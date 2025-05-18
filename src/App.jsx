@@ -13,7 +13,7 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { AboutPage } from "./pages/AboutPage";
 import { AuthModal } from "./components/AuthModal";
-
+import { Home } from "./pages/Home";
 // Halaman admin
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
@@ -23,78 +23,11 @@ import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/MentorSchedulePage";
 import { MentorCoursesPage } from "./pages/mentor/MentorCoursesPage";
 import { MentorStudentsPage } from "./pages/mentor/MentorStudentsPage";
-
+import coursesData from "./utils/constants/CourseData";
 import Swal from "sweetalert2";
 
 // Sample data
-const courses = [
-	{
-		id: "1",
-		title: "Statistika Probabilitas",
-		description:
-			"Master complex mathematical concepts with expert peer tutors.",
-		image:
-			"https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=800",
-		category: "Mathematics",
-		price_per_hour: 50,
-		mentors: [
-			{
-				id: "m1",
-				name: "Alex Thompson",
-				avatar:
-					"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200",
-				rating: 4.8,
-				expertise: ["Calculus", "Linear Algebra"],
-				availability: { online: true, offline: true },
-				phone: "+1234567890",
-				location: "Central Library, Building A",
-			},
-		],
-	},
-
-	{
-		id: "2",
-		title: "Dasar Dasar Pemrograman",
-		description:
-			"Learn essential programming concepts and algorithms with python.",
-		image:
-			"https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=800",
-		category: "Computer Science",
-		price_per_hour: 25,
-		mentors: [
-			{
-				id: "m2",
-				name: "Eko Muchamad Haryono",
-				avatar:
-					"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200",
-				rating: 4.9,
-				expertise: ["Algorithms", "Python"],
-				availability: { online: true, offline: false },
-				phone: "+1234567891",
-			},
-		],
-	},
-	{
-		id: "3",
-		title: "Pemrograman Web",
-		description:
-			"Learn essential programming concepts and algorithms with python.",
-		image: "../public/webpro.jpg",
-		category: "Software Engineering",
-		price_per_hour: 25,
-		mentors: [
-			{
-				id: "m2",
-				name: "Eko Muchamad Haryono",
-				avatar: "../public/eko.JPG",
-				rating: 4.9,
-				expertise: ["Algorithms", "Python"],
-				availability: { online: true, offline: false },
-				phone: "+1234567891",
-			},
-		],
-	},
-];
+const courses = coursesData;
 
 function App() {
 	const [currentPage, setCurrentPage] = useState("home");
@@ -108,6 +41,7 @@ function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [userRole, setUserRole] = useState(null);
 
+	// Navigasi berbasis hash
 	useEffect(() => {
 		const handleHashChange = () => {
 			const hash = window.location.hash.slice(1) || "home";
@@ -123,7 +57,7 @@ function App() {
 	const filteredCourses = courses.filter(
 		(course) =>
 			course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			course.category.toLowerCase().includes(searchQuery.toLowerCase()),
+			course.category.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	const handleSchedule = (mentor, course = null) => {
@@ -172,12 +106,13 @@ function App() {
 
 	const handleNavigate = (page) => {
 		if (!isAuthenticated && ["profile", "history"].includes(page)) {
+			//
 			setShowAuthModal(true);
 			return;
 		}
 
 		if (page === "home") {
-			setSelectedCourse(null); // Reset selectedCourse saat ke halaman home
+			setSelectedCourse(null);
 		}
 		setCurrentPage(page);
 		window.location.hash = page;
@@ -188,7 +123,6 @@ function App() {
 		setUserRole(role);
 		setShowAuthModal(false);
 
-		// Redirect based on role
 		if (role === "admin") {
 			setCurrentPage("admin-dashboard");
 			window.location.hash = "admin-dashboard";
@@ -211,6 +145,37 @@ function App() {
 	};
 
 	const renderContent = () => {
+		const protectedPages = [
+			"admin-dashboard",
+			"manage-users",
+			"manage-courses",
+			"manage-mentors",
+			"mentor-dashboard",
+			"manage-schedule",
+			"manage-students",
+			"profile",
+			"history",
+			"settings",
+		];
+
+		// Jika belum login dan mencoba mengakses halaman terproteksi, langsung render Home
+		if (!isAuthenticated && protectedPages.includes(currentPage)) {
+			// Ubah currentPage dan hash untuk konsistensi
+			setCurrentPage("home");
+			window.location.hash = "home";
+			setShowAuthModal(true); // Tampilkan modal login kalau belum login atau nyoba akses halaman terproteksi
+			return (
+				<Home
+					courses={courses}
+					filteredCourses={filteredCourses}
+					searchQuery={searchQuery}
+					setSearchQuery={setSearchQuery}
+					handleCourseClick={handleCourseClick}
+					userRole={userRole}
+				/>
+			);
+		}
+
 		// Role-specific dashboards
 		if (userRole === "admin" && currentPage === "admin-dashboard") {
 			return <AdminDashboard />;
@@ -255,13 +220,12 @@ function App() {
 				case "mentors":
 					return <MentorsPage onSchedule={handleSchedule} />;
 				case "courses":
-					return selectedCourse ? ( // Kalo course di klik akan menampilkan mentor tersedia
+					return selectedCourse ? (
 						<div className="py-4">
 							<button
 								type="button"
 								onClick={() => setSelectedCourse(null)}
-								className="px-4 py-2 mb-4 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
-							>
+								className="px-4 py-2 mb-4 bg-black text-white rounded-lg flex items-center gap-2 hover:bg-yellow-500 transition-all duration-300 shadow-md hover:shadow-lg">
 								<ArrowLeft className="w-4 h-4" />
 								Back to Courses
 							</button>
@@ -281,21 +245,54 @@ function App() {
 								))}
 							</div>
 						</div>
-						//sebaliknya kalo course belum di klik akan tampilkan semua course
 					) : (
 						<CoursesPage courses={courses} onCourseClick={setSelectedCourse} />
 					);
-
 				case "about":
 					return <AboutPage />;
-				default:
-					return selectedCourse ? ( // Kalo course di klik akan menampilkan mentor tersedia
+				case "home":
+					return selectedCourse ? (
 						<div className="py-4">
 							<button
 								type="button"
 								onClick={() => setSelectedCourse(null)}
-								className="px-4 py-2 mb-4 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
-							>
+								className="px-4 py-2 mb-4 bg-black text-white rounded-lg flex items-center gap-2 hover:bg-yellow-500 transition-all duration-300 shadow-md hover:shadow-lg">
+								<ArrowLeft className="w-4 h-4" />
+								Back to Home
+							</button>
+							<h2 className="text-2xl font-bold text-gray-900 mb-6">
+								{selectedCourse.title} - Available Mentors
+							</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+								{selectedCourse.mentors.map((mentor) => (
+									<MentorCard
+										key={mentor.id}
+										mentor={mentor}
+										onSchedule={(mentor) =>
+											handleSchedule(mentor, selectedCourse)
+										}
+										selectedCourse={selectedCourse}
+									/>
+								))}
+							</div>
+						</div>
+					) : (
+						<Home
+							courses={courses}
+							filteredCourses={filteredCourses}
+							searchQuery={searchQuery}
+							setSearchQuery={setSearchQuery}
+							handleCourseClick={handleCourseClick}
+							userRole={userRole}
+						/>
+					);
+				default:
+					return selectedCourse ? (
+						<div className="py-4">
+							<button
+								type="button"
+								onClick={() => setSelectedCourse(null)}
+								className="px-4 py-2 mb-4 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg">
 								<ArrowLeft className="w-4 h-4" />
 								Back to Courses
 							</button>
@@ -314,33 +311,12 @@ function App() {
 									/>
 								))}
 							</div>
-						</div> //sebaliknya kalo course belum di klik
-					) : (
-						<div className="space-y-8">
-							<CourseCarousel
-								courses={courses}
-								onCourseClick={handleCourseClick}
-							/>
-							<div>
-								<h2 className="text-2xl font-bold text-gray-900 mb-6">
-									All Courses
-								</h2>
-								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-									{filteredCourses.map((course) => (
-										<CourseCard
-											key={course.id}
-											course={course}
-											onClick={handleCourseClick}
-										/>
-									))}
-								</div>
-							</div>
 						</div>
-					);
+					) : null;
 			}
 		})();
 
-		return <div className="page-transition">{content}</div>;
+		return <div className="page-transition ">{content}</div>;
 	};
 
 	return (
@@ -356,21 +332,6 @@ function App() {
 
 			<main className="flex-grow">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					{currentPage === "home" &&
-						userRole !== "admin" &&
-						userRole !== "mentor" && (
-							<div className="relative py-4">
-								<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-								<input
-									type="text"
-									placeholder="Search courses..."
-									value={searchQuery}
-									onChange={(e) => setSearchQuery(e.target.value)}
-									className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-								/>
-							</div>
-						)}
-
 					{renderContent()}
 				</div>
 

@@ -48,6 +48,8 @@ export function Navigation({
 				return "Users";
 			case "manage-courses":
 				return "Courses";
+			case "manage-mentors":
+				return "Mentors";
 			// Halaman mentor
 			case "mentor-dashboard":
 				return "Mentor Dashboard";
@@ -64,117 +66,92 @@ export function Navigation({
 		if (userRole === "admin") {
 			return (
 				<>
-					<button
+					<a
 						type="button"
 						onClick={() => onNavigate("admin-dashboard")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "users"
+							currentPage === "admin-dashboard"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
+						}`}>
 						<Users className="w-4 h-4 inline-block mr-1" />
 						Dashboard
-					</button>
-					<button
+					</a>
+					<a
 						type="button"
 						onClick={() => onNavigate("manage-users")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-users"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
+						}`}>
 						<BookOpen className="w-4 h-4 inline-block mr-1" />
 						Users
-					</button>
-					<button
+					</a>
+					<a
 						type="button"
 						onClick={() => onNavigate("manage-courses")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-courses"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
+						}`}>
 						<BookOpen className="w-4 h-4 inline-block mr-1" />
 						Course
-					</button>
-					<button
+					</a>
+					<a
 						type="button"
 						onClick={() => onNavigate("manage-mentors")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-mentors"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
+						}`}>
 						<UserCheck className="w-4 h-4 inline-block mr-1" />
 						Mentors
-					</button>
-					<button
-						type="button"
-						onClick={() => onNavigate("settings")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "settings"
-								? "bg-yellow-500 text-gray-900"
-								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
-						<Settings className="w-4 h-4 inline-block mr-1" />
-						Settings
-					</button>
+					</a>
 				</>
 			);
-			// biome-ignore lint/style/noUselessElse: <explanation>
 		} else if (userRole === "mentor") {
 			return (
 				<>
 					<a
-						// biome-ignore lint/a11y/useValidAnchor: <explanation>
 						onClick={() => onNavigate("mentor-dashboard")} // Ambil dari mengatur halaman di App.jsx
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "mentor-dashboard"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
+						}`}>
 						<Calendar className="w-4 h-4 inline-block mr-1" />
 						Dashboard
 					</a>
 					<a
-						// biome-ignore lint/a11y/useValidAnchor: <explanation>
 						onClick={() => onNavigate("manage-schedule")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-schedule"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
+						}`}>
 						<Calendar className="w-4 h-4 inline-block mr-1" />
 						Schedule
 					</a>
 					<a
-						// biome-ignore lint/a11y/useValidAnchor: <explanation>
 						onClick={() => onNavigate("manage-courses")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-courses"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
+						}`}>
 						<BookOpen className="w-4 h-4 inline-block mr-1" />
 						My Courses
 					</a>
 					<a
-						// biome-ignore lint/a11y/useValidAnchor: <explanation>
 						onClick={() => onNavigate("manage-students")} // Ambil halaman dari App.jsx
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-students"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
-						}`}
-					>
+						}`}>
 						<Users className="w-4 h-4 inline-block mr-1" />
 						Students
 					</a>
@@ -185,50 +162,42 @@ export function Navigation({
 		return (
 			<>
 				<a
-					// biome-ignore lint/a11y/useValidAnchor: <explanation>
 					onClick={() => onNavigate("home")}
 					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 						currentPage === "home"
 							? "bg-yellow-500 text-gray-900"
 							: "text-gray-900 hover:bg-yellow-500"
-					}`}
-				>
+					}`}>
 					<Home className="w-4 h-4 inline-block mr-1" />
 					Home
 				</a>
 				<a
-					// biome-ignore lint/a11y/useValidAnchor: <explanation>
 					onClick={() => onNavigate("courses")}
 					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 						currentPage === "courses"
 							? "bg-yellow-500 text-gray-900"
 							: "text-gray-900 hover:bg-yellow-500"
-					}`}
-				>
+					}`}>
 					<BookOpen className="w-4 h-4 inline-block mr-1" />
 					Courses
 				</a>
 				<a
-					// biome-ignore lint/a11y/useValidAnchor: <explanation>
 					onClick={() => onNavigate("mentors")}
 					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 						currentPage === "mentors"
 							? "bg-yellow-500 text-gray-900"
 							: "text-gray-900 hover:bg-yellow-500"
-					}`}
-				>
+					}`}>
 					<Users className="w-4 h-4 inline-block mr-1" />
 					Mentors
 				</a>
 				<a
-					// biome-ignore lint/a11y/useValidAnchor: <explanation>
 					onClick={() => onNavigate("about")}
 					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 						currentPage === "about"
 							? "bg-yellow-500 text-gray-900"
 							: "text-gray-900 hover:bg-yellow-500"
-					}`}
-				>
+					}`}>
 					<Info className="w-4 h-4 inline-block mr-1" />
 					About Us
 				</a>
@@ -266,8 +235,7 @@ export function Navigation({
 							<button
 								type="button"
 								onClick={onAuthClick}
-								className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-							>
+								className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none  transition-colors">
 								<LogIn className="w-4 h-4 mr-2" />
 								Sign In
 							</button>
@@ -275,8 +243,7 @@ export function Navigation({
 						<button
 							type="button"
 							onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-							className="ml-4 md:hidden"
-						>
+							className="ml-4 md:hidden">
 							{isMobileMenuOpen ? (
 								<X className="h-6 w-6 text-gray-600" />
 							) : (
@@ -299,8 +266,7 @@ export function Navigation({
 											onNavigate("users");
 											setIsMobileMenuOpen(false);
 										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md"
-									>
+										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 										<Users className="w-5 h-5 mr-3" />
 										Users
 										<ChevronRight className="w-5 h-5 ml-auto" />
@@ -315,8 +281,7 @@ export function Navigation({
 											onNavigate("schedule");
 											setIsMobileMenuOpen(false);
 										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md"
-									>
+										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 										<Calendar className="w-5 h-5 mr-3" />
 										Schedule
 										<ChevronRight className="w-5 h-5 ml-auto" />
@@ -331,8 +296,7 @@ export function Navigation({
 											onNavigate("courses");
 											setIsMobileMenuOpen(false);
 										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md"
-									>
+										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 										<BookOpen className="w-5 h-5 mr-3" />
 										Courses
 										<ChevronRight className="w-5 h-5 ml-auto" />
@@ -343,8 +307,7 @@ export function Navigation({
 											onNavigate("mentors");
 											setIsMobileMenuOpen(false);
 										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md"
-									>
+										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 										<Users className="w-5 h-5 mr-3" />
 										Mentors
 										<ChevronRight className="w-5 h-5 ml-auto" />
@@ -355,8 +318,7 @@ export function Navigation({
 											onNavigate("about");
 											setIsMobileMenuOpen(false);
 										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md"
-									>
+										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 										<Info className="w-5 h-5 mr-3" />
 										About Us
 										<ChevronRight className="w-5 h-5 ml-auto" />
@@ -370,8 +332,7 @@ export function Navigation({
 										onAuthClick();
 										setIsMobileMenuOpen(false);
 									}}
-									className="w-full flex items-center px-3 py-2 text-base font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-colors rounded-md"
-								>
+									className="w-full flex items-center px-3 py-2 text-base font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-colors rounded-md">
 									<LogIn className="w-5 h-5 mr-3" />
 									Sign In
 									<ChevronRight className="w-5 h-5 ml-auto" />
