@@ -18,6 +18,7 @@ import { Home } from "./pages/Home";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
 import { AdminCoursesPage } from "./pages/admin/AdminCoursesPage";
+import { AdminMentorsPage } from "./pages/admin/AdminMentorsPage";
 // Halaman mentor
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/MentorSchedulePage";
@@ -25,12 +26,14 @@ import { MentorCoursesPage } from "./pages/mentor/MentorCoursesPage";
 import { MentorStudentsPage } from "./pages/mentor/MentorStudentsPage";
 import coursesData from "./utils/constants/CourseData";
 import Swal from "sweetalert2";
+import api from "./api"; // Sesuaikan path ke file api.jsx
 
-// Sample data
 const courses = coursesData;
 
 function App() {
-	const [currentPage, setCurrentPage] = useState("home");
+	const [currentPage, setCurrentPage] = useState(
+		window.location.hash.slice(1) || "home"
+	);
 	const [selectedCourse, setSelectedCourse] = useState(null);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedMentor, setSelectedMentor] = useState(null);
@@ -40,6 +43,81 @@ function App() {
 	const [showAuthModal, setShowAuthModal] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [userRole, setUserRole] = useState(null);
+	const [userData, setUserData] = useState(null);
+	const [isLoading, setIsLoading] = useState(true); // Tambahkan state untuk loading
+
+	// Memulihkan status autentikasi saat aplikasi dimuat
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		const storedUser = localStorage.getItem("user");
+
+		if (token && storedUser) {
+			try {
+				const user = JSON.parse(storedUser);
+				const roleFromBackend = user.peran?.toLowerCase();
+
+				if (roleFromBackend) {
+					setIsAuthenticated(true);
+					setUserRole(roleFromBackend);
+					setUserData(user);
+
+					const adminPages = [
+						"admin-dashboard",
+						"manage-users",
+						"manage-courses",
+						"manage-mentors",
+					];
+					const mentorPages = [
+						"mentor-dashboard",
+						"manage-schedule",
+						"manage-courses",
+						"manage-students",
+					];
+					const protectedPages = [
+						...adminPages,
+						...mentorPages,
+						"profile",
+						"history",
+						"settings",
+					];
+
+					if (!protectedPages.includes(currentPage) || currentPage === "home") {
+						if (roleFromBackend === "admin") {
+							setCurrentPage("admin-dashboard");
+							window.location.hash = "admin-dashboard";
+						} else if (roleFromBackend === "mentor") {
+							setCurrentPage("mentor-dashboard");
+							window.location.hash = "mentor-dashboard";
+						}
+					}
+				} else {
+					localStorage.removeItem("token");
+					localStorage.removeItem("user");
+					setIsAuthenticated(false);
+					setUserRole(null);
+					setUserData(null);
+					setCurrentPage("home");
+					window.location.hash = "home";
+				}
+			} catch (error) {
+				console.error("Error parsing stored user:", error);
+				localStorage.removeItem("token");
+				localStorage.removeItem("user");
+				setIsAuthenticated(false);
+				setUserRole(null);
+				setUserData(null);
+				setCurrentPage("home");
+				window.location.hash = "home";
+			}
+		} else {
+			setIsAuthenticated(false);
+			setUserRole(null);
+			setUserData(null);
+			setCurrentPage("home");
+			window.location.hash = "home";
+		}
+		setIsLoading(false); // Selesai memuat
+	}, []);
 
 	// Navigasi berbasis hash
 	useEffect(() => {
@@ -99,14 +177,13 @@ function App() {
 			text: "Your booking has been confirmed. We will verify your payment shortly.",
 			confirmButtonColor: "#3B82F6",
 		}).then(() => {
-			setCurrentBooking(null);
+			setCurrentPage("history");
 			window.location.hash = "history";
 		});
 	};
 
 	const handleNavigate = (page) => {
-		if (!isAuthenticated && ["profile", "history"].includes(page)) {
-			//
+		if (!isAuthenticated && ["profile", "history", "settings"].includes(page)) {
 			setShowAuthModal(true);
 			return;
 		}
@@ -118,9 +195,10 @@ function App() {
 		window.location.hash = page;
 	};
 
-	const handleAuthSuccess = (role) => {
+	const handleAuthSuccess = (role, user) => {
 		setIsAuthenticated(true);
 		setUserRole(role);
+		setUserData(user);
 		setShowAuthModal(false);
 
 		if (role === "admin") {
@@ -133,10 +211,27 @@ function App() {
 	};
 
 	const handleLogout = () => {
-		setIsAuthenticated(false);
-		setUserRole(null);
-		setCurrentPage("home");
-		window.location.hash = "home";
+		api
+			.post("/logout")
+			.then(() => {
+				localStorage.removeItem("token");
+				localStorage.removeItem("user");
+				setIsAuthenticated(false);
+				setUserRole(null);
+				setUserData(null);
+				setCurrentPage("home");
+				window.location.hash = "home";
+			})
+			.catch((error) => {
+				console.error("Logout failed:", error);
+				localStorage.removeItem("token");
+				localStorage.removeItem("user");
+				setIsAuthenticated(false);
+				setUserRole(null);
+				setUserData(null);
+				setCurrentPage("home");
+				window.location.hash = "home";
+			});
 	};
 
 	const handleCourseClick = (course) => {
@@ -145,25 +240,36 @@ function App() {
 	};
 
 	const renderContent = () => {
-		const protectedPages = [
+		const adminPages = [
 			"admin-dashboard",
 			"manage-users",
 			"manage-courses",
 			"manage-mentors",
+		];
+		const mentorPages = [
 			"mentor-dashboard",
 			"manage-schedule",
+			"manage-courses",
 			"manage-students",
+		];
+		const protectedPages = [
+			...adminPages,
+			...mentorPages,
 			"profile",
 			"history",
 			"settings",
 		];
 
-		// Jika belum login dan mencoba mengakses halaman terproteksi, langsung render Home
+		// Jika masih loading, jangan render apa-apa
+		if (isLoading) {
+			return <div>Loading...</div>;
+		}
+
+		// Cek apakah pengguna mencoba mengakses halaman yang dilindungi
 		if (!isAuthenticated && protectedPages.includes(currentPage)) {
-			// Ubah currentPage dan hash untuk konsistensi
 			setCurrentPage("home");
 			window.location.hash = "home";
-			setShowAuthModal(true); // Tampilkan modal login kalau belum login atau nyoba akses halaman terproteksi
+			setShowAuthModal(true);
 			return (
 				<Home
 					courses={courses}
@@ -176,29 +282,27 @@ function App() {
 			);
 		}
 
-		// Role-specific dashboards
-		if (userRole === "admin" && currentPage === "admin-dashboard") {
-			return <AdminDashboard />;
-		}
-		if (userRole === "mentor" && currentPage === "mentor-dashboard") {
-			return <MentorDashboard />;
-		}
-
-		// Mengatur Halaman khusus admin
-		if (userRole === "admin") {
+		// Cek apakah admin mencoba mengakses halaman admin
+		if (userRole === "admin" && adminPages.includes(currentPage)) {
 			switch (currentPage) {
+				case "admin-dashboard":
+					return <AdminDashboard />;
 				case "manage-users":
 					return <AdminUsersPage />;
 				case "manage-courses":
 					return <AdminCoursesPage />;
+				case "manage-mentors":
+					return <AdminMentorsPage />;
 				default:
 					break;
 			}
 		}
 
-		// Mengatur Halaman khusus mentor
-		if (userRole === "mentor") {
+		// Cek apakah mentor mencoba mengakses halaman mentor
+		if (userRole === "mentor" && mentorPages.includes(currentPage)) {
 			switch (currentPage) {
+				case "mentor-dashboard":
+					return <MentorDashboard />;
 				case "manage-schedule":
 					return <MentorSchedulePage />;
 				case "manage-courses":
@@ -210,11 +314,25 @@ function App() {
 			}
 		}
 
-		// Regular content
+		// Cek apakah halaman yang diakses tidak sesuai dengan role
+		if (
+			(userRole === "admin" && mentorPages.includes(currentPage)) ||
+			(userRole === "mentor" && adminPages.includes(currentPage))
+		) {
+			setCurrentPage(
+				userRole === "admin" ? "admin-dashboard" : "mentor-dashboard"
+			);
+			window.location.hash =
+				userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
+			return userRole === "admin" ? <AdminDashboard /> : <MentorDashboard />;
+		}
+
 		const content = (() => {
 			switch (currentPage) {
 				case "profile":
-					return isAuthenticated ? <ProfilePage userRole={userRole} /> : null;
+					return isAuthenticated ? (
+						<ProfilePage userRole={userRole} userData={userData} />
+					) : null;
 				case "history":
 					return isAuthenticated ? <HistoryPage /> : null;
 				case "mentors":
@@ -316,7 +434,7 @@ function App() {
 			}
 		})();
 
-		return <div className="page-transition ">{content}</div>;
+		return <div className="page-transition">{content}</div>;
 	};
 
 	return (
@@ -328,6 +446,7 @@ function App() {
 				userRole={userRole}
 				onAuthClick={() => setShowAuthModal(true)}
 				onLogout={handleLogout}
+				userData={userData}
 			/>
 
 			<main className="flex-grow">

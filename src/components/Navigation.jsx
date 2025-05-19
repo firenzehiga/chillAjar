@@ -23,11 +23,11 @@ export function Navigation({
 	userRole,
 	onAuthClick,
 	onLogout,
+	userData,
 }) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
 	const getPageTitle = (page) => {
-		// Mengatur judul halaman berdasarkan halaman yang sedang aktif
 		switch (page) {
 			case "courses":
 				return "Courses";
@@ -41,7 +41,6 @@ export function Navigation({
 				return "Settings";
 			case "about":
 				return "About Us";
-			// Halaman admin
 			case "admin-dashboard":
 				return "Admin Dashboard";
 			case "manage-users":
@@ -50,7 +49,6 @@ export function Navigation({
 				return "Courses";
 			case "manage-mentors":
 				return "Mentors";
-			// Halaman mentor
 			case "mentor-dashboard":
 				return "Mentor Dashboard";
 			case "manage-schedule":
@@ -67,7 +65,6 @@ export function Navigation({
 			return (
 				<>
 					<a
-						type="button"
 						onClick={() => onNavigate("admin-dashboard")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "admin-dashboard"
@@ -78,7 +75,6 @@ export function Navigation({
 						Dashboard
 					</a>
 					<a
-						type="button"
 						onClick={() => onNavigate("manage-users")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-users"
@@ -89,7 +85,6 @@ export function Navigation({
 						Users
 					</a>
 					<a
-						type="button"
 						onClick={() => onNavigate("manage-courses")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-courses"
@@ -97,10 +92,9 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<BookOpen className="w-4 h-4 inline-block mr-1" />
-						Course
+						Courses
 					</a>
 					<a
-						type="button"
 						onClick={() => onNavigate("manage-mentors")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-mentors"
@@ -116,7 +110,7 @@ export function Navigation({
 			return (
 				<>
 					<a
-						onClick={() => onNavigate("mentor-dashboard")} // Ambil dari mengatur halaman di App.jsx
+						onClick={() => onNavigate("mentor-dashboard")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "mentor-dashboard"
 								? "bg-yellow-500 text-gray-900"
@@ -146,7 +140,7 @@ export function Navigation({
 						My Courses
 					</a>
 					<a
-						onClick={() => onNavigate("manage-students")} // Ambil halaman dari App.jsx
+						onClick={() => onNavigate("manage-students")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
 							currentPage === "manage-students"
 								? "bg-yellow-500 text-gray-900"
@@ -205,13 +199,165 @@ export function Navigation({
 		);
 	};
 
-	// tampilan navigasi
+	const renderMobileNavLinks = () => {
+		if (userRole === "admin") {
+			return (
+				<>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("admin-dashboard");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<Users className="w-5 h-5 mr-3" />
+						Dashboard
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("manage-users");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<BookOpen className="w-5 h-5 mr-3" />
+						Users
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("manage-courses");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<BookOpen className="w-5 h-5 mr-3" />
+						Courses
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("manage-mentors");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<UserCheck className="w-5 h-5 mr-3" />
+						Mentors
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+				</>
+			);
+		} else if (userRole === "mentor") {
+			return (
+				<>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("mentor-dashboard");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<Calendar className="w-5 h-5 mr-3" />
+						Dashboard
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("manage-schedule");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<Calendar className="w-5 h-5 mr-3" />
+						Schedule
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("manage-courses");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<BookOpen className="w-5 h-5 mr-3" />
+						My Courses
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("manage-students");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<Users className="w-5 h-5 mr-3" />
+						Students
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+				</>
+			);
+		}
+
+		return (
+			<>
+				<button
+					type="button"
+					onClick={() => {
+						onNavigate("home");
+						setIsMobileMenuOpen(false);
+					}}
+					className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+					<Home className="w-5 h-5 mr-3" />
+					Home
+					<ChevronRight className="w-5 h-5 ml-auto" />
+				</button>
+				<button
+					type="button"
+					onClick={() => {
+						onNavigate("courses");
+						setIsMobileMenuOpen(false);
+					}}
+					className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+					<BookOpen className="w-5 h-5 mr-3" />
+					Courses
+					<ChevronRight className="w-5 h-5 ml-auto" />
+				</button>
+				<button
+					type="button"
+					onClick={() => {
+						onNavigate("mentors");
+						setIsMobileMenuOpen(false);
+					}}
+					className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+					<Users className="w-5 h-5 mr-3" />
+					Mentors
+					<ChevronRight className="w-5 h-5 ml-auto" />
+				</button>
+				<button
+					type="button"
+					onClick={() => {
+						onNavigate("about");
+						setIsMobileMenuOpen(false);
+					}}
+					className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+					<Info className="w-5 h-5 mr-3" />
+					About Us
+					<ChevronRight className="w-5 h-5 ml-auto" />
+				</button>
+			</>
+		);
+	};
+
 	return (
 		<header className="bg-chill-yellow shadow-sm sticky top-0 z-50">
 			<div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center">
-						<div className="flex items-center cursor-pointer">
+						<div
+							className="flex items-center cursor-pointer"
+							onClick={() => onNavigate("home")}>
 							<img
 								src={titleLogo}
 								alt="Logo ChillAjar"
@@ -230,12 +376,13 @@ export function Navigation({
 								onNavigate={onNavigate}
 								onLogout={onLogout}
 								userRole={userRole}
+								userData={userData}
 							/>
 						) : (
 							<button
 								type="button"
 								onClick={onAuthClick}
-								className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none  transition-colors">
+								className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-colors">
 								<LogIn className="w-4 h-4 mr-2" />
 								Sign In
 							</button>
@@ -256,89 +403,20 @@ export function Navigation({
 				{/* Mobile Navigation */}
 				{isMobileMenuOpen && (
 					<nav className="md:hidden mt-4 pb-3 border-t border-gray-200">
-						<div className="pt-3 space-y-1">
-							{/* Render mobile nav links based on role */}
-							{userRole === "admin" ? (
-								<>
-									<button
-										type="button"
-										onClick={() => {
-											onNavigate("users");
-											setIsMobileMenuOpen(false);
-										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
-										<Users className="w-5 h-5 mr-3" />
-										Users
-										<ChevronRight className="w-5 h-5 ml-auto" />
-									</button>
-									{/* Add other admin mobile links */}
-								</>
-							) : userRole === "mentor" ? (
-								<>
-									<button
-										type="button"
-										onClick={() => {
-											onNavigate("schedule");
-											setIsMobileMenuOpen(false);
-										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
-										<Calendar className="w-5 h-5 mr-3" />
-										Schedule
-										<ChevronRight className="w-5 h-5 ml-auto" />
-									</button>
-									{/* Add other mentor mobile links */}
-								</>
-							) : (
-								<>
-									<button
-										type="button"
-										onClick={() => {
-											onNavigate("courses");
-											setIsMobileMenuOpen(false);
-										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
-										<BookOpen className="w-5 h-5 mr-3" />
-										Courses
-										<ChevronRight className="w-5 h-5 ml-auto" />
-									</button>
-									<button
-										type="button"
-										onClick={() => {
-											onNavigate("mentors");
-											setIsMobileMenuOpen(false);
-										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
-										<Users className="w-5 h-5 mr-3" />
-										Mentors
-										<ChevronRight className="w-5 h-5 ml-auto" />
-									</button>
-									<button
-										type="button"
-										onClick={() => {
-											onNavigate("about");
-											setIsMobileMenuOpen(false);
-										}}
-										className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
-										<Info className="w-5 h-5 mr-3" />
-										About Us
-										<ChevronRight className="w-5 h-5 ml-auto" />
-									</button>
-								</>
-							)}
-							{!isAuthenticated && (
-								<button
-									type="button"
-									onClick={() => {
-										onAuthClick();
-										setIsMobileMenuOpen(false);
-									}}
-									className="w-full flex items-center px-3 py-2 text-base font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-colors rounded-md">
-									<LogIn className="w-5 h-5 mr-3" />
-									Sign In
-									<ChevronRight className="w-5 h-5 ml-auto" />
-								</button>
-							)}
-						</div>
+						<div className="pt-3 space-y-1">{renderMobileNavLinks()}</div>
+						{!isAuthenticated && (
+							<button
+								type="button"
+								onClick={() => {
+									onAuthClick();
+									setIsMobileMenuOpen(false);
+								}}
+								className="w-full flex items-center px-3 py-2 text-base font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-colors rounded-md">
+								<LogIn className="w-5 h-5 mr-3" />
+								Sign In
+								<ChevronRight className="w-5 h-5 ml-auto" />
+							</button>
+						)}
 					</nav>
 				)}
 			</div>
@@ -348,7 +426,10 @@ export function Navigation({
 				<div className="bg-gray-50 border-t border-gray-200">
 					<div className="max-w-7xl mx-auto px-4 py-2 sm:px-6 lg:px-8">
 						<div className="flex items-center space-x-2 text-sm text-gray-600">
-							<button type="button" className="hover:text-yellow-600">
+							<button
+								type="button"
+								onClick={() => onNavigate("home")}
+								className="hover:text-yellow-600">
 								Home
 							</button>
 							<ChevronRight className="w-4 h-4" />
@@ -362,3 +443,5 @@ export function Navigation({
 		</header>
 	);
 }
+
+export default Navigation;

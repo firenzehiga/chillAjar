@@ -1,98 +1,76 @@
-import React from "react";
-import { UserCheck, Plus, Pencil, Trash } from "lucide-react";
-import {
-	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
-
-// Sample data
-const mentors = [
-	{ id: 1, name: "Dr. Smith", expertise: "Mathematics", rating: 4.8 },
-	{ id: 2, name: "Prof. Johnson", expertise: "Programming", rating: 4.9 },
-	// Add more mentors...
-];
+import React, { useEffect, useState } from "react";
+import DataTable from "react-data-table-component";
+import { UserCheck, Plus, Pencil, Trash, Star } from "lucide-react";
+import api from "../../api";
 
 export function AdminMentorsPage() {
-	const columnHelper = createColumnHelper();
+	const [mentors, setMentors] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-	const mentorColumns = [
-		columnHelper.accessor("name", {
-			header: "Name",
-			cell: (info) => info.getValue(),
-		}),
-		columnHelper.accessor("expertise", {
-			header: "Expertise",
-			cell: (info) => info.getValue(),
-		}),
-		columnHelper.accessor("rating", {
-			header: "Rating",
-			cell: (info) => info.getValue(),
-		}),
-		columnHelper.display({
-			id: "actions",
-			cell: (info) => (
-				<div className="flex space-x-2">
-					<button className="p-1 text-blue-600 hover:text-blue-800">
+	useEffect(() => {
+		const fetchMentors = async () => {
+			try {
+				const response = await api.get("/admin/mentor");
+				setMentors(response.data);
+				setLoading(false);
+			} catch (err) {
+				setError("Gagal mengambil data mentor");
+				setLoading(false);
+			}
+		};
+		fetchMentors();
+	}, []);
+
+	const columns = [
+		{ name: "ID", selector: (row) => row.id, sortable: true },
+		{
+			name: "Rating",
+			cell: (row) => (
+				<div className="flex text-yellow-500">
+					<Star className="w-4 h-4" fill="currentColor" />
+					<span className="ml-1 text-gray-700">{row.rating.toFixed(1)}</span>
+				</div>
+			),
+			sortable: true,
+		},
+		{
+			name: "Biaya Per Sesi",
+			selector: (row) => `Rp ${row.biayaPerSesi.toLocaleString()}`,
+		},
+		{ name: "Gaya Mengajar", selector: (row) => row.gayaMengajar },
+		{ name: "Deskripsi", selector: (row) => row.deskripsi },
+
+		{
+			name: "Aksi",
+			cell: (row) => (
+				<div className="flex gap-2">
+					<button className="text-blue-600 hover:text-blue-800">
 						<Pencil className="w-4 h-4" />
 					</button>
-					<button className="p-1 text-red-600 hover:text-red-800">
+					<button className="text-red-600 hover:text-red-800">
 						<Trash className="w-4 h-4" />
 					</button>
 				</div>
 			),
-		}),
+		},
 	];
 
-	const mentorsTable = useReactTable({
-		data: mentors,
-		columns: mentorColumns,
-		getCoreRowModel: getCoreRowModel(),
-	});
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
+				<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+				<p>Loading mentor data...</p>
+			</div>
+		);
+	}
 
-	const renderTable = (table) => (
-		<div className="mt-4 overflow-x-auto">
-			<table className="min-w-full divide-y divide-gray-200">
-				<thead className="bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th
-									key={header.id}
-									className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-									{header.isPlaceholder
-										? null
-										: flexRender(
-												header.column.columnDef.header,
-												header.getContext()
-										  )}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody className="bg-white divide-y divide-gray-200">
-					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id}>
-							{row.getVisibleCells().map((cell) => (
-								<td
-									key={cell.id}
-									className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
-								</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-			</table>
-		</div>
-	);
+	if (error) return <p className="text-red-500">{error}</p>;
 
 	return (
 		<div className="py-8">
 			<div className="mb-8">
-				<h1 className="text-2xl font-bold text-gray-900 flex items-center">
+				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<UserCheck className="w-6 h-6 mr-2 text-blue-600" />
 					Manage Mentors
 				</h1>
@@ -107,9 +85,19 @@ export function AdminMentorsPage() {
 						Add Mentor
 					</button>
 				</div>
-				{renderTable(mentorsTable)}
+
+				<DataTable
+					columns={columns}
+					data={mentors}
+					pagination
+					highlightOnHover
+					persistTableHead
+					responsive
+					noHeader
+				/>
 			</div>
 		</div>
 	);
 }
+
 export default AdminMentorsPage;

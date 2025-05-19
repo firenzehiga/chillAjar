@@ -1,100 +1,70 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import DataTable from "react-data-table-component";
 import { BookOpen, Plus, Pencil, Trash } from "lucide-react";
-import {
-	createColumnHelper,
-	flexRender,
-	getCoreRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
-
-// Sample data
-const courses = [
-	{ id: 1, title: "Advanced Mathematics", category: "Mathematics", price: 50 },
-	{ id: 2, title: "Web Development", category: "Programming", price: 60 },
-	// Add more courses...
-];
+import api from "../../api";
 
 export function AdminCoursesPage() {
-	const columnHelper = createColumnHelper();
+	const [courses, setCourses] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
-	const courseColumns = [
-		columnHelper.accessor("title", {
-			header: "Title",
-			cell: (info) => info.getValue(),
-		}),
-		columnHelper.accessor("category", {
-			header: "Category",
-			cell: (info) => info.getValue(),
-		}),
-		columnHelper.accessor("price", {
-			header: "Price/Hour",
-			cell: (info) => `$${info.getValue()}`,
-		}),
-		columnHelper.display({
-			id: "actions",
-			cell: (info) => (
-				<div className="flex space-x-2">
-					<button className="p-1 text-blue-600 hover:text-blue-800">
+	useEffect(() => {
+		const fetchCourses = async () => {
+			try {
+				const response = await api.get("/courses"); // sesuaikan endpoint API kamu
+				setCourses(response.data);
+				setLoading(false);
+			} catch (err) {
+				setError("Gagal mengambil data courses");
+				setLoading(false);
+			}
+		};
+		fetchCourses();
+	}, []);
+
+	const columns = [
+		{ name: "ID", selector: (row) => row.id, sortable: true },
+		{ name: "Nama Course", selector: (row) => row.namaCourse, sortable: true },
+		{ name: "Deskripsi", selector: (row) => row.deskripsi },
+		{
+			name: "Created At",
+			selector: (row) => new Date(row.created_at).toLocaleDateString(),
+		},
+		{
+			name: "Updated At",
+			selector: (row) => new Date(row.updated_at).toLocaleDateString(),
+		},
+
+		{
+			name: "Aksi",
+			cell: (row) => (
+				<div className="flex gap-2">
+					<button className="text-blue-600 hover:text-blue-800">
 						<Pencil className="w-4 h-4" />
 					</button>
-					<button className="p-1 text-red-600 hover:text-red-800">
+					<button className="text-red-600 hover:text-red-800">
 						<Trash className="w-4 h-4" />
 					</button>
 				</div>
 			),
-		}),
+		},
 	];
 
-	const coursesTable = useReactTable({
-		data: courses,
-		columns: courseColumns,
-		getCoreRowModel: getCoreRowModel(),
-	});
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
+				<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+				<p>Loading course data...</p>
+			</div>
+		);
+	}
 
-	const renderTable = (table) => (
-		<div className="mt-4 overflow-x-auto">
-			<table className="min-w-full divide-y divide-gray-200">
-				<thead className="bg-gray-50">
-					{table.getHeaderGroups().map((headerGroup) => (
-						<tr key={headerGroup.id}>
-							{headerGroup.headers.map((header) => (
-								<th
-									key={header.id}
-									className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-								>
-									{header.isPlaceholder
-										? null
-										: flexRender(
-												header.column.columnDef.header,
-												header.getContext(),
-											)}
-								</th>
-							))}
-						</tr>
-					))}
-				</thead>
-				<tbody className="bg-white divide-y divide-gray-200">
-					{table.getRowModel().rows.map((row) => (
-						<tr key={row.id}>
-							{row.getVisibleCells().map((cell) => (
-								<td
-									key={cell.id}
-									className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-								>
-									{flexRender(cell.column.columnDef.cell, cell.getContext())}
-								</td>
-							))}
-						</tr>
-					))}
-				</tbody>
-			</table>
-		</div>
-	);
+	if (error) return <p className="text-red-500">{error}</p>;
 
 	return (
 		<div className="py-8">
 			<div className="mb-8">
-				<h1 className="text-2xl font-bold text-gray-900 flex items-center">
+				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
 					Manage Courses
 				</h1>
@@ -109,8 +79,19 @@ export function AdminCoursesPage() {
 						Add Course
 					</button>
 				</div>
-				{renderTable(coursesTable)}
+
+				<DataTable
+					columns={columns}
+					data={courses}
+					pagination
+					highlightOnHover
+					persistTableHead
+					responsive
+					noHeader
+				/>
 			</div>
 		</div>
 	);
 }
+
+export default AdminCoursesPage;
