@@ -27,6 +27,8 @@ import { MentorStudentsPage } from "./pages/mentor/MentorStudentsPage";
 import coursesData from "./utils/constants/CourseData";
 import Swal from "sweetalert2";
 import api from "./api"; // Sesuaikan path ke file api.jsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClient = new QueryClient();
 
 const courses = coursesData;
 
@@ -438,57 +440,61 @@ function App() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50 flex flex-col">
-			<Navigation
-				currentPage={currentPage}
-				onNavigate={handleNavigate}
-				isAuthenticated={isAuthenticated}
-				userRole={userRole}
-				onAuthClick={() => setShowAuthModal(true)}
-				onLogout={handleLogout}
-				userData={userData}
-			/>
+		// QueryClient Provider untuk React Query fungsinya agar kita bisa menggunakan
+		// React Query di seluruh aplikasi kita
+		<QueryClientProvider client={queryClient}>
+			<div className="min-h-screen bg-gray-50 flex flex-col">
+				<Navigation
+					currentPage={currentPage}
+					onNavigate={handleNavigate}
+					isAuthenticated={isAuthenticated}
+					userRole={userRole}
+					onAuthClick={() => setShowAuthModal(true)}
+					onLogout={handleLogout}
+					userData={userData}
+				/>
 
-			<main className="flex-grow">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					{renderContent()}
-				</div>
+				<main className="flex-grow">
+					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+						{renderContent()}
+					</div>
 
-				{selectedMentor && (
-					<BookingModal
-						mentor={selectedMentor}
-						selectedCourse={bookingCourse}
-						onClose={() => {
-							setSelectedMentor(null);
-							setBookingCourse(null);
-						}}
-						onSubmit={handleBookingSubmit}
-					/>
-				)}
+					{selectedMentor && (
+						<BookingModal
+							mentor={selectedMentor}
+							selectedCourse={bookingCourse}
+							onClose={() => {
+								setSelectedMentor(null);
+								setBookingCourse(null);
+							}}
+							onSubmit={handleBookingSubmit}
+						/>
+					)}
 
-				{showPayment && currentBooking && (
-					<PaymentModal
-						booking={currentBooking}
-						onClose={() => {
-							setShowPayment(false);
-							setCurrentBooking(null);
-						}}
-						onSubmit={handlePaymentSubmit}
-					/>
-				)}
+					{showPayment && currentBooking && (
+						<PaymentModal
+							booking={currentBooking}
+							onClose={() => {
+								setShowPayment(false);
+								setCurrentBooking(null);
+							}}
+							onSubmit={handlePaymentSubmit}
+						/>
+					)}
 
-				{showAuthModal && (
-					<AuthModal
-						isOpen={showAuthModal}
-						onClose={() => setShowAuthModal(false)}
-						onSuccess={handleAuthSuccess}
-						defaultMode="login"
-					/>
-				)}
-			</main>
+					{showAuthModal && (
+						<AuthModal
+							isOpen={showAuthModal}
+							onClose={() => setShowAuthModal(false)}
+							onSuccess={handleAuthSuccess}
+							defaultMode="login"
+						/>
+					)}
+				</main>
 
-			<Footer onNavigate={handleNavigate} className="mt-auto" />
-		</div>
+				<Footer onNavigate={handleNavigate} className="mt-auto" />
+			</div>
+		</QueryClientProvider>
 	);
 }
 

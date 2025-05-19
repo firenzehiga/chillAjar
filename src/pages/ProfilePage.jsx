@@ -1,4 +1,5 @@
 import React from "react";
+import { useQuery } from "@tanstack/react-query"; // Impor React Query
 import {
 	User,
 	Mail,
@@ -9,30 +10,55 @@ import {
 	Star,
 	Award,
 } from "lucide-react";
+import api from "../api";
 
-// Default avatar jika tidak ada avatar dari userData
 const defaultAvatar =
 	"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200";
 
 export function ProfilePage({ userData }) {
-	// Gabungkan userData dengan nilai default untuk field yang tidak ada
+	// Fetch deskripsi menggunakan useQuery
+	const {
+		data: deskripsi,
+		isLoading: deskripsiLoading,
+		error: deskripsiError,
+	} = useQuery({
+		queryKey: ["mentorProfile"], // Key unik untuk caching
+		queryFn: async () => {
+			if (!userData || userData.peran !== "mentor") return "No description";
+			const response = await api.get("/mentor/profil-saya", {
+				headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+			});
+			return response.data.deskripsi || "No description";
+		},
+		enabled: !!userData && userData.peran === "mentor", // Hanya fetch jika peran adalah mentor
+	});
+
 	const currentUser = {
 		name: userData?.nama || "Unknown User",
 		email: userData?.email || "No email provided",
 		avatar: userData?.avatar || defaultAvatar,
 		location: userData?.alamat || "Location not specified",
 		phone: userData?.nomorTelepon || "Phone not specified",
-		joinedDate: userData?.joinedDate || "Unknown", // Anda bisa menambahkan kolom ini di database
-		completedCourses: userData?.completedCourses || 0, // Anda bisa menambahkan kolom ini di database
-		averageRating: userData?.averageRating || 0, // Anda bisa menambahkan kolom ini di database
-		achievements: userData?.achievements || [], // Anda bisa menambahkan kolom ini di database
+		joinedDate: userData?.created_at || "Unknown",
+		peran: userData?.peran || "unknown",
+	};
+
+	const roleSpecificData = {
+		mentor: {
+			completedCourses: userData?.completedCourses || 0,
+			averageRating: userData?.averageRating || 0,
+			deskripsi: deskripsi,
+		},
+		pelanggan: {
+			coursesEnrolled: userData?.coursesEnrolled || 0,
+			paymentStatus: userData?.statusPembayaran || "Not specified",
+		},
 	};
 
 	return (
 		<div className="py-8">
 			<div className="max-w-4xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
-					{/* Cover Image */}
 					<div className="h-48 bg-gradient-to-r from-blue-500 to-blue-600 relative">
 						<div className="absolute -bottom-16 left-8">
 							<img
@@ -42,8 +68,6 @@ export function ProfilePage({ userData }) {
 							/>
 						</div>
 					</div>
-
-					{/* Profile Info */}
 					<div className="pt-20 px-8 pb-8">
 						<div className="flex justify-between items-start mb-6">
 							<div>
@@ -52,40 +76,67 @@ export function ProfilePage({ userData }) {
 								</h2>
 								<p className="text-gray-600 flex items-center">
 									<Calendar className="w-4 h-4 mr-2" />
-									Joined {currentUser.joinedDate}
+									Joined{" "}
+									{new Date(currentUser.joinedDate).toLocaleDateString(
+										"id-ID",
+										{
+											year: "numeric",
+											month: "long",
+											day: "numeric",
+										}
+									)}
 								</p>
 							</div>
 							<button className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium transform transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg">
 								Edit Profile
 							</button>
 						</div>
-
-						{/* Stats */}
-						<div className="grid grid-cols-3 gap-6 mb-8">
-							<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
-								<BookOpen className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">
-									{currentUser.completedCourses}
-								</div>
-								<div className="text-sm text-gray-600">Courses Completed</div>
-							</div>
-							<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
-								<Star className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">
-									{currentUser.averageRating}
-								</div>
-								<div className="text-sm text-gray-600">Average Rating</div>
-							</div>
-							<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
-								<Award className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">
-									{currentUser.achievements.length}
-								</div>
-								<div className="text-sm text-gray-600">Achievements</div>
-							</div>
+						<div className="grid grid-cols-2 gap-6 mb-8">
+							{currentUser.peran === "mentor" ? (
+								<>
+									<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
+										<BookOpen className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+										<div className="text-2xl font-bold text-gray-900">
+											{roleSpecificData.mentor.completedCourses}
+										</div>
+										<div className="text-sm text-gray-600">
+											Courses Completed
+										</div>
+									</div>
+									<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
+										<Star className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+										<div className="text-2xl font-bold text-gray-900">
+											{roleSpecificData.mentor.averageRating}
+										</div>
+										<div className="text-sm text-gray-600">Average Rating</div>
+									</div>
+								</>
+							) : currentUser.peran === "pelanggan" ? (
+								<>
+									<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
+										<BookOpen className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+										<div className="text-2xl font-bold text-gray-900">
+											{roleSpecificData.pelanggan.coursesEnrolled}
+										</div>
+										<div className="text-sm text-gray-600">
+											Courses Enrolled
+										</div>
+									</div>
+									<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
+										<Calendar className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+										<div className="text-2xl font-bold text-gray-900">
+											{roleSpecificData.pelanggan.paymentStatus}
+										</div>
+										<div className="text-sm text-gray-600">Payment Status</div>
+									</div>
+									<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
+										<Award className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+										<div className="text-2xl font-bold text-gray-900">0</div>
+										<div className="text-sm text-gray-600">Achievements</div>
+									</div>
+								</>
+							) : null}
 						</div>
-
-						{/* Contact Information */}
 						<div className="bg-gray-50 rounded-xl p-6 space-y-4">
 							<h3 className="text-xl font-semibold text-gray-900 mb-4">
 								Contact Information
@@ -106,25 +157,17 @@ export function ProfilePage({ userData }) {
 							</div>
 						</div>
 
-						{/* Achievements */}
-						<div className="mt-8">
-							<h3 className="text-xl font-semibold text-gray-900 mb-4">
-								Achievements
-							</h3>
-							{currentUser.achievements.length > 0 ? (
-								<div className="flex flex-wrap gap-3">
-									{currentUser.achievements.map((achievement, index) => (
-										<span
-											key={index}
-											className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-md">
-											{achievement}
-										</span>
-									))}
-								</div>
-							) : (
-								<p className="text-gray-600">No achievements yet.</p>
-							)}
-						</div>
+						{/* Deskr (hanya untuk mentor) */}
+						{currentUser.peran === "mentor" && (
+							<div className="bg-gray-50 rounded-xl p-6 mt-6 space-y-4">
+								<h3 className="text-xl font-semibold text-gray-900 mb-4">
+									Description
+								</h3>
+								<p className="text-gray-600">
+									{roleSpecificData.mentor.deskripsi}
+								</p>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

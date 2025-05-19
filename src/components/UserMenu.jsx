@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { LogOut, User, Settings, History } from "lucide-react";
-import userChill from "../assets/higa.png";
+import userChill from "../assets/default.png";
 import Swal from "sweetalert2";
 
 export function UserMenu({ onNavigate, onLogout, userData }) {
@@ -11,11 +11,12 @@ export function UserMenu({ onNavigate, onLogout, userData }) {
 		setIsOpen(false);
 	};
 
-	// Gunakan userData jika ada, jika tidak gunakan default (opsional)
-	const currentUser = userData || {
-		name: "Firenze Higa Putra",
-		email: "firenhiga@gmail.com",
-		avatar: userChill,
+	// Gunakan userData jika ada, jika tidak gunakan default
+	const currentUser = {
+		...userData,
+		namaDefault: "Chill Ajar",
+		emailDefault: "chillajar@gmail.com",
+		image: userChill,
 	};
 
 	const handleLogout = () => {
@@ -54,7 +55,7 @@ export function UserMenu({ onNavigate, onLogout, userData }) {
 					{currentUser.nama}
 				</span>
 				<img
-					src={currentUser.avatar || userChill} // Gunakan avatar dari userData jika ada
+					src={currentUser.image} // Gunakan avatar dari userData jika ada
 					alt={currentUser.nama}
 					className="h-8 w-8 rounded-full ring-2 ring-gray-200 group-hover:ring-blue-200"
 				/>

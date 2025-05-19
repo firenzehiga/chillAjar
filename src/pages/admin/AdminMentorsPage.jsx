@@ -64,7 +64,7 @@ export function AdminMentorsPage() {
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
-				<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
 				<p>Loading mentor data...</p>
 			</div>
 		);

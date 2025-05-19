@@ -34,21 +34,21 @@ export function MentorDashboard() {
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<Users className="h-8 w-8 text-blue-600" />
+						<Users className="h-8 w-8 text-yellow-600" />
 						<span className="text-2xl font-bold text-gray-900">24</span>
 					</div>
 					<h3 className="text-gray-600 font-medium">Active Students</h3>
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<Clock className="h-8 w-8 text-blue-600" />
+						<Clock className="h-8 w-8 text-yellow-600" />
 						<span className="text-2xl font-bold text-gray-900">156</span>
 					</div>
 					<h3 className="text-gray-600 font-medium">Teaching Hours</h3>
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<Star className="h-8 w-8 text-blue-600" />
+						<Star className="h-8 w-8 text-yellow-600" />
 						<span className="text-2xl font-bold text-gray-900">4.8</span>
 					</div>
 					<h3 className="text-gray-600 font-medium">Average Rating</h3>
@@ -56,9 +56,9 @@ export function MentorDashboard() {
 
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<BookOpen className="h-8 w-8 text-blue-600" />
+						<BookOpen className="h-8 w-8 text-yellow-600" />
 						{loading ? (
-							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
 						) : error ? (
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
