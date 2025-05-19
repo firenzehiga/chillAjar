@@ -23,7 +23,12 @@ export function AdminMentorsPage() {
 	}, []);
 
 	const columns = [
-		{ name: "ID", selector: (row) => row.id, sortable: true },
+		{
+			name: "No",
+			selector: (row, index) => index + 1,
+			width: "80px",
+			sortable: true,
+		},
 		{
 			name: "Rating",
 			cell: (row) => (

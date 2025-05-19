@@ -23,16 +23,23 @@ export function AdminCoursesPage() {
 	}, []);
 
 	const columns = [
-		{ name: "ID", selector: (row) => row.id, sortable: true },
-		{ name: "Nama Course", selector: (row) => row.namaCourse, sortable: true },
-		{ name: "Deskripsi", selector: (row) => row.deskripsi },
 		{
-			name: "Created At",
-			selector: (row) => new Date(row.created_at).toLocaleDateString(),
+			name: "No",
+			selector: (row, index) => index + 1,
+			width: "80px",
+			sortable: true,
 		},
 		{
-			name: "Updated At",
-			selector: (row) => new Date(row.updated_at).toLocaleDateString(),
+			name: "Nama Course",
+			selector: (row) => row.namaCourse,
+			width: "200px",
+			sortable: true,
+		},
+		{
+			name: "Deskripsi",
+			selector: (row) => row.deskripsi,
+			width: "750px",
+			sortable: true,
 		},
 
 		{
@@ -47,6 +54,7 @@ export function AdminCoursesPage() {
 					</button>
 				</div>
 			),
+			width: "100px",
 		},
 	];
 

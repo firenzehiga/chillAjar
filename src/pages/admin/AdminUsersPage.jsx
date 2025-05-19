@@ -31,7 +31,12 @@ export function AdminUsersPage() {
 	};
 
 	const columns = [
-		{ name: "ID", selector: (row) => row.id, sortable: true },
+		{
+			name: "No",
+			selector: (row, index) => index + 1,
+			width: "80px",
+			sortable: true,
+		},
 		{ name: "Nama", selector: (row) => row.nama, sortable: true },
 		{ name: "Email", selector: (row) => row.email, sortable: true },
 		{ name: "Role", selector: (row) => row.peran, sortable: true },

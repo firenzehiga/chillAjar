@@ -31,15 +31,6 @@ export function AdminDashboard() {
 		fetchDashboardData();
 	}, []);
 
-	if (loading)
-		return (
-			<div className="flex items-center justify-center h-[60vh] text-gray-600">
-				<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-			</div>
-		);
-
-	if (error) return <p className="text-red-500">{error}</p>;
-
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -51,27 +42,45 @@ export function AdminDashboard() {
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<Users className="h-8 w-8 text-blue-600" />
-						<span className="text-2xl font-bold text-gray-900">
-							{usersCount}
-						</span>
+						{loading ? (
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+						) : error ? (
+							<span className="text-red-500 text-sm">Error</span>
+						) : (
+							<span className="text-2xl font-bold text-gray-900">
+								{usersCount}
+							</span>
+						)}
 					</div>
 					<h3 className="text-gray-600 font-medium">Total Users</h3>
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<BookOpen className="h-8 w-8 text-blue-600" />
-						<span className="text-2xl font-bold text-gray-900">
-							{coursesCount}
-						</span>
+						{loading ? (
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+						) : error ? (
+							<span className="text-red-500 text-sm">Error</span>
+						) : (
+							<span className="text-2xl font-bold text-gray-900">
+								{coursesCount}
+							</span>
+						)}
 					</div>
 					<h3 className="text-gray-600 font-medium">Active Courses</h3>
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<Clock className="h-8 w-8 text-blue-600" />
-						<span className="text-2xl font-bold text-gray-900">
-							{mentorsCount}
-						</span>
+						{loading ? (
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+						) : error ? (
+							<span className="text-red-500 text-sm">Error</span>
+						) : (
+							<span className="text-2xl font-bold text-gray-900">
+								{mentorsCount}
+							</span>
+						)}
 					</div>
 					<h3 className="text-gray-600 font-medium">Total Mentors</h3>
 				</div>

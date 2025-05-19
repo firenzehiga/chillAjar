@@ -1,7 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Users, BookOpen, Star, Clock } from "lucide-react";
+import api from "../../api";
 
 export function MentorDashboard() {
+	const [coursesCount, setCoursesCount] = useState(0);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+
+	useEffect(() => {
+		const fetchCourses = async () => {
+			try {
+				const token = localStorage.getItem("token"); // Ambil token untuk autentikasi
+				const response = await api.get("/mentor/daftar-course", {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				setCoursesCount(response.data.length);
+				setLoading(false);
+			} catch (err) {
+				setError("Gagal mengambil jumlah courses");
+				setLoading(false);
+			}
+		};
+		fetchCourses();
+	}, []);
+
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -31,10 +53,19 @@ export function MentorDashboard() {
 					</div>
 					<h3 className="text-gray-600 font-medium">Average Rating</h3>
 				</div>
+
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<BookOpen className="h-8 w-8 text-blue-600" />
-						<span className="text-2xl font-bold text-gray-900">5</span>
+						{loading ? (
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+						) : error ? (
+							<span className="text-red-500 text-sm">Error</span>
+						) : (
+							<span className="text-2xl font-bold text-gray-900">
+								{coursesCount}
+							</span>
+						)}
 					</div>
 					<h3 className="text-gray-600 font-medium">Courses</h3>
 				</div>
@@ -59,3 +90,5 @@ export function MentorDashboard() {
 		</div>
 	);
 }
+
+export default MentorDashboard;
