@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Star,
 	Phone,
@@ -7,42 +7,65 @@ import {
 	BookOpen,
 	Award,
 	Clock,
-	Heart,
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
 
+// Komponen MentorCard untuk menampilkan informasi mentor dan memilih kursus
 export function MentorCard({
 	mentor,
 	onSchedule,
 	showCourseSelect = false,
 	selectedCourse = null,
+	resetCourseSelection,
 }) {
 	const [showCourseModal, setShowCourseModal] = useState(false);
-	const [selectedMentorCourse, setSelectedMentorCourse] =
-		useState(selectedCourse);
+	const [selectedMentorCourse, setSelectedMentorCourse] = useState(null);
 	const [showDetails, setShowDetails] = useState(false);
 
+	// Reset pilihan kursus jika resetCourseSelection berubah (dari App.jsx)
+	useEffect(() => {
+		setSelectedMentorCourse(null);
+	}, [resetCourseSelection]);
+
+	// Fungsi untuk menangani klik tombol berdasarkan konteks
 	const handleScheduleClick = () => {
-		if (!selectedMentorCourse && mentor.courses) {
+		if (selectedCourse) {
+			// Jika selectedCourse ada (dari halaman Courses), langsung ke BookingModal
+			onSchedule(mentor, selectedCourse);
+		} else if (mentor.courses) {
+			// Jika tidak ada selectedCourse, buka CourseSelectionModal
 			setShowCourseModal(true);
-			return;
 		}
-		onSchedule(mentor, selectedMentorCourse || selectedCourse);
 	};
 
+	// Fungsi untuk memilih kursus sementara di CourseSelectionModal
 	const handleCourseSelect = (course) => {
 		setSelectedMentorCourse(course);
-		setShowCourseModal(false);
-		onSchedule(mentor, course);
 	};
+
+	// Fungsi untuk mengonfirmasi pilihan kursus dan membuka BookingModal
+	const handleConfirmCourse = () => {
+		if (selectedMentorCourse) {
+			setShowCourseModal(false);
+			onSchedule(mentor, selectedMentorCourse);
+		}
+	};
+
+	// Fungsi untuk menutup CourseSelectionModal dan reset pilihan kursus
+	const handleCloseCourseModal = () => {
+		setShowCourseModal(false);
+		setSelectedMentorCourse(null); // Reset kursus jika Cancel ditekan
+	};
+
+	// Tentukan teks tombol berdasarkan konteks
+	const buttonText = selectedCourse ? "Book Selected Course" : "Select Course";
 
 	return (
 		<>
 			<div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
-				{/* Profile Header */}
+				{/* Header Profil Mentor */}
 				<div className="relative">
-					{/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
-					<div className="h-32 bg-gradient-to-r bg-yellow-500"></div>
+					<div className="h-32 bg-gradient-to-r bg-yellow-500" />
 					<div className="absolute -bottom-12 left-6">
 						<img
 							src={mentor.avatar}
@@ -52,6 +75,7 @@ export function MentorCard({
 					</div>
 				</div>
 
+				{/* Informasi Utama Mentor */}
 				<div className="pt-14 px-6 pb-6">
 					<div className="flex justify-between items-start mb-4">
 						<div>
@@ -67,18 +91,16 @@ export function MentorCard({
 							</div>
 						</div>
 						<a
-							// biome-ignore lint/a11y/useValidAnchor: <explanation>
 							onClick={() => setShowDetails(!showDetails)}
-							className="text-yellow-600 hover:text-yellow-800 text-sm font-medium">
+							className="text-yellow-600 hover:text-yellow-800 text-sm font-medium cursor-pointer">
 							{showDetails ? "Show Less" : "View Details"}
 						</a>
 					</div>
 
-					{/* Expertise Tags */}
+					{/* Tag Keahlian Mentor */}
 					<div className="flex flex-wrap gap-2 mb-4">
 						{mentor.expertise.map((skill, index) => (
 							<span
-								// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 								key={index}
 								className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">
 								{skill}
@@ -86,7 +108,7 @@ export function MentorCard({
 						))}
 					</div>
 
-					{/* Expanded Details */}
+					{/* Detail Mentor (Jika Diperluas) */}
 					{showDetails && (
 						<div className="mt-4 space-y-4 border-t pt-4">
 							<div className="grid grid-cols-2 gap-4">
@@ -149,22 +171,25 @@ export function MentorCard({
 						</div>
 					)}
 
-					{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
+					{/* Tombol untuk Memilih atau Membooking Mentor */}
 					<button
+						type="button"
 						onClick={handleScheduleClick}
 						className="w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors bg-black text-white hover:bg-gray-900">
 						<BookOpen className="w-4 h-4" />
-						{selectedMentorCourse ? "Book Selected Course" : "Select Course"}
+						{buttonText}
 					</button>
 				</div>
 			</div>
 
+			{/* Modal untuk Memilih Kursus */}
 			{showCourseModal && (
 				<CourseSelectionModal
 					courses={mentor.courses || []}
 					selectedCourse={selectedMentorCourse}
 					onSelect={handleCourseSelect}
-					onClose={() => setShowCourseModal(false)}
+					onConfirm={handleConfirmCourse}
+					onClose={handleCloseCourseModal}
 				/>
 			)}
 		</>

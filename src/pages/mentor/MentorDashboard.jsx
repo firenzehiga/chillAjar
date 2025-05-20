@@ -3,7 +3,7 @@ import { Users, BookOpen, Star, Clock } from "lucide-react";
 import api from "../../api";
 
 export function MentorDashboard() {
-	const [coursesCount, setCoursesCount] = useState(0);
+	const [jumlahCourse, setJumlahCourse] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
@@ -14,11 +14,12 @@ export function MentorDashboard() {
 				const response = await api.get("/mentor/daftar-course", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
-				setCoursesCount(response.data.length);
+				setJumlahCourse(response.data.length);
 				setLoading(false);
 			} catch (err) {
 				setError("Gagal mengambil jumlah courses");
 				setLoading(false);
+				setJumlahCourse(0);
 			}
 		};
 		fetchCourses();
@@ -60,10 +61,13 @@ export function MentorDashboard() {
 						{loading ? (
 							<div className="w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
 						) : error ? (
-							<span className="text-red-500 text-sm">Error</span>
+							// Jika data coursenya kosong akan di setJumlahCourse(0);
+							<span className="text-2xl font-bold text-gray-900">
+								{jumlahCourse}
+							</span>
 						) : (
 							<span className="text-2xl font-bold text-gray-900">
-								{coursesCount}
+								{jumlahCourse}
 							</span>
 						)}
 					</div>

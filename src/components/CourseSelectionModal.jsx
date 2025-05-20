@@ -1,34 +1,36 @@
 import React from "react";
 import { X, BookOpen } from "lucide-react";
 
+// Komponen Modal untuk Memilih Kursus
 export function CourseSelectionModal({
 	courses,
 	onSelect,
+	onConfirm,
 	onClose,
 	selectedCourse,
 }) {
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
 			<div className="bg-white rounded-lg w-full max-w-md">
-				{/* Header */}
+				{/* Header Modal */}
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">Select a Course</h2>
-						<a
-							// biome-ignore lint/a11y/useValidAnchor: <explanation>
+						<button
+							type="button"
 							onClick={onClose}
 							className="text-gray-500 hover:text-gray-700 transition-colors">
 							<X className="w-5 h-5" />
-						</a>
+						</button>
 					</div>
 				</div>
 
-				{/* Course List */}
+				{/* Daftar Kursus */}
 				<div className="p-6 max-h-[60vh] overflow-y-auto">
 					<div className="space-y-4">
 						{courses.map((course) => (
-							// biome-ignore lint/a11y/useButtonType: <explanation>
 							<button
+								type="button"
 								key={course.id}
 								onClick={() => onSelect(course)}
 								className={`w-full p-4 rounded-lg border transition-all ${
@@ -53,21 +55,24 @@ export function CourseSelectionModal({
 					</div>
 				</div>
 
-				{/* Footer */}
+				{/* Footer Modal */}
 				<div className="p-6 border-t bg-gray-50">
 					<div className="flex justify-end space-x-3">
 						<button
+							type="button"
 							onClick={onClose}
 							className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
 							Cancel
 						</button>
 						<button
-							onClick={() => selectedCourse && onSelect(selectedCourse)}
+							type="button"
+							onClick={onConfirm}
 							className={`px-4 py-2 rounded-lg font-medium ${
 								selectedCourse
 									? "bg-blue-600 text-white hover:bg-blue-700"
 									: "bg-gray-200 text-gray-500 cursor-not-allowed"
-							}`}>
+							}`}
+							disabled={!selectedCourse}>
 							Confirm Selection
 						</button>
 					</div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { BookOpen, Plus, Pencil, Trash } from "lucide-react";
+import { BookOpen, Plus, Pencil, Trash, AlertCircle } from "lucide-react";
 import api from "../../api";
 
 export function MentorCoursesPage() {
@@ -57,16 +57,15 @@ export function MentorCoursesPage() {
 		},
 	];
 
-	if (loading) {
+	if (error) {
 		return (
-			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
-				<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-				<p>Loading course data...</p>
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+				<h3 className="text-lg font-semibold mb-2">Error</h3>
+				<p className="text-gray-500 mb-4 text-center">{error}</p>
 			</div>
 		);
 	}
-
-	if (error) return <p className="text-red-500">{error}</p>;
 
 	return (
 		<div className="py-8">
@@ -87,15 +86,31 @@ export function MentorCoursesPage() {
 					</button>
 				</div>
 
-				<DataTable
-					columns={columns}
-					data={courses}
-					pagination
-					highlightOnHover
-					persistTableHead
-					responsive
-					noHeader
-				/>
+				{loading ? (
+					<div className="flex items-center justify-center h-64 text-gray-600">
+						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<p className="ml-3">Loading course data...</p>
+					</div>
+				) : courses.length === 0 ? (
+					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+						<h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
+						<p className="text-gray-500 mb-4 text-center">
+							You haven't added any courses yet. Start by adding a new course to
+							teach!
+						</p>
+					</div>
+				) : (
+					<DataTable
+						columns={columns}
+						data={courses}
+						pagination
+						highlightOnHover
+						persistTableHead
+						responsive
+						noHeader
+					/>
+				)}
 			</div>
 		</div>
 	);

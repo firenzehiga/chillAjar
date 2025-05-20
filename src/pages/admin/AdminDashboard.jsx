@@ -16,7 +16,7 @@ export function AdminDashboard() {
 	// Jika ada error, maka akan mengembalikan error
 	// Jika berhasil, maka akan mengembalikan data dalam bentuk jumlah pengguna
 	const {
-		data: usersData, // data yang diambil dari API
+		data: jumlahUser, // data yang diambil dari API
 		isLoading: usersLoading, // status loading (true/false)
 		error: usersError, // error jika terjadi kesalahan
 	} = useQuery({
@@ -31,9 +31,9 @@ export function AdminDashboard() {
 		},
 	});
 
-	// Query untuk Active Courses
+	// Query untuk Total Courses
 	const {
-		data: coursesData,
+		data: jumlahCourse,
 		isLoading: coursesLoading,
 		error: coursesError,
 	} = useQuery({
@@ -48,7 +48,7 @@ export function AdminDashboard() {
 
 	// Query untuk Total Mentors
 	const {
-		data: mentorsData,
+		data: jumlahMentor,
 		isLoading: mentorsLoading,
 		error: mentorsError,
 	} = useQuery({
@@ -78,7 +78,7 @@ export function AdminDashboard() {
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
 							<span className="text-2xl font-bold text-gray-900">
-								{usersData || 0}
+								{jumlahUser || 0}
 							</span>
 						)}
 					</div>
@@ -93,7 +93,7 @@ export function AdminDashboard() {
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
 							<span className="text-2xl font-bold text-gray-900">
-								{coursesData || 0}
+								{jumlahCourse || 0}
 							</span>
 						)}
 					</div>
@@ -108,7 +108,7 @@ export function AdminDashboard() {
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
 							<span className="text-2xl font-bold text-gray-900">
-								{mentorsData || 0}
+								{jumlahMentor || 0}
 							</span>
 						)}
 					</div>

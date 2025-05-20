@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { LogOut, User, Settings, History } from "lucide-react";
-import userChill from "../assets/default.png";
+import userChill from "../assets/foto_profil.png";
 import Swal from "sweetalert2";
 
 export function UserMenu({ onNavigate, onLogout, userData }) {

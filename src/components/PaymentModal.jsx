@@ -52,6 +52,10 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 						<h3 className="font-medium text-lg mb-2">Booking Summary</h3>
 						<div className="bg-gray-50 p-4 rounded-lg">
 							<p className="mb-2">
+								<span className="font-medium">Topik Yang Ingin Dibahas:</span>{" "}
+								{booking.topic}
+							</p>
+							<p className="mb-2">
 								<span className="font-medium">Course:</span>{" "}
 								{booking.course.title}
 							</p>

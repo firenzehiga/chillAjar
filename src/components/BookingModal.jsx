@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { format } from "date-fns";
 import { X, Clock, Monitor, MapPin, BookOpen } from "lucide-react";
 
-// Sample available slots - In real app, this would come from the backend
+// Data slot yang tersedia (contoh)
 const availableSlots = {
 	online: {
 		times: ["09:00", "10:00", "11:00", "14:00", "15:00"],
-		days: [0, 1, 2, 3, 4], // 0 is today, 1 is tomorrow, etc.
+		days: [0, 1, 2, 3, 4],
 	},
 	offline: {
 		times: ["13:00", "14:00", "15:00", "16:00"],
-		days: [1, 2, 4], // Only specific days available for offline
+		days: [1, 2, 4],
 		locations: [
 			"Central Library, Building A",
 			"Science Building, Room 204",
@@ -19,27 +19,32 @@ const availableSlots = {
 	},
 };
 
+// Daftar tanggal untuk 7 hari ke depan
 const nextWeekDates = Array.from({ length: 7 }, (_, i) => {
 	const date = new Date();
 	date.setDate(date.getDate() + i);
 	return date;
 });
 
+// Komponen Modal untuk Booking Sesi
 export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 	const [selectedMode, setSelectedMode] = useState(null);
 	const [selectedDate, setSelectedDate] = useState(null);
 	const [selectedTime, setSelectedTime] = useState(null);
 	const [selectedLocation, setSelectedLocation] = useState(null);
+	const [topic, setTopic] = useState(""); // State untuk menyimpan topik
 
+	// Fungsi untuk mengirimkan booking
 	const handleSubmit = () => {
 		if (selectedDate && selectedTime && selectedMode) {
 			const [hours, minutes] = selectedTime.split(":");
 			const dateTime = new Date(selectedDate);
 			dateTime.setHours(parseInt(hours), parseInt(minutes));
-			onSubmit(dateTime, selectedTime, selectedMode, selectedCourse);
+			onSubmit(dateTime, selectedTime, selectedMode, selectedCourse, topic); // Sertakan topik
 		}
 	};
 
+	// Fungsi untuk memeriksa ketersediaan tanggal
 	const isDateAvailable = (date, mode) => {
 		const dayIndex = Math.floor(
 			(date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
@@ -47,6 +52,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 		return availableSlots[mode].days.includes(dayIndex);
 	};
 
+	// Fungsi untuk memeriksa ketersediaan waktu
 	const isTimeAvailable = (time, mode) => {
 		return availableSlots[mode].times.includes(time);
 	};
@@ -54,26 +60,27 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
 			<div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] flex flex-col">
-				{/* Header - Fixed */}
+				{/* Header Modal */}
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
 							Book a Session with {mentor.name}
 						</h2>
-						{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 						<button
+							type="button"
 							onClick={onClose}
-							className="text-gray-500 hover:text-gray-700 focus:outline-none transition-colors ">
+							className="text-gray-500 hover:text-gray-700 focus:outline-none transition-colors">
 							<X className="w-5 h-5" />
 						</button>
 					</div>
 				</div>
 
-				{/* Content - Scrollable */}
+				{/* Konten Modal (Scrollable) */}
 				<div className="flex-1 overflow-y-auto p-6">
+					{/* Informasi Kursus yang Dipilih */}
 					{selectedCourse && (
 						<div className="mb-6 p-4 bg-blue-50 rounded-lg">
-							<div className="flex items-center mb-2">
+							<div className="flex items-center">
 								<BookOpen className="w-5 h-5 text-blue-600 mr-2" />
 								<h3 className="font-medium text-blue-900">
 									{selectedCourse.title}
@@ -85,11 +92,29 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						</div>
 					)}
 
+					{/* Input Topik yang Ingin Dibahas */}
+					<div className="mb-6">
+						<label
+							htmlFor="topic"
+							className="block text-sm font-medium text-gray-700 mb-1">
+							Topic to Discuss (Optional)
+						</label>
+						<textarea
+							id="topic"
+							value={topic}
+							onChange={(e) => setTopic(e.target.value)}
+							placeholder="Enter the topic you want to discuss in this session..."
+							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							rows="3"
+						/>
+					</div>
+
+					{/* Pilihan Mode Belajar */}
 					<div className="mb-6">
 						<h3 className="font-medium mb-2">Select Learning Mode:</h3>
 						<div className="grid grid-cols-2 gap-3">
-							{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 							<button
+								type="button"
 								onClick={() => {
 									setSelectedMode("online");
 									setSelectedDate(null);
@@ -107,8 +132,8 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 								<Monitor className="w-5 h-5 mr-2" />
 								Online
 							</button>
-							{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 							<button
+								type="button"
 								onClick={() => {
 									setSelectedMode("offline");
 									setSelectedDate(null);
@@ -129,6 +154,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						</div>
 					</div>
 
+					{/* Pilihan Lokasi (Jika Offline) */}
 					{selectedMode === "offline" && (
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Location:</h3>
@@ -136,7 +162,6 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 								{availableSlots.offline.locations.map((location, index) => (
 									<button
 										type="button"
-										// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 										key={index}
 										onClick={() => setSelectedLocation(location)}
 										className={`w-full p-3 rounded-lg border text-left ${
@@ -154,6 +179,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						</div>
 					)}
 
+					{/* Pilihan Tanggal */}
 					{selectedMode && (selectedMode === "online" || selectedLocation) && (
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Date:</h3>
@@ -161,8 +187,8 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 								{nextWeekDates.map((date) => {
 									const available = isDateAvailable(date, selectedMode);
 									return (
-										// biome-ignore lint/a11y/useButtonType: <explanation>
 										<button
+											type="button"
 											key={date.toISOString()}
 											onClick={() => available && setSelectedDate(date)}
 											disabled={!available}
@@ -181,6 +207,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						</div>
 					)}
 
+					{/* Pilihan Waktu */}
 					{selectedDate && (
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Time:</h3>
@@ -210,17 +237,17 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 					)}
 				</div>
 
-				{/* Footer - Fixed */}
+				{/* Footer Modal */}
 				<div className="p-6 border-t bg-gray-50">
 					<div className="flex justify-end space-x-3">
-						{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 						<button
+							type="button"
 							onClick={onClose}
 							className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none">
 							Cancel
 						</button>
 						<button
-							// biome-ignore lint/a11y/useButtonType: <explanation>
+							type="button"
 							onClick={handleSubmit}
 							disabled={
 								!selectedDate ||
