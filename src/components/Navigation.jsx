@@ -43,18 +43,24 @@ export function Navigation({
 				return "About Us";
 			case "admin-dashboard":
 				return "Admin Dashboard";
-			case "manage-users":
+			case "admin-manage-users":
 				return "Users";
-			case "manage-courses":
+			case "admin-manage-courses":
 				return "Courses";
-			case "manage-mentors":
+			case "admin-manage-mentors":
 				return "Mentors";
 			case "mentor-dashboard":
 				return "Mentor Dashboard";
-			case "manage-schedule":
+			case "mentor-manage-schedule":
 				return "Schedule";
-			case "manage-students":
+			case "mentor-manage-courses":
+				return "My Courses";
+			case "mentor-manage-students":
 				return "My Students";
+			case "mentor-add-course":
+				return "Add Course";
+			case "mentor-edit-course":
+				return "Edit Course";
 			default:
 				return "Home";
 		}
@@ -75,9 +81,9 @@ export function Navigation({
 						Dashboard
 					</a>
 					<a
-						onClick={() => onNavigate("manage-users")}
+						onClick={() => onNavigate("admin-manage-users")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "manage-users"
+							currentPage === "admin-manage-users"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
@@ -85,9 +91,9 @@ export function Navigation({
 						Users
 					</a>
 					<a
-						onClick={() => onNavigate("manage-courses")}
+						onClick={() => onNavigate("admin-manage-courses")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "manage-courses"
+							currentPage === "admin-manage-courses"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
@@ -95,9 +101,9 @@ export function Navigation({
 						Courses
 					</a>
 					<a
-						onClick={() => onNavigate("manage-mentors")}
+						onClick={() => onNavigate("admin-manage-mentors")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "manage-mentors"
+							currentPage === "admin-manage-mentors"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
@@ -120,9 +126,9 @@ export function Navigation({
 						Dashboard
 					</a>
 					<a
-						onClick={() => onNavigate("manage-schedule")}
+						onClick={() => onNavigate("mentor-manage-schedule")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "manage-schedule"
+							currentPage === "mentor-manage-schedule"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
@@ -130,9 +136,11 @@ export function Navigation({
 						Schedule
 					</a>
 					<a
-						onClick={() => onNavigate("manage-courses")}
+						onClick={() => onNavigate("mentor-manage-courses")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "manage-courses"
+							currentPage === "mentor-manage-courses" ||
+							currentPage === "mentor-add-course" ||
+							currentPage.startsWith("mentor-edit-course")
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
@@ -140,9 +148,9 @@ export function Navigation({
 						My Courses
 					</a>
 					<a
-						onClick={() => onNavigate("manage-students")}
+						onClick={() => onNavigate("mentor-manage-students")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "manage-students"
+							currentPage === "mentor-manage-students"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
@@ -217,7 +225,7 @@ export function Navigation({
 					<button
 						type="button"
 						onClick={() => {
-							onNavigate("manage-users");
+							onNavigate("admin-manage-users");
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
@@ -228,7 +236,7 @@ export function Navigation({
 					<button
 						type="button"
 						onClick={() => {
-							onNavigate("manage-courses");
+							onNavigate("admin-manage-courses");
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
@@ -239,7 +247,7 @@ export function Navigation({
 					<button
 						type="button"
 						onClick={() => {
-							onNavigate("manage-mentors");
+							onNavigate("admin-manage-mentors");
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
@@ -266,7 +274,7 @@ export function Navigation({
 					<button
 						type="button"
 						onClick={() => {
-							onNavigate("manage-schedule");
+							onNavigate("mentor-manage-schedule");
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
@@ -277,7 +285,7 @@ export function Navigation({
 					<button
 						type="button"
 						onClick={() => {
-							onNavigate("manage-courses");
+							onNavigate("mentor-manage-courses");
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
@@ -288,7 +296,7 @@ export function Navigation({
 					<button
 						type="button"
 						onClick={() => {
-							onNavigate("manage-students");
+							onNavigate("mentor-manage-students");
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">

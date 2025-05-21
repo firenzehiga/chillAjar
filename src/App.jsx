@@ -26,13 +26,13 @@ import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/MentorSchedulePage";
 import { MentorCoursesPage } from "./pages/mentor/MentorCoursesPage";
 import { MentorStudentsPage } from "./pages/mentor/MentorStudentsPage";
+import { FormCoursePage } from "./pages/mentor/FormCoursePage";
 import Swal from "sweetalert2";
 import api from "./api";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
-// Komponen Utama Aplikasi
 function App() {
 	const [currentPage, setCurrentPage] = useState(
 		window.location.hash.slice(1) || "home"
@@ -57,7 +57,7 @@ function App() {
 		const fetchCourses = async () => {
 			try {
 				setIsLoading(true);
-				const endpoint = isAuthenticated
+				const endpoint = isAuthenticated // kondisi jika pengguna terautentikasi maka ambil data kursus pelanggan
 					? "/pelanggan/daftar-course"
 					: "/public/courses";
 				const response = await api.get(endpoint, {
@@ -65,7 +65,7 @@ function App() {
 						? { Authorization: `Bearer ${localStorage.getItem("token")}` }
 						: {},
 				});
-				const formattedCourses = response.data.map((course) => ({
+				const courseData = response.data.map((course) => ({
 					id: course.id,
 					title: course.namaCourse,
 					description: course.deskripsi,
@@ -76,9 +76,7 @@ function App() {
 						{
 							id: course.mentor?.id,
 							name: course.mentor?.user?.nama || "Unknown Mentor",
-							avatar:
-								course.mentor?.user?.avatar ||
-								"https://via.placeholder.com/150",
+							avatar: course.mentor?.user?.avatar || defaultPhoto,
 							rating: course.mentor?.rating || 0,
 							expertise: [course.mentor?.gayaMengajar || "Unknown"],
 							availability: {
@@ -91,7 +89,7 @@ function App() {
 						},
 					],
 				}));
-				setCourses(formattedCourses);
+				setCourses(courseData);
 			} catch (err) {
 				setError("Gagal mengambil data kursus");
 				console.error(err);
@@ -104,6 +102,7 @@ function App() {
 	}, [isAuthenticated]);
 
 	// Memulihkan status autentikasi saat aplikasi dimuat
+
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		const storedUser = localStorage.getItem("user");
@@ -120,15 +119,17 @@ function App() {
 
 					const adminPages = [
 						"admin-dashboard",
-						"manage-users",
-						"manage-courses",
-						"manage-mentors",
+						"admin-manage-users",
+						"admin-manage-courses",
+						"admin-manage-mentors",
 					];
 					const mentorPages = [
 						"mentor-dashboard",
-						"manage-schedule",
-						"manage-courses",
-						"manage-students",
+						"mentor-manage-schedule",
+						"mentor-manage-courses",
+						"mentor-manage-students",
+						"mentor-add-course",
+						"mentor-edit-course",
 					];
 					const protectedPages = [
 						...adminPages,
@@ -326,15 +327,17 @@ function App() {
 	const renderContent = () => {
 		const adminPages = [
 			"admin-dashboard",
-			"manage-users",
-			"manage-courses",
-			"manage-mentors",
+			"admin-manage-users",
+			"admin-manage-courses",
+			"admin-manage-mentors",
 		];
 		const mentorPages = [
 			"mentor-dashboard",
-			"manage-schedule",
-			"manage-courses",
-			"manage-students",
+			"mentor-manage-schedule",
+			"mentor-manage-courses",
+			"mentor-manage-students",
+			"mentor-add-course",
+			"mentor-edit-course",
 		];
 		const protectedPages = [
 			...adminPages,
@@ -377,29 +380,36 @@ function App() {
 			switch (currentPage) {
 				case "admin-dashboard":
 					return <AdminDashboard />;
-				case "manage-users":
+				case "admin-manage-users":
 					return <AdminUsersPage />;
-				case "manage-courses":
+				case "admin-manage-courses":
 					return <AdminCoursesPage />;
-				case "manage-mentors":
+				case "admin-manage-mentors":
 					return <AdminMentorsPage />;
 				default:
 					break;
 			}
 		}
 
-		if (userRole === "mentor" && mentorPages.includes(currentPage)) {
-			switch (currentPage) {
-				case "mentor-dashboard":
-					return <MentorDashboard />;
-				case "manage-schedule":
-					return <MentorSchedulePage />;
-				case "manage-courses":
-					return <MentorCoursesPage />;
-				case "manage-students":
-					return <MentorStudentsPage />;
-				default:
-					break;
+		if (userRole === "mentor") {
+			if (currentPage === "mentor-dashboard") {
+				return <MentorDashboard />;
+			}
+			if (currentPage === "mentor-manage-schedule") {
+				return <MentorSchedulePage />;
+			}
+			if (currentPage === "mentor-manage-courses") {
+				return <MentorCoursesPage onNavigate={handleNavigate} />;
+			}
+			if (currentPage === "mentor-manage-students") {
+				return <MentorStudentsPage />;
+			}
+			if (currentPage === "mentor-add-course") {
+				return <FormCoursePage onNavigate={handleNavigate} />;
+			}
+			if (currentPage.startsWith("mentor-edit-course")) {
+				const id = currentPage.split("mentor-edit-course/")[1];
+				return <FormCoursePage courseId={id} />;
 			}
 		}
 
@@ -444,7 +454,7 @@ function App() {
 										key={mentor.id}
 										mentor={mentor}
 										onSchedule={handleSchedule}
-										selectedCourse={selectedCourse} // Pastikan selectedCourse dikirim
+										selectedCourse={selectedCourse}
 									/>
 								))}
 							</div>
@@ -473,7 +483,7 @@ function App() {
 										key={mentor.id}
 										mentor={mentor}
 										onSchedule={handleSchedule}
-										selectedCourse={selectedCourse} // Pastikan selectedCourse dikirim
+										selectedCourse={selectedCourse}
 									/>
 								))}
 							</div>
@@ -507,7 +517,7 @@ function App() {
 										key={mentor.id}
 										mentor={mentor}
 										onSchedule={handleSchedule}
-										selectedCourse={selectedCourse} // Pastikan selectedCourse dikirim
+										selectedCourse={selectedCourse}
 									/>
 								))}
 							</div>
@@ -522,7 +532,6 @@ function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<div className="min-h-screen bg-gray-50 flex flex-col">
-				{/* Navigasi */}
 				<Navigation
 					currentPage={currentPage}
 					onNavigate={handleNavigate}
@@ -532,14 +541,10 @@ function App() {
 					onLogout={handleLogout}
 					userData={userData}
 				/>
-
-				{/* Konten Utama */}
 				<main className="flex-grow">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 						{renderContent()}
 					</div>
-
-					{/* BookingModal */}
 					{selectedMentor && bookingCourse && (
 						<BookingModal
 							mentor={selectedMentor}
@@ -548,8 +553,6 @@ function App() {
 							onSubmit={handleBookingSubmit}
 						/>
 					)}
-
-					{/* CourseSelectionModal */}
 					{showCourseSelection && selectedMentor && (
 						<CourseSelectionModal
 							courses={selectedMentor.courses || []}
@@ -562,8 +565,6 @@ function App() {
 							selectedCourse={bookingCourse}
 						/>
 					)}
-
-					{/* PaymentModal */}
 					{showPayment && currentBooking && (
 						<PaymentModal
 							booking={currentBooking}
@@ -574,8 +575,6 @@ function App() {
 							onSubmit={handlePaymentSubmit}
 						/>
 					)}
-
-					{/* AuthModal */}
 					{showAuthModal && (
 						<AuthModal
 							isOpen={showAuthModal}
@@ -585,8 +584,6 @@ function App() {
 						/>
 					)}
 				</main>
-
-				{/* Footer */}
 				<Footer onNavigate={handleNavigate} className="mt-auto" />
 			</div>
 		</QueryClientProvider>

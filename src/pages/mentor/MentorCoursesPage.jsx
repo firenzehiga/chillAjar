@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { BookOpen, Plus, Pencil, Trash, AlertCircle } from "lucide-react";
 import api from "../../api";
+import Swal from "sweetalert2";
 
-export function MentorCoursesPage() {
+export function MentorCoursesPage({ onNavigate }) {
 	const [courses, setCourses] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -11,9 +12,9 @@ export function MentorCoursesPage() {
 	useEffect(() => {
 		const fetchCourses = async () => {
 			try {
-				const token = localStorage.getItem("token"); // Ambil token dari localStorage
+				const token = localStorage.getItem("token");
 				const response = await api.get("/mentor/daftar-course", {
-					headers: { Authorization: `Bearer ${token}` }, // Kirim token untuk autentikasi
+					headers: { Authorization: `Bearer ${token}` },
 				});
 				setCourses(response.data);
 				setLoading(false);
@@ -25,12 +26,37 @@ export function MentorCoursesPage() {
 		fetchCourses();
 	}, []);
 
+	const handleDelete = async (id) => {
+		Swal.fire({
+			title: "Are you sure?",
+			text: "You won't be able to revert this!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#d33",
+			cancelButtonColor: "#3085d6",
+			confirmButtonText: "Yes, delete it!",
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				try {
+					const token = localStorage.getItem("token");
+					await api.delete(`/mentor/daftar-course/${id}`, {
+						headers: { Authorization: `Bearer ${token}` },
+					});
+					setCourses(courses.filter((course) => course.id !== id));
+					Swal.fire("Deleted!", "Course has been deleted.", "success");
+				} catch (err) {
+					Swal.fire("Error!", "Failed to delete course.", "error");
+				}
+			}
+		});
+	};
+
 	const columns = [
 		{
 			name: "No",
-			cell: (row, index) => index + 1, // Nomor urut dimulai dari 1
+			cell: (row, index) => index + 1,
 			sortable: false,
-			width: "80px", // Lebar kolom tetap
+			width: "80px",
 		},
 		{ name: "Nama Course", selector: (row) => row.namaCourse, sortable: true },
 		{ name: "Deskripsi", selector: (row) => row.deskripsi },
@@ -46,10 +72,14 @@ export function MentorCoursesPage() {
 			name: "Aksi",
 			cell: (row) => (
 				<div className="flex gap-2">
-					<button className="text-blue-600 hover:text-blue-800">
+					<button
+						onClick={() => onNavigate(`mentor-edit-course/${row.id}`)}
+						className="text-blue-600 hover:text-blue-800">
 						<Pencil className="w-4 h-4" />
 					</button>
-					<button className="text-red-600 hover:text-red-800">
+					<button
+						onClick={() => handleDelete(row.id)}
+						className="text-red-600 hover:text-red-800">
 						<Trash className="w-4 h-4" />
 					</button>
 				</div>
@@ -80,7 +110,9 @@ export function MentorCoursesPage() {
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Courses You Teach</h2>
-					<button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+					<button
+						onClick={() => onNavigate("mentor-add-course")}
+						className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
 						<Plus className="w-4 h-4 mr-2" />
 						Add Course
 					</button>

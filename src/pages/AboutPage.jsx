@@ -1,10 +1,38 @@
 import React from "react";
 import { Users, BookOpen, Clock, Award, Target, Heart } from "lucide-react";
 import teamsData from "../utils/constants/TeamData";
+import { useQuery } from "@tanstack/react-query";
+import api from "../api";
+
 export function AboutPage() {
+	// Menggunakan endpoint publik untuk jumlah kursus tanpa autentikasi
+	const {
+		data: jumlahCourse,
+		isLoading: coursesLoading,
+		error: coursesError,
+	} = useQuery({
+		queryKey: ["publicCoursesCount"],
+		queryFn: async () => {
+			const response = await api.get("/public/courses", {
+				headers: localStorage.getItem("token")
+					? { Authorization: `Bearer ${localStorage.getItem("token")}` }
+					: {}, // Header hanya ditambahkan jika token ada
+			});
+			return response.data.length;
+		},
+	});
+
 	const stats = [
 		{ icon: Users, label: "Active Students", value: "10,000+" },
-		{ icon: BookOpen, label: "Courses", value: "50+" },
+		{
+			icon: BookOpen,
+			label: "Courses",
+			value: coursesLoading
+				? "Loading..."
+				: coursesError
+				? "Error"
+				: jumlahCourse,
+		},
 		{ icon: Clock, label: "Learning Hours", value: "100,000+" },
 	];
 
@@ -27,6 +55,12 @@ export function AboutPage() {
 	];
 
 	const team = teamsData;
+	const productManager = team.find(
+		(member) => member.role.toLowerCase() === "product manager"
+	);
+	const anggotaTim = team.filter(
+		(member) => member.role.toLowerCase() !== "product manager"
+	);
 
 	return (
 		<div className="py-12">
@@ -42,7 +76,7 @@ export function AboutPage() {
 			</div>
 
 			{/* Stats */}
-			<div className="bg-chill-yellow  py-12 mb-16">
+			<div className="bg-chill-yellow py-12 mb-16">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 						{stats.map((stat, index) => (
@@ -68,8 +102,7 @@ export function AboutPage() {
 						{values.map((value, index) => (
 							<div
 								key={index}
-								className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow"
-							>
+								className="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 								<value.icon className="h-12 w-12 text-chill-yellow mx-auto mb-4" />
 								<h3 className="text-xl font-semibold text-gray-900 mb-2">
 									{value.title}
@@ -86,22 +119,39 @@ export function AboutPage() {
 				<h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
 					Our Team
 				</h2>
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-						{team.map((member, index) => (
-							<div key={index} className="text-center">
+				<div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+					{productManager && (
+						<div className="flex justify-center mb-8">
+							<div className="text-center">
 								<img
-									src={member.image}
-									alt={member.name}
-									className="w-32 h-32 rounded-full  mx-auto mb-4 object-cover ring-4 ring-blue-100"
+									src={productManager.image}
+									alt={productManager.name}
+									className="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-blue-100"
 								/>
 								<h3 className="text-xl font-semibold text-gray-900">
-									{member.name}
+									{productManager.name}
 								</h3>
-								<p className="text-gray-600">{member.role}</p>
+								<p className="text-gray-600">{productManager.role}</p>
 							</div>
-						))}
-					</div>
+						</div>
+					)}
+					{anggotaTim.length > 0 && (
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+							{anggotaTim.map((member, index) => (
+								<div key={index} className="text-center">
+									<img
+										src={member.image}
+										alt={member.name}
+										className="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-blue-100"
+									/>
+									<h3 className="text-xl font-semibold text-gray-900">
+										{member.name}
+									</h3>
+									<p className="text-gray-600">{member.role}</p>
+								</div>
+							))}
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

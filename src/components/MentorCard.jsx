@@ -79,7 +79,9 @@ export function MentorCard({
 				<div className="pt-14 px-6 pb-6">
 					<div className="flex justify-between items-start mb-4">
 						<div>
-							<h3 className="text-xl font-bold text-gray-900">{mentor.name}</h3>
+							<h3 className="text-xl font-bold text-gray-900">
+								{mentor.name || "John Doe"}{" "}
+							</h3>
 							<div className="flex items-center text-yellow-400 mt-1">
 								<Star className="w-4 h-4 fill-current" />
 								<span className="ml-1 text-sm font-medium">

@@ -1,4 +1,4 @@
-import eko from "../../assets/eko.jpg";
+import eko from "../../assets/eko.png";
 
 const mentorsData = [
 	{

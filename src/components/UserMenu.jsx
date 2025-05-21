@@ -37,7 +37,7 @@ export function UserMenu({ onNavigate, onLogout, userData }) {
 					icon: "success",
 					title: "Logged Out!",
 					text: "You have been successfully logged out.",
-					position: "top-end",
+					position: "bottom-end",
 					toast: true,
 					timer: 2000,
 					showConfirmButton: false,

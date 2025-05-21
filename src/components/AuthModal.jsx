@@ -74,7 +74,7 @@ export function AuthModal({
 					timer: 2000,
 					timerProgressBar: true,
 					showConfirmButton: false,
-					position: "top-end",
+					position: "bottom-right",
 					toast: true,
 				});
 

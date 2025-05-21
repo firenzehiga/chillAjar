@@ -1,24 +1,22 @@
 import higa from "../../assets/higa.png";
-import fatiya from "../../assets/fatiya.webp";
-import eko from "../../assets/eko.jpg";
-import faiz from "../../assets/faiz.jpg";
-import wildan from "../../assets/wildan.jpeg";
+import fatiya from "../../assets/fatiya.png";
+import eko from "../../assets/eko.png";
+import faiz from "../../assets/faiz.png";
+import wildan from "../../assets/wildan.png";
+import arby from "../../assets/arby.png";
+import farrel from "../../assets/farrel.png";
 const teamsData = [
 	{
 		name: "Farrel Zulviano",
 		role: "Product Manager",
-		image: eko,
+		image: farrel,
 	},
 	{
 		name: "Arby Ali Amludin",
 		role: "Scrum Master",
-		image: eko,
+		image: arby,
 	},
-	{
-		name: "Ahmad Faiz Al Asad",
-		role: "UI/UX Designer",
-		image: faiz,
-	},
+
 	{
 		name: "Firenze Higa Putra",
 		role: "Frontend Developer",
@@ -28,6 +26,11 @@ const teamsData = [
 		name: "Eko Muchamad Haryono",
 		role: "Backend Developer",
 		image: eko,
+	},
+	{
+		name: "Ahmad Faiz Al Asad",
+		role: "UI/UX Designer",
+		image: faiz,
 	},
 	{
 		name: "Fatiya Labibah",
