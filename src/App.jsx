@@ -360,6 +360,8 @@ function App() {
 			return <p className="text-red-500 text-center mt-8">{error}</p>;
 		}
 
+		// Jika user belum login dan ingin mengakses halaman yang protected,
+		// maka redirect ke halaman home dan tampilkan modal autentikasi
 		if (!isAuthenticated && protectedPages.includes(currentPage)) {
 			setCurrentPage("home");
 			window.location.hash = "home";
@@ -374,6 +376,43 @@ function App() {
 					userRole={userRole}
 				/>
 			);
+		}
+
+		// logika untuk mentor dan admin yang mencoba mengakses halaman pelanggan
+		if (
+			// apakah user sudah login dan perannya adalah admin atau mentor dan halaman yang diakses adalah home, courses, mentors, atau about
+			isAuthenticated &&
+			(userRole === "admin" || userRole === "mentor") &&
+			["home", "courses", "mentors", "about"].includes(currentPage)
+		) {
+			// Arahkan ke dashboard admin atau mentor sesuai dengan peran user
+			setCurrentPage(
+				userRole === "admin" ? "admin-dashboard" : "mentor-dashboard"
+			);
+			window.location.hash =
+				userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
+			return userRole === "admin" ? <AdminDashboard /> : <MentorDashboard />;
+		}
+
+		// logika untuk pelanggan yang mencoba mengakses halaman admin atau mentor
+		if (isAuthenticated && userRole === "pelanggan") {
+			if (
+				adminPages.includes(currentPage) ||
+				mentorPages.includes(currentPage)
+			) {
+				setCurrentPage("home");
+				window.location.hash = "home";
+				return (
+					<Home
+						courses={courses}
+						filteredCourses={filteredCourses}
+						searchQuery={searchQuery}
+						setSearchQuery={setSearchQuery}
+						handleCourseClick={handleCourseClick}
+						userRole={userRole}
+					/>
+				);
+			}
 		}
 
 		if (userRole === "admin" && adminPages.includes(currentPage)) {
