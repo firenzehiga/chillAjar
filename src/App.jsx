@@ -8,14 +8,20 @@ import { BookingModal } from "./components/BookingModal";
 import { PaymentModal } from "./components/PaymentModal";
 import { Navigation } from "./components/Navigation";
 import { Footer } from "./components/Footer";
+
+// Halaman utama
 import { CoursesPage } from "./pages/CoursesPage";
 import { MentorsPage } from "./pages/MentorsPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { EditProfilePage } from "./pages/EditProfilePage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { AboutPage } from "./pages/AboutPage";
 import { AuthModal } from "./components/AuthModal";
 import { CourseSelectionModal } from "./components/CourseSelectionModal";
 import { Home } from "./pages/Home";
+
+// Error Boundary sebagai tampilan error jika ada kesalahan
+import ErrorBoundary from "./components/ErrorBoundary";
 // Halaman admin
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
@@ -33,9 +39,36 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
+// ini untuk mengatur halaman yang dilindungi
+// hanya admin dan mentor yang bisa mengakses halaman ini
+const adminPages = [
+	"admin-dashboard",
+	"admin-manage-users",
+	"admin-manage-courses",
+	"admin-manage-mentors",
+];
+const mentorPages = [
+	"mentor-dashboard",
+	"mentor-manage-schedule",
+	"mentor-manage-courses",
+	"mentor-manage-students",
+	"mentor-add-course",
+	"mentor-edit-course",
+];
+const protectedPages = [
+	...adminPages,
+	...mentorPages,
+	"profile",
+	"history",
+	"settings",
+];
+
+const hideNavigationPages = ["edit-profile"]; // untuk menyembunyikan navigation bar di halaman ini
+
 function App() {
 	const [currentPage, setCurrentPage] = useState(
-		window.location.hash.slice(1) || "home"
+		window.location.hash.slice(1) || "home" // Halaman default
+		// jika tidak ada hash, maka set ke home
 	);
 	const [selectedCourse, setSelectedCourse] = useState(null);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -101,8 +134,6 @@ function App() {
 		fetchCourses();
 	}, [isAuthenticated]);
 
-	// Memulihkan status autentikasi saat aplikasi dimuat
-
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		const storedUser = localStorage.getItem("user");
@@ -116,38 +147,18 @@ function App() {
 					setIsAuthenticated(true);
 					setUserRole(roleFromBackend);
 					setUserData(user);
-
-					const adminPages = [
-						"admin-dashboard",
-						"admin-manage-users",
-						"admin-manage-courses",
-						"admin-manage-mentors",
-					];
-					const mentorPages = [
-						"mentor-dashboard",
-						"mentor-manage-schedule",
-						"mentor-manage-courses",
-						"mentor-manage-students",
-						"mentor-add-course",
-						"mentor-edit-course",
-					];
-					const protectedPages = [
-						...adminPages,
-						...mentorPages,
-						"profile",
-						"history",
-						"settings",
-					];
-
-					if (!protectedPages.includes(currentPage) || currentPage === "home") {
-						if (roleFromBackend === "admin") {
-							setCurrentPage("admin-dashboard");
-							window.location.hash = "admin-dashboard";
-						} else if (roleFromBackend === "mentor") {
-							setCurrentPage("mentor-dashboard");
-							window.location.hash = "mentor-dashboard";
-						}
-					}
+					// // Jika user sudah login dan ingin mengakses halaman yang tidak protected,
+					// // maka arahkan ke halaman dashboard admin atau mentor sesuai dengan peran user
+					// // Jika user ingin mengakses halaman home, maka tidak perlu redirect
+					// if (!protectedPages.includes(currentPage) || currentPage === "home") {
+					// 	if (roleFromBackend === "admin") {
+					// 		setCurrentPage("admin-dashboard");
+					// 		window.location.hash = "admin-dashboard";
+					// 	} else if (roleFromBackend === "mentor") {
+					// 		setCurrentPage("mentor-dashboard");
+					// 		window.location.hash = "mentor-dashboard";
+					// 	}
+					// }
 				} else {
 					localStorage.removeItem("token");
 					localStorage.removeItem("user");
@@ -298,6 +309,16 @@ function App() {
 				setUserData(null);
 				setCurrentPage("home");
 				window.location.hash = "home";
+
+				Swal.fire({
+					icon: "success",
+					title: "Logged Out!",
+					text: "You have been successfully logged out.",
+					position: "bottom-end",
+					toast: true,
+					timer: 2000,
+					showConfirmButton: false,
+				});
 			})
 			.catch((error) => {
 				console.error("Logout failed:", error);
@@ -325,27 +346,6 @@ function App() {
 
 	// Render konten berdasarkan halaman
 	const renderContent = () => {
-		const adminPages = [
-			"admin-dashboard",
-			"admin-manage-users",
-			"admin-manage-courses",
-			"admin-manage-mentors",
-		];
-		const mentorPages = [
-			"mentor-dashboard",
-			"mentor-manage-schedule",
-			"mentor-manage-courses",
-			"mentor-manage-students",
-			"mentor-add-course",
-			"mentor-edit-course",
-		];
-		const protectedPages = [
-			...adminPages,
-			...mentorPages,
-			"profile",
-			"history",
-			"settings",
-		];
 		const skipGlobalLoading = protectedPages.includes(currentPage);
 
 		if (isLoading && !skipGlobalLoading) {
@@ -468,7 +468,19 @@ function App() {
 			switch (currentPage) {
 				case "profile":
 					return isAuthenticated ? (
-						<ProfilePage userRole={userRole} userData={userData} />
+						<ProfilePage
+							userRole={userRole}
+							userData={userData}
+							onNavigate={handleNavigate}
+						/>
+					) : null;
+				case "edit-profile":
+					return isAuthenticated ? (
+						<EditProfilePage
+							onNavigate={handleNavigate}
+							userRole={userRole}
+							userData={userData}
+						/>
 					) : null;
 				case "history":
 					return isAuthenticated ? <HistoryPage /> : null;
@@ -571,15 +583,18 @@ function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<div className="min-h-screen bg-gray-50 flex flex-col">
-				<Navigation
-					currentPage={currentPage}
-					onNavigate={handleNavigate}
-					isAuthenticated={isAuthenticated}
-					userRole={userRole}
-					onAuthClick={() => setShowAuthModal(true)}
-					onLogout={handleLogout}
-					userData={userData}
-				/>
+				{/* Cek apakah halaman saat ini tidak termasuk yang ingin disembunyikan */}
+				{!hideNavigationPages.includes(currentPage) && (
+					<Navigation
+						currentPage={currentPage}
+						onNavigate={handleNavigate}
+						isAuthenticated={isAuthenticated}
+						userRole={userRole}
+						onAuthClick={() => setShowAuthModal(true)}
+						onLogout={handleLogout}
+						userData={userData}
+					/>
+				)}
 				<main className="flex-grow">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 						{renderContent()}

@@ -33,15 +33,6 @@ export function UserMenu({ onNavigate, onLogout, userData }) {
 			if (result.isConfirmed) {
 				onLogout(); // Panggil fungsi logout dari App.jsx
 				setIsOpen(false);
-				Swal.fire({
-					icon: "success",
-					title: "Logged Out!",
-					text: "You have been successfully logged out.",
-					position: "bottom-end",
-					toast: true,
-					timer: 2000,
-					showConfirmButton: false,
-				});
 			}
 		});
 	};

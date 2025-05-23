@@ -11,11 +11,22 @@ export function AdminMentorsPage() {
 	useEffect(() => {
 		const fetchMentors = async () => {
 			try {
-				const response = await api.get("/admin/mentor");
-				setMentors(response.data);
+				const response = await api.get("/admin/mentor", {
+					headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }, // Sertakan token di header
+				});
+				// Pastikan response.data adalah array
+				if (Array.isArray(response.data)) {
+					setMentors(response.data);
+				} else {
+					setMentors([]);
+					console.warn("API response is not an array:", response.data);
+				}
 				setLoading(false);
 			} catch (err) {
-				setError("Gagal mengambil data mentor");
+				setError(
+					"Gagal mengambil data mentor: " +
+						(err.response?.data?.message || err.message)
+				);
 				setLoading(false);
 			}
 		};
@@ -38,14 +49,14 @@ export function AdminMentorsPage() {
 				</div>
 			),
 			sortable: true,
+			sortFunction: (a, b) => (a.rating || 0) - (b.rating || 0), // Handle undefined rating
 		},
 		{
 			name: "Biaya Per Sesi",
-			selector: (row) => `Rp ${row.biayaPerSesi.toLocaleString()}`,
+			selector: (row) => `Rp ${row.biayaPerSesi?.toLocaleString() || "N/A"}`,
 		},
-		{ name: "Gaya Mengajar", selector: (row) => row.gayaMengajar },
-		{ name: "Deskripsi", selector: (row) => row.deskripsi },
-
+		{ name: "Gaya Mengajar", selector: (row) => row.gayaMengajar || "N/A" },
+		{ name: "Deskripsi", selector: (row) => row.deskripsi || "N/A" },
 		{
 			name: "Aksi",
 			cell: (row) => (
@@ -70,7 +81,18 @@ export function AdminMentorsPage() {
 		);
 	}
 
-	if (error) return <p className="text-red-500">{error}</p>;
+	if (error) {
+		return (
+			<div className="flex items-center justify-center h-[60vh] flex-col text-red-500">
+				<p>{error}</p>
+				<button
+					onClick={() => window.location.reload()}
+					className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+					Reload
+				</button>
+			</div>
+		);
+	}
 
 	return (
 		<div className="py-8">
@@ -99,6 +121,10 @@ export function AdminMentorsPage() {
 					persistTableHead
 					responsive
 					noHeader
+					// Tambahkan penanganan jika data kosong
+					noDataComponent={
+						<p className="p-4 text-gray-500">No mentors available</p>
+					}
 				/>
 			</div>
 		</div>
