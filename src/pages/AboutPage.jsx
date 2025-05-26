@@ -13,7 +13,7 @@ export function AboutPage() {
 	} = useQuery({
 		queryKey: ["publicCoursesCount"],
 		queryFn: async () => {
-			const response = await api.get("/public/courses", {
+			const response = await api.get("/public/kursus	", {
 				headers: localStorage.getItem("token")
 					? { Authorization: `Bearer ${localStorage.getItem("token")}` }
 					: {}, // Header hanya ditambahkan jika token ada

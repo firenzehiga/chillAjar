@@ -7,6 +7,7 @@ import {
 	BookOpen,
 	Award,
 	Clock,
+	MonitorX,
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
 
@@ -17,6 +18,7 @@ export function MentorCard({
 	showCourseSelect = false,
 	selectedCourse = null,
 	resetCourseSelection,
+	schedules,
 }) {
 	const [showCourseModal, setShowCourseModal] = useState(false);
 	const [selectedMentorCourse, setSelectedMentorCourse] = useState(null);
@@ -59,7 +61,7 @@ export function MentorCard({
 
 	// Tentukan teks tombol berdasarkan konteks
 	const buttonText = selectedCourse ? "Book Selected Course" : "Select Course";
-
+	// Contoh: Tampilkan jumlah slot tersedia
 	return (
 		<>
 			<div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
@@ -68,9 +70,13 @@ export function MentorCard({
 					<div className="h-32 bg-gradient-to-r bg-yellow-500" />
 					<div className="absolute -bottom-12 left-6">
 						<img
-							src={mentor.avatar}
-							alt={mentor.name}
+							src={mentor.mentorImage}
+							alt={mentor.mentorName}
 							className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover object-center"
+							onError={(e) => {
+								e.target.onerror = null;
+								e.target.src = "/foto_mentor/default.png"; // Jika gagal memuat gambar(path ada di db tapi file gaada di folder), gunakan gambar default
+							}}
 						/>
 					</div>
 				</div>
@@ -80,12 +86,12 @@ export function MentorCard({
 					<div className="flex justify-between items-start mb-4">
 						<div>
 							<h3 className="text-xl font-bold text-gray-900">
-								{mentor.name || "John Doe"}{" "}
+								{mentor.mentorName || "Chill Ajar"}{" "}
 							</h3>
 							<div className="flex items-center text-yellow-400 mt-1">
 								<Star className="w-4 h-4 fill-current" />
 								<span className="ml-1 text-sm font-medium">
-									{mentor.rating.toFixed(1)}
+									{mentor.mentorRating}
 								</span>
 								<span className="text-gray-500 text-sm ml-2">
 									({mentor.totalReviews || "50+"} reviews)
@@ -136,10 +142,7 @@ export function MentorCard({
 
 							<div className="space-y-2">
 								<h4 className="font-medium text-gray-900">About</h4>
-								<p className="text-gray-600 text-sm">
-									{mentor.about ||
-										"Experienced educator passionate about helping students succeed. Specializing in personalized learning approaches and interactive teaching methods."}
-								</p>
+								<p className="text-gray-600 text-sm">{mentor.mentorAbout}</p>
 							</div>
 
 							<div className="space-y-2">
@@ -154,20 +157,35 @@ export function MentorCard({
 										</div>
 									)}
 									<div className="flex items-center text-gray-600">
-										<Monitor className="w-4 h-4 mr-2 text-blue-600" />
+										{mentor.availability.online ? (
+											<>
+												<Monitor className="w-4 h-4 mr-2 text-blue-600" />
+												<span className="text-sm">
+													Available for online sessions
+												</span>
+											</>
+										) : (
+											<>
+												<MonitorX className="w-4 h-4 mr-2 text-gray-400" />
+												<span className="text-sm text-gray-500">
+													Online sessions unavailable
+												</span>
+											</>
+										)}
+										{/* <Monitor className="w-4 h-4 mr-2 text-blue-600" />
 										<span className="text-sm">
 											{mentor.availability.online
 												? "Available for online sessions"
 												: "Online sessions unavailable"}
-										</span>
+										</span> */}
 									</div>
 								</div>
 							</div>
 
-							{mentor.phone && (
+							{mentor.mentorPhone && (
 								<div className="flex items-center text-gray-600">
 									<Phone className="w-4 h-4 mr-2 text-blue-600" />
-									<span className="text-sm">{mentor.phone}</span>
+									<span className="text-sm">{mentor.mentorPhone}</span>
 								</div>
 							)}
 						</div>

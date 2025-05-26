@@ -114,9 +114,7 @@ export function AuthModal({
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
-							{mode === "login"
-								? "Welcome Back to ChillAjar"
-								: "Create Account"}
+							{mode === "login" ? "Sign In To Your Account" : "Create Account"}
 						</h2>
 						<button
 							type="button"
@@ -261,7 +259,7 @@ export function AuthModal({
 
 						<button
 							type="submit"
-							className="w-full bg-chill-yellow text-black py-2 rounded-lg font-medium hover:bg-yellow-500 transition-colors">
+							className="w-full outline-none focus:outline-none cursor-pointer transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">
 							{mode === "login" ? "Sign In" : "Create Account"}
 						</button>
 

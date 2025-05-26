@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { X, Upload, CreditCard } from "lucide-react";
 import Swal from "sweetalert2";
 
-export function PaymentModal({ booking, onClose, onSubmit }) {
+export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	const [paymentMethod, setPaymentMethod] = useState("transfer");
 	const [proofImage, setProofImage] = useState(null);
 
@@ -57,10 +57,11 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 							</p>
 							<p className="mb-2">
 								<span className="font-medium">Course:</span>{" "}
-								{booking.course.title}
+								{course?.courseName}
 							</p>
 							<p className="mb-2">
-								<span className="font-medium">Mentor:</span> {booking.mentor}
+								<span className="font-medium">Mentor:</span>{" "}
+								{mentor?.mentorName}
 							</p>
 							<p className="mb-2">
 								<span className="font-medium">Date:</span> {booking.date}

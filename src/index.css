@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* src/index.css atau src/App.css */
+.bg-svg {
+  background-image: url('./assets/bg1.jpg');
+  /* atau contain sesuai desain */
+  background-position: center;
+}
+
+.bg-error {
+  background-image: url('./assets/bg2.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
 /* Smooth scrolling and better focus */
 html {
   scroll-behavior: smooth;
@@ -74,6 +88,7 @@ img {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -114,6 +129,7 @@ input:focus {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

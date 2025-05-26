@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { BookOpen, Plus, Pencil, Trash, AlertCircle } from "lucide-react";
+import { BookOpen, Plus, Pencil, Trash, AlertCircle, X } from "lucide-react";
 import api from "../../api";
 import Swal from "sweetalert2";
 
@@ -8,12 +8,13 @@ export function MentorCoursesPage({ onNavigate }) {
 	const [courses, setCourses] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const [previewImg, setPreviewImg] = useState(null); // Tambah state preview
 
 	useEffect(() => {
 		const fetchCourses = async () => {
 			try {
 				const token = localStorage.getItem("token");
-				const response = await api.get("/mentor/daftar-course", {
+				const response = await api.get("/mentor/daftar-kursus", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
 				setCourses(response.data);
@@ -39,7 +40,7 @@ export function MentorCoursesPage({ onNavigate }) {
 			if (result.isConfirmed) {
 				try {
 					const token = localStorage.getItem("token");
-					await api.delete(`/mentor/daftar-course/${id}`, {
+					await api.delete(`/kursus/${id}`, {
 						headers: { Authorization: `Bearer ${token}` },
 					});
 					setCourses(courses.filter((course) => course.id !== id));
@@ -56,18 +57,51 @@ export function MentorCoursesPage({ onNavigate }) {
 			name: "No",
 			cell: (row, index) => index + 1,
 			sortable: false,
-			width: "80px",
-		},
-		{ name: "Nama Course", selector: (row) => row.namaCourse, sortable: true },
-		{ name: "Deskripsi", selector: (row) => row.deskripsi },
-		{
-			name: "Created At",
-			selector: (row) => new Date(row.created_at).toLocaleDateString(),
+			width: "60px",
 		},
 		{
-			name: "Updated At",
-			selector: (row) => new Date(row.updated_at).toLocaleDateString(),
+			name: "Foto",
+			cell: (row) =>
+				row.fotoKursus ? (
+					<div className="flex items-center justify-center p-1">
+						<img
+							loading="lazy"
+							src={`/storage/${row.fotoKursus}`}
+							alt={row.namaKursus}
+							className="h-16 w-16 object-cover rounded-lg border border-gray-200 bg-gray-50 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
+							onClick={() => setPreviewImg(`/storage/${row.fotoKursus}`)}
+							onError={(e) => (e.target.style.display = "none")}
+						/>
+					</div>
+				) : (
+					<span className="text-gray-400 text-xs">No Image</span>
+				),
+			width: "170px",
 		},
+		{ name: "Nama Course", selector: (row) => row.namaKursus, sortable: true },
+		{
+			name: "Gaya Pembelajaran",
+			selector: (row) =>
+				row.gayaMengajar === "online" ? (
+					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+						Online
+					</span>
+				) : (
+					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+						Offline
+					</span>
+				),
+			width: "200px",
+		},
+		{ name: "Deskripsi", selector: (row) => row.deskripsi, width: "390px" },
+		// {
+		// 	name: "Created At",
+		// 	selector: (row) => new Date(row.created_at).toLocaleDateString(),
+		// },
+		// {
+		// 	name: "Updated At",
+		// 	selector: (row) => new Date(row.updated_at).toLocaleDateString(),
+		// },
 		{
 			name: "Aksi",
 			cell: (row) => (
@@ -79,14 +113,13 @@ export function MentorCoursesPage({ onNavigate }) {
 					</button>
 					<button
 						onClick={() => handleDelete(row.id)}
-						className="text-red-600 hover:text-red-800">
+						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
 						<Trash className="w-4 h-4" />
 					</button>
 				</div>
 			),
 		},
 	];
-
 	if (error) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
@@ -144,6 +177,24 @@ export function MentorCoursesPage({ onNavigate }) {
 					/>
 				)}
 			</div>
+			{previewImg && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+					<div className="relative bg-white rounded-lg shadow-lg p-4">
+						<button
+							className="absolute top-2 right-2 text-gray-600 hover:text-red-500 z-10 pointer-events-auto"
+							onClick={() => setPreviewImg(null)}
+							style={{ zIndex: 10 }}>
+							<X className="w-6 h-6" />
+						</button>
+						<img
+							src={previewImg}
+							alt="Preview"
+							className="max-w-[70vw] max-h-[70vh] rounded-lg shadow"
+							style={{ display: "block" }}
+						/>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

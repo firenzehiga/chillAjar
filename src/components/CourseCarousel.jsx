@@ -24,21 +24,26 @@ export function CourseCarousel({ courses, onCourseClick }) {
 							className="relative h-[400px] rounded-xl overflow-hidden cursor-pointer"
 							onClick={() => onCourseClick(course)}>
 							<img
-								src={course.image}
-								alt={course.title}
+								loading="lazy"
+								src={course.courseImage}
+								alt={course.courseName}
 								className="w-full h-full object-cover"
+								onError={(e) => {
+									e.target.onerror = null;
+									e.target.src = "/foto_kursus/kursus_dummy_1.jpg"; // Jika gagal memuat gambar(path ada di db tapi file gaada di folder), gunakan gambar default
+								}}
 							/>
 							<div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8">
 								<h3 className="text-3xl font-bold text-white mb-2">
-									{course.title}
+									{course.courseName}
 								</h3>
-								<p className="text-gray-200 mb-4">{course.description}</p>
+								<p className="text-gray-200 mb-4">{course.courseDescription}</p>
 								<div className="flex items-center justify-between">
 									<span className="text-white bg-blue-800 px-4 py-1 rounded-full text-sm">
-										{course.category}
+										{course.learnMethod}
 									</span>
 									<span className="text-white">
-										${course.price_per_hour}/hour
+										Rp{course.price_per_hour}/sesi
 									</span>
 								</div>
 							</div>

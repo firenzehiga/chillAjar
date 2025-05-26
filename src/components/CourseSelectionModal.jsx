@@ -28,33 +28,39 @@ export function CourseSelectionModal({
 				{/* Daftar Kursus */}
 				<div className="p-6 max-h-[60vh] overflow-y-auto">
 					<div className="space-y-4">
-						{courses.map((course) => (
-							<button
-								type="button"
-								key={course.id}
-								onClick={() => onSelect(course)}
-								className={`w-full p-4 rounded-lg border transition-all ${
-									selectedCourse?.id === course.id
-										? "border-blue-500 bg-blue-50"
-										: "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
-								}`}>
-								<div className="flex items-center justify-between">
-									<div className="flex items-center">
-										<BookOpen className="w-4 h-4 text-blue-600 mr-2" />
-										<span className="font-medium">{course.title}</span>
+						{courses.length === 0 ? (
+							<div className="text-center text-gray-500 py-8">
+								Mentor ini belum menetapkan kursus.
+								<br /> Silahkan memilih kursus lain.
+							</div>
+						) : (
+							courses.map((course) => (
+								<button
+									type="button"
+									key={course.id}
+									onClick={() => onSelect(course)}
+									className={`w-full p-4 rounded-lg border transition-all outline-none focus:outline-none ${
+										selectedCourse?.id === course.id
+											? "border-yellow-500 bg-yellow-50"
+											: "border-gray-200 hover:border-yellow-300 hover:bg-gray-50"
+									}`}>
+									<div className="flex items-center justify-between">
+										<div className="flex items-center">
+											<BookOpen className="w-4 h-4 text-yellow-600 mr-2" />
+											<span className="font-medium">{course.courseName}</span>
+										</div>
+										<span className="text-sm text-gray-600">
+											Rp{course.price_per_hour}/sesi
+										</span>
 									</div>
-									<span className="text-sm text-gray-600">
-										${course.price_per_hour}/hour
-									</span>
-								</div>
-								<p className="text-sm text-gray-500 mt-1 text-left">
-									{course.description}
-								</p>
-							</button>
-						))}
+									<p className="text-sm text-gray-500 mt-1 text-left">
+										{course.courseDescription}
+									</p>
+								</button>
+							))
+						)}
 					</div>
 				</div>
-
 				{/* Footer Modal */}
 				<div className="p-6 border-t bg-gray-50">
 					<div className="flex justify-end space-x-3">
@@ -69,7 +75,7 @@ export function CourseSelectionModal({
 							onClick={onConfirm}
 							className={`px-4 py-2 rounded-lg font-medium ${
 								selectedCourse
-									? "bg-blue-600 text-white hover:bg-blue-700"
+									? "bg-black text-white hover:bg-yellow-600"
 									: "bg-gray-200 text-gray-500 cursor-not-allowed"
 							}`}
 							disabled={!selectedCourse}>

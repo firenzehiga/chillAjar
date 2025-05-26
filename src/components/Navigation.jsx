@@ -438,10 +438,10 @@ export function Navigation({
 								type="button"
 								onClick={() => onNavigate("home")}
 								className="hover:text-yellow-600">
-								Home
+								{userRole !== "admin" && "mentor" ? "Home" : "Dashboard"}
 							</button>
 							<ChevronRight className="w-4 h-4" />
-							<span className="font-medium text-gray-900">
+							<span className="font-medium   text-gray-900">
 								{getPageTitle(currentPage)}
 							</span>
 						</div>

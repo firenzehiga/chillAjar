@@ -1,35 +1,32 @@
-import React from "react";
+import React, { Component } from "react";
 
-class ErrorBoundary extends React.Component {
+class ErrorBoundary extends Component {
 	state = { hasError: false, error: null };
 
 	static getDerivedStateFromError(error) {
 		return { hasError: true, error };
 	}
 
-	componentDidCatch(error, errorInfo) {
-		console.error("ErrorBoundary caught an error:", error, errorInfo);
-	}
-
 	render() {
 		if (this.state.hasError) {
 			return (
-				<div className="flex items-center justify-center h-[60vh] text-red-500">
+				<div className="flex items-center justify-center h-screen bg-error">
 					<div className="text-center">
-						<h2 className="text-xl font-bold mb-2">Something went wrong</h2>
-						<p className="mb-4">
-							{this.state.error?.message || "An unexpected error occurred"}
+						<h2 className="text-4xl font-bold text-red-600">
+							Something went wrong
+						</h2>
+						<p className="text-black mt-2 font-bold">
+							Fix this error: {this.state.error.message}
 						</p>
 						<button
 							onClick={() => window.location.reload()}
-							className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+							className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
 							Reload Page
 						</button>
 					</div>
 				</div>
 			);
 		}
-
 		return this.props.children;
 	}
 }

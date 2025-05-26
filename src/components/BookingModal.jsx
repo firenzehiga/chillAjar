@@ -1,61 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { X, Clock, Monitor, MapPin, BookOpen } from "lucide-react";
 
-// Data slot yang tersedia (contoh)
-const availableSlots = {
-	online: {
-		times: ["09:00", "10:00", "11:00", "14:00", "15:00"],
-		days: [0, 1, 2, 3, 4],
-	},
-	offline: {
-		times: ["13:00", "14:00", "15:00", "16:00"],
-		days: [1, 2, 4],
-		locations: [
-			"Central Library, Building A",
-			"Science Building, Room 204",
-			"Engineering Lab, Floor 3",
-		],
-	},
-};
-
-// Daftar tanggal untuk 7 hari ke depan
-const nextWeekDates = Array.from({ length: 7 }, (_, i) => {
-	const date = new Date();
-	date.setDate(date.getDate() + i);
-	return date;
-});
-
-// Komponen Modal untuk Booking Sesi
-export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
+export function BookingModal({
+	mentor,
+	selectedCourse,
+	onClose,
+	onSubmit,
+	schedules,
+	location,
+}) {
 	const [selectedMode, setSelectedMode] = useState(null);
 	const [selectedDate, setSelectedDate] = useState(null);
 	const [selectedTime, setSelectedTime] = useState(null);
-	const [selectedLocation, setSelectedLocation] = useState(null);
-	const [topic, setTopic] = useState(""); // State untuk menyimpan topik
+	const [selectedLocation, setSelectedLocation] = useState(location || "");
+	const [topic, setTopic] = useState("");
 
-	// Fungsi untuk mengirimkan booking
 	const handleSubmit = () => {
 		if (selectedDate && selectedTime && selectedMode) {
-			const [hours, minutes] = selectedTime.split(":");
-			const dateTime = new Date(selectedDate);
-			dateTime.setHours(parseInt(hours), parseInt(minutes));
-			onSubmit(dateTime, selectedTime, selectedMode, selectedCourse, topic); // Sertakan topik
+			onSubmit(
+				selectedDate,
+				selectedTime,
+				selectedMode,
+				selectedCourse,
+				topic,
+				selectedLocation
+			);
+			onClose();
 		}
 	};
 
-	// Fungsi untuk memeriksa ketersediaan tanggal
-	const isDateAvailable = (date, mode) => {
-		const dayIndex = Math.floor(
-			(date.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
-		);
-		return availableSlots[mode].days.includes(dayIndex);
-	};
+	// Pastikan selectedCourse ada
+	const filteredSchedules = (schedules || []).filter(
+		(s) => s.kursus_id === selectedCourse?.id
+	);
 
-	// Fungsi untuk memeriksa ketersediaan waktu
-	const isTimeAvailable = (time, mode) => {
-		return availableSlots[mode].times.includes(time);
-	};
+	// Untuk menampilkan tanggal yang tersedia
+	const availableDates =
+		filteredSchedules.length > 0
+			? [...new Set(filteredSchedules.map((s) => s.tanggal))].map(
+					(date) => new Date(date)
+			  )
+			: [];
+
+	// Untuk menampilkan waktu yang tersedia
+	const availableTimes =
+		selectedDate && filteredSchedules.length > 0
+			? filteredSchedules
+					.filter(
+						(schedule) =>
+							schedule.tanggal === selectedDate.toISOString().split("T")[0]
+					)
+					.map((schedule) => schedule.waktu)
+			: [];
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -64,7 +61,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
-							Book a Session with {mentor.name}
+							Book a Session with {mentor.mentorName}
 						</h2>
 						<button
 							type="button"
@@ -83,11 +80,11 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 							<div className="flex items-center">
 								<BookOpen className="w-5 h-5 text-blue-600 mr-2" />
 								<h3 className="font-medium text-blue-900">
-									{selectedCourse.title}
+									{selectedCourse.courseName}
 								</h3>
 							</div>
 							<p className="text-sm text-blue-700">
-								${selectedCourse.price_per_hour}/hour
+								Rp{selectedCourse.price_per_hour}/sesi
 							</p>
 						</div>
 					)}
@@ -138,7 +135,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 									setSelectedMode("offline");
 									setSelectedDate(null);
 									setSelectedTime(null);
-									setSelectedLocation(null);
+									setSelectedLocation("");
 								}}
 								disabled={!mentor.availability.offline}
 								className={`flex items-center justify-center p-3 rounded-lg border ${
@@ -159,22 +156,19 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Location:</h3>
 							<div className="space-y-2">
-								{availableSlots.offline.locations.map((location, index) => (
-									<button
-										type="button"
-										key={index}
-										onClick={() => setSelectedLocation(location)}
-										className={`w-full p-3 rounded-lg border text-left ${
-											selectedLocation === location
-												? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
-												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-										}`}>
-										<div className="flex items-center">
-											<MapPin className="w-4 h-4 mr-2" />
-											{location}
-										</div>
-									</button>
-								))}
+								<button
+									type="button"
+									onClick={() => setSelectedLocation(mentor.location)}
+									className={`w-1/2 p-3 rounded-lg border text-left ${
+										selectedLocation === mentor.location
+											? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+											: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+									}`}>
+									<div className="flex items-center">
+										<MapPin className="w-4 h-4 mr-2" />
+										{mentor.location}
+									</div>
+								</button>
 							</div>
 						</div>
 					)}
@@ -184,25 +178,19 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Date:</h3>
 							<div className="grid grid-cols-3 gap-2">
-								{nextWeekDates.map((date) => {
-									const available = isDateAvailable(date, selectedMode);
-									return (
-										<button
-											type="button"
-											key={date.toISOString()}
-											onClick={() => available && setSelectedDate(date)}
-											disabled={!available}
-											className={`p-2 rounded ${
-												selectedDate?.toDateString() === date.toDateString()
-													? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
-													: available
-													? "bg-gray-100 hover:bg-gray-200"
-													: "bg-gray-100 text-gray-400 cursor-not-allowed"
-											}`}>
-											{format(date, "MMM d")}
-										</button>
-									);
-								})}
+								{availableDates.map((date) => (
+									<button
+										type="button"
+										key={date.toISOString()}
+										onClick={() => setSelectedDate(date)}
+										className={`p-2 rounded ${
+											selectedDate?.toDateString() === date.toDateString()
+												? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+												: "bg-gray-100 hover:bg-gray-200"
+										}`}>
+										{format(date, "MMM d")}
+									</button>
+								))}
 							</div>
 						</div>
 					)}
@@ -212,26 +200,20 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Time:</h3>
 							<div className="grid grid-cols-3 gap-2">
-								{availableSlots[selectedMode].times.map((time) => {
-									const available = isTimeAvailable(time, selectedMode);
-									return (
-										<button
-											type="button"
-											key={time}
-											onClick={() => available && setSelectedTime(time)}
-											disabled={!available}
-											className={`flex items-center justify-center p-2 rounded ${
-												selectedTime === time
-													? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
-													: available
-													? "bg-gray-100 hover:bg-gray-200"
-													: "bg-gray-100 text-gray-400 cursor-not-allowed"
-											}`}>
-											<Clock className="w-4 h-4 mr-1" />
-											{time}
-										</button>
-									);
-								})}
+								{availableTimes.map((time) => (
+									<button
+										type="button"
+										key={time}
+										onClick={() => setSelectedTime(time)}
+										className={`flex items-center justify-center p-2 rounded ${
+											selectedTime === time
+												? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+												: "bg-gray-100 hover:bg-gray-200"
+										}`}>
+										<Clock className="w-4 h-4 mr-1" />
+										{time.slice(0, 5)} WIB
+									</button>
+								))}
 							</div>
 						</div>
 					)}

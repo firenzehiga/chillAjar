@@ -44,7 +44,15 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 			mentorProfile?.user?.nomorTelepon ||
 			"Phone not specified",
 		joinedDate:
-			userData?.created_at || mentorProfile?.user?.created_at || "Unknown",
+			userData?.created_at || mentorProfile?.user?.created_at
+				? new Date(
+						userData?.created_at || mentorProfile?.user?.created_at
+				  ).toLocaleDateString("id-ID", {
+						year: "numeric",
+						month: "long",
+						day: "numeric",
+				  })
+				: "Unknown",
 		peran: userData?.peran || mentorProfile?.user?.peran || "unknown",
 	};
 
@@ -105,15 +113,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 								<div className="flex items-center text-gray-600 space-x-4">
 									<span className="flex items-center">
 										<Calendar className="w-4 h-4 mr-2 text-yellow-600" />
-										Joined{" "}
-										{new Date(currentUser.joinedDate).toLocaleDateString(
-											"id-ID",
-											{
-												year: "numeric",
-												month: "long",
-												day: "numeric",
-											}
-										)}
+										Joined {currentUser.joinedDate}
 									</span>
 									<span className="flex items-center">
 										<MapPin className="w-4 h-4 mr-2 text-yellow-600" />

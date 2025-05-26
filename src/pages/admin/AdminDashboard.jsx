@@ -37,9 +37,9 @@ export function AdminDashboard() {
 		isLoading: coursesLoading,
 		error: coursesError,
 	} = useQuery({
-		queryKey: ["courses"],
+		queryKey: ["kursus"],
 		queryFn: async () => {
-			const response = await api.get("/courses", {
+			const response = await api.get("/kursus", {
 				headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
 			});
 			return response.data.length;
