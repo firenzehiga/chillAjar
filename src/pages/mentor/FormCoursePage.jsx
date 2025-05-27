@@ -78,14 +78,14 @@ export function FormCoursePage({ onNavigate, courseId }) {
 			let response;
 			if (isEditMode) {
 				payload.append("_method", "PUT");
-				response = await api.post(`/kursus/${courseId}`, payload, {
+				response = await api.post(`/mentor/kursus/${courseId}`, payload, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 						"Content-Type": "multipart/form-data",
 					},
 				});
 			} else {
-				response = await api.post("/kursus", payload, {
+				response = await api.post("/mentor/kursus", payload, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 						"Content-Type": "multipart/form-data",

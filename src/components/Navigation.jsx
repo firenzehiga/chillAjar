@@ -41,12 +41,16 @@ export function Navigation({
 				return "Settings";
 			case "about":
 				return "About Us";
+			// Halaman Admin
 			case "admin-dashboard":
 				return "Admin Dashboard";
 			case "admin-manage-users":
 				return "Users";
+			case "admin-manage-payments":
+				return "Payments";
 			case "admin-manage-courses":
 				return "Courses";
+			// Halaman Mentor
 			case "admin-manage-mentors":
 				return "Mentors";
 			case "mentor-dashboard":
@@ -89,6 +93,16 @@ export function Navigation({
 						}`}>
 						<BookOpen className="w-4 h-4 inline-block mr-1" />
 						Users
+					</a>
+					<a
+						onClick={() => onNavigate("admin-manage-payments")}
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+							currentPage === "admin-manage-payments"
+								? "bg-yellow-500 text-gray-900"
+								: "text-gray-900 hover:bg-yellow-500"
+						}`}>
+						<BookOpen className="w-4 h-4 inline-block mr-1" />
+						Payments
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-courses")}

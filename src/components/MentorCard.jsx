@@ -48,6 +48,8 @@ export function MentorCard({
 	// Fungsi untuk mengonfirmasi pilihan kursus dan membuka BookingModal
 	const handleConfirmCourse = () => {
 		if (selectedMentorCourse) {
+			console.log("Course yang dipilih:", selectedMentorCourse);
+
 			setShowCourseModal(false);
 			onSchedule(mentor, selectedMentorCourse);
 		}
@@ -105,12 +107,19 @@ export function MentorCard({
 						</a>
 					</div>
 
-					{/* Tag Keahlian Mentor */}
+					{/* Gaya Belajar */}
 					<div className="flex flex-wrap gap-2 mb-4">
-						{mentor.expertise.map((skill, index) => (
+						{mentor.availableLearnMethod.map((skill, index) => (
 							<span
 								key={index}
-								className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">
+								className={`text-xs px-3 py-1 rounded-full font-medium
+                ${
+									skill === "Online Learning"
+										? "bg-blue-50 text-blue-700"
+										: skill === "Offline Learning"
+										? "bg-red-50 text-red-700"
+										: "bg-gray-100 text-gray-700"
+								}`}>
 								{skill}
 							</span>
 						))}
@@ -150,14 +159,14 @@ export function MentorCard({
 									Teaching Locations
 								</h4>
 								<div className="space-y-2">
-									{mentor.availability.offline && mentor.location && (
+									{mentor.teachingMode.offline && mentor.location && (
 										<div className="flex items-center text-gray-600">
 											<MapPinIcon className="w-4 h-4 mr-2 text-blue-600" />
 											<span className="text-sm">{mentor.location}</span>
 										</div>
 									)}
 									<div className="flex items-center text-gray-600">
-										{mentor.availability.online ? (
+										{mentor.teachingMode.online ? (
 											<>
 												<Monitor className="w-4 h-4 mr-2 text-blue-600" />
 												<span className="text-sm">

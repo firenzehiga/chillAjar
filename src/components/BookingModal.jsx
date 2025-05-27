@@ -54,6 +54,9 @@ export function BookingModal({
 					.map((schedule) => schedule.waktu)
 			: [];
 
+	const isOnline = selectedCourse?.learnMethod === "Online Learning";
+	const isOffline = selectedCourse?.learnMethod === "Offline Learning";
+
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
 			<div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] flex flex-col">
@@ -118,11 +121,11 @@ export function BookingModal({
 									setSelectedTime(null);
 									setSelectedLocation(null);
 								}}
-								disabled={!mentor.availability.online}
+								disabled={!isOnline}
 								className={`flex items-center justify-center p-3 rounded-lg border ${
 									selectedMode === "online"
 										? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
-										: mentor.availability.online
+										: isOnline
 										? "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 										: "bg-gray-100 text-gray-400 cursor-not-allowed"
 								}`}>
@@ -137,11 +140,11 @@ export function BookingModal({
 									setSelectedTime(null);
 									setSelectedLocation("");
 								}}
-								disabled={!mentor.availability.offline}
+								disabled={!isOffline}
 								className={`flex items-center justify-center p-3 rounded-lg border ${
 									selectedMode === "offline"
 										? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
-										: mentor.availability.offline
+										: isOffline
 										? "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 										: "bg-gray-100 text-gray-400 cursor-not-allowed"
 								}`}>
@@ -177,24 +180,29 @@ export function BookingModal({
 					{selectedMode && (selectedMode === "online" || selectedLocation) && (
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Date:</h3>
-							<div className="grid grid-cols-3 gap-2">
-								{availableDates.map((date) => (
-									<button
-										type="button"
-										key={date.toISOString()}
-										onClick={() => setSelectedDate(date)}
-										className={`p-2 rounded ${
-											selectedDate?.toDateString() === date.toDateString()
-												? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
-												: "bg-gray-100 hover:bg-gray-200"
-										}`}>
-										{format(date, "MMM d")}
-									</button>
-								))}
-							</div>
+							{availableDates.length === 0 ? (
+								<div className="text-red-500 text-sm p-2 bg-red-50 rounded">
+									Belum ada jadwal tersedia untuk kursus ini.
+								</div>
+							) : (
+								<div className="grid grid-cols-3 gap-2">
+									{availableDates.map((date) => (
+										<button
+											type="button"
+											key={date.toISOString()}
+											onClick={() => setSelectedDate(date)}
+											className={`p-2 rounded ${
+												selectedDate?.toDateString() === date.toDateString()
+													? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+													: "bg-gray-100 hover:bg-gray-200"
+											}`}>
+											{format(date, "MMM d")}
+										</button>
+									))}
+								</div>
+							)}
 						</div>
 					)}
-
 					{/* Pilihan Waktu */}
 					{selectedDate && (
 						<div className="mb-6">

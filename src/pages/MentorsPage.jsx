@@ -52,9 +52,10 @@ export function MentorsPage({ courses, onSchedule }) {
 				price_per_hour: course.price_per_hour,
 			}));
 
-		const firstCourse = mentorCourses[0];
-		const expertise = firstCourse
-			? [firstCourse.learnMethod || "Unknown"]
+		const availableLearnMethod = mentorCourses.length
+			? Array.from(
+					new Set(mentorCourses.map((c) => c.learnMethod || "Unknown"))
+			  )
 			: ["Unknown"];
 
 		return {
@@ -63,10 +64,12 @@ export function MentorsPage({ courses, onSchedule }) {
 			mentorImage: mentor.user?.foto_profil || defaultPhoto,
 			mentorRating: mentor.rating || 0,
 			mentorAbout: mentor.deskripsi || "No description",
-			expertise,
-			availability: {
-				online: firstCourse?.learnMethod === "Online Learning",
-				offline: firstCourse?.learnMethod === "Offline Learning",
+			availableLearnMethod,
+			teachingMode: {
+				online: mentorCourses.some((c) => c.learnMethod === "Online Learning"),
+				offline: mentorCourses.some(
+					(c) => c.learnMethod === "Offline Learning"
+				),
 			},
 			phone: mentor.user?.nomorTelepon || "+1234567890",
 			location: mentor.user?.alamat || "Location not specified",

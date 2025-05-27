@@ -3,7 +3,7 @@ import { X, Upload, CreditCard } from "lucide-react";
 import Swal from "sweetalert2";
 
 export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
-	const [paymentMethod, setPaymentMethod] = useState("transfer");
+	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
 	const [proofImage, setProofImage] = useState(null);
 
 	const handleFileChange = (e) => {
@@ -18,7 +18,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	};
 
 	const handleSubmit = () => {
-		if (paymentMethod === "transfer" && !proofImage) {
+		if (paymentMethod === "Transfer Bank" && !proofImage) {
 			Swal.fire({
 				icon: "error",
 				title: "Payment Proof Required",
@@ -26,7 +26,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 			});
 			return;
 		}
-		onSubmit({ paymentMethod, proofImage });
+		onSubmit({ paymentMethod, proofImage, booking });
 	};
 
 	const totalAmount = booking.course.price_per_hour;
@@ -85,8 +85,8 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 								<input
 									type="radio"
 									name="paymentMethod"
-									value="transfer"
-									checked={paymentMethod === "transfer"}
+									value="Transfer Bank"
+									checked={paymentMethod === "Transfer Bank"}
 									onChange={(e) => setPaymentMethod(e.target.value)}
 									className="mr-3"
 								/>
@@ -95,7 +95,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 						</div>
 					</div>
 
-					{paymentMethod === "transfer" && (
+					{paymentMethod === "Transfer Bank" && (
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Bank Details</h3>
 							<div className="bg-blue-50 p-4 rounded-lg mb-4">
@@ -158,7 +158,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 						<button
 							onClick={onClose}
 							className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-							Cancel
+							Nanti
 						</button>
 						<button
 							onClick={handleSubmit}

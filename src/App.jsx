@@ -20,10 +20,14 @@ import { AboutPage } from "./pages/AboutPage";
 import { AuthModal } from "./components/AuthModal";
 import { CourseSelectionModal } from "./components/CourseSelectionModal";
 import { Home } from "./pages/Home";
+
+// Halaman Admin
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
 import { AdminCoursesPage } from "./pages/admin/AdminCoursesPage";
 import { AdminMentorsPage } from "./pages/admin/AdminMentorsPage";
+import { AdminPaymentsPage } from "./pages/admin/AdminPaymentsPage";
+// Halaman Mentor
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/MentorSchedulePage";
 import { MentorCoursesPage } from "./pages/mentor/MentorCoursesPage";
@@ -33,12 +37,13 @@ import Swal from "sweetalert2";
 import api from "./api";
 import { useQuery } from "@tanstack/react-query";
 import { createBrowserHistory } from "history";
-
+import { useQueryClient } from "@tanstack/react-query";
 const history = createBrowserHistory();
 
 const adminPages = [
 	"admin-dashboard",
 	"admin-manage-users",
+	"admin-manage-payments",
 	"admin-manage-courses",
 	"admin-manage-mentors",
 ];
@@ -61,6 +66,7 @@ const protectedPages = [
 const hideNavigationPages = ["edit-profile"];
 
 function App() {
+	const queryClient = useQueryClient();
 	const [currentPage, setCurrentPage] = useState(
 		(history.location && history.location.pathname.slice(1)) || "home"
 	);
@@ -95,6 +101,7 @@ function App() {
 					: {},
 			});
 			return response.data.map((course) => ({
+				// ini untuk menyimpan data kursus yang terkait dengan mentor (CourseCard)
 				id: course.id,
 				mentor_id: course.mentor_id,
 				courseName: course.namaKursus,
@@ -110,6 +117,7 @@ function App() {
 						: "Belum diatur",
 				price_per_hour: course.mentor?.biayaPerSesi || 0,
 				mentors: [
+					// ini untuk menyimpan data mentor yang terkait dengan kursus (MentorCard)
 					{
 						id: course.mentor?.id,
 						mentorName: course.mentor?.user?.nama || "Unknown Mentor",
@@ -118,8 +126,14 @@ function App() {
 							: "/foto_mentor/default.png",
 						mentorRating: course.mentor?.rating || 0,
 						mentorAbout: course.mentor?.deskripsi || "No description",
-						expertise: [course.gayaMengajar || "Unknown"],
-						availability: {
+						availableLearnMethod: [
+							course.gayaMengajar === "online"
+								? "Online Learning"
+								: course.gayaMengajar === "offline"
+								? "Offline Learning"
+								: "Belum diatur",
+						],
+						teachingMode: {
 							online: course.gayaMengajar === "online",
 							offline: course.gayaMengajar === "offline",
 						},
@@ -232,7 +246,9 @@ function App() {
 		}
 		setSelectedMentor(mentor);
 		setBookingCourse(course);
-		setSelectedCourse(course); //Memastikan state selectedCourse selalu sesuai dengan course yang akan di-booking
+		// Cari course asli dari courses utama
+		const fullCourse = courses.find((c) => c.id === course.id);
+		setSelectedCourse(fullCourse || course); //Memastikan state selectedCourse selalu sesuai dengan course yang akan di-booking
 		setCurrentBooking({ schedules, location, mentor, course }); // Simpan semua data sementara
 		setShowBookingModal(true); // state untuk membuka modal
 	};
@@ -249,7 +265,7 @@ function App() {
 	};
 
 	// Fungsi untuk mengirimkan booking
-	const handleBookingSubmit = (
+	const handleBookingSubmit = async (
 		date,
 		time,
 		mode,
@@ -263,35 +279,98 @@ function App() {
 		}
 
 		if (selectedMentor) {
-			const booking = {
-				course,
-				mentor: selectedMentor,
-				date: date.toLocaleDateString(),
-				time,
-				mode,
-				location: mode === "offline" ? customLocation.location : null,
-				topic: topic || "No specific topic", // Simpan topik, default jika kosong
-			};
-			setCurrentBooking(booking);
-			setSelectedMentor(null);
-			setBookingCourse(null);
-			setShowPayment(true);
-			setShowBookingModal(false);
+			try {
+				// Temukan jadwal_kursus_id yang sesuai dengan tanggal & waktu yang dipilih
+				const selectedSchedule = schedules.find(
+					(s) =>
+						s.kursus_id === course.id &&
+						s.tanggal === date.toISOString().split("T")[0] &&
+						s.waktu.startsWith(time.slice(0, 5))
+				);
+
+				if (!selectedSchedule) {
+					Swal.fire("Gagal booking", "Jadwal tidak ditemukan!", "error");
+					return;
+				}
+				// console.log("userData", userData); // Kirim data sesi ke backend
+				const response = await api.post("/pelanggan/pesan-sesi", {
+					mentor_id: selectedMentor.id,
+					pelanggan_id: userData.pelanggan?.id,
+					kursus_id: course.id,
+					jadwal_kursus_id: selectedSchedule?.id,
+					detailKursus: topic || "No specific topic",
+					statusSesi: "pending",
+				});
+				// console.log("Sesi response:", response.data); // mau tau apakah data sesi sudah kekirim
+
+				// Simpan data sesi ke state booking
+				const sesiBaru = response.data;
+				const booking = {
+					course,
+					mentor: selectedMentor,
+					sesi: sesiBaru,
+					date: date.toLocaleDateString(),
+					time,
+					mode,
+					location: mode === "offline" ? customLocation.location : null,
+					topic: topic || "No specific topic",
+				};
+				setCurrentBooking(booking);
+				setSelectedMentor(null);
+				setBookingCourse(null);
+				setShowPayment(true);
+				setShowBookingModal(false);
+			} catch (err) {
+				Swal.fire(
+					"Gagal booking",
+					err.response?.data?.message || "Terjadi kesalahan saat booking sesi.",
+					"error"
+				);
+			}
 		}
 	};
-
 	// Fungsi untuk mengirimkan pembayaran
-	const handlePaymentSubmit = ({ paymentMethod, proofImage }) => {
-		setShowPayment(false);
-		Swal.fire({
-			icon: "success",
-			title: "Payment Submitted!",
-			text: "Your booking has been confirmed. We will verify your payment shortly.",
-			confirmButtonColor: "#3B82F6",
-		}).then(() => {
-			setCurrentPage("history");
-			history.push("/history");
-		});
+	const handlePaymentSubmit = async ({
+		paymentMethod,
+		proofImage,
+		booking,
+	}) => {
+		try {
+			const sesi = booking?.sesi;
+			const course = booking?.course;
+			const res = await api.post("/transaksi", {
+				pelanggan_id: sesi.pelanggan_id,
+				mentor_id: sesi.mentor_id,
+				sesi_id: sesi.id,
+				jumlah: course.price_per_hour,
+				statusPembayaran: "menunggu_verifikasi",
+				metodePembayaran: paymentMethod,
+				tanggalPembayaran: new Date().toISOString().slice(0, 10),
+				// bukti_pembayaran: proofImage (nanti kalau sudah ada kolomnya)
+			});
+
+			// Invalidate query agar data history langsung refetch
+			queryClient.invalidateQueries(["transactions", sesi.pelanggan_id]);
+			queryClient.invalidateQueries(["sessions", sesi.pelanggan_id]);
+
+			// console.log("Transaksi response:", res.data); // Mau tau apakah data transaksi sudah kekirim
+			setShowPayment(false);
+			Swal.fire({
+				icon: "success",
+				title: "Payment Submitted!",
+				text: "Your booking has been confirmed. We will verify your payment shortly.",
+				confirmButtonColor: "#3B82F6",
+			}).then(() => {
+				setCurrentPage("history");
+				history.push("/history");
+			});
+		} catch (err) {
+			Swal.fire(
+				"Gagal pembayaran",
+				err.response?.data?.message || "Terjadi kesalahan saat pembayaran.",
+				"error"
+			);
+		}
 	};
 
 	// Fungsi untuk navigasi antar halaman
@@ -368,6 +447,7 @@ function App() {
 	const handleBookingModalClose = () => {
 		setSelectedMentor(null);
 		setBookingCourse(null);
+		setSelectedCourse(null); // kalo gajadi, reset selectedCourse juga
 	};
 
 	// Render konten berdasarkan halaman
@@ -376,8 +456,8 @@ function App() {
 		// Ini akan mencegah redirect ke home sebelum status autentikasi user benar-benar diketahui.
 		if (!authChecked) {
 			return (
-				<div className="flex items-center justify-center h-[60vh]">
-					<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+				<div className="fixed top-0 left-0 w-full h-1 bg-blue-200">
+					<div className="h-1 bg-blue-500 animate-pulse w-1/2"></div>
 				</div>
 			);
 		}
@@ -476,6 +556,10 @@ function App() {
 					return <AdminDashboard />;
 				case "admin-manage-users":
 					return <AdminUsersPage />;
+				case "admin-manage-payments":
+					return <AdminPaymentsPage />;
+				// case "admin-manage-sessions":
+				// return <AdminSessionsPage />;
 				case "admin-manage-courses":
 					return <AdminCoursesPage />;
 				case "admin-manage-mentors":
@@ -533,7 +617,12 @@ function App() {
 						/>
 					) : null;
 				case "history":
-					return isAuthenticated ? <HistoryPage /> : null;
+					return isAuthenticated ? (
+						<HistoryPage
+							userData={userData}
+							onPaymentSubmit={handlePaymentSubmit}
+						/>
+					) : null;
 				case "mentors":
 					return <MentorsPage courses={courses} onSchedule={handleSchedule} />;
 				case "courses":
@@ -565,7 +654,7 @@ function App() {
 								{selectedCourse.title} - Available Mentors
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-								{selectedCourse.mentors.map((mentor) => (
+								{selectedCourse.mentors?.map((mentor) => (
 									<MentorCard
 										key={mentor.id}
 										mentor={mentor}
@@ -689,6 +778,14 @@ function App() {
 						onClose={() => {
 							setShowPayment(false);
 							setCurrentBooking(null);
+							Swal.fire({
+								icon: "warning",
+								title: "Pembayaran Belum Selesai",
+								html: `<span style="color:red;">Batas waktu pembayaran 1x24 jam.</span>`,
+								confirmButtonColor: "#3B82F6",
+								footer:
+									"Klik Ikon Profile &gt; Session History &gt; Cek Sesi &gt; Selesaikan Pembayaran.",
+							});
 						}}
 						onSubmit={handlePaymentSubmit}
 					/>

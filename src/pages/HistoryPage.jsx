@@ -1,123 +1,299 @@
-import React from 'react';
-import { Calendar, Clock, Monitor, MapPin, DollarSign } from 'lucide-react';
+import React, { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Calendar, Clock, Monitor, MapPin, DollarSign } from "lucide-react";
+import api from "../api";
+import { PaymentModal } from "../components/PaymentModal";
+import { useEffect } from "react";
 
-// Mock history data - In real app, this would come from backend
-const sessionHistory = [
-  {
-    id: 1,
-    course: 'Advanced Calculus',
-    mentor: 'Alex Thompson',
-    date: '2024-02-15',
-    time: '14:00',
-    mode: 'online',
-    status: 'waiting_verification',
-    amount: 50,
-    paymentDate: '2024-02-15'
-  },
-  {
-    id: 2,
-    course: 'Data Structures',
-    mentor: 'Sarah Chen',
-    date: '2024-02-10',
-    time: '10:00',
-    mode: 'offline',
-    location: 'Central Library, Room 204',
-    status: 'completed',
-    amount: 45,
-    paymentDate: '2024-02-10'
-  }
-];
+export function HistoryPage({ userData, onPaymentSubmit }) {
+	const [showPaymentModal, setShowPaymentModal] = useState(false);
+	const [selectedSession, setSelectedSession] = useState(null);
+	const [updatingSessionId, setUpdatingSessionId] = useState(null);
 
-const getStatusStyle = (status) => {
-  switch (status) {
-    case 'waiting_verification':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'completed':
-      return 'bg-green-100 text-green-800';
-    case 'cancelled':
-      return 'bg-red-100 text-red-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
+	const pelangganId = userData?.pelanggan?.id;
 
-const getStatusText = (status) => {
-  switch (status) {
-    case 'waiting_verification':
-      return 'Waiting for Verification';
-    case 'completed':
-      return 'Completed';
-    case 'cancelled':
-      return 'Cancelled';
-    default:
-      return status;
-  }
-};
+	const {
+		data: sessions = [],
+		isLoading: loadingSessions,
+		error: errorSessions,
+	} = useQuery({
+		queryKey: ["sessions", pelangganId],
+		queryFn: async () => {
+			const res = await api.get("/pelanggan/daftar-sesi");
+			return res.data;
+		},
+		enabled: !!pelangganId,
+	});
 
-export function HistoryPage() {
-  return (
-    <div className="py-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Session History</h2>
-      <div className="space-y-4">
-        {sessionHistory.map((session) => (
-          <div key={session.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">{session.course}</h3>
-                <p className="text-gray-600">with {session.mentor}</p>
-              </div>
-              <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusStyle(session.status)}`}>
-                {getStatusText(session.status)}
-              </span>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="flex items-center text-gray-600">
-                <Calendar className="w-4 h-4 mr-2 text-blue-600" />
-                {new Date(session.date).toLocaleDateString()}
-              </div>
-              <div className="flex items-center text-gray-600">
-                <Clock className="w-4 h-4 mr-2 text-blue-600" />
-                {session.time}
-              </div>
-              <div className="flex items-center text-gray-600">
-                {session.mode === 'online' ? (
-                  <Monitor className="w-4 h-4 mr-2 text-blue-600" />
-                ) : (
-                  <MapPin className="w-4 h-4 mr-2 text-blue-600" />
-                )}
-                {session.mode === 'online' ? 'Online Session' : 'Offline Session'}
-              </div>
-              {session.location && (
-                <div className="flex items-center text-gray-600">
-                  <MapPin className="w-4 h-4 mr-2 text-blue-600" />
-                  {session.location}
-                </div>
-              )}
-            </div>
+	const {
+		data: transactions = [],
+		isLoading: loadingTransactions,
+		error: errorTransactions,
+	} = useQuery({
+		queryKey: ["transactions", pelangganId],
+		queryFn: async () => {
+			const res = await api.get("/transaksi");
+			return res.data.filter((t) => t.pelanggan_id === pelangganId);
+		},
+		enabled: !!pelangganId,
+	});
 
-            <div className="border-t pt-4 mt-4">
-              <div className="flex items-center justify-between text-gray-600">
-                <div className="flex items-center">
-                  <DollarSign className="w-4 h-4 mr-2 text-blue-600" />
-                  Payment Amount: ${session.amount}
-                </div>
-                <div className="text-sm">
-                  Payment Date: {new Date(session.paymentDate).toLocaleDateString()}
-                </div>
-              </div>
-              {session.status === 'waiting_verification' && (
-                <div className="mt-4 bg-yellow-50 p-4 rounded-lg">
-                  <p className="text-yellow-800 text-sm">
-                    Your payment is being verified. This usually takes 1-2 business days.
-                    We'll notify you once the verification is complete.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+	const history = useMemo(() => {
+		if (!sessions.length) return [];
+		return sessions.map((sesi) => {
+			const transaksi = transactions.find((t) => t.sesi_id === sesi.id);
+			const jadwal = sesi.jadwal_kursus || sesi.jadwalKursus;
+			return {
+				id: sesi.id,
+				course: sesi.kursus?.namaKursus || "-",
+				mentor: sesi.mentor?.user?.nama || "-",
+				mentor_id: sesi.mentor?.id || null,
+				date: jadwal?.tanggal || "-",
+				time: jadwal?.waktu.slice(0, 5) || "-",
+				mode: sesi.kursus?.gayaMengajar || "-",
+				topic: sesi.detailKursus || "No Topic Specified",
+				location: sesi.mentor?.user?.alamat || "-",
+				status: transaksi
+					? transaksi.statusPembayaran === "menunggu_verifikasi"
+						? "waiting_verification"
+						: transaksi.statusPembayaran === "completed"
+						? "completed"
+						: "pending_payment"
+					: "pending_payment",
+				amount: sesi.mentor?.biayaPerSesi || 0,
+				paymentDate: transaksi?.tanggalPembayaran || null,
+				transaksiId: transaksi?.id,
+			};
+		});
+	}, [sessions, transactions]);
+
+	const getStatusStyle = (status) => {
+		switch (status) {
+			case "waiting_verification":
+				return "bg-yellow-100 text-yellow-800";
+			case "completed":
+				return "bg-green-100 text-green-800";
+			case "cancelled":
+				return "bg-red-100 text-red-800";
+			case "pending_payment":
+				return "bg-blue-100 text-blue-800";
+			default:
+				return "bg-gray-100 text-gray-800";
+		}
+	};
+
+	const getStatusText = (status) => {
+		switch (status) {
+			case "waiting_verification":
+				return "Waiting for Verification";
+			case "completed":
+				return "Completed";
+			case "cancelled":
+				return "Cancelled";
+			case "pending_payment":
+				return "Pending Payment";
+			default:
+				return status;
+		}
+	};
+
+	const handleContinuePayment = (session) => {
+		setSelectedSession(session);
+		setShowPaymentModal(true);
+	};
+
+	const handlePaymentFromHistory = async (data) => {
+		setUpdatingSessionId(selectedSession.id);
+		await onPaymentSubmit(data); // submit pembayaran ke backend (App.jsx)
+		setShowPaymentModal(false); // tutup modal di halaman history
+	};
+
+	useEffect(() => {
+		if (!updatingSessionId) return;
+		const updatedSession = history.find((s) => s.id === updatingSessionId);
+		if (updatedSession && updatedSession.status !== "pending_payment") {
+			setUpdatingSessionId(null);
+		}
+	}, [history, updatingSessionId]);
+
+	const isLoading = loadingSessions || loadingTransactions;
+
+	if (isLoading) {
+		return (
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+				<Calendar className="w-12 h-12 text-gray-400 mb-4 animate-pulse" />
+				<h3 className="text-lg font-semibold mb-2 animate-pulse">
+					Loading history...
+				</h3>
+			</div>
+		);
+	}
+
+	if (errorSessions || errorTransactions) {
+		return (
+			<div className="flex flex-col items-center justify-center h-[40vh] text-red-600">
+				<p>Gagal memuat data. Silakan coba lagi.</p>
+			</div>
+		);
+	}
+
+	if (history.length === 0) {
+		return (
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+				<Calendar className="w-12 h-12 text-gray-400 mb-4" />
+				<h3 className="text-lg font-semibold mb-2">No Session History</h3>
+				<p className="text-gray-500 mb-4 text-center">
+					You have no session history yet. Book a session to get started!
+				</p>
+			</div>
+		);
+	}
+
+	return (
+		<div className="py-8">
+			<h2 className="text-2xl font-bold text-gray-900 mb-6">Session History</h2>
+			<div className="space-y-4">
+				{history.map((session) => (
+					<div
+						key={session.id}
+						className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300">
+						<div className="flex justify-between items-start mb-4">
+							<div>
+								<h3 className="text-lg font-semibold text-gray-900">
+									{session.course}
+								</h3>
+								<p className="text-gray-600">with {session.mentor}</p>
+							</div>
+							{updatingSessionId === session.id ? (
+								<div className="flex items-center text-blue-500">
+									<svg
+										className="animate-spin h-5 w-5 mr-2"
+										fill="none"
+										viewBox="0 0 24 24">
+										<circle
+											className="opacity-25"
+											cx="12"
+											cy="12"
+											r="10"
+											stroke="currentColor"
+											strokeWidth="4"></circle>
+										<path
+											className="opacity-75"
+											fill="currentColor"
+											d="M4 12a8 8 0 018-8v8z"></path>
+									</svg>
+									Updating...
+								</div>
+							) : (
+								<span
+									className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusStyle(
+										session.status
+									)}`}>
+									{getStatusText(session.status)}
+								</span>
+							)}
+						</div>
+
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+							<div className="flex items-center text-gray-600">
+								<Calendar className="w-4 h-4 mr-2 text-blue-600" />
+								{new Date(session.date).toLocaleDateString("id-ID", {
+									day: "numeric",
+									month: "long",
+									year: "numeric",
+								})}{" "}
+							</div>
+							<div className="flex items-center text-gray-600">
+								<Clock className="w-4 h-4 mr-2 text-blue-600" />
+								Jam Mulai: {session.time}
+							</div>
+							<div className="flex items-center text-gray-600">
+								{session.mode === "online" ? (
+									<Monitor className="w-4 h-4 mr-2 text-blue-600" />
+								) : (
+									<MapPin className="w-4 h-4 mr-2 text-blue-600" />
+								)}
+								{session.mode === "online"
+									? "Online Session"
+									: "Offline Session"}
+							</div>
+							{session.location && (
+								<div className="flex items-center text-gray-600">
+									<MapPin className="w-4 h-4 mr-2 text-blue-600" />
+									Lokasi: {session.location}
+								</div>
+							)}
+						</div>
+
+						<div className="border-t pt-4 mt-4">
+							<div className="flex items-center justify-between text-gray-600">
+								<div className="flex items-center">
+									<DollarSign className="w-4 h-4 mr-2 text-blue-600" />
+									Total Harga: Rp{session.amount}
+								</div>
+								<div className="text-sm">
+									Payment Date:{" "}
+									{session.paymentDate
+										? new Date(session.paymentDate).toLocaleDateString(
+												"id-ID",
+												{
+													day: "numeric",
+													month: "long",
+													year: "numeric",
+												}
+										  )
+										: "-"}
+								</div>
+							</div>
+							{session.status === "waiting_verification" && (
+								<div className="mt-4 bg-yellow-50 p-4 rounded-lg">
+									<p className="text-yellow-800 text-sm">
+										Your payment is being verified. This usually takes 1-2
+										business days. We'll notify you once the verification is
+										complete.
+									</p>
+								</div>
+							)}
+							{session.status === "pending_payment" && (
+								<div className="mt-4">
+									<button
+										className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+										onClick={() => handleContinuePayment(session)}>
+										Selesaikan Pembayaran
+									</button>
+								</div>
+							)}
+						</div>
+					</div>
+				))}
+			</div>
+
+			{/* Simulasi PaymentModal */}
+			{showPaymentModal && selectedSession && (
+				<PaymentModal
+					booking={{
+						course: {
+							courseName: selectedSession.course,
+							price_per_hour: selectedSession.amount,
+						},
+						mentor: { mentorName: selectedSession.mentor },
+						date: selectedSession.date,
+						time: selectedSession.time,
+						mode: selectedSession.mode,
+						topic: selectedSession.topic, // atau isi sesuai kebutuhan
+						sesi: {
+							// tambahkan sesi jika perlu id untuk transaksi
+							id: selectedSession.id,
+							pelanggan_id: userData?.pelanggan?.id,
+							mentor_id: selectedSession.mentor_id, // pastikan ada
+						},
+					}}
+					course={{ courseName: selectedSession.course }}
+					mentor={{ mentorName: selectedSession.mentor }}
+					onClose={() => setShowPaymentModal(false)}
+					onSubmit={handlePaymentFromHistory}
+				/>
+			)}
+		</div>
+	);
 }
