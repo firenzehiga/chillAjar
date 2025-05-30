@@ -96,10 +96,12 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 								<p className="text-sm text-gray-600 mb-1">Mode</p>
 								<p className="font-medium">{booking.mode}</p>
 							</div>
-							<div>
-								<p className="text-sm text-gray-600 mb-1">Lokasi</p>
-								<p className="font-medium">{booking.location}</p>
-							</div>
+							{booking.mode === "Offline" && (
+								<div>
+									<p className="text-sm text-gray-600 mb-1">Lokasi</p>
+									<p className="font-medium">{booking.location}</p>
+								</div>
+							)}
 
 							{/* Topik pindah ke bawah dan full width */}
 							<div className="sm:col-span-2">
