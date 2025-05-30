@@ -327,7 +327,7 @@ function App() {
 					date: date.toLocaleDateString(),
 					time,
 					mode,
-					location: mode === "offline" ? customLocation.location : null,
+					location: mode === "offline" ? customLocation : null,
 					topic: topic || "No specific topic",
 				};
 				setCurrentBooking(booking);

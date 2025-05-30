@@ -98,7 +98,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							</div>
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Lokasi</p>
-								<p className="font-medium">{mentor?.location}</p>
+								<p className="font-medium">{booking.location}</p>
 							</div>
 
 							{/* Topik pindah ke bawah dan full width */}
@@ -111,7 +111,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 
 							<div className="sm:col-span-2 border-t pt-4 mt-2">
 								<p className="text-lg font-bold text-gray-800">
-									Total: ${totalAmount}
+									Total: Rp{totalAmount}
 								</p>
 							</div>
 						</div>
@@ -148,7 +148,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 									1234567890
 								</p>
 								<p>
-									<span className="font-medium">Account Name:</span> BelajarWoy
+									<span className="font-medium">Account Name:</span> ChillAjar
 								</p>
 							</div>
 

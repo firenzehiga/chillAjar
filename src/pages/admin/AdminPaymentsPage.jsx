@@ -113,7 +113,7 @@ export function AdminPaymentsPage() {
 				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
 		accepted: {
-			label: "Bagus",
+			label: "Accepted",
 			class:
 				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
@@ -271,6 +271,26 @@ export function AdminPaymentsPage() {
 		);
 	}
 
+	if (isLoading) {
+		return (
+			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
+				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+				<p>Loading payments data...</p>
+			</div>
+		);
+	}
+
+	if (payments.length === 0) {
+		return (
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+				<h3 className="text-lg font-semibold mb-2">No Payments Found</h3>
+				<p className="text-gray-500 mb-4 text-center">
+					Tidak ada pembayaran yang menunggu verifikasi.
+				</p>
+			</div>
+		);
+	}
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -294,57 +314,56 @@ export function AdminPaymentsPage() {
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
-				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading pembayaran...</p>
-					</div>
-				) : payments.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">Tidak Ada Pembayaran</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							Tidak ada pembayaran yang menunggu verifikasi.
-						</p>
-					</div>
-				) : (
-					<DataTable
-						columns={columns}
-						data={filteredPayments}
-						pagination
-						highlightOnHover
-						persistTableHead
-						responsive
-						noHeader
-						expandableRows
-						expandableRowsComponent={({ data }) => (
-							<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-								<p className="flex">
-									<span className="w-48 font-medium text-gray-900">
-										Mentor:
-									</span>
-									<span>{data.mentor?.user?.nama || "Tidak ada"}</span>
-								</p>
-								<p className="flex">
-									<span className="w-48 font-medium text-gray-900">
-										Metode Pembayaran:
-									</span>
-									<span className="capitalize">
-										{data.metodePembayaran || "-"}
-									</span>
-								</p>
-								<p className="flex">
-									<span className="w-48 font-medium text-gray-900">
-										Jumlah:
-									</span>
-									<span>
-										Rp{Number(data.jumlah || 0).toLocaleString("id-ID")}
-									</span>
-								</p>
-							</div>
-						)}
-					/>
-				)}
+				<DataTable
+					columns={columns}
+					data={filteredPayments}
+					pagination
+					highlightOnHover
+					persistTableHead
+					responsive
+					noHeader
+					expandableRows
+					expandableRowsComponent={({ data }) => (
+						<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
+							<p className="flex">
+								<span className="w-48 font-medium text-gray-900">Mentor:</span>
+								<span>{data.mentor?.user?.nama || "Tidak ada"}</span>
+							</p>
+							<p className="flex">
+								<span className="w-48 font-medium text-gray-900">
+									Metode Pembayaran:
+								</span>
+								<span className="capitalize">
+									{data.metodePembayaran || "-"}
+								</span>
+							</p>
+							<p className="flex">
+								<span className="w-48 font-medium text-gray-900">Jadwal:</span>
+								<span className="capitalize">
+									{data.sesi?.jadwal_kursus?.tanggal || "-"}
+								</span>
+							</p>
+							<p className="flex">
+								<span className="w-48 font-medium text-gray-900">Jam:</span>
+								<span className="capitalize">
+									{data.sesi?.jadwal_kursus?.waktu.slice(0, 5) || "-"} WIB
+								</span>
+							</p>
+							<p className="flex">
+								<span className="w-48 font-medium text-gray-900">Lokasi:</span>
+								<span className="capitalize">
+									{data.sesi?.jadwal_kursus?.tempat || "-"}
+								</span>
+							</p>
+							<p className="flex">
+								<span className="w-48 font-medium text-gray-900">Jumlah:</span>
+								<span>
+									Rp{Number(data.jumlah || 0).toLocaleString("id-ID")}
+								</span>
+							</p>
+						</div>
+					)}
+				/>
 			</div>
 			{previewImg && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">

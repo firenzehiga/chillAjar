@@ -56,8 +56,8 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 				status: transaksi
 					? transaksi.statusPembayaran === "menunggu_verifikasi"
 						? "waiting_verification"
-						: transaksi.statusPembayaran === "completed"
-						? "completed"
+						: transaksi.statusPembayaran === "accepted"
+						? "accepted"
 						: "pending_payment"
 					: "pending_payment",
 				amount: sesi.mentor?.biayaPerSesi || 0,
@@ -71,7 +71,7 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 		switch (status) {
 			case "waiting_verification":
 				return "bg-yellow-100 text-yellow-800";
-			case "completed":
+			case "accepted":
 				return "bg-green-100 text-green-800";
 			case "cancelled":
 				return "bg-red-100 text-red-800";
@@ -86,8 +86,8 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 		switch (status) {
 			case "waiting_verification":
 				return "Waiting for Verification";
-			case "completed":
-				return "Completed";
+			case "accepted":
+				return "Accepted";
 			case "cancelled":
 				return "Cancelled";
 			case "pending_payment":
@@ -254,6 +254,14 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 									</p>
 								</div>
 							)}
+							{session.status === "accepted" && (
+								<div className="mt-4 bg-green-50 p-4 rounded-lg">
+									<p className="text-green-800 text-sm">
+										Your payment is accepted. Please wait the mentor to start
+										the session.
+									</p>
+								</div>
+							)}
 							{session.status === "pending_payment" && (
 								<div className="mt-4">
 									<button
@@ -280,6 +288,7 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 						date: selectedSession.date,
 						time: selectedSession.time,
 						mode: selectedSession.mode,
+						location: selectedSession.location,
 						topic: selectedSession.topic, // atau isi sesuai kebutuhan
 						sesi: {
 							// tambahkan sesi jika perlu id untuk transaksi
