@@ -2,18 +2,11 @@ import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { X, Clock, Monitor, MapPin, BookOpen } from "lucide-react";
 
-export function BookingModal({
-	mentor,
-	selectedCourse,
-	onClose,
-	onSubmit,
-	schedules,
-	location,
-}) {
+export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 	const [selectedMode, setSelectedMode] = useState(null);
+	const [selectedLocation, setSelectedLocation] = useState(null);
 	const [selectedDate, setSelectedDate] = useState(null);
 	const [selectedTime, setSelectedTime] = useState(null);
-	const [selectedLocation, setSelectedLocation] = useState(location || "");
 	const [topic, setTopic] = useState("");
 
 	const handleSubmit = () => {
@@ -30,37 +23,54 @@ export function BookingModal({
 		}
 	};
 
-	// Pastikan selectedCourse ada
-	const filteredSchedules = (schedules || []).filter(
-		(s) => s.kursus_id === selectedCourse?.id
-	);
+	// filteredSchedules kunci utama muncul tidaknya pilihan jadwal
+	// Ambil schedules dari selectedCourse
+	// Jika tidak ada, coba ambil dari selectedCourse.schedules atau selectedCourse.mentors[0].schedules
+	const filteredSchedules =
+		selectedCourse?.schedules || selectedCourse?.mentors?.[0]?.schedules || [];
+	// console.log("Selected Course in BookingModal:", selectedCourse);
+	// console.log("Filtered Schedules in BookingModal:", filteredSchedules);
 
-	// Untuk menampilkan tanggal yang tersedia
-	const availableDates =
-		filteredSchedules.length > 0
-			? [...new Set(filteredSchedules.map((s) => s.tanggal))].map(
-					(date) => new Date(date)
-			  )
+	const isOnline = selectedCourse?.learnMethod === "Online Learning";
+	const isOffline = selectedCourse?.learnMethod === "Offline Learning";
+
+	// Ambil daftar lokasi yang tersedia (hanya untuk kursus offline)
+	const availableLocations =
+		isOffline && filteredSchedules.length > 0
+			? [...new Set(filteredSchedules.map((s) => s.tempat).filter(Boolean))]
 			: [];
 
-	// Untuk menampilkan waktu yang tersedia
+	// Ambil tanggal yang tersedia
+	const availableDates =
+		filteredSchedules.length > 0
+			? [
+					...new Set(
+						filteredSchedules
+							.filter(
+								(schedule) =>
+									isOnline || // Untuk online, ambil semua tanggal
+									(isOffline && schedule.tempat === selectedLocation) // Untuk offline, filter berdasarkan lokasi
+							)
+							.map((s) => s.tanggal)
+					),
+			  ].map((date) => new Date(date))
+			: [];
+
+	// Ambil waktu yang tersedia berdasarkan tanggal (dan lokasi untuk offline)
 	const availableTimes =
 		selectedDate && filteredSchedules.length > 0
 			? filteredSchedules
 					.filter(
 						(schedule) =>
-							schedule.tanggal === selectedDate.toISOString().split("T")[0]
+							schedule.tanggal === selectedDate.toISOString().split("T")[0] &&
+							(isOnline || (isOffline && schedule.tempat === selectedLocation))
 					)
 					.map((schedule) => schedule.waktu)
 			: [];
 
-	const isOnline = selectedCourse?.learnMethod === "Online Learning";
-	const isOffline = selectedCourse?.learnMethod === "Offline Learning";
-
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
 			<div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] flex flex-col">
-				{/* Header Modal */}
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
@@ -75,9 +85,7 @@ export function BookingModal({
 					</div>
 				</div>
 
-				{/* Konten Modal (Scrollable) */}
 				<div className="flex-1 overflow-y-auto p-6">
-					{/* Informasi Kursus yang Dipilih */}
 					{selectedCourse && (
 						<div className="mb-6 p-4 bg-blue-50 rounded-lg">
 							<div className="flex items-center">
@@ -92,7 +100,6 @@ export function BookingModal({
 						</div>
 					)}
 
-					{/* Input Topik yang Ingin Dibahas */}
 					<div className="mb-6">
 						<label
 							htmlFor="topic"
@@ -109,7 +116,6 @@ export function BookingModal({
 						/>
 					</div>
 
-					{/* Pilihan Mode Belajar */}
 					<div className="mb-6">
 						<h3 className="font-medium mb-2">Select Learning Mode:</h3>
 						<div className="grid grid-cols-2 gap-3">
@@ -117,9 +123,9 @@ export function BookingModal({
 								type="button"
 								onClick={() => {
 									setSelectedMode("online");
+									setSelectedLocation(null);
 									setSelectedDate(null);
 									setSelectedTime(null);
-									setSelectedLocation(null);
 								}}
 								disabled={!isOnline}
 								className={`flex items-center justify-center p-3 rounded-lg border ${
@@ -136,9 +142,9 @@ export function BookingModal({
 								type="button"
 								onClick={() => {
 									setSelectedMode("offline");
+									setSelectedLocation(null);
 									setSelectedDate(null);
 									setSelectedTime(null);
-									setSelectedLocation("");
 								}}
 								disabled={!isOffline}
 								className={`flex items-center justify-center p-3 rounded-lg border ${
@@ -154,35 +160,49 @@ export function BookingModal({
 						</div>
 					</div>
 
-					{/* Pilihan Lokasi (Jika Offline) */}
 					{selectedMode === "offline" && (
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Location:</h3>
-							<div className="space-y-2">
-								<button
-									type="button"
-									onClick={() => setSelectedLocation(mentor.location)}
-									className={`w-1/2 p-3 rounded-lg border text-left ${
-										selectedLocation === mentor.location
-											? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
-											: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-									}`}>
-									<div className="flex items-center">
-										<MapPin className="w-4 h-4 mr-2" />
-										{mentor.location}
+							<div className="space-y-2 gap-3">
+								{availableLocations.length > 0 ? (
+									availableLocations.map((loc, index) => (
+										<button
+											key={index}
+											type="button"
+											onClick={() => {
+												setSelectedLocation(loc);
+												setSelectedDate(null);
+												setSelectedTime(null);
+											}}
+											className={`w-3/4 p-2 rounded-lg border text-left ${
+												selectedLocation === loc
+													? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+													: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+											}`}>
+											<div className="flex items-center">
+												<MapPin className="w-4 h-4 mr-2" />
+												{loc}
+											</div>
+										</button>
+									))
+								) : (
+									<div className="text-red-500 text-sm p-2 bg-red-50 rounded">
+										{filteredSchedules.length === 0
+											? "Jadwal belum tersedia untuk kursus ini."
+											: "Lokasi belum ditentukan untuk jadwal ini."}
 									</div>
-								</button>
+								)}
 							</div>
 						</div>
 					)}
 
-					{/* Pilihan Tanggal */}
-					{selectedMode && (selectedMode === "online" || selectedLocation) && (
+					{(selectedMode === "online" || selectedLocation) && (
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Date:</h3>
 							{availableDates.length === 0 ? (
 								<div className="text-red-500 text-sm p-2 bg-red-50 rounded">
-									Belum ada jadwal tersedia untuk kursus ini.
+									Belum ada jadwal tersedia untuk{" "}
+									{isOffline ? "lokasi ini" : "kursus ini"}.
 								</div>
 							) : (
 								<div className="grid grid-cols-3 gap-2">
@@ -190,7 +210,10 @@ export function BookingModal({
 										<button
 											type="button"
 											key={date.toISOString()}
-											onClick={() => setSelectedDate(date)}
+											onClick={() => {
+												setSelectedDate(date);
+												setSelectedTime(null);
+											}}
 											className={`p-2 rounded ${
 												selectedDate?.toDateString() === date.toDateString()
 													? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
@@ -203,7 +226,7 @@ export function BookingModal({
 							)}
 						</div>
 					)}
-					{/* Pilihan Waktu */}
+
 					{selectedDate && (
 						<div className="mb-6">
 							<h3 className="font-medium mb-2">Select Time:</h3>
@@ -227,7 +250,6 @@ export function BookingModal({
 					)}
 				</div>
 
-				{/* Footer Modal */}
 				<div className="p-6 border-t bg-gray-50">
 					<div className="flex justify-end space-x-3">
 						<button

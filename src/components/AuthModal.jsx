@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { X, Mail, Lock, User, Eye, EyeOff, Phone, MapPin } from "lucide-react";
+import {
+	X,
+	Mail,
+	Lock,
+	User,
+	Eye,
+	EyeOff,
+	Phone,
+	MapPin,
+	Loader2,
+} from "lucide-react";
 import api from "../api"; // Sesuaikan path ke file api.jsx
 import Swal from "sweetalert2";
 // Impor logo aplikasi (sesuaikan path sesuai struktur proyek Anda)
@@ -11,6 +21,7 @@ export function AuthModal({
 	onSuccess,
 	defaultMode = "login",
 }) {
+	const [isLoading, setIsLoading] = useState(false);
 	const [mode, setMode] = useState(defaultMode);
 	const [showPassword, setShowPassword] = useState(false);
 	const [formData, setFormData] = useState({
@@ -55,6 +66,8 @@ export function AuthModal({
 				return;
 			}
 		}
+
+		setIsLoading(true);
 
 		try {
 			if (mode === "login") {
@@ -105,6 +118,8 @@ export function AuthModal({
 		} catch (error) {
 			console.error(`${mode} failed:`, error);
 			setError(error.response?.data?.message || "Something went wrong!");
+		} finally {
+			setIsLoading(false); // Set isLoading menjadi false setelah proses selesai
 		}
 	};
 
@@ -259,8 +274,18 @@ export function AuthModal({
 
 						<button
 							type="submit"
-							className="w-full outline-none focus:outline-none cursor-pointer transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]">
-							{mode === "login" ? "Sign In" : "Create Account"}
+							disabled={isLoading} // Nonaktifkan tombol saat loading
+							className={`w-full outline-none focus:outline-none transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
+								isLoading ? "opacity-50 cursor-not-allowed" : ""
+							}`}>
+							{isLoading ? (
+								<>
+									<Loader2 className="w-5 h-5 animate-spin" />
+									{mode === "login" ? "Signing In..." : "Creating Account..."}
+								</>
+							) : (
+								<>{mode === "login" ? "Sign In" : "Create Account"}</>
+							)}
 						</button>
 
 						<div className="mt-4 text-center text-sm text-gray-600">

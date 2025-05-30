@@ -4,6 +4,7 @@ import api from "../api";
 import defaultPhoto from "../../public/foto_kursus/default.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { MentorSkeletonCard } from "../components/Skeleton/MentorSkeletonCard";
+
 export function MentorsPage({ courses, onSchedule }) {
 	const {
 		data: mentors = [],
@@ -15,7 +16,7 @@ export function MentorsPage({ courses, onSchedule }) {
 			const mentorsResponse = await api.get("/public/mentor");
 			return mentorsResponse.data;
 		},
-		staleTime: 0, // Cache selama 5 menit
+		staleTime: 0,
 		refetchOnWindowFocus: false,
 		retry: 1,
 	});
@@ -32,6 +33,7 @@ export function MentorsPage({ courses, onSchedule }) {
 			</div>
 		);
 	}
+
 	if (error) {
 		let msg = error.message;
 		if (error.response && error.response.data && error.response.data.message) {
@@ -39,6 +41,7 @@ export function MentorsPage({ courses, onSchedule }) {
 		}
 		return <p className="text-red-500 text-center mt-8">{msg}</p>;
 	}
+
 	const mentorsData = mentors.map((mentor) => {
 		// Mengambil kursus dari prop courses yang sudah di-fetch di App.jsx
 		const mentorCourses = courses
@@ -50,6 +53,7 @@ export function MentorsPage({ courses, onSchedule }) {
 				courseImage: course.courseImage,
 				learnMethod: course.learnMethod,
 				price_per_hour: course.price_per_hour,
+				schedules: course.mentors[0].schedules, // Ambil schedules dari mentors
 			}));
 
 		const availableLearnMethod = mentorCourses.length
@@ -72,7 +76,7 @@ export function MentorsPage({ courses, onSchedule }) {
 				),
 			},
 			phone: mentor.user?.nomorTelepon || "+1234567890",
-			location: mentor.user?.alamat || "Location not specified",
+			mentorAddress: mentor.user?.alamat || "Alamat tidak tersedia",
 			courses: mentorCourses,
 		};
 	});

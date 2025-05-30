@@ -5,15 +5,38 @@ import Swal from "sweetalert2";
 export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
 	const [proofImage, setProofImage] = useState(null);
+	const [proofPreview, setProofPreview] = useState(null); // Untuk pratinjau
 
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
+		console.log("Uploaded File:", file); // Debug
 		if (file) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				setProofImage(reader.result);
-			};
-			reader.readAsDataURL(file);
+			if (file.size > 2 * 1024 * 1024) {
+				// Maksimal 2MB
+				Swal.fire({
+					icon: "error",
+					title: "File Too Large",
+					text: "Ukuran file maksimal 2MB.",
+				});
+				setProofImage(null);
+				setProofPreview(null);
+				return;
+			}
+			if (!["image/jpeg", "image/png"].includes(file.type)) {
+				Swal.fire({
+					icon: "error",
+					title: "Invalid File Type",
+					text: "Please upload a valid image (JPG or PNG).",
+				});
+				setProofImage(null);
+				setProofPreview(null);
+				return;
+			}
+			setProofImage(file); // Simpan objek File
+			setProofPreview(URL.createObjectURL(file)); // Buat pratinjau
+		} else {
+			setProofImage(null);
+			setProofPreview(null);
 		}
 	};
 
@@ -26,6 +49,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 			});
 			return;
 		}
+		console.log("Submitting with proofImage:", proofImage); // Debug
 		onSubmit({ paymentMethod, proofImage, booking });
 	};
 
@@ -47,40 +71,56 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 				</div>
 
 				{/* Content - Scrollable */}
-				<div className="p-6 overflow-y-auto flex-1">
-					<div className="mb-6">
-						<h3 className="font-medium text-lg mb-2">Booking Summary</h3>
-						<div className="bg-gray-50 p-4 rounded-lg">
-							<p className="mb-2">
-								<span className="font-medium">Topik Yang Ingin Dibahas:</span>{" "}
-								{booking.topic}
-							</p>
-							<p className="mb-2">
-								<span className="font-medium">Course:</span>{" "}
-								{course?.courseName}
-							</p>
-							<p className="mb-2">
-								<span className="font-medium">Mentor:</span>{" "}
-								{mentor?.mentorName}
-							</p>
-							<p className="mb-2">
-								<span className="font-medium">Date:</span> {booking.date}
-							</p>
-							<p className="mb-2">
-								<span className="font-medium">Time:</span> {booking.time}
-							</p>
-							<p className="mb-2">
-								<span className="font-medium">Mode:</span> {booking.mode}
-							</p>
-							<p className="text-lg font-semibold mt-4">
-								Total: ${totalAmount}
-							</p>
+				<div className="p-6 overflow-y-auto flex-1 space-y-8">
+					{/* Booking Summary */}
+					<div>
+						<h3 className="font-semibold text-xl mb-4">Booking Summary</h3>
+						<div className="bg-white border rounded-xl p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
+							<div>
+								<p className="text-sm text-gray-600 mb-1">Course</p>
+								<p className="font-medium">{course?.courseName}</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600 mb-1">Mentor</p>
+								<p className="font-medium">{mentor?.mentorName}</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600 mb-1">Date</p>
+								<p className="font-medium">{booking.date}</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600 mb-1">Waktu</p>
+								<p className="font-medium">{booking.time.slice(0, 5)} WIB</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600 mb-1">Mode</p>
+								<p className="font-medium">{booking.mode}</p>
+							</div>
+							<div>
+								<p className="text-sm text-gray-600 mb-1">Lokasi</p>
+								<p className="font-medium">{mentor?.location}</p>
+							</div>
+
+							{/* Topik pindah ke bawah dan full width */}
+							<div className="sm:col-span-2">
+								<p className="text-sm text-gray-600 mb-1">
+									Topik Yang Ingin Dibahas
+								</p>
+								<p className="font-medium">{booking.topic}</p>
+							</div>
+
+							<div className="sm:col-span-2 border-t pt-4 mt-2">
+								<p className="text-lg font-bold text-gray-800">
+									Total: ${totalAmount}
+								</p>
+							</div>
 						</div>
 					</div>
 
-					<div className="mb-6">
-						<h3 className="font-medium mb-2">Payment Method</h3>
-						<div className="space-y-2">
+					{/* Payment Method */}
+					<div>
+						<h3 className="font-semibold text-xl mb-4">Payment Method</h3>
+						<div className="space-y-3">
 							<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
 								<input
 									type="radio"
@@ -95,44 +135,49 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 						</div>
 					</div>
 
+					{/* Bank Details */}
 					{paymentMethod === "Transfer Bank" && (
-						<div className="mb-6">
-							<h3 className="font-medium mb-2">Bank Details</h3>
-							<div className="bg-blue-50 p-4 rounded-lg mb-4">
-								<p className="mb-2">
+						<div>
+							<h3 className="font-semibold text-xl mb-4">Bank Details</h3>
+							<div className="bg-blue-50 border border-blue-200 rounded-xl p-6 space-y-2">
+								<p>
 									<span className="font-medium">Bank:</span> BCA
 								</p>
-								<p className="mb-2">
+								<p>
 									<span className="font-medium">Account Number:</span>{" "}
 									1234567890
 								</p>
-								<p className="mb-2">
+								<p>
 									<span className="font-medium">Account Name:</span> BelajarWoy
 								</p>
 							</div>
 
-							<div className="mt-4">
+							{/* Upload Proof */}
+							<div className="mt-6">
 								<label className="block font-medium mb-2">
 									Upload Payment Proof
 								</label>
-								<div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-									{proofImage ? (
+								<div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+									{proofPreview ? (
 										<div className="relative">
 											<img
-												src={proofImage}
+												src={proofPreview}
 												alt="Payment proof"
-												className="max-h-48 mx-auto"
+												className="max-h-48 mx-auto rounded-md"
 											/>
 											<button
-												onClick={() => setProofImage(null)}
-												className="mt-2 text-red-600 hover:text-red-700">
+												onClick={() => {
+													setProofImage(null);
+													setProofPreview(null);
+												}}
+												className="mt-3 text-red-600 hover:text-red-700 font-medium">
 												Remove
 											</button>
 										</div>
 									) : (
 										<div>
-											<Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-											<label className="cursor-pointer text-blue-600 hover:text-blue-700">
+											<Upload className="w-8 h-8 mx-auto mb-3 text-gray-400" />
+											<label className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
 												Click to upload
 												<input
 													type="file"

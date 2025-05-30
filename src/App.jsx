@@ -84,7 +84,6 @@ function App() {
 	const [showCourseSelection, setShowCourseSelection] = useState(false);
 	const [authChecked, setAuthChecked] = useState(false);
 
-	// Fetch data kursus dengan React Query
 	const {
 		data: courses = [],
 		isLoading,
@@ -100,8 +99,8 @@ function App() {
 					? { Authorization: `Bearer ${localStorage.getItem("token")}` }
 					: {},
 			});
-			return response.data.map((course) => ({
-				// ini untuk menyimpan data kursus yang terkait dengan mentor (CourseCard)
+			// console.log("API Response:", response.data); // Debug: Periksa data dari API
+			const mappedCourses = response.data.map((course) => ({
 				id: course.id,
 				mentor_id: course.mentor_id,
 				courseName: course.namaKursus,
@@ -117,9 +116,8 @@ function App() {
 						: "Belum diatur",
 				price_per_hour: course.mentor?.biayaPerSesi || 0,
 				mentors: [
-					// ini untuk menyimpan data mentor yang terkait dengan kursus (MentorCard)
 					{
-						id: course.mentor?.id,
+						id: course.mentor?.id || null,
 						mentorName: course.mentor?.user?.nama || "Unknown Mentor",
 						mentorImage: course.mentor?.user?.avatar
 							? `/${course.mentor?.user?.avatar}`
@@ -127,6 +125,7 @@ function App() {
 						mentorRating: course.mentor?.rating || 0,
 						mentorAbout: course.mentor?.deskripsi || "No description",
 						availableLearnMethod: [
+							// buat menampilkan gaya mengajar yang tersedia di mentorcard
 							course.gayaMengajar === "online"
 								? "Online Learning"
 								: course.gayaMengajar === "offline"
@@ -138,17 +137,33 @@ function App() {
 							offline: course.gayaMengajar === "offline",
 						},
 						mentorPhone: course.mentor?.user?.nomorTelepon || "+1234567890",
-						location: course.mentor?.user?.alamat || "Location not specified",
-						courses: [course],
+						schedules: course.jadwal_kursus || [], // Pastikan schedules ada di sini
+
+						mentorAddress:
+							course.mentor?.user?.alamat || "Alamat tidak tersedia",
+						courses: [
+							{
+								id: course.id,
+								courseName: course.namaKursus,
+								learnMethod:
+									course.gayaMengajar === "online"
+										? "Online Learning"
+										: course.gayaMengajar === "offline"
+										? "Offline Learning"
+										: "Belum diatur",
+								schedules: course.jadwal_kursus || [], // Pastikan schedules ada di sini
+							},
+						],
 					},
 				],
 			}));
+			// console.log("Mapped Courses:", mappedCourses); // Debug: Periksa data setelah pemetaan
+			return mappedCourses;
 		},
 		staleTime: 0,
 		refetchOnWindowFocus: false,
 		retry: 1,
 	});
-
 	// Fetch data jadwal dengan React Query
 	const {
 		data: schedules = [],
@@ -329,6 +344,7 @@ function App() {
 			}
 		}
 	};
+
 	// Fungsi untuk mengirimkan pembayaran
 	const handlePaymentSubmit = async ({
 		paymentMethod,
@@ -338,22 +354,51 @@ function App() {
 		try {
 			const sesi = booking?.sesi;
 			const course = booking?.course;
-			const res = await api.post("/transaksi", {
-				pelanggan_id: sesi.pelanggan_id,
-				mentor_id: sesi.mentor_id,
-				sesi_id: sesi.id,
-				jumlah: course.price_per_hour,
-				statusPembayaran: "menunggu_verifikasi",
-				metodePembayaran: paymentMethod,
-				tanggalPembayaran: new Date().toISOString().slice(0, 10),
-				// bukti_pembayaran: proofImage (nanti kalau sudah ada kolomnya)
+
+			// Validasi data awal
+			if (!sesi || !course) {
+				throw new Error("Data booking tidak lengkap.");
+			}
+			if (!sesi.pelanggan_id || !sesi.mentor_id || !sesi.id) {
+				throw new Error("Data sesi tidak lengkap.");
+			}
+			if (!course.price_per_hour) {
+				throw new Error("Harga kursus tidak tersedia.");
+			}
+			if (!proofImage || !(proofImage instanceof File)) {
+				throw new Error("Proof of payment must be a valid image file.");
+			}
+
+			// Buat FormData untuk mengirim data termasuk file
+			const formData = new FormData();
+			formData.append("pelanggan_id", sesi.pelanggan_id);
+			formData.append("mentor_id", sesi.mentor_id);
+			formData.append("sesi_id", sesi.id);
+			formData.append("jumlah", course.price_per_hour);
+			formData.append("statusPembayaran", "menunggu_verifikasi");
+			formData.append("metodePembayaran", paymentMethod);
+			formData.append(
+				"tanggalPembayaran",
+				new Date().toISOString().slice(0, 10)
+			);
+			formData.append("buktiPembayaran", proofImage); // Log untuk debugging
+			for (let [key, value] of formData.entries()) {
+				console.log(`${key}:`, value);
+			}
+
+			// Kirim permintaan dengan header multipart/form-data
+			const res = await api.post("/transaksi", formData, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
 			});
 
-			// Invalidate query agar data history langsung refetch
+			// Invalidate queries setelah sukses
 			queryClient.invalidateQueries(["transactions", sesi.pelanggan_id]);
 			queryClient.invalidateQueries(["sessions", sesi.pelanggan_id]);
 
-			// console.log("Transaksi response:", res.data); // Mau tau apakah data transaksi sudah kekirim
+			console.log("Transaksi response:", res.data); // Debugging
 			setShowPayment(false);
 			Swal.fire({
 				icon: "success",
@@ -365,14 +410,15 @@ function App() {
 				history.push("/history");
 			});
 		} catch (err) {
-			Swal.fire(
-				"Gagal pembayaran",
-				err.response?.data?.message || "Terjadi kesalahan saat pembayaran.",
-				"error"
-			);
+			console.error("Error creating transaction:", err);
+			const errorMessage =
+				err.response?.data?.message ||
+				err.response?.data?.errors?.buktiPembayaran?.[0] ||
+				err.message ||
+				"Terjadi kesalahan saat pembayaran.";
+			Swal.fire("Gagal pembayaran", errorMessage, "error");
 		}
 	};
-
 	// Fungsi untuk navigasi antar halaman
 	const handleNavigate = (page) => {
 		if (!isAuthenticated && ["profile", "history", "settings"].includes(page)) {

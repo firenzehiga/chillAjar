@@ -11,63 +11,76 @@ import {
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
 
-// Komponen MentorCard untuk menampilkan informasi mentor dan memilih kursus
 export function MentorCard({
 	mentor,
 	onSchedule,
 	showCourseSelect = false,
 	selectedCourse = null,
 	resetCourseSelection,
-	schedules,
 }) {
 	const [showCourseModal, setShowCourseModal] = useState(false);
 	const [selectedMentorCourse, setSelectedMentorCourse] = useState(null);
 	const [showDetails, setShowDetails] = useState(false);
 
-	// Reset pilihan kursus jika resetCourseSelection berubah (dari App.jsx)
 	useEffect(() => {
 		setSelectedMentorCourse(null);
 	}, [resetCourseSelection]);
 
-	// Fungsi untuk menangani klik tombol berdasarkan konteks
 	const handleScheduleClick = () => {
 		if (selectedCourse) {
-			// Jika selectedCourse ada (dari halaman Courses), langsung ke BookingModal
 			onSchedule(mentor, selectedCourse);
 		} else if (mentor.courses) {
-			// Jika tidak ada selectedCourse, buka CourseSelectionModal
 			setShowCourseModal(true);
 		}
 	};
 
-	// Fungsi untuk memilih kursus sementara di CourseSelectionModal
 	const handleCourseSelect = (course) => {
 		setSelectedMentorCourse(course);
 	};
 
-	// Fungsi untuk mengonfirmasi pilihan kursus dan membuka BookingModal
 	const handleConfirmCourse = () => {
 		if (selectedMentorCourse) {
 			console.log("Course yang dipilih:", selectedMentorCourse);
-
 			setShowCourseModal(false);
 			onSchedule(mentor, selectedMentorCourse);
 		}
 	};
 
-	// Fungsi untuk menutup CourseSelectionModal dan reset pilihan kursus
 	const handleCloseCourseModal = () => {
 		setShowCourseModal(false);
-		setSelectedMentorCourse(null); // Reset kursus jika Cancel ditekan
+		setSelectedMentorCourse(null);
 	};
 
-	// Tentukan teks tombol berdasarkan konteks
 	const buttonText = selectedCourse ? "Book Selected Course" : "Select Course";
-	// Contoh: Tampilkan jumlah slot tersedia
+
+	// Fungsi untuk mengelompokkan jadwal berdasarkan lokasi
+	const getSchedulesByLocation = (course) => {
+		if (!course?.schedules || course.schedules.length === 0) {
+			return [];
+		}
+
+		// Kelompokkan schedules berdasarkan tempat
+		const schedulesByLocation = course.schedules.reduce((acc, schedule) => {
+			const location = schedule.tempat;
+			if (!acc[location]) {
+				acc[location] = [];
+			}
+			acc[location].push(schedule);
+			return acc;
+		}, {});
+
+		// Ambil tanggal unik untuk setiap lokasi
+		return Object.entries(schedulesByLocation).map(([location, schedules]) => ({
+			location,
+			dates: [...new Set(schedules.map((s) => s.tanggal))].map(
+				(date) => new Date(date)
+			),
+		}));
+	};
+
 	return (
 		<>
 			<div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
-				{/* Header Profil Mentor */}
 				<div className="relative">
 					<div className="h-32 bg-gradient-to-r bg-yellow-500" />
 					<div className="absolute -bottom-12 left-6">
@@ -77,24 +90,21 @@ export function MentorCard({
 							className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover object-center"
 							onError={(e) => {
 								e.target.onerror = null;
-								e.target.src = "/foto_mentor/default.png"; // Jika gagal memuat gambar(path ada di db tapi file gaada di folder), gunakan gambar default
+								e.target.src = "/foto_mentor/default.png";
 							}}
 						/>
 					</div>
 				</div>
 
-				{/* Informasi Utama Mentor */}
 				<div className="pt-14 px-6 pb-6">
 					<div className="flex justify-between items-start mb-4">
 						<div>
 							<h3 className="text-xl font-bold text-gray-900">
-								{mentor.mentorName || "Chill Ajar"}{" "}
+								{mentor.mentorName || "Chill Ajar"}
 							</h3>
 							<div className="flex items-center text-yellow-400 mt-1">
 								<Star className="w-4 h-4 fill-current" />
-								<span className="ml-1 text-sm font-medium">
-									{mentor.mentorRating}
-								</span>
+								<span className="ml-1 text-sm çe">{mentor.mentorRating}</span>
 								<span className="text-gray-500 text-sm ml-2">
 									({mentor.totalReviews || "50+"} reviews)
 								</span>
@@ -107,7 +117,6 @@ export function MentorCard({
 						</a>
 					</div>
 
-					{/* Gaya Belajar */}
 					<div className="flex flex-wrap gap-2 mb-4">
 						{mentor.availableLearnMethod.map((skill, index) => (
 							<span
@@ -125,30 +134,8 @@ export function MentorCard({
 						))}
 					</div>
 
-					{/* Detail Mentor (Jika Diperluas) */}
 					{showDetails && (
 						<div className="mt-4 space-y-4 border-t pt-4">
-							<div className="grid grid-cols-2 gap-4">
-								<div className="bg-gray-50 p-3 rounded-lg">
-									<div className="flex items-center text-gray-600 mb-1">
-										<Clock className="w-4 h-4 text-blue-600 mr-2" />
-										<span className="text-sm font-medium">Experience</span>
-									</div>
-									<p className="text-gray-900">
-										{mentor.experience || "5+ years"}
-									</p>
-								</div>
-								<div className="bg-gray-50 p-3 rounded-lg">
-									<div className="flex items-center text-gray-600 mb-1">
-										<Award className="w-4 h-4 text-blue-600 mr-2" />
-										<span className="text-sm font-medium">Students</span>
-									</div>
-									<p className="text-gray-900">
-										{mentor.totalStudents || "100+"}
-									</p>
-								</div>
-							</div>
-
 							<div className="space-y-2">
 								<h4 className="font-medium text-gray-900">About</h4>
 								<p className="text-gray-600 text-sm">{mentor.mentorAbout}</p>
@@ -159,10 +146,44 @@ export function MentorCard({
 									Teaching Locations
 								</h4>
 								<div className="space-y-2">
-									{mentor.teachingMode.offline && mentor.location && (
+									{mentor.teachingMode.offline &&
+									mentor.courses &&
+									mentor.courses.length > 0 ? (
+										// Ambil semua lokasi unik dari schedules kursus offline
+										(() => {
+											const offlineCourses = mentor.courses.filter(
+												(course) => course.learnMethod === "Offline Learning"
+											);
+											const allSchedules = offlineCourses.flatMap(
+												(course) => course.schedules || []
+											);
+											const uniqueLocations = [
+												...new Set(
+													allSchedules.map((s) => s.tempat).filter(Boolean)
+												),
+											];
+
+											return uniqueLocations.length > 0 ? (
+												uniqueLocations.map((location) => (
+													<div key={location} className="">
+														<div className="flex items-center text-gray-600">
+															<MapPinIcon className="w-4 h-4 mr-2 text-blue-600" />
+															<span className="text-sm">{location}</span>
+														</div>
+													</div>
+												))
+											) : (
+												<div className="text-gray-600 text-sm ml-2">
+													Jadwal belum tersedia.
+												</div>
+											);
+										})()
+									) : (
 										<div className="flex items-center text-gray-600">
-											<MapPinIcon className="w-4 h-4 mr-2 text-blue-600" />
-											<span className="text-sm">{mentor.location}</span>
+											<MapPinIcon className="w-4 h-4 mr-2 text-gray-400" />
+											<span className="text-sm text-gray-500">
+												Offline sessions unavailable
+											</span>
 										</div>
 									)}
 									<div className="flex items-center text-gray-600">
@@ -181,26 +202,19 @@ export function MentorCard({
 												</span>
 											</>
 										)}
-										{/* <Monitor className="w-4 h-4 mr-2 text-blue-600" />
-										<span className="text-sm">
-											{mentor.availability.online
-												? "Available for online sessions"
-												: "Online sessions unavailable"}
-										</span> */}
 									</div>
 								</div>
 							</div>
 
-							{mentor.mentorPhone && (
+							{mentor.phone && (
 								<div className="flex items-center text-gray-600">
 									<Phone className="w-4 h-4 mr-2 text-blue-600" />
-									<span className="text-sm">{mentor.mentorPhone}</span>
+									<span className="text-sm">{mentor.phone}</span>
 								</div>
 							)}
 						</div>
 					)}
 
-					{/* Tombol untuk Memilih atau Membooking Mentor */}
 					<button
 						type="button"
 						onClick={handleScheduleClick}
@@ -211,7 +225,6 @@ export function MentorCard({
 				</div>
 			</div>
 
-			{/* Modal untuk Memilih Kursus */}
 			{showCourseModal && (
 				<CourseSelectionModal
 					courses={mentor.courses || []}

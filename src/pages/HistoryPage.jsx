@@ -52,7 +52,7 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 				time: jadwal?.waktu.slice(0, 5) || "-",
 				mode: sesi.kursus?.gayaMengajar || "-",
 				topic: sesi.detailKursus || "No Topic Specified",
-				location: sesi.mentor?.user?.alamat || "-",
+				location: jadwal?.tempat || "-",
 				status: transaksi
 					? transaksi.statusPembayaran === "menunggu_verifikasi"
 						? "waiting_verification"
@@ -217,7 +217,7 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 									? "Online Session"
 									: "Offline Session"}
 							</div>
-							{session.location && (
+							{session.mode === "offline" && (
 								<div className="flex items-center text-gray-600">
 									<MapPin className="w-4 h-4 mr-2 text-blue-600" />
 									Lokasi: {session.location}

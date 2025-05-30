@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { BookOpen, Plus, Pencil, Trash, X } from "lucide-react";
+import { BookOpen, Plus, Pencil, Trash, X, XCircle } from "lucide-react";
 import api from "../../api";
 
 export function AdminCoursesPage() {
@@ -33,25 +33,7 @@ export function AdminCoursesPage() {
 			sortable: false,
 			width: "60px",
 		},
-		{
-			name: "Foto",
-			cell: (row) =>
-				row.fotoKursus ? (
-					<div className="flex items-center justify-center p-1">
-						<img
-							loading="lazy"
-							src={`/storage/${row.fotoKursus}`}
-							alt={row.namaKursus}
-							className="h-16 w-16 object-cover rounded-lg border border-gray-200 bg-gray-50 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
-							onClick={() => setPreviewImg(`/storage/${row.fotoKursus}`)}
-							onError={(e) => (e.target.style.display = "none")}
-						/>
-					</div>
-				) : (
-					<span className="text-gray-400 text-xs">No Image</span>
-				),
-			width: "170px",
-		},
+
 		{ name: "Nama Course", selector: (row) => row.namaKursus, sortable: true },
 		{
 			name: "Gaya Pembelajaran",
@@ -76,6 +58,25 @@ export function AdminCoursesPage() {
 		// 	name: "Updated At",
 		// 	selector: (row) => new Date(row.updated_at).toLocaleDateString(),
 		// },
+		{
+			name: "Foto",
+			cell: (row) =>
+				row.fotoKursus ? (
+					<div className="flex items-center justify-center p-1">
+						<img
+							loading="lazy"
+							src={`/storage/${row.fotoKursus}`}
+							alt={row.namaKursus}
+							className="h-16 w-16 object-cover rounded-lg border border-gray-200 bg-gray-50 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
+							onClick={() => setPreviewImg(`/storage/${row.fotoKursus}`)}
+							onError={(e) => (e.target.style.display = "none")}
+						/>
+					</div>
+				) : (
+					<span className="text-gray-400 text-xs">No Image</span>
+				),
+			width: "170px",
+		},
 		{
 			name: "Aksi",
 			cell: (row) => (
@@ -106,38 +107,78 @@ export function AdminCoursesPage() {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
-					Manage Courses
+					My Courses
 				</h1>
-				<p className="text-gray-600">Manage platform courses</p>
+				<p className="text-gray-600">Manage your teaching courses</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Course Management</h2>
-					<button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+					<h2 className="text-xl font-semibold">Courses You Teach</h2>
+					<button
+						onClick={() => onNavigate("mentor-add-course")}
+						className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
 						<Plus className="w-4 h-4 mr-2" />
 						Add Course
 					</button>
 				</div>
 
-				<DataTable
-					columns={columns}
-					data={courses}
-					pagination
-					highlightOnHover
-					persistTableHead
-					responsive
-					noHeader
-				/>
+				{loading ? (
+					<div className="flex items-center justify-center h-64 text-gray-600">
+						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<p className="ml-3">Loading course data...</p>
+					</div>
+				) : courses.length === 0 ? (
+					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+						<h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
+						<p className="text-gray-500 mb-4 text-center">
+							You haven't added any courses yet. Start by adding a new course to
+							teach!
+						</p>
+					</div>
+				) : (
+					<DataTable
+						columns={columns}
+						data={courses}
+						pagination
+						highlightOnHover
+						persistTableHead
+						responsive
+						noHeader
+						expandableRows
+						expandableRowsComponent={({ data }) => (
+							<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
+								<p className="flex">
+									<span className="w-20 font-medium text-gray-900 mb-2">
+										Jadwal:
+									</span>
+								</p>
+								<span>
+									{data.jadwal_kursus.map((jadwal, index) => (
+										<div key={index} className="mb-3">
+											<p>
+												{jadwal.tanggal} {jadwal.waktu.slice(0, 5)} WIB |
+												<span className="text-gray-500 ml-2">
+													{jadwal.tempat}
+												</span>
+											</p>
+										</div>
+									))}
+								</span>
+							</div>
+						)}
+					/>
+				)}
 			</div>
 			{previewImg && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-					<div className="relative bg-white rounded-lg shadow-lg p-4">
+					<div className="relative bg-white rounded-lg shadow-lg p-7">
 						<button
-							className="absolute top-2 right-2 text-gray-600 hover:text-red-500 z-10 pointer-events-auto"
+							className="absolute top-2 right-2 text-gray-600 hover:text-red-500 z-10 pointer-events-auto  outline-none focus:outline-none"
 							onClick={() => setPreviewImg(null)}
 							style={{ zIndex: 10 }}>
-							<X className="w-6 h-6" />
+							<XCircle className="w-6 h-6" />
 						</button>
 						<img
 							src={previewImg}

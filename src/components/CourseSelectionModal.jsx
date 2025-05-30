@@ -1,7 +1,6 @@
 import React from "react";
 import { X, BookOpen } from "lucide-react";
 
-// Komponen Modal untuk Memilih Kursus
 export function CourseSelectionModal({
 	courses,
 	onSelect,
@@ -12,7 +11,6 @@ export function CourseSelectionModal({
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
 			<div className="bg-white rounded-lg w-full max-w-md">
-				{/* Header Modal */}
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">Select a Course</h2>
@@ -25,7 +23,6 @@ export function CourseSelectionModal({
 					</div>
 				</div>
 
-				{/* Daftar Kursus */}
 				<div className="p-6 max-h-[60vh] overflow-y-auto">
 					<div className="space-y-4">
 						{courses.length === 0 ? (
@@ -56,12 +53,17 @@ export function CourseSelectionModal({
 									<p className="text-sm text-gray-500 mt-1 text-left">
 										{course.courseDescription}
 									</p>
+									{course.schedules && course.schedules.length > 0 && (
+										<p className="text-sm text-gray-400 mt-1">
+											Lokasi: {course.schedules[0].tempat}
+										</p>
+									)}
 								</button>
 							))
 						)}
 					</div>
 				</div>
-				{/* Footer Modal */}
+
 				<div className="p-6 border-t bg-gray-50">
 					<div className="flex justify-end space-x-3">
 						<button

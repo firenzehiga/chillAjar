@@ -10,7 +10,10 @@ import {
 
 export function CourseCard({ course, onClick }) {
 	const [imgLoaded, setImgLoaded] = useState(false);
+	// const filteredSchedules = course?.mentors?.[0]?.schedules || [];
 
+	// console.log("Course in CourseCard:", course);
+	// console.log("Filtered Schedules:", filteredSchedules);
 	return (
 		<div
 			onClick={() => onClick(course)}
@@ -27,7 +30,7 @@ export function CourseCard({ course, onClick }) {
 					onLoad={() => setImgLoaded(true)}
 					onError={(e) => {
 						e.target.onerror = null;
-						e.target.src = "/foto_kursus/kursus_dummy_1.jpg"; // Jika gagal memuat gambar(path ada di db tapi file gaada di folder), gunakan gambar default
+						e.target.src = "/foto_kursus/kursus_dummy_1.png"; // Jika gagal memuat gambar(path ada di db tapi file gaada di folder), gunakan gambar default
 						setImgLoaded(true);
 					}}
 				/>

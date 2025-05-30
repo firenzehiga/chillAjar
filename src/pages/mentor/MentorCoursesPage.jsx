@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { BookOpen, Plus, Pencil, Trash, AlertCircle, X } from "lucide-react";
+import {
+	BookOpen,
+	Plus,
+	Pencil,
+	Trash,
+	AlertCircle,
+	X,
+	XCircle,
+} from "lucide-react";
 import api from "../../api";
 import Swal from "sweetalert2";
 
@@ -17,6 +25,7 @@ export function MentorCoursesPage({ onNavigate }) {
 				const response = await api.get("/mentor/daftar-kursus", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
+				console.log(response.data);
 				setCourses(response.data);
 				setLoading(false);
 			} catch (err) {
@@ -59,6 +68,23 @@ export function MentorCoursesPage({ onNavigate }) {
 			sortable: false,
 			width: "60px",
 		},
+
+		{ name: "Nama Course", selector: (row) => row.namaKursus, sortable: true },
+		{
+			name: "Gaya Pembelajaran",
+			selector: (row) =>
+				row.gayaMengajar === "online" ? (
+					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+						Online
+					</span>
+				) : (
+					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+						Offline
+					</span>
+				),
+			width: "100px",
+		},
+		{ name: "Deskripsi", selector: (row) => row.deskripsi, width: "390px" },
 		{
 			name: "Foto",
 			cell: (row) =>
@@ -76,32 +102,8 @@ export function MentorCoursesPage({ onNavigate }) {
 				) : (
 					<span className="text-gray-400 text-xs">No Image</span>
 				),
-			width: "170px",
+			width: "100px",
 		},
-		{ name: "Nama Course", selector: (row) => row.namaKursus, sortable: true },
-		{
-			name: "Gaya Pembelajaran",
-			selector: (row) =>
-				row.gayaMengajar === "online" ? (
-					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-						Online
-					</span>
-				) : (
-					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-						Offline
-					</span>
-				),
-			width: "200px",
-		},
-		{ name: "Deskripsi", selector: (row) => row.deskripsi, width: "390px" },
-		// {
-		// 	name: "Created At",
-		// 	selector: (row) => new Date(row.created_at).toLocaleDateString(),
-		// },
-		// {
-		// 	name: "Updated At",
-		// 	selector: (row) => new Date(row.updated_at).toLocaleDateString(),
-		// },
 		{
 			name: "Aksi",
 			cell: (row) => (
@@ -174,17 +176,39 @@ export function MentorCoursesPage({ onNavigate }) {
 						persistTableHead
 						responsive
 						noHeader
+						expandableRows
+						expandableRowsComponent={({ data }) => (
+							<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
+								<p className="flex">
+									<span className="w-20 font-medium text-gray-900 mb-2">
+										Jadwal:
+									</span>
+								</p>
+								<span>
+									{data.jadwal_kursus.map((jadwal, index) => (
+										<div key={index} className="mb-3">
+											<p>
+												{jadwal.tanggal} {jadwal.waktu.slice(0, 5)} WIB |
+												<span className="text-gray-500 ml-2">
+													{jadwal.tempat}
+												</span>
+											</p>
+										</div>
+									))}
+								</span>
+							</div>
+						)}
 					/>
 				)}
 			</div>
 			{previewImg && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-					<div className="relative bg-white rounded-lg shadow-lg p-4">
+					<div className="relative bg-white rounded-lg shadow-lg p-7">
 						<button
-							className="absolute top-2 right-2 text-gray-600 hover:text-red-500 z-10 pointer-events-auto"
+							className="absolute top-2 right-2 text-gray-600 hover:text-red-500 z-10 pointer-events-auto  outline-none focus:outline-none"
 							onClick={() => setPreviewImg(null)}
 							style={{ zIndex: 10 }}>
-							<X className="w-6 h-6" />
+							<XCircle className="w-6 h-6" />
 						</button>
 						<img
 							src={previewImg}

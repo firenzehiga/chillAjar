@@ -3,7 +3,7 @@ import { LogOut, User, Settings, History } from "lucide-react";
 import userChill from "../assets/foto_profil.png";
 import Swal from "sweetalert2";
 
-export function UserMenu({ onNavigate, onLogout, userData }) {
+export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const handleNavigate = (page) => {
@@ -65,22 +65,25 @@ export function UserMenu({ onNavigate, onLogout, userData }) {
 						onClick={() => handleNavigate("profile")}
 						className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 						<User className="w-4 h-4 mr-2" />
-						Your Profile
+						Profil Saya
 					</button>
 
-					<button
-						onClick={() => handleNavigate("history")}
-						className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-						<History className="w-4 h-4 mr-2" />
-						Session History
-					</button>
-
-					<button
-						onClick={() => handleNavigate("settings")}
-						className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-						<Settings className="w-4 h-4 mr-2" />
-						Settings
-					</button>
+					{userRole === "pelanggan" && (
+						<button
+							onClick={() => handleNavigate("history")}
+							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							<History className="w-4 h-4 mr-2" />
+							Session History
+						</button>
+					)}
+					{userRole === "admin" && (
+						<button
+							onClick={() => handleNavigate("admin-manage-history")}
+							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							<History className="w-4 h-4 mr-2" />
+							Riwayat Pemesanan
+						</button>
+					)}
 
 					<button
 						onClick={handleLogout}
