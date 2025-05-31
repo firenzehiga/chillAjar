@@ -11,12 +11,13 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 		setIsOpen(false);
 	};
 
-	// Gunakan userData jika ada, jika tidak gunakan default
+	// Definisikan currentUser dengan data terbaru dari userData
 	const currentUser = {
-		...userData,
-		namaDefault: "Chill Ajar",
-		emailDefault: "chillajar@gmail.com",
-		image: userChill,
+		nama: userData?.nama || "Chill Ajar",
+		email: userData?.email || "chillajar@gmail.com",
+		image: userData?.foto_profil
+			? `/storage/${userData.foto_profil}`
+			: userChill,
 	};
 
 	const handleLogout = () => {
@@ -31,7 +32,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 			cancelButtonText: "Cancel",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				onLogout(); // Panggil fungsi logout dari App.jsx
+				onLogout();
 				setIsOpen(false);
 			}
 		});
@@ -46,7 +47,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 					{currentUser.nama}
 				</span>
 				<img
-					src={currentUser.image} // Gunakan avatar dari userData jika ada
+					src={currentUser.image}
 					alt={currentUser.nama}
 					className="h-8 w-8 rounded-full ring-2 ring-gray-200 group-hover:ring-blue-200"
 				/>
@@ -61,12 +62,30 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 						<p className="text-sm text-gray-500">{currentUser.email}</p>
 					</div>
 
-					<button
-						onClick={() => handleNavigate("profile")}
-						className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-						<User className="w-4 h-4 mr-2" />
-						Profil Saya
-					</button>
+					{userRole === "admin" && (
+						<button
+							onClick={() => handleNavigate("admin-profile")}
+							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							<User className="w-4 h-4 mr-2" />
+							Profil Saya
+						</button>
+					)}
+					{userRole === "mentor" && (
+						<button
+							onClick={() => handleNavigate("mentor-profile")}
+							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							<User className="w-4 h-4 mr-2" />
+							Profile Saya
+						</button>
+					)}
+					{userRole === "pelanggan" && (
+						<button
+							onClick={() => handleNavigate("profile")}
+							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							<User className="w-4 h-4 mr-2" />
+							Profil Saya
+						</button>
+					)}
 
 					{userRole === "pelanggan" && (
 						<button

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Camera, AlertCircle } from "lucide-react";
-import defaultPhoto from "../assets/foto_profil.png";
-import api from "../api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import defaultPhoto from "../../../assets/foto_profil.png";
+import api from "../../../api";
 import Swal from "sweetalert2";
 
-export function EditProfilePage({
+export function MentorEditProfile({
 	onNavigate,
 	userRole,
 	userData,
@@ -15,12 +16,15 @@ export function EditProfilePage({
 		email: "",
 		nomorTelepon: "",
 		alamat: "",
+		deskripsi: "",
 	});
 
 	const [profileImage, setProfileImage] = useState(defaultPhoto);
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		if (userData) {
@@ -29,6 +33,7 @@ export function EditProfilePage({
 				email: userData.email || "",
 				nomorTelepon: userData.nomorTelepon || "",
 				alamat: userData.alamat || "",
+				deskripsi: userData.deskripsi || "",
 			});
 			setProfileImage(
 				userData.foto_profil ? `/storage/${userData.foto_profil}` : defaultPhoto
@@ -62,6 +67,7 @@ export function EditProfilePage({
 		try {
 			const token = localStorage.getItem("token");
 
+			// Update data utama di /user/profil
 			const userPayload = new FormData();
 			userPayload.append("nama", formData.nama);
 			userPayload.append("email", formData.email);
@@ -74,6 +80,7 @@ export function EditProfilePage({
 			if (selectedImage) {
 				userPayload.append("foto_profil", selectedImage);
 			}
+
 			userPayload.append("_method", "PUT");
 
 			const userResponse = await api.post("/user/profil", userPayload, {
@@ -83,6 +90,18 @@ export function EditProfilePage({
 				},
 			});
 
+			// Update deskripsi di /mentor/profil-saya
+			// const mentorPayload = { deskripsi: formData.deskripsi };
+			// const mentorResponse = await api.put(
+			// 	"/mentor/profil-saya",
+			// 	mentorPayload,
+			// 	{
+			// 		headers: {
+			// 			Authorization: `Bearer ${token}`,
+			// 		},
+			// 	}
+			// );
+
 			if (userResponse.status === 200) {
 				Swal.fire({
 					icon: "success",
@@ -91,11 +110,12 @@ export function EditProfilePage({
 					confirmButtonColor: "#3B82F6",
 				});
 
+				// Invalidate query agar UserMenu melakukan refetch
+				queryClient.invalidateQueries({ queryKey: ["profileData"] });
 				console.log(
 					"Updated Profile Data from PUT /user/profil:",
 					userResponse.data
 				);
-
 				const updatedUserData = {
 					...userData,
 					nama: formData.nama,
@@ -110,10 +130,11 @@ export function EditProfilePage({
 				localStorage.setItem("user", JSON.stringify(updatedUserData));
 				if (onUpdateUserData) {
 					console.log("Calling onUpdateUserData with:", updatedUserData);
+
 					onUpdateUserData(updatedUserData);
 				}
 
-				onNavigate("profile");
+				onNavigate("mentor-profile");
 			} else {
 				throw new Error("Gagal memperbarui profil");
 			}
@@ -139,7 +160,7 @@ export function EditProfilePage({
 		<div className="max-w-3xl mx-auto px-4 py-10">
 			<div className="flex items-center space-x-4 mb-6">
 				<button
-					onClick={() => onNavigate("profile")}
+					onClick={() => onNavigate("mentor-profile")}
 					className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
 					<ArrowLeft className="w-5 h-5 text-gray-700" />
 				</button>
@@ -237,6 +258,21 @@ export function EditProfilePage({
 					/>
 				</div>
 
+				<div className="flex flex-col">
+					<label
+						htmlFor="deskripsi"
+						className="text-sm font-semibold text-gray-900">
+						Deskripsi
+					</label>
+					<textarea
+						id="deskripsi"
+						name="deskripsi"
+						value={formData.deskripsi}
+						onChange={handleChange}
+						className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+					/>
+				</div>
+
 				{error && (
 					<div className="mb-4 text-red-500 text-sm flex items-center">
 						<AlertCircle className="w-4 h-4 mr-2" />
@@ -247,8 +283,8 @@ export function EditProfilePage({
 				<div className="flex justify-end space-x-4">
 					<button
 						type="button"
-						onClick={() => onNavigate("profile")}
-						className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
+						onClick={() => onNavigate("mentor-profile")}
+						class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
 						disabled={loading}>
 						Cancel
 					</button>
@@ -268,4 +304,4 @@ export function EditProfilePage({
 	);
 }
 
-export default EditProfilePage;
+export default MentorEditProfile;

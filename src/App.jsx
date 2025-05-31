@@ -23,6 +23,8 @@ import { Home } from "./pages/Home";
 
 // Halaman Admin
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
+import { AdminProfilePage } from "./pages/admin/profile/AdminProfilePage";
+import { AdminEditProfile } from "./pages/admin/profile/AdminEditProfile";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
 import { AdminCoursesPage } from "./pages/admin/AdminCoursesPage";
 import { AdminMentorsPage } from "./pages/admin/AdminMentorsPage";
@@ -33,6 +35,9 @@ import { MentorSchedulePage } from "./pages/mentor/MentorSchedulePage";
 import { MentorCoursesPage } from "./pages/mentor/MentorCoursesPage";
 import { MentorStudentsPage } from "./pages/mentor/MentorStudentsPage";
 import { FormCoursePage } from "./pages/mentor/FormCoursePage";
+import { MentorProfilePage } from "./pages/mentor/profile/MentorProfilePage";
+import { MentorEditProfile } from "./pages/mentor/profile/MentorEditProfile";
+
 import Swal from "sweetalert2";
 import api from "./api";
 import { useQuery } from "@tanstack/react-query";
@@ -46,6 +51,8 @@ const adminPages = [
 	"admin-manage-payments",
 	"admin-manage-courses",
 	"admin-manage-mentors",
+	"admin-profile",
+	"admin-edit-profile",
 ];
 const mentorPages = [
 	"mentor-dashboard",
@@ -54,6 +61,8 @@ const mentorPages = [
 	"mentor-manage-students",
 	"mentor-add-course",
 	"mentor-edit-course",
+	"mentor-profile",
+	"mentor-edit-profile",
 ];
 const protectedPages = [
 	...adminPages,
@@ -449,6 +458,13 @@ function App() {
 		}
 	};
 
+	const handleUpdateUserData = (updatedData) => {
+		console.log("Updating userData with:", updatedData);
+		setUserData(updatedData);
+		setUserRole(updatedData.peran?.toLowerCase());
+		localStorage.setItem("user", JSON.stringify(updatedData));
+	};
+
 	// Fungsi untuk logout
 	const handleLogout = () => {
 		api
@@ -600,6 +616,23 @@ function App() {
 			switch (currentPage) {
 				case "admin-dashboard":
 					return <AdminDashboard />;
+				case "admin-edit-profile":
+					return (
+						<AdminEditProfile
+							onUpdateUserData={handleUpdateUserData}
+							userData={userData}
+							userRole={userRole}
+							onNavigate={handleNavigate}
+						/>
+					);
+				case "admin-profile":
+					return (
+						<AdminProfilePage
+							userData={userData}
+							userRole={userRole}
+							onNavigate={handleNavigate}
+						/>
+					);
 				case "admin-manage-users":
 					return <AdminUsersPage />;
 				case "admin-manage-payments":
@@ -617,6 +650,23 @@ function App() {
 
 		if (userRole === "mentor") {
 			if (currentPage === "mentor-dashboard") return <MentorDashboard />;
+			if (currentPage === "mentor-profile")
+				return (
+					<MentorProfilePage
+						userData={userData}
+						userRole={userRole}
+						onNavigate={handleNavigate}
+					/>
+				);
+			if (currentPage === "mentor-edit-profile")
+				return (
+					<MentorEditProfile
+						onUpdateUserData={handleUpdateUserData}
+						userData={userData}
+						userRole={userRole}
+						onNavigate={handleNavigate}
+					/>
+				);
 			if (currentPage === "mentor-manage-schedule")
 				return <MentorSchedulePage />;
 			if (currentPage === "mentor-manage-courses")
@@ -660,6 +710,7 @@ function App() {
 							onNavigate={handleNavigate}
 							userRole={userRole}
 							userData={userData}
+							onUpdateUserData={handleUpdateUserData}
 						/>
 					) : null;
 				case "history":

@@ -1,16 +1,8 @@
 import React from "react";
-import defaultPhoto from "../assets/foto_profil.png";
-import {
-	Mail,
-	MapPin,
-	Phone,
-	Calendar,
-	BookOpen,
-	Star,
-	Award,
-} from "lucide-react";
+import defaultPhoto from "../../../assets/foto_profil.png";
+import { Mail, MapPin, Phone, Calendar, BookOpen, Star } from "lucide-react";
 
-export function ProfilePage({ userData, userRole, onNavigate }) {
+export function MentorProfilePage({ userData, userRole, onNavigate }) {
 	console.log("UserData:", userData);
 
 	const currentUser = {
@@ -29,6 +21,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 			  })
 			: "Unknown",
 		peran: userData?.peran || "unknown",
+		deskripsi: userData?.deskripsi || "No description",
 	};
 
 	return (
@@ -63,29 +56,20 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 							</div>
 							<button
 								className="bg-yellow-600 text-white px-6 py-2 rounded-full font-medium transform transition-all duration-300 hover:scale-105 hover:bg-yellow-700 hover:shadow-lg"
-								onClick={() => onNavigate("edit-profile")}>
+								onClick={() => onNavigate("mentor-edit-profile")}>
 								Edit Profile
 							</button>
 						</div>
 						<div className="grid grid-cols-2 gap-6 mb-8">
 							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
 								<BookOpen className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">
-									{currentUser.coursesEnrolled || 0}
-								</div>
-								<div className="text-sm text-gray-600">Courses Enrolled</div>
-							</div>
-							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
-								<Calendar className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">
-									{currentUser.paymentStatus || 0}
-								</div>
-								<div className="text-sm text-gray-600">Payment Status</div>
-							</div>
-							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
-								<Award className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
 								<div className="text-2xl font-bold text-gray-900">0</div>
-								<div className="text-sm text-gray-600">Achievements</div>
+								<div className="text-sm text-gray-600">Courses Completed</div>
+							</div>
+							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
+								<Star className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
+								<div className="text-2xl font-bold text-gray-900">0</div>
+								<div className="text-sm text-gray-600">Average Rating</div>
 							</div>
 						</div>
 						<div className="bg-gray-50 rounded-xl p-6 space-y-4">
@@ -103,6 +87,16 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 								</div>
 							</div>
 						</div>
+						<div className="bg-gray-50 rounded-xl p-6 mt-6 space-y-4">
+							<h3 className="text-xl font-semibold text-gray-900 mb-4">
+								Mentor Details
+							</h3>
+							<div className="space-y-2">
+								<p className="text-gray-600">
+									<strong>Deskripsi:</strong> {currentUser.deskripsi}
+								</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -110,4 +104,4 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 	);
 }
 
-export default ProfilePage;
+export default MentorProfilePage;

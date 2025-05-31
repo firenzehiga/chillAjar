@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Camera, AlertCircle } from "lucide-react";
-import defaultPhoto from "../assets/foto_profil.png";
-import api from "../api";
+import defaultPhoto from "../../../assets/foto_profil.png";
+import api from "../../../api";
 import Swal from "sweetalert2";
 
-export function EditProfilePage({
+export function AdminEditProfile({
 	onNavigate,
 	userRole,
 	userData,
@@ -113,7 +113,7 @@ export function EditProfilePage({
 					onUpdateUserData(updatedUserData);
 				}
 
-				onNavigate("profile");
+				onNavigate("admin-profile");
 			} else {
 				throw new Error("Gagal memperbarui profil");
 			}
@@ -139,7 +139,7 @@ export function EditProfilePage({
 		<div className="max-w-3xl mx-auto px-4 py-10">
 			<div className="flex items-center space-x-4 mb-6">
 				<button
-					onClick={() => onNavigate("profile")}
+					onClick={() => onNavigate("admin-profile")}
 					className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
 					<ArrowLeft className="w-5 h-5 text-gray-700" />
 				</button>
@@ -247,7 +247,7 @@ export function EditProfilePage({
 				<div className="flex justify-end space-x-4">
 					<button
 						type="button"
-						onClick={() => onNavigate("profile")}
+						onClick={() => onNavigate("admin-profile")}
 						className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
 						disabled={loading}>
 						Cancel
@@ -268,4 +268,4 @@ export function EditProfilePage({
 	);
 }
 
-export default EditProfilePage;
+export default AdminEditProfile;

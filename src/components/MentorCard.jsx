@@ -105,9 +105,9 @@ export function MentorCard({
 							<div className="flex items-center text-yellow-400 mt-1">
 								<Star className="w-4 h-4 fill-current" />
 								<span className="ml-1 text-sm çe">{mentor.mentorRating}</span>
-								<span className="text-gray-500 text-sm ml-2">
+								{/* <span className="text-gray-500 text-sm ml-2">
 									({mentor.totalReviews || "50+"} reviews)
-								</span>
+								</span> */}
 							</div>
 						</div>
 						<a

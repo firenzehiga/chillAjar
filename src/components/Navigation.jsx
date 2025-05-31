@@ -44,17 +44,26 @@ export function Navigation({
 			// Halaman Admin
 			case "admin-dashboard":
 				return "Admin Dashboard";
+			case "admin-profile":
+				return "Admin Profile";
+			case "admin-edit-profile":
+				return "Admin Edit Profile";
 			case "admin-manage-users":
 				return "Users";
 			case "admin-manage-payments":
 				return "Payments";
 			case "admin-manage-courses":
 				return "Courses";
-			// Halaman Mentor
 			case "admin-manage-mentors":
 				return "Mentors";
+
+			// Halaman Mentor
 			case "mentor-dashboard":
 				return "Mentor Dashboard";
+			case "mentor-profile":
+				return "Mentor Profile";
+			case "mentor-edit-profile":
+				return "Mentor Edit Profile";
 			case "mentor-manage-schedule":
 				return "Schedule";
 			case "mentor-manage-courses":

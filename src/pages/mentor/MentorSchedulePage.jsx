@@ -56,8 +56,9 @@ export function MentorSchedulePage() {
 			header: "Mode",
 			cell: (info) => (
 				<span
-					className={`capitalize ${info.getValue() === "online" ? "text-green-600" : "text-blue-600"}`}
-				>
+					className={`capitalize ${
+						info.getValue() === "online" ? "text-green-600" : "text-blue-600"
+					}`}>
 					{info.getValue()}
 				</span>
 			),
@@ -72,8 +73,7 @@ export function MentorSchedulePage() {
 				<div className="flex space-x-2">
 					<button
 						type="button"
-						className="p-1 text-blue-600 hover:text-blue-800"
-					>
+						className="p-1 text-blue-600 hover:text-blue-800">
 						<Pencil className="w-4 h-4" />
 					</button>
 					<button type="button" className="p-1 text-red-600 hover:text-red-800">
@@ -99,14 +99,13 @@ export function MentorSchedulePage() {
 							{headerGroup.headers.map((header) => (
 								<th
 									key={header.id}
-									className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-								>
+									className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
 									{header.isPlaceholder
 										? null
 										: flexRender(
 												header.column.columnDef.header,
-												header.getContext(),
-											)}
+												header.getContext()
+										  )}
 								</th>
 							))}
 						</tr>
@@ -118,8 +117,7 @@ export function MentorSchedulePage() {
 							{row.getVisibleCells().map((cell) => (
 								<td
 									key={cell.id}
-									className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-								>
+									className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
 									{flexRender(cell.column.columnDef.cell, cell.getContext())}
 								</td>
 							))}
@@ -145,8 +143,7 @@ export function MentorSchedulePage() {
 					<h2 className="text-xl font-semibold">Teaching Schedule</h2>
 					<button
 						type="button"
-						className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-					>
+						className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
 						<Plus className="w-4 h-4 mr-2" />
 						Add Schedule
 					</button>

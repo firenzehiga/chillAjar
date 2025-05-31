@@ -58,7 +58,7 @@ export function CourseCard({ course, onClick }) {
 					</span>
 					<span className="flex items-center transform transition-transform duration-300 hover:scale-105 hover:text-blue-800">
 						<Users className="w-4 h-4 mr-1 text-blue-800" />
-						{course.mentors.length} mentors
+						{course.mentors.length} Mentors
 					</span>
 				</div>
 			</div>
