@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
+import { BookOpen, ArrowLeft, AlertCircle, Plus } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 
-export function MentorFormCoursePage({ onNavigate, courseId }) {
+export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 	const isEditMode = !!courseId;
 
 	const [formData, setFormData] = useState({
@@ -11,6 +11,9 @@ export function MentorFormCoursePage({ onNavigate, courseId }) {
 		deskripsi: "",
 		gayaMengajar: "online",
 	});
+	const [schedules, setSchedules] = useState([
+		{ tanggal: "", waktu: "", keterangan: "", tempat: "" },
+	]);
 	const [fotoKursus, setFotoKursus] = useState(null);
 	const [fotoPreview, setFotoPreview] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -33,6 +36,18 @@ export function MentorFormCoursePage({ onNavigate, courseId }) {
 					if (response.data.fotoKursus) {
 						setFotoPreview(`/storage/${response.data.fotoKursus}`);
 					}
+					// Jika backend mengembalikan data jadwal
+					if (response.data.jadwal_kursus) {
+						setSchedules(
+							response.data.jadwal_kursus.map((jadwal) => ({
+								id: jadwal.id, // simpen id
+								tanggal: jadwal.tanggal || "",
+								waktu: jadwal.waktu || "",
+								keterangan: jadwal.keterangan || "",
+								tempat: jadwal.tempat || "",
+							}))
+						);
+					}
 				} catch (err) {
 					setError("Gagal mengambil data kursus");
 				} finally {
@@ -51,13 +66,31 @@ export function MentorFormCoursePage({ onNavigate, courseId }) {
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
-			if (file.size > 2 * 1024 * 1024) {
-				setError("Ukuran file maksimal 2MB");
+			if (file.size > 3 * 1024 * 1024) {
+				Swal.fire({
+					icon: "error",
+					title: "Ukuran file terlalu besar",
+					text: "Ukuran file maksimal 3MB.",
+				});
 				return;
 			}
 			setFotoKursus(file);
 			setFotoPreview(URL.createObjectURL(file));
 		}
+	};
+
+	const handleScheduleChange = (index, e) => {
+		const { name, value } = e.target;
+		const newSchedules = [...schedules];
+		newSchedules[index] = { ...newSchedules[index], [name]: value };
+		setSchedules(newSchedules);
+	};
+
+	const addSchedule = () => {
+		setSchedules([
+			...schedules,
+			{ tanggal: "", waktu: "", keterangan: "", tempat: "" },
+		]);
 	};
 
 	const handleSubmit = async (e) => {
@@ -93,7 +126,65 @@ export function MentorFormCoursePage({ onNavigate, courseId }) {
 				});
 			}
 
+			console.log("API Response after creating course:", response.data);
+
 			if (response.status === 200 || response.status === 201) {
+				let newCourseId;
+				if (isEditMode) {
+					newCourseId = courseId;
+				} else {
+					newCourseId =
+						response.data.kursus?.id ||
+						response.data.id ||
+						response.data.course_id ||
+						response.data.data?.id;
+
+					if (!newCourseId) {
+						const fetchCourseResponse = await api.get(
+							`/kursus?namaKursus=${formData.namaKursus}`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+						console.log("Fetch Course Response:", fetchCourseResponse.data);
+						const latestCourse = fetchCourseResponse.data
+							.filter((course) => course.namaKursus === formData.namaKursus)
+							.sort(
+								(a, b) => new Date(b.created_at) - new Date(a.created_at)
+							)[0];
+						newCourseId = latestCourse?.id;
+
+						if (!newCourseId) {
+							throw new Error("Gagal mendapatkan ID kursus setelah pembuatan");
+						}
+					}
+				}
+
+				// Tambahkan atau perbarui jadwal
+				for (const schedule of schedules) {
+					if (schedule.tanggal && schedule.waktu) {
+						const jadwalPayload = {
+							kursus_id: newCourseId,
+							id: schedule.id || undefined, // Sertakan id jika ada, kosongkan jika tidak
+							tanggal: schedule.tanggal,
+							waktu: schedule.waktu,
+							keterangan: schedule.keterangan || "",
+							tempat: schedule.tempat || "",
+						};
+						console.log("Jadwal Payload:", jadwalPayload);
+						const jadwalResponse = await api.post(
+							"/mentor/atur-jadwal",
+							jadwalPayload,
+							{
+								headers: {
+									Authorization: `Bearer ${token}`,
+								},
+							}
+						);
+						console.log("Jadwal API Response:", jadwalResponse.data);
+					}
+				}
+
 				Swal.fire({
 					icon: "success",
 					title: "Success",
@@ -128,7 +219,6 @@ export function MentorFormCoursePage({ onNavigate, courseId }) {
 			setLoading(false);
 		}
 	};
-
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center h-[60vh] text-gray-600">
@@ -277,6 +367,88 @@ export function MentorFormCoursePage({ onNavigate, courseId }) {
 								</div>
 							)}
 						</div>
+					</div>
+
+					<div className="mb-4">
+						<label className="block text-sm font-medium text-gray-700 mb-1">
+							Schedules
+						</label>
+						{schedules.map((schedule, index) => (
+							<div key={index} className="border p-4 rounded-lg mb-4">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div>
+										<label
+											htmlFor={`tanggal-${index}`}
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Date
+										</label>
+										<input
+											type="date"
+											id={`tanggal-${index}`}
+											name="tanggal"
+											value={schedule.tanggal}
+											onChange={(e) => handleScheduleChange(index, e)}
+											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											required
+										/>
+									</div>
+									<div>
+										<label
+											htmlFor={`waktu-${index}`}
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Time
+										</label>
+										<input
+											type="time"
+											id={`waktu-${index}`}
+											name="waktu"
+											value={schedule.waktu}
+											onChange={(e) => handleScheduleChange(index, e)}
+											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											required
+										/>
+									</div>
+								</div>
+								<div className="mt-4">
+									<label
+										htmlFor={`keterangan-${index}`}
+										className="block text-sm font-medium text-gray-700 mb-1">
+										Notes
+									</label>
+									<input
+										type="text"
+										id={`keterangan-${index}`}
+										name="keterangan"
+										value={schedule.keterangan}
+										onChange={(e) => handleScheduleChange(index, e)}
+										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+										placeholder="Enter notes (optional)"
+									/>
+								</div>
+								<div className="mt-4">
+									<label
+										htmlFor={`tempat-${index}`}
+										className="block text-sm font-medium text-gray-700 mb-1">
+										Location
+									</label>
+									<input
+										type="text"
+										id={`tempat-${index}`}
+										name="tempat"
+										value={schedule.tempat}
+										onChange={(e) => handleScheduleChange(index, e)}
+										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+										placeholder="Enter location (optional)"
+									/>
+								</div>
+							</div>
+						))}
+						<button
+							type="button"
+							onClick={addSchedule}
+							className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+							<Plus className="w-5 h-5 inline mr-2" /> Add Schedule
+						</button>
 					</div>
 
 					{error && (

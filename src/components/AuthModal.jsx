@@ -117,7 +117,12 @@ export function AuthModal({
 			}
 		} catch (error) {
 			console.error(`${mode} failed:`, error);
-			setError(error.response?.data?.message || "Something went wrong!");
+			// Swal.fire({
+			// 	icon: "error",
+			// 	title: "Error",
+			// 	text: error.response?.data?.message || "Something went wrong!",
+			// });
+			setError("Email atau password salah!"); // di ganti ke swal aja
 		} finally {
 			setIsLoading(false); // Set isLoading menjadi false setelah proses selesai
 		}
@@ -269,7 +274,9 @@ export function AuthModal({
 									)}
 								</button>
 							</div>
-							{error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+							{error && (
+								<p className="text-red-500 text-sm mt-3 ml-1">{error}</p>
+							)}
 						</div>
 
 						<button

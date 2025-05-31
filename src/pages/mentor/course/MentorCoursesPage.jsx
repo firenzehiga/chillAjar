@@ -69,7 +69,12 @@ export function MentorCoursesPage({ onNavigate }) {
 			width: "60px",
 		},
 
-		{ name: "Nama Course", selector: (row) => row.namaKursus, sortable: true },
+		{
+			name: "Nama Course",
+			selector: (row) => row.namaKursus,
+			sortable: true,
+			width: "270px",
+		},
 		{
 			name: "Gaya Pembelajaran",
 			selector: (row) =>
@@ -82,9 +87,9 @@ export function MentorCoursesPage({ onNavigate }) {
 						Offline
 					</span>
 				),
-			width: "100px",
+			width: "130px",
 		},
-		{ name: "Deskripsi", selector: (row) => row.deskripsi, width: "390px" },
+		{ name: "Deskripsi", selector: (row) => row.deskripsi, width: "450px" },
 		{
 			name: "Foto",
 			cell: (row) =>

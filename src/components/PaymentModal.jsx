@@ -94,9 +94,11 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							</div>
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Mode</p>
-								<p className="font-medium">{booking.mode}</p>
+								<p className="font-medium">
+									{booking.mode === "online" ? "Online" : "Offline"}
+								</p>
 							</div>
-							{booking.mode === "Offline" && (
+							{booking.mode === "offline" && (
 								<div>
 									<p className="text-sm text-gray-600 mb-1">Lokasi</p>
 									<p className="font-medium">{booking.location}</p>
