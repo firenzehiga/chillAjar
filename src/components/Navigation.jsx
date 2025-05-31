@@ -54,6 +54,10 @@ export function Navigation({
 				return "Payments";
 			case "admin-manage-courses":
 				return "Courses";
+			case "admin-add-course":
+				return "Add Course";
+			case "admin-edit-course":
+				return "Edit Course";
 			case "admin-manage-mentors":
 				return "Mentors";
 

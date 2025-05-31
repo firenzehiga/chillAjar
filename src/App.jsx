@@ -26,15 +26,16 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminProfilePage } from "./pages/admin/profile/AdminProfilePage";
 import { AdminEditProfile } from "./pages/admin/profile/AdminEditProfile";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
-import { AdminCoursesPage } from "./pages/admin/AdminCoursesPage";
+import { AdminCoursesPage } from "./pages/admin/course/AdminCoursesPage";
+import { AdminFormCoursePage } from "./pages/admin/course/FormCoursePage";
 import { AdminMentorsPage } from "./pages/admin/AdminMentorsPage";
 import { AdminPaymentsPage } from "./pages/admin/AdminPaymentsPage";
 // Halaman Mentor
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/MentorSchedulePage";
-import { MentorCoursesPage } from "./pages/mentor/MentorCoursesPage";
+import { MentorCoursesPage } from "./pages/mentor/course/MentorCoursesPage";
 import { MentorStudentsPage } from "./pages/mentor/MentorStudentsPage";
-import { FormCoursePage } from "./pages/mentor/FormCoursePage";
+import { MentorFormCoursePage } from "./pages/mentor/course/FormCoursePage";
 import { MentorProfilePage } from "./pages/mentor/profile/MentorProfilePage";
 import { MentorEditProfile } from "./pages/mentor/profile/MentorEditProfile";
 
@@ -50,7 +51,10 @@ const adminPages = [
 	"admin-manage-users",
 	"admin-manage-payments",
 	"admin-manage-courses",
+	"admin-add-course",
+	"admin-edit-course",
 	"admin-manage-mentors",
+
 	"admin-profile",
 	"admin-edit-profile",
 ];
@@ -640,7 +644,10 @@ function App() {
 				// case "admin-manage-sessions":
 				// return <AdminSessionsPage />;
 				case "admin-manage-courses":
-					return <AdminCoursesPage />;
+					return <AdminCoursesPage onNavigate={handleNavigate} />;
+				case "admin-add-course":
+					return <AdminFormCoursePage onNavigate={handleNavigate} />;
+
 				case "admin-manage-mentors":
 					return <AdminMentorsPage />;
 				default:
@@ -674,10 +681,12 @@ function App() {
 			if (currentPage === "mentor-manage-students")
 				return <MentorStudentsPage />;
 			if (currentPage === "mentor-add-course")
-				return <FormCoursePage onNavigate={handleNavigate} />;
+				return <MentorFormCoursePage onNavigate={handleNavigate} />;
 			if (currentPage.startsWith("mentor-edit-course")) {
 				const id = currentPage.split("mentor-edit-course/")[1];
-				return <FormCoursePage onNavigate={handleNavigate} courseId={id} />;
+				return (
+					<MentorFormCoursePage onNavigate={handleNavigate} courseId={id} />
+				);
 			}
 		}
 
@@ -821,7 +830,7 @@ function App() {
 						/>
 					);
 				default:
-					return "gatau";
+					return "menu yang kamu cari tidak ada (soon bakal dibuat tampilan lebih bagus)";
 			}
 		})();
 

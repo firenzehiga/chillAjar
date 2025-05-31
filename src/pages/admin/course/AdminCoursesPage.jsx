@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { BookOpen, Plus, Pencil, Trash, X, XCircle } from "lucide-react";
-import api from "../../api";
+import api from "../../../api";
+import Swal from "sweetalert2";
 
-export function AdminCoursesPage() {
+export function AdminCoursesPage({ onNavigate }) {
 	const [courses, setCourses] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
@@ -26,6 +27,31 @@ export function AdminCoursesPage() {
 		fetchCourses();
 	}, []);
 
+	const handleDelete = async (id) => {
+		Swal.fire({
+			title: "Are you sure?",
+			text: "You won't be able to revert this!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#d33",
+			cancelButtonColor: "#3085d6",
+			confirmButtonText: "Yes, delete it!",
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				try {
+					const token = localStorage.getItem("token");
+					await api.delete(`/kursus/${id}`, {
+						headers: { Authorization: `Bearer ${token}` },
+					});
+					setCourses(courses.filter((course) => course.id !== id));
+					Swal.fire("Deleted!", "Course has been deleted.", "success");
+				} catch (err) {
+					Swal.fire("Error!", "Failed to delete course.", "error");
+				}
+			}
+		});
+	};
+
 	const columns = [
 		{
 			name: "No",
@@ -35,6 +61,12 @@ export function AdminCoursesPage() {
 		},
 
 		{ name: "Nama Course", selector: (row) => row.namaKursus, sortable: true },
+		{
+			name: "Nama Course",
+			selector: (row) => row.mentor.user.nama,
+			sortable: true,
+		},
+
 		{
 			name: "Gaya Pembelajaran",
 			selector: (row) =>
@@ -47,7 +79,7 @@ export function AdminCoursesPage() {
 						Offline
 					</span>
 				),
-			width: "200px",
+			width: "100px",
 		},
 		{ name: "Deskripsi", selector: (row) => row.deskripsi, width: "390px" },
 		// {
@@ -69,7 +101,9 @@ export function AdminCoursesPage() {
 							alt={row.namaKursus}
 							className="h-16 w-16 object-cover rounded-lg border border-gray-200 bg-gray-50 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
 							onClick={() => setPreviewImg(`/storage/${row.fotoKursus}`)}
-							onError={(e) => (e.target.style.display = "none")}
+							onError={(e) =>
+								(e.target.style.display = `/storage/${row.fotoKursus}`)
+							}
 						/>
 					</div>
 				) : (
@@ -109,14 +143,14 @@ export function AdminCoursesPage() {
 					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
 					My Courses
 				</h1>
-				<p className="text-gray-600">Manage your teaching courses</p>
+				<p className="text-gray-600">Manage mentor courses</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Courses You Teach</h2>
+					<h2 className="text-xl font-semibold">Courses</h2>
 					<button
-						onClick={() => onNavigate("mentor-add-course")}
+						onClick={() => onNavigate("admin-add-course")}
 						className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
 						<Plus className="w-4 h-4 mr-2" />
 						Add Course

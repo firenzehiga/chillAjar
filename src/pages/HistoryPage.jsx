@@ -58,6 +58,8 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 						? "waiting_verification"
 						: transaksi.statusPembayaran === "accepted"
 						? "accepted"
+						: transaksi.statusPembayaran === "rejected"
+						? "rejected"
 						: "pending_payment"
 					: "pending_payment",
 				amount: sesi.mentor?.biayaPerSesi || 0,
@@ -73,7 +75,7 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 				return "bg-yellow-100 text-yellow-800";
 			case "accepted":
 				return "bg-green-100 text-green-800";
-			case "cancelled":
+			case "rejected":
 				return "bg-red-100 text-red-800";
 			case "pending_payment":
 				return "bg-blue-100 text-blue-800";
@@ -87,9 +89,9 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 			case "waiting_verification":
 				return "Waiting for Verification";
 			case "accepted":
-				return "Accepted";
-			case "cancelled":
-				return "Cancelled";
+				return "Disetujui";
+			case "rejected":
+				return "Ditolak";
 			case "pending_payment":
 				return "Pending Payment";
 			default:
@@ -111,7 +113,11 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 	useEffect(() => {
 		if (!updatingSessionId) return;
 		const updatedSession = history.find((s) => s.id === updatingSessionId);
-		if (updatedSession && updatedSession.status !== "pending_payment") {
+		if (
+			updatedSession &&
+			updatedSession.status !== "pending_payment" &&
+			updatedSession.status !== "rejected"
+		) {
 			setUpdatingSessionId(null);
 		}
 	}, [history, updatingSessionId]);
@@ -260,6 +266,20 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 										Your payment is accepted. Please wait the mentor to start
 										the session.
 									</p>
+								</div>
+							)}
+							{session.status === "rejected" && (
+								<div className="mt-4 bg-red-50 p-4 rounded-lg">
+									<p className="text-red-800 text-sm mb-3">
+										Your payment is rejected. Please wait submit a valid payment
+										proof
+									</p>
+									<button
+										disabled
+										className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+										onClick={() => handleContinuePayment(session)}>
+										blom di develop
+									</button>
 								</div>
 							)}
 							{session.status === "pending_payment" && (

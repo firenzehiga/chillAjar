@@ -9,7 +9,7 @@ import {
 	X,
 	XCircle,
 } from "lucide-react";
-import api from "../../api";
+import api from "../../../api";
 import Swal from "sweetalert2";
 
 export function MentorCoursesPage({ onNavigate }) {

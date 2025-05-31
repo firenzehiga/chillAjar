@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
-import api from "../../api";
+import api from "../../../api";
 import Swal from "sweetalert2";
 
-export function FormCoursePage({ onNavigate, courseId }) {
+export function MentorFormCoursePage({ onNavigate, courseId }) {
 	const isEditMode = !!courseId;
 
 	const [formData, setFormData] = useState({
@@ -308,4 +308,4 @@ export function FormCoursePage({ onNavigate, courseId }) {
 	);
 }
 
-export default FormCoursePage;
+export default MentorFormCoursePage;
