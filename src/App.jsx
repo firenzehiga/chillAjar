@@ -363,6 +363,7 @@ function App() {
 		paymentMethod,
 		proofImage,
 		booking,
+		transaksiId, // Tambahkan parameter untuk transaksi yang sudah ada
 	}) => {
 		try {
 			const sesi = booking?.sesi;
@@ -384,17 +385,22 @@ function App() {
 
 			// Buat FormData untuk mengirim data termasuk file
 			const formData = new FormData();
+			if (transaksiId) {
+				formData.append("id", transaksiId); // Sertakan id untuk update
+			}
 			formData.append("pelanggan_id", sesi.pelanggan_id);
 			formData.append("mentor_id", sesi.mentor_id);
 			formData.append("sesi_id", sesi.id);
 			formData.append("jumlah", course.price_per_hour);
-			formData.append("statusPembayaran", "menunggu_verifikasi");
+			formData.append("statusPembayaran", "menunggu_verifikasi"); // Selalu menunggu verifikasi
 			formData.append("metodePembayaran", paymentMethod);
 			formData.append(
 				"tanggalPembayaran",
 				new Date().toISOString().slice(0, 10)
 			);
-			formData.append("buktiPembayaran", proofImage); // Log untuk debugging
+			formData.append("buktiPembayaran", proofImage);
+
+			// Log untuk debugging
 			for (let [key, value] of formData.entries()) {
 				console.log(`${key}:`, value);
 			}
@@ -415,8 +421,10 @@ function App() {
 			setShowPayment(false);
 			Swal.fire({
 				icon: "success",
-				title: "Payment Submitted!",
-				text: "Your booking has been confirmed. We will verify your payment shortly.",
+				title: transaksiId ? "Proof Updated!" : "Payment Submitted!",
+				text: transaksiId
+					? "Your payment proof has been updated. We will verify it shortly."
+					: "Your booking has been confirmed. We will verify your payment shortly.",
 				confirmButtonColor: "#3B82F6",
 			}).then(() => {
 				setCurrentPage("history");

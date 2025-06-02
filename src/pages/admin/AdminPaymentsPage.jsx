@@ -103,7 +103,19 @@ export function AdminPaymentsPage() {
 
 	// Handler untuk tombol Tolak
 	const handleTolak = (transaksiId) => {
-		tolakMutation.mutate(transaksiId);
+		Swal.fire({
+			title: "Yakin ingin menolak?",
+			text: "Pembayaran akan dihapus!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Ya, hapus!",
+		}).then((result) => {
+			if (result.isConfirmed) {
+				tolakMutation.mutate(transaksiId);
+			}
+		});
 	};
 
 	const statusCheck = {

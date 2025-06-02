@@ -228,7 +228,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 	}
 
 	return (
-		<div className="py-8">
+		<div className="py-5">
 			<button
 				onClick={() => onNavigate("mentor-manage-courses")}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
@@ -271,7 +271,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 								name="namaKursus"
 								value={formData.namaKursus}
 								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
 								placeholder="Enter course name"
 								required
 							/>
@@ -287,15 +287,91 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 								name="gayaMengajar"
 								value={formData.gayaMengajar}
 								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
 								required>
 								<option value="online">Online</option>
 								<option value="offline">Offline</option>
 							</select>
 						</div>
 					</div>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+						<div>
+							<label
+								htmlFor="deskripsi"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Description
+							</label>
+							<textarea
+								id="deskripsi"
+								name="deskripsi"
+								value={formData.deskripsi}
+								onChange={handleChange}
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+								placeholder="Enter course description"
+								rows="4"
+							/>
+						</div>
+						<div>
+							<label
+								htmlFor="fotoKursus"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Course Image
+							</label>
+							<div
+								className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors cursor-pointer"
+								onDragOver={(e) => {
+									e.preventDefault();
+									e.currentTarget.classList.add("border-yellow-500");
+								}}
+								onDragLeave={(e) => {
+									e.preventDefault();
+									e.currentTarget.classList.remove("border-yellow-500");
+								}}
+								onDrop={(e) => {
+									e.preventDefault();
+									e.currentTarget.classList.remove("border-yellow-500");
+									const file = e.dataTransfer.files[0];
+									if (file) handleFileChange({ target: { files: [file] } });
+								}}>
+								<input
+									type="file"
+									id="fotoKursus"
+									name="fotoKursus"
+									accept="image/*"
+									onChange={handleFileChange}
+									className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+								/>
+								{fotoPreview ? (
+									<img
+										src={fotoPreview}
+										alt="Preview"
+										className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
+									/>
+								) : (
+									<div className="text-gray-500">
+										<svg
+											className="mx-auto h-12 w-12 text-gray-400"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+											xmlns="http://www.w3.org/2000/svg">
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M7 16l-4-4m0 0l4-4m-4 4h18"
+											/>
+										</svg>
+										<p className="mt-1 text-sm">
+											Click or drag to upload image
+										</p>
+									</div>
+								)}
+							</div>
+						</div>
+					</div>
 
-					<div className="mb-4">
+					{/* <div className="mb-4">
 						<label
 							htmlFor="deskripsi"
 							className="block text-sm font-medium text-gray-700 mb-1">
@@ -367,7 +443,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 								</div>
 							)}
 						</div>
-					</div>
+					</div> */}
 
 					<div className="mb-4">
 						<label className="block text-sm font-medium text-gray-700 mb-1">
@@ -388,7 +464,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 											name="tanggal"
 											value={schedule.tanggal}
 											onChange={(e) => handleScheduleChange(index, e)}
-											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
 											required
 										/>
 									</div>
@@ -404,7 +480,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 											name="waktu"
 											value={schedule.waktu}
 											onChange={(e) => handleScheduleChange(index, e)}
-											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
 											required
 										/>
 									</div>
@@ -421,7 +497,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 										name="keterangan"
 										value={schedule.keterangan}
 										onChange={(e) => handleScheduleChange(index, e)}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+										className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
 										placeholder="Enter notes (optional)"
 									/>
 								</div>
@@ -437,7 +513,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 										name="tempat"
 										value={schedule.tempat}
 										onChange={(e) => handleScheduleChange(index, e)}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+										className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
 										placeholder="Enter location (optional)"
 									/>
 								</div>
@@ -446,7 +522,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 						<button
 							type="button"
 							onClick={addSchedule}
-							className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+							className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none">
 							<Plus className="w-5 h-5 inline mr-2" /> Add Schedule
 						</button>
 					</div>
@@ -464,8 +540,8 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 							disabled={loading}
 							className={`px-4 py-2 rounded-lg transition-colors ${
 								loading
-									? "bg-gray-300 text-gray-500 cursor-not-allowed"
-									: "bg-yellow-600 text-white hover:bg-yellow-700"
+									? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
+									: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
 							}`}>
 							{loading
 								? "Processing..."

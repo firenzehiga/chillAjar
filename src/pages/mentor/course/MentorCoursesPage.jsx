@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import DataTable from "react-data-table-component";
 import {
 	BookOpen,
@@ -6,37 +6,56 @@ import {
 	Pencil,
 	Trash,
 	AlertCircle,
-	X,
 	XCircle,
 } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function MentorCoursesPage({ onNavigate }) {
-	const [courses, setCourses] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
-	const [previewImg, setPreviewImg] = useState(null); // Tambah state preview
+	const queryClient = useQueryClient();
 
-	useEffect(() => {
-		const fetchCourses = async () => {
-			try {
-				const token = localStorage.getItem("token");
-				const response = await api.get("/mentor/daftar-kursus", {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				console.log(response.data);
-				setCourses(response.data);
-				setLoading(false);
-			} catch (err) {
-				setError("Gagal mengambil data courses");
-				setLoading(false);
-			}
-		};
-		fetchCourses();
-	}, []);
+	// Fetch data menggunakan useQuery
+	const {
+		data: courses,
+		isLoading,
+		error,
+	} = useQuery({
+		queryKey: ["mentorCourses"],
+		queryFn: async () => {
+			const token = localStorage.getItem("token");
+			const response = await api.get("/mentor/daftar-kursus", {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			console.log("Fetched courses:", response.data);
+			return response.data;
+		},
+		onError: (err) => {
+			console.error("Error fetching courses:", err);
+		},
+	});
 
-	const handleDelete = async (id) => {
+	// Handle delete menggunakan useMutation
+	const deleteCourseMutation = useMutation({
+		mutationFn: async (id) => {
+			const token = localStorage.getItem("token");
+			await api.delete(`/kursus/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+		},
+		onSuccess: (_, id) => {
+			// Update data di cache setelah penghapusan
+			queryClient.setQueryData(["mentorCourses"], (oldData) =>
+				oldData.filter((course) => course.id !== id)
+			);
+			Swal.fire("Deleted!", "Kursus Berhasil Dihapus", "success");
+		},
+		onError: () => {
+			Swal.fire("Error!", "Gagal Menghapus Kursus!", "error");
+		},
+	});
+
+	const handleDelete = (id) => {
 		Swal.fire({
 			title: "Are you sure?",
 			text: "You won't be able to revert this!",
@@ -45,18 +64,9 @@ export function MentorCoursesPage({ onNavigate }) {
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Yes, delete it!",
-		}).then(async (result) => {
+		}).then((result) => {
 			if (result.isConfirmed) {
-				try {
-					const token = localStorage.getItem("token");
-					await api.delete(`/kursus/${id}`, {
-						headers: { Authorization: `Bearer ${token}` },
-					});
-					setCourses(courses.filter((course) => course.id !== id));
-					Swal.fire("Deleted!", "Course has been deleted.", "success");
-				} catch (err) {
-					Swal.fire("Error!", "Failed to delete course.", "error");
-				}
+				deleteCourseMutation.mutate(id);
 			}
 		});
 	};
@@ -68,7 +78,6 @@ export function MentorCoursesPage({ onNavigate }) {
 			sortable: false,
 			width: "60px",
 		},
-
 		{
 			name: "Nama Course",
 			selector: (row) => row.namaKursus,
@@ -127,12 +136,17 @@ export function MentorCoursesPage({ onNavigate }) {
 			),
 		},
 	];
+
+	const [previewImg, setPreviewImg] = React.useState(null);
+
 	if (error) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
 				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 				<h3 className="text-lg font-semibold mb-2">Error</h3>
-				<p className="text-gray-500 mb-4 text-center">{error}</p>
+				<p className="text-gray-500 mb-4 text-center">
+					Gagal mengambil data courses
+				</p>
 			</div>
 		);
 	}
@@ -158,12 +172,12 @@ export function MentorCoursesPage({ onNavigate }) {
 					</button>
 				</div>
 
-				{loading ? (
+				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
 						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
 						<p className="ml-3">Loading course data...</p>
 					</div>
-				) : courses.length === 0 ? (
+				) : courses?.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 						<h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
@@ -190,10 +204,10 @@ export function MentorCoursesPage({ onNavigate }) {
 									</span>
 								</p>
 								<span>
-									{data.jadwal_kursus.map((jadwal, index) => (
+									{data.jadwal_kursus?.map((jadwal, index) => (
 										<div key={index} className="mb-3">
 											<p>
-												{jadwal.tanggal} {jadwal.waktu.slice(0, 5)} WIB |
+												{jadwal.tanggal} {jadwal.waktu.slice(0, 5)} WIB |{" "}
 												<span className="text-gray-500 ml-2">
 													{jadwal.tempat}
 												</span>
@@ -210,7 +224,7 @@ export function MentorCoursesPage({ onNavigate }) {
 				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
 					<div className="relative bg-white rounded-lg shadow-lg p-7">
 						<button
-							className="absolute top-2 right-2 text-gray-600 hover:text-red-500 z-10 pointer-events-auto  outline-none focus:outline-none"
+							className="absolute top-2 right-2 text-gray-600 hover:text-red-500 z-10 pointer-events-auto outline-none focus:outline-none"
 							onClick={() => setPreviewImg(null)}
 							style={{ zIndex: 10 }}>
 							<XCircle className="w-6 h-6" />

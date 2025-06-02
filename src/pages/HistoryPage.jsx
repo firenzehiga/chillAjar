@@ -106,8 +106,11 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 
 	const handlePaymentFromHistory = async (data) => {
 		setUpdatingSessionId(selectedSession.id);
-		await onPaymentSubmit(data); // submit pembayaran ke backend (App.jsx)
-		setShowPaymentModal(false); // tutup modal di halaman history
+		await onPaymentSubmit({
+			...data,
+			transaksiId: selectedSession.transaksiId, // Sertakan transaksiId untuk update
+		});
+		setShowPaymentModal(false);
 	};
 
 	useEffect(() => {
@@ -275,10 +278,9 @@ export function HistoryPage({ userData, onPaymentSubmit }) {
 										proof
 									</p>
 									<button
-										disabled
 										className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
 										onClick={() => handleContinuePayment(session)}>
-										blom di develop
+										Kirim Ulang Bukti
 									</button>
 								</div>
 							)}

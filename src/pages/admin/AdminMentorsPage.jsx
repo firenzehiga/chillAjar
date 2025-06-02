@@ -41,6 +41,12 @@ export function AdminMentorsPage() {
 			sortable: true,
 		},
 		{
+			name: "Nama Mentor",
+			selector: (row) => row.user?.nama,
+			width: "180px",
+			sortable: true,
+		},
+		{
 			name: "Rating",
 			cell: (row) => (
 				<div className="flex text-yellow-500">
@@ -55,7 +61,6 @@ export function AdminMentorsPage() {
 			name: "Biaya Per Sesi",
 			selector: (row) => `Rp ${row.biayaPerSesi?.toLocaleString() || "N/A"}`,
 		},
-		{ name: "Gaya Mengajar", selector: (row) => row.gayaMengajar || "N/A" },
 		{ name: "Deskripsi", selector: (row) => row.deskripsi || "N/A" },
 		{
 			name: "Aksi",
