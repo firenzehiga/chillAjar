@@ -35,7 +35,8 @@ import { AdminPaymentsPage } from "./pages/admin/AdminPaymentsPage";
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/MentorSchedulePage";
 import { MentorCoursesPage } from "./pages/mentor/course/MentorCoursesPage";
-import { MentorStudentsPage } from "./pages/mentor/MentorStudentsPage";
+// import { MentorStudentsPage } from "./pages/mentor/MentorTestimoniesPage";
+import { MentorTestimoniesPage } from "./pages/mentor/MentorTestimoniesPage";
 import { MentorFormCoursePage } from "./pages/mentor/course/FormCoursePage";
 import { MentorProfilePage } from "./pages/mentor/profile/MentorProfilePage";
 import { MentorEditProfile } from "./pages/mentor/profile/MentorEditProfile";
@@ -64,6 +65,7 @@ const mentorPages = [
 	"mentor-manage-schedule",
 	"mentor-manage-courses",
 	"mentor-manage-students",
+	"mentor-testimonials",
 	"mentor-add-course",
 	"mentor-edit-course",
 	"mentor-profile",
@@ -719,8 +721,10 @@ function App() {
 						return <MentorSchedulePage />;
 					case "mentor-manage-courses":
 						return <MentorCoursesPage onNavigate={handleNavigate} />;
-					case "mentor-manage-students":
-						return <MentorStudentsPage />;
+					case "mentor-testimonials":
+						return <MentorTestimoniesPage />;
+					// case "mentor-students":
+					// 	return <MentorStudentsPage />;
 					case "mentor-add-course":
 						return <MentorFormCoursePage onNavigate={handleNavigate} />;
 					default:

@@ -11,7 +11,7 @@ export function MentorDashboard() {
 		const fetchCourses = async () => {
 			try {
 				const token = localStorage.getItem("token"); // Ambil token untuk autentikasi
-				const response = await api.get("/mentor/daftar-course", {
+				const response = await api.get("/mentor/daftar-kursus", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
 				setJumlahCourse(response.data.length);
@@ -40,13 +40,13 @@ export function MentorDashboard() {
 					</div>
 					<h3 className="text-gray-600 font-medium">Active Students</h3>
 				</div>
-				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+				{/* <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<Clock className="h-8 w-8 text-yellow-600" />
 						<span className="text-2xl font-bold text-gray-900">156</span>
 					</div>
 					<h3 className="text-gray-600 font-medium">Teaching Hours</h3>
-				</div>
+				</div> */}
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<Star className="h-8 w-8 text-yellow-600" />

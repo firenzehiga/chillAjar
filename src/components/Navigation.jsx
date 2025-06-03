@@ -74,8 +74,8 @@ export function Navigation({
 				return "Schedule";
 			case "mentor-manage-courses":
 				return "My Courses";
-			case "mentor-manage-students":
-				return "My Students";
+			case "mentor-testimonials":
+				return "Testimonies";
 			case "mentor-add-course":
 				return "Add Course";
 			case "mentor-edit-course":
@@ -177,14 +177,14 @@ export function Navigation({
 						My Courses
 					</a>
 					<a
-						onClick={() => onNavigate("mentor-manage-students")}
+						onClick={() => onNavigate("mentor-testimonials")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "mentor-manage-students"
+							currentPage === "mentor-testimonials"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<Users className="w-4 h-4 inline-block mr-1" />
-						Students
+						Testimonies
 					</a>
 				</>
 			);

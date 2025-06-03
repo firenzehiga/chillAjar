@@ -1,15 +1,6 @@
 import React from "react";
 import DataTable from "react-data-table-component";
-import {
-	BookOpen,
-	Plus,
-	Pencil,
-	Trash,
-	AlertCircle,
-	XCircle,
-	CheckCircle,
-	PlayCircle,
-} from "lucide-react";
+import { BookOpen, AlertCircle, XCircle, PlayCircle } from "lucide-react";
 import api from "../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -17,58 +8,92 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 export function MentorSchedulePage({ onNavigate }) {
 	const queryClient = useQueryClient();
 
-	// Fetch data menggunakan useQuery
+	// Query 1: Fetch daftar sesi mentor
 	const {
-		data: schedules,
-		isLoading,
-		error,
+		data: sessions = [],
+		isLoading: isLoadingSessions,
+		error: errorSessions,
 	} = useQuery({
-		queryKey: ["mentorSchedules"],
+		queryKey: ["mentorSessions"],
 		queryFn: async () => {
 			const token = localStorage.getItem("token");
 			const response = await api.get("/mentor/daftar-sesi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			console.log("Fetched schedules:", response.data);
+			console.log("Fetched sessions:", response.data);
 			return response.data;
 		},
 		onError: (err) => {
-			console.error("Error fetching schedules:", err);
+			console.error("Error fetching sessions:", err);
 		},
 	});
 
-	// Handle delete menggunakan useMutation
-	const deleteCourseMutation = useMutation({
-		mutationFn: async (id) => {
+	// Query 2: Fetch transaksi
+	const {
+		data: transactions = [],
+		isLoading: isLoadingTransactions,
+		error: errorTransactions,
+	} = useQuery({
+		queryKey: ["mentorTransactions"],
+		queryFn: async () => {
 			const token = localStorage.getItem("token");
-			await api.delete(`/kursus/${id}`, {
+			const response = await api.get("/transaksi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
+			console.log("Fetched transactions:", response.data);
+			return response.data;
 		},
-		onSuccess: (_, id) => {
-			// Update data di cache setelah penghapusan
-			queryClient.setQueryData(["mentorSchedules"], (oldData) =>
-				oldData.filter((course) => course.id !== id)
-			);
-			Swal.fire("Deleted!", "Kursus Berhasil Dihapus", "success");
-		},
-		onError: () => {
-			Swal.fire("Error!", "Gagal Menghapus Kursus!", "error");
+		onError: (err) => {
+			console.error("Error fetching transactions:", err);
 		},
 	});
 
-	const handleDelete = (id) => {
+	// Filter transaksi yang statusPembayaran === "accepted"
+	const acceptedTransactions = transactions.filter(
+		(transaction) => transaction.statusPembayaran === "accepted"
+	);
+
+	// Filter sesi yang memiliki transaksi dengan status "accepted"
+	const filteredSessions = sessions.filter((session) =>
+		acceptedTransactions.some(
+			(transaction) => transaction.sesi_id === session.id
+		)
+	);
+
+	// Mutasi untuk memulai sesi
+	const startSessionMutation = useMutation({
+		mutationFn: async (sessionId) => {
+			const token = localStorage.getItem("token");
+			await api.post(
+				`/mentor/mulai-sesi/${sessionId}`,
+				{},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			);
+		},
+		onSuccess: () => {
+			Swal.fire("Berhasil!", "Sesi telah dimulai.", "success");
+			queryClient.invalidateQueries(["mentorSessions"]);
+			queryClient.invalidateQueries(["mentorTransactions"]);
+		},
+		onError: () => {
+			Swal.fire("Gagal", "Terjadi kesalahan saat memulai sesi.", "error");
+		},
+	});
+
+	const handleStartSession = (sessionId) => {
 		Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
+			title: "Mulai Sesi",
+			text: "Apakah Anda yakin ingin memulai sesi ini?",
 			icon: "warning",
 			showCancelButton: true,
-			confirmButtonColor: "#d33",
-			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Ya, mulai!",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				deleteCourseMutation.mutate(id);
+				startSessionMutation.mutate(sessionId);
 			}
 		});
 	};
@@ -79,23 +104,18 @@ export function MentorSchedulePage({ onNavigate }) {
 			class:
 				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
-		accepted: {
-			label: "Accepted",
-			class:
-				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
-		},
-		rejected: {
-			label: "Ditolak",
-			class:
-				"inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-red-600/10 ring-inset",
-		},
 		pending: {
 			label: "Pending",
 			class:
+				"inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
+		},
+		started: {
+			label: "Sedang Dimulai",
+			class:
 				"inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset",
 		},
-		lunas: {
-			label: "Lunas",
+		end: {
+			label: "Selesai",
 			class:
 				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
@@ -110,24 +130,24 @@ export function MentorSchedulePage({ onNavigate }) {
 		},
 		{
 			name: "Nama Pelanggan",
-			selector: (row) => row.pelanggan.user.nama,
+			selector: (row) => row.pelanggan?.user?.nama || "-",
 			sortable: true,
 			width: "200px",
 		},
 		{
 			name: "Nama Kursus",
-			selector: (row) => row.kursus.namaKursus,
+			selector: (row) => row.kursus?.namaKursus || "-",
 			sortable: true,
 			width: "200px",
 		},
 		{
 			name: "Gaya Pembelajaran",
 			selector: (row) =>
-				row.kursus.gayaMengajar === "online" ? (
+				row.kursus?.gayaMengajar === "online" ? (
 					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
 						Online
 					</span>
-				) : row.kursus.gayaMengajar === "offline" ? (
+				) : row.kursus?.gayaMengajar === "offline" ? (
 					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
 						Offline
 					</span>
@@ -138,7 +158,6 @@ export function MentorSchedulePage({ onNavigate }) {
 				),
 			width: "200px",
 		},
-
 		{
 			name: "Status",
 			selector: (row) => {
@@ -151,53 +170,18 @@ export function MentorSchedulePage({ onNavigate }) {
 			},
 			width: "250px",
 		},
-		// {
-		// 	name: "Foto",
-		// 	cell: (row) =>
-		// 		row.fotoKursus ? (
-		// 			<div className="flex items-center justify-center p-1">
-		// 				<img
-		// 					loading="lazy"
-		// 					src={`/storage/${row.fotoKursus}`}
-		// 					alt={row.namaKursus}
-		// 					className="h-16 w-16 object-cover rounded-lg border border-gray-200 bg-gray-50 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
-		// 					onClick={() => setPreviewImg(`/storage/${row.fotoKursus}`)}
-		// 					onError={(e) => (e.target.style.display = "none")}
-		// 				/>
-		// 			</div>
-		// 		) : (
-		// 			<span className="text-gray-400 text-xs">No Image</span>
-		// 		),
-		// 	width: "100px",
-		// },
 		{
 			name: "Aksi",
 			cell: (row) => (
-				<div className=" gap-2">
-					{row.statusSesi === "booked" && (
-						<>
-							<button
-								type="button"
-								className="mt-2 mb-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none">
-								<PlayCircle className="w-4 h-4 inline mb-1" /> Mulai Sesi
-							</button>
-
-							{/* <button
-								onClick={() => handleTolak(row.id)}
-								className="text-red-600 hover:text-red-800 outline-none focus:outline-none"
-								title="Tolak Pembayaran"
-									disabled={
-										verifikasiMutation.isLoading || tolakMutation.isLoading
-									}>
-								<XCircle className="w-5 h-5" />
-							</button> */}
-							{/* <button
-								onClick={() => handleTolak(row.id)}
-								className="text-red-600 hover:text-red-800 outline-none focus:outline-none"
-								title="Tolak Pembayaran">
-								<XCircle className="w-5 h-5" />
-							</button> */}
-						</>
+				<div className="gap-2">
+					{(row.statusSesi === "booked" || row.statusSesi === "pending") && (
+						<button
+							type="button"
+							className="mt-2 mb-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none"
+							disabled={isLoadingSessions || isLoadingTransactions}
+							onClick={() => handleStartSession(row.id)}>
+							<PlayCircle className="w-4 h-4 inline mb-1" /> Mulai Sesi
+						</button>
 					)}
 				</div>
 			),
@@ -207,13 +191,13 @@ export function MentorSchedulePage({ onNavigate }) {
 
 	const [previewImg, setPreviewImg] = React.useState(null);
 
-	if (error) {
+	if (errorSessions || errorTransactions) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
 				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 				<h3 className="text-lg font-semibold mb-2">Error</h3>
 				<p className="text-gray-500 mb-4 text-center">
-					Gagal mengambil data schedules
+					Gagal mengambil data sesi atau transaksi
 				</p>
 			</div>
 		);
@@ -230,26 +214,25 @@ export function MentorSchedulePage({ onNavigate }) {
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
-				{isLoading ? (
+				{isLoadingSessions || isLoadingTransactions ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
 						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
 						<p className="ml-3">Loading course data...</p>
 					</div>
-				) : schedules?.length === 0 ? (
+				) : filteredSessions.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 						<h3 className="text-lg font-semibold mb-2">
 							No Schedules Available
 						</h3>
 						<p className="text-gray-500 mb-4 text-center">
-							You haven't added any schedules yet. Start by adding a new course
-							to teach!
+							Tidak ada sesi dengan pembayaran yang diterima.
 						</p>
 					</div>
 				) : (
 					<DataTable
 						columns={columns}
-						data={schedules}
+						data={filteredSessions}
 						pagination
 						highlightOnHover
 						persistTableHead
@@ -263,7 +246,7 @@ export function MentorSchedulePage({ onNavigate }) {
 										Topik:
 									</span>
 									<span className="text-gray-500 ml-2">
-										{data.detailKursus}
+										{data.detailKursus || "-"}
 									</span>
 								</p>
 								<p className="flex">
@@ -277,7 +260,7 @@ export function MentorSchedulePage({ onNavigate }) {
 								<p className="flex">
 									<span className="w-48 font-medium text-gray-900">Jam:</span>
 									<span className="capitalize">
-										{data.jadwal_kursus?.waktu.slice(0, 5) || "-"} WIB
+										{data.jadwal_kursus?.waktu?.slice(0, 5) || "-"} WIB
 									</span>
 								</p>
 								<p className="flex">
