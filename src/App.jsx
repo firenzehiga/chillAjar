@@ -332,7 +332,7 @@ function App() {
 				// console.log("Sesi response:", response.data); // mau tau apakah data sesi sudah kekirim
 
 				// Simpan data sesi ke state booking
-				const sesiBaru = response.data;
+				const sesiBaru = response.data.sesi; 
 				const booking = {
 					course,
 					mentor: selectedMentor,
