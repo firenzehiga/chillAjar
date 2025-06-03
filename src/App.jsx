@@ -38,6 +38,7 @@ import { MentorStudentsPage } from "./pages/mentor/MentorStudentsPage";
 import { MentorFormCoursePage } from "./pages/mentor/course/FormCoursePage";
 import { MentorProfilePage } from "./pages/mentor/profile/MentorProfilePage";
 import { MentorEditProfile } from "./pages/mentor/profile/MentorEditProfile";
+import { motion, AnimatePresence } from "framer-motion"; // Impor Framer Motion
 
 import Swal from "sweetalert2";
 import api from "./api";
@@ -54,7 +55,6 @@ const adminPages = [
 	"admin-add-course",
 	"admin-edit-course",
 	"admin-manage-mentors",
-
 	"admin-profile",
 	"admin-edit-profile",
 ];
@@ -332,7 +332,7 @@ function App() {
 				// console.log("Sesi response:", response.data); // mau tau apakah data sesi sudah kekirim
 
 				// Simpan data sesi ke state booking
-				const sesiBaru = response.data.sesi; 
+				const sesiBaru = response.data.sesi;
 				const booking = {
 					course,
 					mentor: selectedMentor,
@@ -624,77 +624,95 @@ function App() {
 			}
 		}
 
-		if (userRole === "admin" && adminPages.includes(currentPage)) {
-			switch (currentPage) {
-				case "admin-dashboard":
-					return <AdminDashboard />;
-				case "admin-edit-profile":
-					return (
-						<AdminEditProfile
-							onUpdateUserData={handleUpdateUserData}
-							userData={userData}
-							userRole={userRole}
-							onNavigate={handleNavigate}
-						/>
-					);
-				case "admin-profile":
-					return (
-						<AdminProfilePage
-							userData={userData}
-							userRole={userRole}
-							onNavigate={handleNavigate}
-						/>
-					);
-				case "admin-manage-users":
-					return <AdminUsersPage />;
-				case "admin-manage-payments":
-					return <AdminPaymentsPage />;
-				// case "admin-manage-sessions":
-				// return <AdminSessionsPage />;
-				case "admin-manage-courses":
-					return <AdminCoursesPage onNavigate={handleNavigate} />;
-				case "admin-add-course":
-					return <AdminFormCoursePage onNavigate={handleNavigate} />;
+		if (userRole === "admin") {
+			// Tangani URL dinamis terlebih dahulu
+			if (currentPage.startsWith("admin-edit-course")) {
+				const id = currentPage.split("admin-edit-course/")[1];
+				return (
+					<AdminFormCoursePage onNavigate={handleNavigate} courseId={id} />
+				);
+			}
 
-				case "admin-manage-mentors":
-					return <AdminMentorsPage />;
-				default:
-					break;
+			// Gunakan switch untuk halaman statis
+			if (adminPages.includes(currentPage)) {
+				switch (currentPage) {
+					case "admin-dashboard":
+						return <AdminDashboard />;
+					case "admin-edit-profile":
+						return (
+							<AdminEditProfile
+								onUpdateUserData={handleUpdateUserData}
+								userData={userData}
+								userRole={userRole}
+								onNavigate={handleNavigate}
+							/>
+						);
+					case "admin-profile":
+						return (
+							<AdminProfilePage
+								userData={userData}
+								userRole={userRole}
+								onNavigate={handleNavigate}
+							/>
+						);
+					case "admin-manage-users":
+						return <AdminUsersPage />;
+					case "admin-manage-payments":
+						return <AdminPaymentsPage />;
+					case "admin-manage-courses":
+						return <AdminCoursesPage onNavigate={handleNavigate} />;
+					case "admin-add-course":
+						return <AdminFormCoursePage onNavigate={handleNavigate} />;
+					case "admin-manage-mentors":
+						return <AdminMentorsPage />;
+					default:
+						break;
+				}
 			}
 		}
 
 		if (userRole === "mentor") {
-			if (currentPage === "mentor-dashboard") return <MentorDashboard />;
-			if (currentPage === "mentor-profile")
-				return (
-					<MentorProfilePage
-						userData={userData}
-						userRole={userRole}
-						onNavigate={handleNavigate}
-					/>
-				);
-			if (currentPage === "mentor-edit-profile")
-				return (
-					<MentorEditProfile
-						onUpdateUserData={handleUpdateUserData}
-						userData={userData}
-						userRole={userRole}
-						onNavigate={handleNavigate}
-					/>
-				);
-			if (currentPage === "mentor-manage-schedule")
-				return <MentorSchedulePage />;
-			if (currentPage === "mentor-manage-courses")
-				return <MentorCoursesPage onNavigate={handleNavigate} />;
-			if (currentPage === "mentor-manage-students")
-				return <MentorStudentsPage />;
-			if (currentPage === "mentor-add-course")
-				return <MentorFormCoursePage onNavigate={handleNavigate} />;
+			// Tangani URL dinamis terlebih dahulu
 			if (currentPage.startsWith("mentor-edit-course")) {
 				const id = currentPage.split("mentor-edit-course/")[1];
 				return (
 					<MentorFormCoursePage onNavigate={handleNavigate} courseId={id} />
 				);
+			}
+
+			// Gunakan switch untuk halaman statis
+			if (mentorPages.includes(currentPage)) {
+				switch (currentPage) {
+					case "mentor-dashboard":
+						return <MentorDashboard />;
+					case "mentor-profile":
+						return (
+							<MentorProfilePage
+								userData={userData}
+								userRole={userRole}
+								onNavigate={handleNavigate}
+							/>
+						);
+					case "mentor-edit-profile":
+						return (
+							<MentorEditProfile
+								onUpdateUserData={handleUpdateUserData}
+								userData={userData}
+								userRole={userRole}
+								onNavigate={handleNavigate}
+							/>
+						);
+					case "mentor-manage-schedule":
+						return <MentorSchedulePage />;
+					case "mentor-manage-courses":
+						return <MentorCoursesPage onNavigate={handleNavigate} />;
+					case "mentor-manage-students":
+						return <MentorStudentsPage />;
+					case "mentor-add-course":
+						return <MentorFormCoursePage onNavigate={handleNavigate} />;
+					default:
+						break;
+				}
 			}
 		}
 
@@ -842,7 +860,18 @@ function App() {
 			}
 		})();
 
-		return <div className="page-transition">{content}</div>;
+		return (
+			<motion.div
+				className="page-transition"
+				initial={{ opacity: 0 }} // Masuk dari kanan
+				animate={{ opacity: 1 }} // Posisi normal
+				exit={{ opacity: 0 }} // Keluar ke kiri
+				transition={{ duration: 0.3 }}
+				key={currentPage} // Key untuk memicu animasi
+			>
+				{content}
+			</motion.div>
+		);
 	};
 
 	return (
@@ -860,7 +889,7 @@ function App() {
 			)}
 			<main className="flex-grow">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					{renderContent()}
+					<AnimatePresence mode="wait">{renderContent()}</AnimatePresence>{" "}
 				</div>
 				{selectedMentor && bookingCourse && (
 					<BookingModal

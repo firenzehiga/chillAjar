@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, ArrowLeft, AlertCircle, Plus } from "lucide-react";
+import { BookOpen, ArrowLeft, AlertCircle, Plus, X } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 
@@ -14,6 +14,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 	const [schedules, setSchedules] = useState([
 		{ tanggal: "", waktu: "", keterangan: "", tempat: "" },
 	]);
+	const [initialSchedules, setInitialSchedules] = useState([]); // Menyimpan jadwal awal dari database
 	const [fotoKursus, setFotoKursus] = useState(null);
 	const [fotoPreview, setFotoPreview] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -36,17 +37,17 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 					if (response.data.fotoKursus) {
 						setFotoPreview(`/storage/${response.data.fotoKursus}`);
 					}
-					// Jika backend mengembalikan data jadwal
+					// Simpan jadwal awal dari database
 					if (response.data.jadwal_kursus) {
-						setSchedules(
-							response.data.jadwal_kursus.map((jadwal) => ({
-								id: jadwal.id, // simpen id
-								tanggal: jadwal.tanggal || "",
-								waktu: jadwal.waktu || "",
-								keterangan: jadwal.keterangan || "",
-								tempat: jadwal.tempat || "",
-							}))
-						);
+						const initial = response.data.jadwal_kursus.map((jadwal) => ({
+							id: jadwal.id,
+							tanggal: jadwal.tanggal || "",
+							waktu: jadwal.waktu || "",
+							keterangan: jadwal.keterangan || "",
+							tempat: jadwal.tempat || "",
+						}));
+						setInitialSchedules(initial);
+						setSchedules(initial);
 					}
 				} catch (err) {
 					setError("Gagal mengambil data kursus");
@@ -55,6 +56,9 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 				}
 			};
 			fetchCourse();
+		} else {
+			// Mode create, set initial schedules kosong
+			setInitialSchedules([]);
 		}
 	}, [courseId, isEditMode]);
 
@@ -91,6 +95,13 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 			...schedules,
 			{ tanggal: "", waktu: "", keterangan: "", tempat: "" },
 		]);
+	};
+
+	const removeSchedule = (index) => {
+		// Hanya hapus jika indeks melebihi jumlah jadwal awal
+		if (index >= initialSchedules.length) {
+			setSchedules(schedules.filter((_, i) => i !== index));
+		}
 	};
 
 	const handleSubmit = async (e) => {
@@ -219,6 +230,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 			setLoading(false);
 		}
 	};
+
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center h-[60vh] text-gray-600">
@@ -371,80 +383,6 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 						</div>
 					</div>
 
-					{/* <div className="mb-4">
-						<label
-							htmlFor="deskripsi"
-							className="block text-sm font-medium text-gray-700 mb-1">
-							Description
-						</label>
-						<textarea
-							id="deskripsi"
-							name="deskripsi"
-							value={formData.deskripsi}
-							onChange={handleChange}
-							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-							placeholder="Enter course description"
-							rows="4"
-						/>
-					</div>
-
-					<div className="mb-4">
-						<label
-							htmlFor="fotoKursus"
-							className="block text-sm font-medium text-gray-700 mb-1">
-							Course Image
-						</label>
-						<div
-							className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors cursor-pointer"
-							onDragOver={(e) => {
-								e.preventDefault();
-								e.currentTarget.classList.add("border-yellow-500");
-							}}
-							onDragLeave={(e) => {
-								e.preventDefault();
-								e.currentTarget.classList.remove("border-yellow-500");
-							}}
-							onDrop={(e) => {
-								e.preventDefault();
-								e.currentTarget.classList.remove("border-yellow-500");
-								const file = e.dataTransfer.files[0];
-								if (file) handleFileChange({ target: { files: [file] } });
-							}}>
-							<input
-								type="file"
-								id="fotoKursus"
-								name="fotoKursus"
-								accept="image/*"
-								onChange={handleFileChange}
-								className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-							/>
-							{fotoPreview ? (
-								<img
-									src={fotoPreview}
-									alt="Preview"
-									className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
-								/>
-							) : (
-								<div className="text-gray-500">
-									<svg
-										className="mx-auto h-12 w-12 text-gray-400"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-										xmlns="http://www.w3.org/2000/svg">
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth="2"
-											d="M7 16l-4-4m0 0l4-4m-4 4h18"
-										/>
-									</svg>
-									<p className="mt-1 text-sm">Click or drag to upload image</p>
-								</div>
-							)}
-						</div>
-					</div> */}
-
 					<div className="mb-4">
 						<label className="block text-sm font-medium text-gray-700 mb-1">
 							Schedules
@@ -456,7 +394,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 										<label
 											htmlFor={`tanggal-${index}`}
 											className="block text-sm font-medium text-gray-700 mb-1">
-											Date
+											Tanggal
 										</label>
 										<input
 											type="date"
@@ -472,7 +410,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 										<label
 											htmlFor={`waktu-${index}`}
 											className="block text-sm font-medium text-gray-700 mb-1">
-											Time
+											Waktu
 										</label>
 										<input
 											type="time"
@@ -485,38 +423,49 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 										/>
 									</div>
 								</div>
-								<div className="mt-4">
-									<label
-										htmlFor={`keterangan-${index}`}
-										className="block text-sm font-medium text-gray-700 mb-1">
-										Notes
-									</label>
-									<input
-										type="text"
-										id={`keterangan-${index}`}
-										name="keterangan"
-										value={schedule.keterangan}
-										onChange={(e) => handleScheduleChange(index, e)}
-										className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-										placeholder="Enter notes (optional)"
-									/>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div className="mt-4">
+										<label
+											htmlFor={`keterangan-${index}`}
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Keterangan
+										</label>
+										<input
+											type="text"
+											id={`keterangan-${index}`}
+											name="keterangan"
+											value={schedule.keterangan}
+											onChange={(e) => handleScheduleChange(index, e)}
+											className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											placeholder="Enter notes (optional)"
+										/>
+									</div>
+									<div className="mt-4">
+										<label
+											htmlFor={`tempat-${index}`}
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Tempat
+										</label>
+										<input
+											type="text"
+											id={`tempat-${index}`}
+											name="tempat"
+											value={schedule.tempat}
+											onChange={(e) => handleScheduleChange(index, e)}
+											className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											placeholder="Enter location (optional)"
+										/>
+									</div>
 								</div>
-								<div className="mt-4">
-									<label
-										htmlFor={`tempat-${index}`}
-										className="block text-sm font-medium text-gray-700 mb-1">
-										Location
-									</label>
-									<input
-										type="text"
-										id={`tempat-${index}`}
-										name="tempat"
-										value={schedule.tempat}
-										onChange={(e) => handleScheduleChange(index, e)}
-										className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-										placeholder="Enter location (optional)"
-									/>
-								</div>
+								{/* Tombol hapus hanya muncul untuk jadwal yang ditambahkan setelah inisialisasi */}
+								{index >= initialSchedules.length && (
+									<button
+										type="button"
+										onClick={() => removeSchedule(index)}
+										className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 outline-none focus:outline-none">
+										<X className="w-5 h-5 inline mr-2" /> Remove Schedule
+									</button>
+								)}
 							</div>
 						))}
 						<button

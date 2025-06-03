@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
+import { BookOpen, ArrowLeft, AlertCircle, Plus, X } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 
@@ -10,36 +10,75 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 		namaKursus: "",
 		deskripsi: "",
 		gayaMengajar: "online",
+		mentorId: "", // Field baru untuk menyimpan ID mentor yang dipilih
 	});
+	const [mentors, setMentors] = useState([]); // Daftar mentor untuk dropdown
+	const [schedules, setSchedules] = useState([
+		{ tanggal: "", waktu: "", keterangan: "", tempat: "" },
+	]);
+	const [initialSchedules, setInitialSchedules] = useState([]); // Menyimpan jadwal awal dari database
 	const [fotoKursus, setFotoKursus] = useState(null);
 	const [fotoPreview, setFotoPreview] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
+	// Fetch daftar mentor dan data kursus (jika mode edit)
 	useEffect(() => {
-		if (isEditMode) {
-			const fetchCourse = async () => {
-				try {
-					setLoading(true);
-					const token = localStorage.getItem("token");
-					const response = await api.get(`/kursus/${courseId}`, {
-						headers: { Authorization: `Bearer ${token}` },
-					});
-					setFormData({
-						namaKursus: response.data.namaKursus,
-						deskripsi: response.data.deskripsi,
-						gayaMengajar: response.data.gayaMengajar || "online",
-					});
-					if (response.data.fotoKursus) {
-						setFotoPreview(`/storage/${response.data.fotoKursus}`);
-					}
-				} catch (err) {
-					setError("Gagal mengambil data kursus");
-				} finally {
-					setLoading(false);
+		const fetchMentors = async () => {
+			try {
+				const token = localStorage.getItem("token");
+				const response = await api.get("/admin/mentor", {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				setMentors(response.data);
+			} catch (err) {
+				setError("Gagal mengambil daftar mentor");
+			}
+		};
+
+		const fetchCourse = async () => {
+			try {
+				setLoading(true);
+				const token = localStorage.getItem("token");
+				const response = await api.get(`/kursus/${courseId}`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				setFormData({
+					namaKursus: response.data.namaKursus,
+					deskripsi: response.data.deskripsi,
+					gayaMengajar: response.data.gayaMengajar || "online",
+					mentorId: response.data.mentor_id || "", // Set mentorId dari data kursus
+				});
+				if (response.data.fotoKursus) {
+					setFotoPreview(`/storage/${response.data.fotoKursus}`);
 				}
-			};
+				// Simpan jadwal awal dari database
+				if (response.data.jadwal_kursus) {
+					const initial = response.data.jadwal_kursus.map((jadwal) => ({
+						id: jadwal.id,
+						tanggal: jadwal.tanggal || "",
+						waktu: jadwal.waktu || "",
+						keterangan: jadwal.keterangan || "",
+						tempat: jadwal.tempat || "",
+					}));
+					setInitialSchedules(initial);
+					setSchedules(initial);
+				}
+			} catch (err) {
+				setError("Gagal mengambil data kursus");
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		// Selalu fetch daftar mentor
+		fetchMentors();
+
+		// Fetch data kursus jika mode edit
+		if (isEditMode) {
 			fetchCourse();
+		} else {
+			setInitialSchedules([]); // Mode create, set initial schedules kosong
 		}
 	}, [courseId, isEditMode]);
 
@@ -51,12 +90,38 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
-			if (file.size > 2 * 1024 * 1024) {
-				setError("Ukuran file maksimal 2MB");
+			if (file.size > 3 * 1024 * 1024) {
+				// Samakan batas ukuran file dengan form mentor
+				Swal.fire({
+					icon: "error",
+					title: "Ukuran file terlalu besar",
+					text: "Ukuran file maksimal 3MB.",
+				});
 				return;
 			}
 			setFotoKursus(file);
 			setFotoPreview(URL.createObjectURL(file));
+		}
+	};
+
+	const handleScheduleChange = (index, e) => {
+		const { name, value } = e.target;
+		const newSchedules = [...schedules];
+		newSchedules[index] = { ...newSchedules[index], [name]: value };
+		setSchedules(newSchedules);
+	};
+
+	const addSchedule = () => {
+		setSchedules([
+			...schedules,
+			{ tanggal: "", waktu: "", keterangan: "", tempat: "" },
+		]);
+	};
+
+	const removeSchedule = (index) => {
+		// Hanya hapus jika indeks melebihi jumlah jadwal awal
+		if (index >= initialSchedules.length) {
+			setSchedules(schedules.filter((_, i) => i !== index));
 		}
 	};
 
@@ -71,6 +136,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 			payload.append("namaKursus", formData.namaKursus);
 			payload.append("deskripsi", formData.deskripsi);
 			payload.append("gayaMengajar", formData.gayaMengajar);
+			payload.append("mentor_id", formData.mentorId); // Sertakan mentorId dalam payload
 			if (fotoKursus) {
 				payload.append("fotoKursus", fotoKursus);
 			}
@@ -78,14 +144,14 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 			let response;
 			if (isEditMode) {
 				payload.append("_method", "PUT");
-				response = await api.post(`/mentor/kursus/${courseId}`, payload, {
+				response = await api.post(`/kursus/${courseId}`, payload, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 						"Content-Type": "multipart/form-data",
 					},
 				});
 			} else {
-				response = await api.post("/mentor/kursus", payload, {
+				response = await api.post("/kursus", payload, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 						"Content-Type": "multipart/form-data",
@@ -93,7 +159,65 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 				});
 			}
 
+			console.log("API Response after creating course:", response.data);
+
 			if (response.status === 200 || response.status === 201) {
+				let newCourseId;
+				if (isEditMode) {
+					newCourseId = courseId;
+				} else {
+					newCourseId =
+						response.data.kursus?.id ||
+						response.data.id ||
+						response.data.course_id ||
+						response.data.data?.id;
+
+					if (!newCourseId) {
+						const fetchCourseResponse = await api.get(
+							`/kursus?namaKursus=${formData.namaKursus}`,
+							{
+								headers: { Authorization: `Bearer ${token}` },
+							}
+						);
+						console.log("Fetch Course Response:", fetchCourseResponse.data);
+						const latestCourse = fetchCourseResponse.data
+							.filter((course) => course.namaKursus === formData.namaKursus)
+							.sort(
+								(a, b) => new Date(b.created_at) - new Date(a.created_at)
+							)[0];
+						newCourseId = latestCourse?.id;
+
+						if (!newCourseId) {
+							throw new Error("Gagal mendapatkan ID kursus setelah pembuatan");
+						}
+					}
+				}
+
+				// Tambahkan atau perbarui jadwal
+				for (const schedule of schedules) {
+					if (schedule.tanggal && schedule.waktu) {
+						const jadwalPayload = {
+							kursus_id: newCourseId,
+							id: schedule.id || undefined, // Sertakan id jika ada, kosongkan jika tidak
+							tanggal: schedule.tanggal,
+							waktu: schedule.waktu,
+							keterangan: schedule.keterangan || "",
+							tempat: schedule.tempat || "",
+						};
+						console.log("Jadwal Payload:", jadwalPayload);
+						const jadwalResponse = await api.post(
+							"/jadwal-kursus", // Sesuaikan endpoint untuk admin
+							jadwalPayload,
+							{
+								headers: {
+									Authorization: `Bearer ${token}`,
+								},
+							}
+						);
+						console.log("Jadwal API Response:", jadwalResponse.data);
+					}
+				}
+
 				Swal.fire({
 					icon: "success",
 					title: "Success",
@@ -102,7 +226,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 						: "Course created successfully!",
 					confirmButtonColor: "#3B82F6",
 				});
-				onNavigate("mentor-manage-courses");
+				onNavigate("admin-manage-courses");
 			} else {
 				Swal.fire({
 					icon: "error",
@@ -181,11 +305,34 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 								name="namaKursus"
 								value={formData.namaKursus}
 								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
 								placeholder="Enter course name"
 								required
 							/>
 						</div>
+						<div>
+							<label
+								htmlFor="mentorId"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Mentor
+							</label>
+							<select
+								id="mentorId"
+								name="mentorId"
+								value={formData.mentorId}
+								onChange={handleChange}
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+								required>
+								<option value="">Select a mentor</option>
+								{mentors.map((mentor) => (
+									<option key={mentor.id} value={mentor.id}>
+										{mentor.user?.nama || "Unknown Mentor"}
+									</option>
+								))}
+							</select>
+						</div>
+					</div>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 						<div>
 							<label
 								htmlFor="gayaMengajar"
@@ -197,11 +344,69 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 								name="gayaMengajar"
 								value={formData.gayaMengajar}
 								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
 								required>
 								<option value="online">Online</option>
 								<option value="offline">Offline</option>
 							</select>
+						</div>
+						<div>
+							<label
+								htmlFor="fotoKursus"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Course Image
+							</label>
+							<div
+								className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors cursor-pointer"
+								onDragOver={(e) => {
+									e.preventDefault();
+									e.currentTarget.classList.add("border-yellow-500");
+								}}
+								onDragLeave={(e) => {
+									e.preventDefault();
+									e.currentTarget.classList.remove("border-yellow-500");
+								}}
+								onDrop={(e) => {
+									e.preventDefault();
+									e.currentTarget.classList.remove("border-yellow-500");
+									const file = e.dataTransfer.files[0];
+									if (file) handleFileChange({ target: { files: [file] } });
+								}}>
+								<input
+									type="file"
+									id="fotoKursus"
+									name="fotoKursus"
+									accept="image/*"
+									onChange={handleFileChange}
+									className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+								/>
+								{fotoPreview ? (
+									<img
+										src={fotoPreview}
+										alt="Preview"
+										className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
+									/>
+								) : (
+									<div className="text-gray-500">
+										<svg
+											className="mx-auto h-12 w-12 text-gray-400"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+											xmlns="http://www.w3.org/2000/svg">
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M7 16l-4-4m0 0l4-4m-4 4h18"
+											/>
+										</svg>
+										<p className="mt-1 text-sm">
+											Click or drag to upload image
+										</p>
+									</div>
+								)}
+							</div>
 						</div>
 					</div>
 
@@ -216,67 +421,103 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							name="deskripsi"
 							value={formData.deskripsi}
 							onChange={handleChange}
-							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
 							placeholder="Enter course description"
 							rows="4"
 						/>
 					</div>
 
 					<div className="mb-4">
-						<label
-							htmlFor="fotoKursus"
-							className="block text-sm font-medium text-gray-700 mb-1">
-							Course Image
+						<label className="block text-sm font-medium text-gray-700 mb-1">
+							Schedules
 						</label>
-						<div
-							className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors cursor-pointer"
-							onDragOver={(e) => {
-								e.preventDefault();
-								e.currentTarget.classList.add("border-yellow-500");
-							}}
-							onDragLeave={(e) => {
-								e.preventDefault();
-								e.currentTarget.classList.remove("border-yellow-500");
-							}}
-							onDrop={(e) => {
-								e.preventDefault();
-								e.currentTarget.classList.remove("border-yellow-500");
-								const file = e.dataTransfer.files[0];
-								if (file) handleFileChange({ target: { files: [file] } });
-							}}>
-							<input
-								type="file"
-								id="fotoKursus"
-								name="fotoKursus"
-								accept="image/*"
-								onChange={handleFileChange}
-								className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-							/>
-							{fotoPreview ? (
-								<img
-									src={fotoPreview}
-									alt="Preview"
-									className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
-								/>
-							) : (
-								<div className="text-gray-500">
-									<svg
-										className="mx-auto h-12 w-12 text-gray-400"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-										xmlns="http://www.w3.org/2000/svg">
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth="2"
-											d="M7 16l-4-4m0 0l4-4m-4 4h18"
+						{schedules.map((schedule, index) => (
+							<div key={index} className="border p-4 rounded-lg mb-4">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div>
+										<label
+											htmlFor={`tanggal-${index}`}
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Tanggal
+										</label>
+										<input
+											type="date"
+											id={`tanggal-${index}`}
+											name="tanggal"
+											value={schedule.tanggal}
+											onChange={(e) => handleScheduleChange(index, e)}
+											className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											required
 										/>
-									</svg>
-									<p className="mt-1 text-sm">Click or drag to upload image</p>
+									</div>
+									<div>
+										<label
+											htmlFor={`waktu-${index}`}
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Waktu
+										</label>
+										<input
+											type="time"
+											id={`waktu-${index}`}
+											name="waktu"
+											value={schedule.waktu}
+											onChange={(e) => handleScheduleChange(index, e)}
+											className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											required
+										/>
+									</div>
 								</div>
-							)}
-						</div>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div className="mt-4">
+										<label
+											htmlFor={`keterangan-${index}`}
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Keterangan
+										</label>
+										<input
+											type="text"
+											id={`keterangan-${index}`}
+											name="keterangan"
+											value={schedule.keterangan}
+											onChange={(e) => handleScheduleChange(index, e)}
+											className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											placeholder="Enter notes (optional)"
+										/>
+									</div>
+									<div className="mt-4">
+										<label
+											htmlFor={`tempat-${index}`}
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Tempat
+										</label>
+										<input
+											type="text"
+											id={`tempat-${index}`}
+											name="tempat"
+											value={schedule.tempat}
+											onChange={(e) => handleScheduleChange(index, e)}
+											className="outline-none focus:outline-none w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
+											placeholder="Enter location (optional)"
+										/>
+									</div>
+								</div>
+								{/* Tombol hapus hanya muncul untuk jadwal yang ditambahkan setelah inisialisasi */}
+								{index >= initialSchedules.length && (
+									<button
+										type="button"
+										onClick={() => removeSchedule(index)}
+										className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 outline-none focus:outline-none">
+										<X className="w-5 h-5 inline mr-2" /> Remove Schedule
+									</button>
+								)}
+							</div>
+						))}
+						<button
+							type="button"
+							onClick={addSchedule}
+							className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none">
+							<Plus className="w-5 h-5 inline mr-2" /> Add Schedule
+						</button>
 					</div>
 
 					{error && (
@@ -292,8 +533,8 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							disabled={loading}
 							className={`px-4 py-2 rounded-lg transition-colors ${
 								loading
-									? "bg-gray-300 text-gray-500 cursor-not-allowed"
-									: "bg-yellow-600 text-white hover:bg-yellow-700"
+									? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
+									: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
 							}`}>
 							{loading
 								? "Processing..."
