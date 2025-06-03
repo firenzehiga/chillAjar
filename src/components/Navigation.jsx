@@ -35,8 +35,10 @@ export function Navigation({
 				return "Mentors";
 			case "profile":
 				return "Profile";
-			case "history":
-				return "Session History";
+			case "transaction-history":
+				return "Riwayat Transaksi";
+			case "session-history":
+				return "Riwayat Sesi";
 			case "settings":
 				return "Settings";
 			case "about":

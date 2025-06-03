@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { LogOut, User, Settings, History } from "lucide-react";
+import { LogOut, User, Settings, History, BookCopy } from "lucide-react";
 import userChill from "../assets/foto_profil.png";
 import Swal from "sweetalert2";
 
@@ -89,10 +89,18 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 
 					{userRole === "pelanggan" && (
 						<button
-							onClick={() => handleNavigate("history")}
+							onClick={() => handleNavigate("session-history")}
+							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							<BookCopy className="w-4 h-4 mr-2" />
+							Riwayat Sesi
+						</button>
+					)}
+					{userRole === "pelanggan" && (
+						<button
+							onClick={() => handleNavigate("transaction-history")}
 							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 							<History className="w-4 h-4 mr-2" />
-							Session History
+							Riwayat Pemesanan
 						</button>
 					)}
 					{userRole === "admin" && (

@@ -15,7 +15,8 @@ import { CoursesPage } from "./pages/CoursesPage";
 import { MentorsPage } from "./pages/MentorsPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { EditProfilePage } from "./pages/EditProfilePage";
-import { HistoryPage } from "./pages/HistoryPage";
+import { TransactionHistoryPage } from "./pages/TransactionHistoryPage";
+import { SessionHistoryPage } from "./pages/SessionHistoryPage";
 import { AboutPage } from "./pages/AboutPage";
 import { AuthModal } from "./components/AuthModal";
 import { CourseSelectionModal } from "./components/CourseSelectionModal";
@@ -72,7 +73,7 @@ const protectedPages = [
 	...adminPages,
 	...mentorPages,
 	"profile",
-	"history",
+	"transaction-history",
 	"settings",
 ];
 
@@ -132,9 +133,10 @@ function App() {
 					{
 						id: course.mentor?.id || null,
 						mentorName: course.mentor?.user?.nama || "Unknown Mentor",
-						mentorImage: course.mentor?.user?.avatar
-							? `/${course.mentor?.user?.avatar}`
-							: "/foto_mentor/default.png",
+						mentorImage: course.mentor?.user?.foto_profil
+							? `/storage/${course.mentor?.user?.foto_profil}?t=${Date.now()}`
+							: defaultPhoto,
+
 						mentorRating: course.mentor?.rating || 0,
 						mentorAbout: course.mentor?.deskripsi || "No description",
 						availableLearnMethod: [
@@ -329,6 +331,14 @@ function App() {
 					detailKursus: topic || "No specific topic",
 					statusSesi: "pending",
 				});
+				Swal.fire({
+					icon: "success",
+					title: "Pemesanan Berhasil!",
+					text: "Selanjutnya, silakan lakukan pembayaran untuk mengonfirmasi sesi Anda.",
+					timer: 1000,
+					timerProgressBar: true,
+					showConfirmButton: false,
+				});
 				// console.log("Sesi response:", response.data); // mau tau apakah data sesi sudah kekirim
 
 				// Simpan data sesi ke state booking
@@ -427,8 +437,8 @@ function App() {
 					: "Your booking has been confirmed. We will verify your payment shortly.",
 				confirmButtonColor: "#3B82F6",
 			}).then(() => {
-				setCurrentPage("history");
-				history.push("/history");
+				setCurrentPage("transaction-history");
+				history.push("/transaction-history");
 			});
 		} catch (err) {
 			console.error("Error creating transaction:", err);
@@ -442,7 +452,10 @@ function App() {
 	};
 	// Fungsi untuk navigasi antar halaman
 	const handleNavigate = (page) => {
-		if (!isAuthenticated && ["profile", "history", "settings"].includes(page)) {
+		if (
+			!isAuthenticated &&
+			["profile", "transaction-history", "settings"].includes(page)
+		) {
 			setShowAuthModal(true);
 			return;
 		}
@@ -748,9 +761,16 @@ function App() {
 							onUpdateUserData={handleUpdateUserData}
 						/>
 					) : null;
-				case "history":
+				case "transaction-history":
 					return isAuthenticated ? (
-						<HistoryPage
+						<TransactionHistoryPage
+							userData={userData}
+							onPaymentSubmit={handlePaymentSubmit}
+						/>
+					) : null;
+				case "session-history":
+					return isAuthenticated ? (
+						<SessionHistoryPage
 							userData={userData}
 							onPaymentSubmit={handlePaymentSubmit}
 						/>
