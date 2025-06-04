@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { UserCheck, Plus, Pencil, Trash, Star } from "lucide-react";
-import api from "../../api";
+import api from "../../../api";
 
 export function AdminMentorsPage() {
 	const [mentors, setMentors] = useState([]);
@@ -92,7 +92,7 @@ export function AdminMentorsPage() {
 				<p>{error}</p>
 				<button
 					onClick={() => window.location.reload()}
-					className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+					className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded">
 					Reload
 				</button>
 			</div>
@@ -103,7 +103,7 @@ export function AdminMentorsPage() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<UserCheck className="w-6 h-6 mr-2 text-blue-600" />
+					<UserCheck className="w-6 h-6 mr-2 text-yellow-600" />
 					Manage Mentors
 				</h1>
 				<p className="text-gray-600">Manage platform mentors</p>
@@ -112,7 +112,7 @@ export function AdminMentorsPage() {
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Mentor Management</h2>
-					<button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+					<button className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
 						<Plus className="w-4 h-4 mr-2" />
 						Add Mentor
 					</button>

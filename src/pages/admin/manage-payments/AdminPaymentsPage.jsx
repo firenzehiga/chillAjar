@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import DataTable from "react-data-table-component";
 import { AlertCircle, CheckCircle, XCircle, Eye, Download } from "lucide-react";
-import api from "../../api";
+import api from "../../../api";
 import Swal from "sweetalert2";
 
 export function AdminPaymentsPage() {

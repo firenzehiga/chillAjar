@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { Users, Plus } from "lucide-react";
-import api from "../../api";
-import { AddUserModal } from "../../components/Admin/AddUserModal"; // Sesuaikan path
+import api from "../../../api";
+import { AddUserModal } from "../../../components/Admin/AddUserModal"; // Sesuaikan path
 
 export function AdminUsersPage() {
 	const [users, setUsers] = useState([]);

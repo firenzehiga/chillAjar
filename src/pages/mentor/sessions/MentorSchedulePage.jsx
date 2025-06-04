@@ -1,7 +1,7 @@
 import React from "react";
 import DataTable from "react-data-table-component";
 import { BookOpen, AlertCircle, XCircle, PlayCircle } from "lucide-react";
-import api from "../../api";
+import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 

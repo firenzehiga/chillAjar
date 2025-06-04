@@ -26,18 +26,18 @@ import { Home } from "./pages/Home";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminProfilePage } from "./pages/admin/profile/AdminProfilePage";
 import { AdminEditProfile } from "./pages/admin/profile/AdminEditProfile";
-import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
-import { AdminCoursesPage } from "./pages/admin/course/AdminCoursesPage";
-import { AdminFormCoursePage } from "./pages/admin/course/FormCoursePage";
-import { AdminMentorsPage } from "./pages/admin/AdminMentorsPage";
-import { AdminPaymentsPage } from "./pages/admin/AdminPaymentsPage";
+import { AdminUsersPage } from "./pages/admin/manage-users/AdminUsersPage";
+import { AdminCoursesPage } from "./pages/admin/manage-courses/AdminCoursesPage";
+import { AdminFormCoursePage } from "./pages/admin/manage-courses/FormCoursePage";
+import { AdminMentorsPage } from "./pages/admin/manage-mentors/AdminMentorsPage";
+import { AdminPaymentsPage } from "./pages/admin/manage-payments/AdminPaymentsPage";
+import { AdminTestimoniesPage } from "./pages/admin/manage-testimonials/AdminTestimoniesPage";
 // Halaman Mentor
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
-import { MentorSchedulePage } from "./pages/mentor/MentorSchedulePage";
-import { MentorCoursesPage } from "./pages/mentor/course/MentorCoursesPage";
-// import { MentorStudentsPage } from "./pages/mentor/MentorTestimoniesPage";
+import { MentorSchedulePage } from "./pages/mentor/sessions/MentorSchedulePage";
+import { MentorCoursesPage } from "./pages/mentor/courses/MentorCoursesPage";
 import { MentorTestimoniesPage } from "./pages/mentor/MentorTestimoniesPage";
-import { MentorFormCoursePage } from "./pages/mentor/course/FormCoursePage";
+import { MentorFormCoursePage } from "./pages/mentor/courses/FormCoursePage";
 import { MentorProfilePage } from "./pages/mentor/profile/MentorProfilePage";
 import { MentorEditProfile } from "./pages/mentor/profile/MentorEditProfile";
 import { motion, AnimatePresence } from "framer-motion"; // Impor Framer Motion
@@ -59,6 +59,7 @@ const adminPages = [
 	"admin-manage-mentors",
 	"admin-profile",
 	"admin-edit-profile",
+	"admin-testimonials",
 ];
 const mentorPages = [
 	"mentor-dashboard",
@@ -674,6 +675,8 @@ function App() {
 						return <AdminUsersPage />;
 					case "admin-manage-payments":
 						return <AdminPaymentsPage />;
+					case "admin-testimonials":
+						return <AdminTestimoniesPage />;
 					case "admin-manage-courses":
 						return <AdminCoursesPage onNavigate={handleNavigate} />;
 					case "admin-add-course":

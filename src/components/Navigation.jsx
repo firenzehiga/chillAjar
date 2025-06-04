@@ -13,6 +13,8 @@ import {
 	Settings,
 	Calendar,
 	UserCheck,
+	LucideUserSquare2,
+	CircleDollarSign,
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 
@@ -62,6 +64,8 @@ export function Navigation({
 				return "Edit Course";
 			case "admin-manage-mentors":
 				return "Mentors";
+			case "admin-testimonials":
+				return "Mentor Testimonials";
 
 			// Halaman Mentor
 			case "mentor-dashboard":
@@ -96,7 +100,7 @@ export function Navigation({
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
-						<Users className="w-4 h-4 inline-block mr-1" />
+						<Home className="w-4 h-4 inline-block mr-1" />
 						Dashboard
 					</a>
 					<a
@@ -106,7 +110,7 @@ export function Navigation({
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
-						<BookOpen className="w-4 h-4 inline-block mr-1" />
+						<Users className="w-4 h-4 inline-block mr-1" />
 						Users
 					</a>
 					<a
@@ -116,7 +120,7 @@ export function Navigation({
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
-						<BookOpen className="w-4 h-4 inline-block mr-1" />
+						<CircleDollarSign className="w-4 h-4 inline-block mr-1" />
 						Payments
 					</a>
 					<a
@@ -136,8 +140,18 @@ export function Navigation({
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
-						<UserCheck className="w-4 h-4 inline-block mr-1" />
+						<LucideUserSquare2 className="w-4 h-4 inline-block mr-1" />
 						Mentors
+					</a>
+					<a
+						onClick={() => onNavigate("admin-testimonials")}
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+							currentPage === "admin-testimonials"
+								? "bg-yellow-500 text-gray-900"
+								: "text-gray-900 hover:bg-yellow-500"
+						}`}>
+						<UserCheck className="w-4 h-4 inline-block mr-1" />
+						Testimonials
 					</a>
 				</>
 			);
@@ -151,7 +165,7 @@ export function Navigation({
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
-						<Calendar className="w-4 h-4 inline-block mr-1" />
+						<Home className="w-4 h-4 inline-block mr-1" />
 						Dashboard
 					</a>
 					<a
