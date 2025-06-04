@@ -877,6 +877,7 @@ function App() {
 							setSearchQuery={setSearchQuery}
 							handleCourseClick={handleCourseClick}
 							userRole={userRole}
+							onNavigate={handleNavigate}
 						/>
 					);
 				default:
