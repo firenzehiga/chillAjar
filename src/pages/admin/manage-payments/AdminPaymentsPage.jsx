@@ -16,7 +16,7 @@ export function AdminPaymentsPage() {
 		isLoading,
 		error,
 	} = useQuery({
-		queryKey: ["payments"],
+		queryKey: ["adminPayments"],
 		queryFn: async () => {
 			const token = localStorage.getItem("token");
 			const response = await api.get("/transaksi", {
@@ -27,29 +27,6 @@ export function AdminPaymentsPage() {
 		onError: () => {
 			setError("Gagal mengambil data pembayaran");
 		},
-	});
-
-	// Filter data berdasarkan searchTerm
-	const filteredPayments = payments.filter((p) => {
-		const lower = searchTerm.toLowerCase();
-		const tanggalFormatted = p.tanggalPembayaran
-			? new Date(p.tanggalPembayaran.replace(" ", "T")).toLocaleDateString(
-					"id-ID",
-					{
-						day: "numeric",
-						month: "long",
-						year: "numeric",
-					}
-			  )
-			: "";
-		return (
-			p.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
-			p.mentor?.user?.nama?.toLowerCase().includes(lower) ||
-			p.sesi?.kursus?.namaKursus?.toLowerCase().includes(lower) ||
-			p.metodePembayaran?.toLowerCase().includes(lower) ||
-			tanggalFormatted.toLowerCase().includes(lower) ||
-			p.statusPembayaran?.toLowerCase().includes(lower)
-		);
 	});
 
 	// Mutasi untuk verifikasi pembayaran
@@ -67,7 +44,7 @@ export function AdminPaymentsPage() {
 		onSuccess: () => {
 			Swal.fire("Berhasil!", "Pembayaran telah diverifikasi.", "success");
 			// Invalidate query untuk memaksa refetch data
-			queryClient.invalidateQueries(["payments"]);
+			queryClient.invalidateQueries(["adminPayments"]);
 		},
 		onError: () => {
 			Swal.fire("Gagal", "Terjadi kesalahan saat verifikasi.", "error");
@@ -89,7 +66,7 @@ export function AdminPaymentsPage() {
 		onSuccess: () => {
 			Swal.fire("Ditolak!", "Pembayaran telah ditolak.", "info");
 			// Invalidate query untuk memaksa refetch data
-			queryClient.invalidateQueries(["payments"]);
+			queryClient.invalidateQueries(["adminPayments"]);
 		},
 		onError: () => {
 			Swal.fire("Gagal", "Terjadi kesalahan saat menolak pembayaran.", "error");
@@ -278,31 +255,36 @@ export function AdminPaymentsPage() {
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
 				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 				<h3 className="text-lg font-semibold mb-2">Error</h3>
-				<p className="text-gray-500 mb-4 text-center">{error}</p>
-			</div>
-		);
-	}
-
-	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
-				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-				<p>Loading payments data...</p>
-			</div>
-		);
-	}
-
-	if (payments.length === 0) {
-		return (
-			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
-				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-				<h3 className="text-lg font-semibold mb-2">No Payments Found</h3>
 				<p className="text-gray-500 mb-4 text-center">
-					Tidak ada pembayaran yang menunggu verifikasi.
+					Gagal mengambil data payments
 				</p>
 			</div>
 		);
 	}
+
+	// Filter data berdasarkan searchTerm
+	const filteredPayments = payments.filter((p) => {
+		const lower = searchTerm.toLowerCase();
+		const tanggalFormatted = p.tanggalPembayaran
+			? new Date(p.tanggalPembayaran.replace(" ", "T")).toLocaleDateString(
+					"id-ID",
+					{
+						day: "numeric",
+						month: "long",
+						year: "numeric",
+					}
+			  )
+			: "";
+		return (
+			p.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
+			p.mentor?.user?.nama?.toLowerCase().includes(lower) ||
+			p.sesi?.kursus?.namaKursus?.toLowerCase().includes(lower) ||
+			p.metodePembayaran?.toLowerCase().includes(lower) ||
+			tanggalFormatted.toLowerCase().includes(lower) ||
+			p.statusPembayaran?.toLowerCase().includes(lower)
+		);
+	});
+
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -315,67 +297,98 @@ export function AdminPaymentsPage() {
 				</p>
 			</div>
 
-			<div className="flex justify-end mb-4">
-				<input
-					type="text"
-					placeholder="Cari nama, kursus, atau metode..."
-					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
-					className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
-				/>
-			</div>
-
 			<div className="bg-white rounded-lg shadow p-6">
-				<DataTable
-					columns={columns}
-					data={filteredPayments}
-					pagination
-					highlightOnHover
-					persistTableHead
-					responsive
-					noHeader
-					expandableRows
-					expandableRowsComponent={({ data }) => (
-						<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-							<p className="flex">
-								<span className="w-48 font-medium text-gray-900">Mentor:</span>
-								<span>{data.mentor?.user?.nama || "Tidak ada"}</span>
-							</p>
-							<p className="flex">
-								<span className="w-48 font-medium text-gray-900">
-									Metode Pembayaran:
-								</span>
-								<span className="capitalize">
-									{data.metodePembayaran || "-"}
-								</span>
-							</p>
-							<p className="flex">
-								<span className="w-48 font-medium text-gray-900">Jadwal:</span>
-								<span className="capitalize">
-									{data.sesi?.jadwal_kursus?.tanggal || "-"}
-								</span>
-							</p>
-							<p className="flex">
-								<span className="w-48 font-medium text-gray-900">Jam:</span>
-								<span className="capitalize">
-									{data.sesi?.jadwal_kursus?.waktu.slice(0, 5) || "-"} WIB
-								</span>
-							</p>
-							<p className="flex">
-								<span className="w-48 font-medium text-gray-900">Lokasi:</span>
-								<span className="capitalize">
-									{data.sesi?.jadwal_kursus?.tempat || "-"}
-								</span>
-							</p>
-							<p className="flex">
-								<span className="w-48 font-medium text-gray-900">Jumlah:</span>
-								<span>
-									Rp{Number(data.jumlah || 0).toLocaleString("id-ID")}
-								</span>
-							</p>
+				<div className="flex justify-between items-center mb-6">
+					<h2 className="text-xl font-semibold">Payment Management</h2>
+				</div>
+				{isLoading ? (
+					<div className="flex items-center justify-center h-64 text-gray-600">
+						<div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<p className="ml-3">Loading payment data...</p>
+					</div>
+				) : payments.length === 0 ? (
+					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+						<h3 className="text-lg font-semibold mb-2">No Payments Found</h3>
+						<p className="text-gray-500 mb-4 text-center">
+							Tidak ada pembayaran yang menunggu verifikasi saat ini.
+						</p>
+					</div>
+				) : (
+					<>
+						<div className="flex justify-end mb-4">
+							<input
+								type="text"
+								placeholder="Cari nama, kursus, atau metode..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
+							/>
 						</div>
-					)}
-				/>
+
+						<DataTable
+							columns={columns}
+							data={filteredPayments}
+							pagination
+							highlightOnHover
+							persistTableHead
+							responsive
+							noHeader
+							expandableRows
+							expandableRowsComponent={({ data }) => (
+								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Mentor:
+										</span>
+										<span>{data.mentor?.user?.nama || "Tidak ada"}</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Metode Pembayaran:
+										</span>
+										<span className="capitalize">
+											{data.metodePembayaran || "-"}
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Jadwal:
+										</span>
+										<span className="capitalize">
+											{data.sesi?.jadwal_kursus?.tanggal || "-"}
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">Jam:</span>
+										<span className="capitalize">
+											{data.sesi?.jadwal_kursus?.waktu.slice(0, 5) || "-"} WIB
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Lokasi:
+										</span>
+										<span className="capitalize">
+											{data.sesi?.jadwal_kursus?.tempat || "-"}
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Jumlah:
+										</span>
+										<span>
+											Rp{Number(data.jumlah || 0).toLocaleString("id-ID")}
+										</span>
+									</p>
+								</div>
+							)}
+							noDataComponent={
+								<p className="p-4 text-gray-500">No payments available</p>
+							}
+						/>
+					</>
+				)}
 			</div>
 			{previewImg && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">

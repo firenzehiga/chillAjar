@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DataTable from "react-data-table-component";
 import { BookOpen, AlertCircle, XCircle, PlayCircle } from "lucide-react";
 import api from "../../../api";
@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function MentorSchedulePage({ onNavigate }) {
+	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
 	// Query 1: Fetch daftar sesi mentor
@@ -203,17 +204,30 @@ export function MentorSchedulePage({ onNavigate }) {
 		);
 	}
 
+	// filter pencarian dengan filteredSessions
+	const filteredData = filteredSessions.filter((session) => {
+		const lower = searchTerm.toLowerCase();
+		return (
+			session.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
+			session.kursus?.namaKursus?.toLowerCase().includes(lower) ||
+			session.kursus?.gayaMengajar?.toLowerCase().includes(lower)
+		);
+	});
+
 	return (
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
 					My Schedules
 				</h1>
 				<p className="text-gray-600">Manage your teaching courses</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
+				<div className="flex justify-between items-center mb-6">
+					<h2 className="text-xl font-semibold">Session Management</h2>
+				</div>
 				{isLoadingSessions || isLoadingTransactions ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
 						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
@@ -230,50 +244,61 @@ export function MentorSchedulePage({ onNavigate }) {
 						</p>
 					</div>
 				) : (
-					<DataTable
-						columns={columns}
-						data={filteredSessions}
-						pagination
-						highlightOnHover
-						persistTableHead
-						responsive
-						noHeader
-						expandableRows
-						expandableRowsComponent={({ data }) => (
-							<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-								<p className="flex">
-									<span className="w-10 font-medium text-gray-900 mb-2">
-										Topik:
-									</span>
-									<span className="text-gray-500 ml-2">
-										{data.detailKursus || "-"}
-									</span>
-								</p>
-								<p className="flex">
-									<span className="w-48 font-medium text-gray-900">
-										Jadwal:
-									</span>
-									<span className="capitalize">
-										{data.jadwal_kursus?.tanggal || "-"}
-									</span>
-								</p>
-								<p className="flex">
-									<span className="w-48 font-medium text-gray-900">Jam:</span>
-									<span className="capitalize">
-										{data.jadwal_kursus?.waktu?.slice(0, 5) || "-"} WIB
-									</span>
-								</p>
-								<p className="flex">
-									<span className="w-48 font-medium text-gray-900">
-										Lokasi:
-									</span>
-									<span className="capitalize">
-										{data.jadwal_kursus?.tempat || "-"}
-									</span>
-								</p>
-							</div>
-						)}
-					/>
+					<>
+						<div className="flex justify-end mb-4">
+							<input
+								type="text"
+								placeholder="Cari nama, kursus, atau metode..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
+							/>
+						</div>
+						<DataTable
+							columns={columns}
+							data={filteredData}
+							pagination
+							highlightOnHover
+							persistTableHead
+							responsive
+							noHeader
+							expandableRows
+							expandableRowsComponent={({ data }) => (
+								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
+									<p className="flex">
+										<span className="w-10 font-medium text-gray-900 mb-2">
+											Topik:
+										</span>
+										<span className="text-gray-500 ml-2">
+											{data.detailKursus || "-"}
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Jadwal:
+										</span>
+										<span className="capitalize">
+											{data.jadwal_kursus?.tanggal || "-"}
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">Jam:</span>
+										<span className="capitalize">
+											{data.jadwal_kursus?.waktu?.slice(0, 5) || "-"} WIB
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Lokasi:
+										</span>
+										<span className="capitalize">
+											{data.jadwal_kursus?.tempat || "-"}
+										</span>
+									</p>
+								</div>
+							)}
+						/>
+					</>
 				)}
 			</div>
 			{previewImg && (

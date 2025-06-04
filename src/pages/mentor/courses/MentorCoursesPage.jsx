@@ -13,6 +13,7 @@ import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function MentorCoursesPage({ onNavigate }) {
+	const [searchTerm, setSearchTerm] = React.useState("");
 	const queryClient = useQueryClient();
 
 	// Fetch data menggunakan useQuery
@@ -151,11 +152,24 @@ export function MentorCoursesPage({ onNavigate }) {
 		);
 	}
 
+	// Filter data di dalam render untuk menghindari error
+	const filteredCourse = courses
+		? courses.filter((p) => {
+				const lower = searchTerm.toLowerCase();
+				return (
+					p.namaKursus?.toLowerCase().includes(lower) ||
+					p.gayaMengajar?.toLowerCase().includes(lower) ||
+					p.deskripsi?.toLowerCase().includes(lower) ||
+					p.mentor?.user?.nama?.toLowerCase().includes(lower)
+				);
+		  })
+		: [];
+
 	return (
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
 					My Courses
 				</h1>
 				<p className="text-gray-600">Manage your teaching courses</p>
@@ -166,7 +180,7 @@ export function MentorCoursesPage({ onNavigate }) {
 					<h2 className="text-xl font-semibold">Courses You Teach</h2>
 					<button
 						onClick={() => onNavigate("mentor-add-course")}
-						className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
 						<Plus className="w-4 h-4 mr-2" />
 						Add Course
 					</button>
@@ -174,7 +188,7 @@ export function MentorCoursesPage({ onNavigate }) {
 
 				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
 						<p className="ml-3">Loading course data...</p>
 					</div>
 				) : courses?.length === 0 ? (
@@ -187,37 +201,63 @@ export function MentorCoursesPage({ onNavigate }) {
 						</p>
 					</div>
 				) : (
-					<DataTable
-						columns={columns}
-						data={courses}
-						pagination
-						highlightOnHover
-						persistTableHead
-						responsive
-						noHeader
-						expandableRows
-						expandableRowsComponent={({ data }) => (
-							<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-								<p className="flex">
-									<span className="w-20 font-medium text-gray-900 mb-2">
-										Jadwal:
+					<>
+						<div className="flex justify-end mb-4">
+							<input
+								type="text"
+								placeholder="Cari nama, kursus, deskripsi atau komentar..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
+							/>
+						</div>
+
+						<DataTable
+							columns={columns}
+							data={filteredCourse}
+							pagination
+							highlightOnHover
+							persistTableHead
+							responsive
+							noHeader
+							expandableRows
+							expandableRowsComponent={({ data }) => (
+								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
+									<p className="flex">
+										<span className="w-20 font-medium text-gray-900 mb-2">
+											Jadwal:
+										</span>
+									</p>
+									<span>
+										{data.jadwal_kursus?.map((jadwal, index) => {
+											const tanggalFormatted = jadwal.tanggal
+												? new Date(
+														jadwal.tanggal.replace(" ", "T")
+												  ).toLocaleDateString("id-ID", {
+														day: "numeric",
+														month: "long",
+														year: "numeric",
+												  })
+												: "";
+											return (
+												<div key={index} className="mb-3">
+													<p>
+														{tanggalFormatted} {jadwal.waktu.slice(0, 5)} WIB |
+														<span className="text-gray-500 ml-2">
+															{jadwal.tempat}
+														</span>
+													</p>
+												</div>
+											);
+										})}
 									</span>
-								</p>
-								<span>
-									{data.jadwal_kursus?.map((jadwal, index) => (
-										<div key={index} className="mb-3">
-											<p>
-												{jadwal.tanggal} {jadwal.waktu.slice(0, 5)} WIB |{" "}
-												<span className="text-gray-500 ml-2">
-													{jadwal.tempat}
-												</span>
-											</p>
-										</div>
-									))}
-								</span>
-							</div>
-						)}
-					/>
+								</div>
+							)}
+							noDataComponent={
+								<p className="p-4 text-gray-500">No Course available</p>
+							}
+						/>
+					</>
 				)}
 			</div>
 			{previewImg && (

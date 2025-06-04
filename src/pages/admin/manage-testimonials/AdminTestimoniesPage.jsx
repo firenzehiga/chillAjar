@@ -60,27 +60,8 @@ export function AdminTestimoniesPage({ onNavigate }) {
 		});
 	};
 
-	// Filter data berdasarkan searchTerm
-	const filteredTestimonies = testimonies.filter((p) => {
-		const lower = searchTerm.toLowerCase();
-		const tanggalFormatted = p.tanggal
-			? new Date(p.tanggal.replace(" ", "T")).toLocaleDateString("id-ID", {
-					day: "numeric",
-					month: "long",
-					year: "numeric",
-			  })
-			: "";
-		return (
-			p.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
-			p.mentor?.user?.nama?.toLowerCase().includes(lower) ||
-			p.sesi?.kursus?.namaKursus?.toLowerCase().includes(lower) ||
-			p.komentar?.toLowerCase().includes(lower) ||
-			tanggalFormatted.toLowerCase().includes(lower)
-		);
-	});
-
 	const handleEdit = (id) => {
-		onNavigate(`admin-edit-testimonials/${id}`);
+		onNavigate(`admin-edit-testimonial/${id}`);
 	};
 
 	const columns = [
@@ -180,6 +161,25 @@ export function AdminTestimoniesPage({ onNavigate }) {
 		);
 	}
 
+	// Filter data berdasarkan searchTerm
+	const filteredTestimonies = testimonies.filter((p) => {
+		const lower = searchTerm.toLowerCase();
+		const tanggalFormatted = p.tanggal
+			? new Date(p.tanggal.replace(" ", "T")).toLocaleDateString("id-ID", {
+					day: "numeric",
+					month: "long",
+					year: "numeric",
+			  })
+			: "";
+		return (
+			p.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
+			p.mentor?.user?.nama?.toLowerCase().includes(lower) ||
+			p.sesi?.kursus?.namaKursus?.toLowerCase().includes(lower) ||
+			p.komentar?.toLowerCase().includes(lower) ||
+			tanggalFormatted.toLowerCase().includes(lower)
+		);
+	});
+
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -191,6 +191,9 @@ export function AdminTestimoniesPage({ onNavigate }) {
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
+				<div className="flex justify-between items-center mb-6">
+					<h2 className="text-xl font-semibold">Testimonial Management</h2>
+				</div>
 				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
 						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
@@ -200,11 +203,10 @@ export function AdminTestimoniesPage({ onNavigate }) {
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 						<h3 className="text-lg font-semibold mb-2">
-							No Schedules Available
+							No Testimonies Available
 						</h3>
 						<p className="text-gray-500 mb-4 text-center">
-							You haven't added any schedules yet. Start by adding a new course
-							to teach!
+							No User has added any testimonies yet.
 						</p>
 					</div>
 				) : (
@@ -212,7 +214,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"
-								placeholder="Cari nama, kursus, atau metode..."
+								placeholder="Cari nama, kursus, atau komentar..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
 								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -243,6 +245,9 @@ export function AdminTestimoniesPage({ onNavigate }) {
 									</p>
 								</div>
 							)}
+							noDataComponent={
+								<p className="p-4 text-gray-500">No Testimonies available</p>
+							}
 						/>
 					</>
 				)}

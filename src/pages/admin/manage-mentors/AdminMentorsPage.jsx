@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { UserCheck, Plus, Pencil, Trash, Star } from "lucide-react";
+import {
+	UserCheck,
+	Plus,
+	Pencil,
+	Trash,
+	Star,
+	AlertCircle,
+} from "lucide-react";
 import api from "../../../api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 
 export function AdminMentorsPage({ onNavigate }) {
+	const [searchTerm, setSearchTerm] = useState("");
+
 	const queryClient = useQueryClient();
 
 	// Fetch data transaksi yang mencakup detail sesi
@@ -109,27 +118,23 @@ export function AdminMentorsPage({ onNavigate }) {
 		},
 	];
 
-	if (isLoading) {
+	if (error) {
 		return (
-			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
-				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-				<p>Loading mentor data...</p>
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+				<h3 className="text-lg font-semibold mb-2">Error</h3>
+				<p className="text-gray-500 mb-4 text-center">
+					Gagal mengambil data mentors
+				</p>
 			</div>
 		);
 	}
 
-	if (error) {
-		return (
-			<div className="flex items-center justify-center h-[60vh] flex-col text-red-500">
-				<p>{error}</p>
-				<button
-					onClick={() => window.location.reload()}
-					className="mt-4 px-4 py-2 bg-yellow-500 text-white rounded">
-					Reload
-				</button>
-			</div>
-		);
-	}
+	// Filter data berdasarkan searchTerm
+	const filteredMentors = mentors.filter((p) => {
+		const lower = searchTerm.toLowerCase();
+		return p.user?.nama?.toLowerCase().includes(lower);
+	});
 
 	return (
 		<div className="py-8">
@@ -145,20 +150,45 @@ export function AdminMentorsPage({ onNavigate }) {
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Mentor Management</h2>
 				</div>
-
-				<DataTable
-					columns={columns}
-					data={mentors}
-					pagination
-					highlightOnHover
-					persistTableHead
-					responsive
-					noHeader
-					// Tambahkan penanganan jika data kosong
-					noDataComponent={
-						<p className="p-4 text-gray-500">No mentors available</p>
-					}
-				/>
+				{isLoading ? (
+					<div className="flex items-center justify-center h-64 text-gray-600">
+						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<p className="ml-3">Loading mentors data...</p>
+					</div>
+				) : mentors.length === 0 ? (
+					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+						<h3 className="text-lg font-semibold mb-2">No Mentors Found</h3>
+						<p className="text-gray-500 mb-4 text-center">
+							You haven't added any mentors yet. Start by adding a new mentor.
+						</p>
+					</div>
+				) : (
+					<>
+						<div className="flex justify-end mb-4">
+							<input
+								type="text"
+								placeholder="Cari nama atau deskripsi..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
+							/>
+						</div>
+						<DataTable
+							columns={columns}
+							data={filteredMentors}
+							pagination
+							highlightOnHover
+							persistTableHead
+							responsive
+							noHeader
+							// Tambahkan penanganan jika data kosong
+							noDataComponent={
+								<p className="p-4 text-gray-500">No mentors available</p>
+							}
+						/>
+					</>
+				)}
 			</div>
 		</div>
 	);

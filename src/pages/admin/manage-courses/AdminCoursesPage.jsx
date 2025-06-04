@@ -2,17 +2,17 @@ import React from "react";
 import DataTable from "react-data-table-component";
 import {
 	BookOpen,
-	Plus,
 	Pencil,
 	Trash,
-	XCircle,
 	AlertCircle,
+	LucideBookPlus,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../api";
 import Swal from "sweetalert2";
 
 export function AdminCoursesPage({ onNavigate }) {
+	const [searchTerm, setSearchTerm] = React.useState("");
 	const queryClient = useQueryClient();
 
 	// Fetch data courses menggunakan useQuery
@@ -29,6 +29,9 @@ export function AdminCoursesPage({ onNavigate }) {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return response.data;
+		},
+		onError: (err) => {
+			console.error("Error fetching courses:", err);
 		},
 		retry: 1, // Hanya coba ulang sekali jika gagal
 	});
@@ -129,28 +132,34 @@ export function AdminCoursesPage({ onNavigate }) {
 		},
 	];
 
-	if (isLoading) {
+	if (error) {
 		return (
-			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
-				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-				<p>Loading course data...</p>
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+				<h3 className="text-lg font-semibold mb-2">Error</h3>
+				<p className="text-gray-500 mb-4 text-center">
+					Gagal mengambil data courses
+				</p>
 			</div>
 		);
 	}
+	// Filter data berdasarkan searchTerm
+	const filteredCourses = courses.filter((p) => {
+		const lower = searchTerm.toLowerCase();
 
-	if (isError) {
 		return (
-			<p className="text-red-500 text-center mt-10">
-				{error.message || "Gagal mengambil data courses"}
-			</p>
+			p.namaKursus?.toLowerCase().includes(lower) ||
+			p.gayaMengajar?.toLowerCase().includes(lower) ||
+			p.deskripsi?.toLowerCase().includes(lower) ||
+			p.mentor?.user?.nama?.toLowerCase().includes(lower)
 		);
-	}
+	});
 
 	return (
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
 					Manage All Courses
 				</h1>
 				<p className="text-gray-600">Manage all courses as an admin</p>
@@ -161,13 +170,17 @@ export function AdminCoursesPage({ onNavigate }) {
 					<h2 className="text-xl font-semibold">Courses</h2>
 					<button
 						onClick={() => onNavigate("admin-add-course")}
-						className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 outline-none focus:outline-none">
-						<Plus className="w-4 h-4 mr-2" />
+						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 outline-none focus:outline-none">
+						<LucideBookPlus className="w-4 h-4 mr-2" />
 						Add Course
 					</button>
 				</div>
-
-				{courses.length === 0 ? (
+				{isLoading ? (
+					<div className="flex items-center justify-center h-64 text-gray-600">
+						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<p className="ml-3">Loading course data...</p>
+					</div>
+				) : courses.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 						<h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
@@ -176,37 +189,62 @@ export function AdminCoursesPage({ onNavigate }) {
 						</p>
 					</div>
 				) : (
-					<DataTable
-						columns={columns}
-						data={courses}
-						pagination
-						highlightOnHover
-						persistTableHead
-						responsive
-						noHeader
-						expandableRows
-						expandableRowsComponent={({ data }) => (
-							<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-								<p className="flex">
-									<span className="w-20 font-medium text-gray-900 mb-2">
-										Jadwal:
+					<>
+						<div className="flex justify-end mb-4">
+							<input
+								type="text"
+								placeholder="Cari nama, kursus, deskripsi atau komentar..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
+							/>
+						</div>
+						<DataTable
+							columns={columns}
+							data={filteredCourses}
+							pagination
+							highlightOnHover
+							persistTableHead
+							responsive
+							noHeader
+							expandableRows
+							expandableRowsComponent={({ data }) => (
+								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
+									<p className="flex">
+										<span className="w-20 font-medium text-gray-900 mb-2">
+											Jadwal:
+										</span>
+									</p>
+									<span>
+										{data.jadwal_kursus?.map((jadwal, index) => {
+											const tanggalFormatted = jadwal.tanggal
+												? new Date(
+														jadwal.tanggal.replace(" ", "T")
+												  ).toLocaleDateString("id-ID", {
+														day: "numeric",
+														month: "long",
+														year: "numeric",
+												  })
+												: "";
+											return (
+												<div key={index} className="mb-3">
+													<p>
+														{tanggalFormatted} {jadwal.waktu.slice(0, 5)} WIB |
+														<span className="text-gray-500 ml-2">
+															{jadwal.tempat}
+														</span>
+													</p>
+												</div>
+											);
+										}) || <p>No schedules available</p>}
 									</span>
-								</p>
-								<span>
-									{data.jadwal_kursus?.map((jadwal, index) => (
-										<div key={index} className="mb-3">
-											<p>
-												{jadwal.tanggal} {jadwal.waktu.slice(0, 5)} WIB |
-												<span className="text-gray-500 ml-2">
-													{jadwal.tempat}
-												</span>
-											</p>
-										</div>
-									)) || <p>No schedules available</p>}
-								</span>
-							</div>
-						)}
-					/>
+								</div>
+							)}
+							noDataComponent={
+								<p className="p-4 text-gray-500">No courses available</p>
+							}
+						/>
+					</>
 				)}
 			</div>
 		</div>

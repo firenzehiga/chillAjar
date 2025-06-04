@@ -42,7 +42,7 @@ export function Home({
 		isLoading: isLoadingSessions,
 		error: errorSessions,
 	} = useQuery({
-		queryKey: ["pelangganSessions", userId],
+		queryKey: ["publicPelangganSessions", userId],
 		queryFn: async () => {
 			const token = localStorage.getItem("token");
 			const response = await api.get(

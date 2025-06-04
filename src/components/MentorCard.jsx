@@ -218,7 +218,7 @@ export function MentorCard({
 					<button
 						type="button"
 						onClick={handleScheduleClick}
-						className="w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors bg-black text-white hover:bg-gray-900">
+						className="w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors bg-black text-white hover:bg-gray-900 outline-none focus:outline-none">
 						<BookOpen className="w-4 h-4" />
 						{buttonText}
 					</button>

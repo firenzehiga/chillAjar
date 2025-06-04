@@ -118,7 +118,7 @@ export function MentorTestimoniesPage() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
 					Students Testimonials
 				</h1>
 				<p className="text-gray-600">Overview of your students' testimonials</p>
@@ -127,18 +127,17 @@ export function MentorTestimoniesPage() {
 			<div className="bg-white rounded-lg shadow p-6">
 				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
 						<p className="ml-3">Loading course data...</p>
 					</div>
 				) : testimonies.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 						<h3 className="text-lg font-semibold mb-2">
-							No Schedules Available
+							No Testimonies Available
 						</h3>
 						<p className="text-gray-500 mb-4 text-center">
-							You haven't added any schedules yet. Start by adding a new course
-							to teach!
+							No User has given testimonies yet.
 						</p>
 					</div>
 				) : (

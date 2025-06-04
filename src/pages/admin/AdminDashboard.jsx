@@ -20,7 +20,7 @@ export function AdminDashboard() {
 		isLoading: usersLoading, // status loading (true/false)
 		error: usersError, // error jika terjadi kesalahan
 	} = useQuery({
-		queryKey: ["users"], // query key untuk cache
+		queryKey: ["adminCountUsers"], // query key untuk cache
 		queryFn: async () => {
 			// query function untuk mengambil data dari API
 			const response = await api.get("/admin/users", {
@@ -37,7 +37,7 @@ export function AdminDashboard() {
 		isLoading: coursesLoading,
 		error: coursesError,
 	} = useQuery({
-		queryKey: ["kursus"],
+		queryKey: ["adminCountCourses"],
 		queryFn: async () => {
 			const response = await api.get("/kursus", {
 				headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -52,7 +52,7 @@ export function AdminDashboard() {
 		isLoading: mentorsLoading,
 		error: mentorsError,
 	} = useQuery({
-		queryKey: ["mentors"],
+		queryKey: ["adminCountMentors"],
 		queryFn: async () => {
 			const response = await api.get("/admin/mentor", {
 				headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

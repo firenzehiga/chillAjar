@@ -11,7 +11,7 @@ export function MentorsPage({ courses, onSchedule }) {
 		isLoading,
 		error,
 	} = useQuery({
-		queryKey: ["mentorsPage"],
+		queryKey: ["publicMentorsPage"],
 		queryFn: async () => {
 			const mentorsResponse = await api.get("/public/mentor");
 			return mentorsResponse.data;

@@ -19,7 +19,7 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 		isLoading: loadingSessions,
 		error: errorSessions,
 	} = useQuery({
-		queryKey: ["sessions", pelangganId],
+		queryKey: ["pelangganSessions", pelangganId],
 		queryFn: async () => {
 			const res = await api.get("/pelanggan/daftar-sesi");
 			return res.data;
@@ -32,7 +32,7 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 		isLoading: loadingTransactions,
 		error: errorTransactions,
 	} = useQuery({
-		queryKey: ["transactions", pelangganId],
+		queryKey: ["pelangganTransactions", pelangganId],
 		queryFn: async () => {
 			const res = await api.get("/transaksi");
 			return res.data.filter((t) => t.pelanggan_id === pelangganId);
@@ -116,8 +116,8 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 			komentar,
 		});
 		// Refetch sessions & transactions agar tombol langsung hilang
-		queryClient.invalidateQueries(["sessions", pelangganId]);
-		queryClient.invalidateQueries(["transactions", pelangganId]);
+		queryClient.invalidateQueries(["pelangganSessions", pelangganId]);
+		queryClient.invalidateQueries(["pelangganTransactions", pelangganId]);
 		setShowTestimoniModal(false);
 		setTestimoniSession(null);
 	};

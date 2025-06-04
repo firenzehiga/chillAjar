@@ -11,7 +11,7 @@ export function AboutPage() {
 		isLoading: coursesLoading,
 		error: coursesError,
 	} = useQuery({
-		queryKey: ["publicCoursesCount"],
+		queryKey: ["publicCountCourses"],
 		queryFn: async () => {
 			const response = await api.get("/public/kursus	", {
 				headers: localStorage.getItem("token")
@@ -126,7 +126,7 @@ export function AboutPage() {
 								<img
 									src={productManager.image}
 									alt={productManager.name}
-									className="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-blue-100"
+									className="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-yellow-300"
 								/>
 								<h3 className="text-xl font-semibold text-gray-900">
 									{productManager.name}
@@ -142,7 +142,7 @@ export function AboutPage() {
 									<img
 										src={member.image}
 										alt={member.name}
-										className="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-blue-100"
+										className="w-32 h-32 rounded-full mx-auto mb-4 object-cover ring-4 ring-yellow-300"
 									/>
 									<h3 className="text-xl font-semibold text-gray-900">
 										{member.name}
