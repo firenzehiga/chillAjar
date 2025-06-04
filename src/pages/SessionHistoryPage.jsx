@@ -2,7 +2,6 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Calendar, Clock, Monitor, MapPin, DollarSign } from 'lucide-react';
 import api from '../api';
-import { PaymentModal } from '../components/PaymentModal';
 import { TestimoniModal } from '../components/TestimoniModal';
 
 export function SessionHistoryPage({ userData, onPaymentSubmit }) {
@@ -49,27 +48,19 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
             // Cek apakah sudah ada testimoni untuk sesi ini
             const sudahTestimoni =
                 sesi.testimoni || sesi.statusSesi === 'reviewed';
-            // Ambil status sesi (bukan status pembayaran)
-            const statusSesi = sesi.statusSesi || sesi.status || '-';
+            // Ambil status sesi dari field statusSesi pada tabel sesi (mengikuti skema database)
+            const statusSesi = sesi.statusSesi || '-';
             return {
                 id: sesi.id,
                 course: sesi.kursus?.namaKursus || '-',
                 mentor: sesi.mentor?.user?.nama || '-',
                 mentor_id: sesi.mentor?.id || null,
                 date: jadwal?.tanggal || '-',
-                time: jadwal?.waktu.slice(0, 5) || '-',
+                time: jadwal?.waktu?.slice(0, 5) || '-',
                 mode: sesi.kursus?.gayaMengajar || '-',
                 topic: sesi.detailKursus || 'No Topic Specified',
                 location: jadwal?.tempat || '-',
-                status: transaksi
-                    ? transaksi.statusPembayaran === 'menunggu_verifikasi'
-                        ? 'waiting_verification'
-                        : transaksi.statusPembayaran === 'accepted'
-                        ? 'accepted'
-                        : transaksi.statusPembayaran === 'rejected'
-                        ? 'rejected'
-                        : 'pending_payment'
-                    : 'pending_payment',
+                status: statusSesi, // gunakan status sesi langsung dari tabel sesi
                 amount: sesi.mentor?.biayaPerSesi || 0,
                 paymentDate: transaksi?.tanggalPembayaran || null,
                 transaksiId: transaksi?.id,
@@ -81,14 +72,14 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 
     const getStatusStyle = (status) => {
         switch (status) {
-            case 'waiting_verification':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'accepted':
-                return 'bg-green-100 text-green-800';
-            case 'rejected':
-                return 'bg-red-100 text-red-800';
-            case 'pending_payment':
-                return 'bg-blue-100 text-blue-800';
+            case 'pending':
+                return 'bg-gray-200 text-gray-700'; // sesi belum dimulai
+            case 'started':
+                return 'bg-blue-100 text-blue-800'; // sesi sedang berlangsung
+            case 'end':
+                return 'bg-yellow-100 text-yellow-800'; // sesi telah selesai
+            case 'reviewed':
+                return 'bg-green-100 text-green-800'; // sesi telah direview
             default:
                 return 'bg-gray-100 text-gray-800';
         }
@@ -96,31 +87,17 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 
     const getStatusText = (status) => {
         switch (status) {
-            case 'waiting_verification':
-                return 'Waiting for Verification';
-            case 'accepted':
-                return 'Disetujui';
-            case 'rejected':
-                return 'Ditolak';
-            case 'pending_payment':
-                return 'Pending Payment';
+            case 'pending':
+                return 'Belum Dimulai';
+            case 'started':
+                return 'Sedang Berlangsung';
+            case 'end':
+                return 'Selesai';
+            case 'reviewed':
+                return 'Sudah Direview';
             default:
                 return status;
         }
-    };
-
-    const handleContinuePayment = (session) => {
-        setSelectedSession(session);
-        setShowPaymentModal(true);
-    };
-
-    const handlePaymentFromHistory = async (data) => {
-        setUpdatingSessionId(selectedSession.id);
-        await onPaymentSubmit({
-            ...data,
-            transaksiId: selectedSession.transaksiId, // Sertakan transaksiId untuk update
-        });
-        setShowPaymentModal(false);
     };
 
     const handleOpenTestimoni = (session) => {
@@ -165,7 +142,7 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
             <div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
                 <Calendar className="w-12 h-12 text-gray-400 mb-4 animate-pulse" />
                 <h3 className="text-lg font-semibold mb-2 animate-pulse">
-                    Loading history...
+                    Memuat riwayat...
                 </h3>
             </div>
         );
@@ -184,11 +161,10 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
             <div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
                 <Calendar className="w-12 h-12 text-gray-400 mb-4" />
                 <h3 className="text-lg font-semibold mb-2">
-                    No Session History
+                    Tidak Ada Riwayat Sesi
                 </h3>
                 <p className="text-gray-500 mb-4 text-center">
-                    You have no session history yet. Book a session to get
-                    started!
+                    Anda belum memiliki riwayat sesi. Pesan sesi untuk memulai!
                 </p>
             </div>
         );
@@ -197,7 +173,7 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
     return (
         <div className="py-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Session History
+                Riwayat Sesi
             </h2>
             <div className="space-y-4">
                 {history.map((session) => (
@@ -210,7 +186,7 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
                                     {session.course}
                                 </h3>
                                 <p className="text-gray-600">
-                                    with {session.mentor}
+                                    dengan {session.mentor}
                                 </p>
                             </div>
                             {updatingSessionId === session.id ? (
@@ -231,7 +207,7 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
                                             fill="currentColor"
                                             d="M4 12a8 8 0 018-8v8z"></path>
                                     </svg>
-                                    Updating...
+                                    Memperbarui...
                                 </div>
                             ) : (
                                 <span
@@ -266,8 +242,8 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
                                     <MapPin className="w-4 h-4 mr-2 text-blue-600" />
                                 )}
                                 {session.mode === 'online'
-                                    ? 'Online Session'
-                                    : 'Offline Session'}
+                                    ? 'Sesi Online'
+                                    : 'Sesi Offline'}
                             </div>
                             {session.mode === 'offline' && (
                                 <div className="flex items-center text-gray-600">
@@ -285,7 +261,7 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm">
-                                        Payment Date:{' '}
+                                        Tanggal Pembayaran:{' '}
                                         {session.paymentDate
                                             ? new Date(
                                                   session.paymentDate
@@ -308,84 +284,13 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
                                         )}
                                 </div>
                             </div>
-                            {session.status === 'waiting_verification' && (
-                                <div className="mt-4 bg-yellow-50 p-4 rounded-lg">
-                                    <p className="text-yellow-800 text-sm">
-                                        Your payment is being verified. This
-                                        usually takes 1-2 business days. We'll
-                                        notify you once the verification is
-                                        complete.
-                                    </p>
-                                </div>
-                            )}
-                            {session.status === 'accepted' && (
-                                <div className="mt-4 bg-green-50 p-4 rounded-lg">
-                                    <p className="text-green-800 text-sm">
-                                        Your payment is accepted. Please wait
-                                        the mentor to start the session.
-                                    </p>
-                                </div>
-                            )}
-                            {session.status === 'rejected' && (
-                                <div className="mt-4 bg-red-50 p-4 rounded-lg">
-                                    <p className="text-red-800 text-sm mb-3">
-                                        Your payment is rejected. Please wait
-                                        submit a valid payment proof
-                                    </p>
-                                    <button
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                        onClick={() =>
-                                            handleContinuePayment(session)
-                                        }>
-                                        Kirim Ulang Bukti
-                                    </button>
-                                </div>
-                            )}
-                            {session.status === 'pending_payment' && (
-                                <div className="mt-4">
-                                    <button
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                        onClick={() =>
-                                            handleContinuePayment(session)
-                                        }>
-                                        Selesaikan Pembayaran
-                                    </button>
-                                </div>
-                            )}
+                            {/* Hapus seluruh mekanisme pembayaran dari riwayat sesi */}
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Simulasi PaymentModal */}
-            {showPaymentModal && selectedSession && (
-                <PaymentModal
-                    booking={{
-                        course: {
-                            courseName: selectedSession.course,
-                            price_per_hour: selectedSession.amount,
-                        },
-                        mentor: { mentorName: selectedSession.mentor },
-                        date: selectedSession.date,
-                        time: selectedSession.time,
-                        mode: selectedSession.mode,
-                        location: selectedSession.location,
-                        topic: selectedSession.topic, // atau isi sesuai kebutuhan
-                        sesi: {
-                            // tambahkan sesi jika perlu id untuk transaksi
-                            id: selectedSession.id,
-                            pelanggan_id: userData?.pelanggan?.id,
-                            mentor_id: selectedSession.mentor_id, // pastikan ada
-                        },
-                    }}
-                    course={{ courseName: selectedSession.course }}
-                    mentor={{ mentorName: selectedSession.mentor }}
-                    onClose={() => setShowPaymentModal(false)}
-                    onSubmit={handlePaymentFromHistory}
-                />
-            )}
-
-            {/* Simulasi TestimoniModal */}
+            {/* Hapus PaymentModal dari halaman ini, hanya TestimoniModal yang tersisa */}
             {showTestimoniModal && testimoniSession && (
                 <TestimoniModal
                     isOpen={showTestimoniModal}
