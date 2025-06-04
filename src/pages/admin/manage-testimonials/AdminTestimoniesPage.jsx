@@ -1,12 +1,12 @@
 import React from "react";
 import DataTable from "react-data-table-component";
-import { BookOpen, AlertCircle, Star } from "lucide-react";
+import { BookOpen, AlertCircle, Star, Pencil, Trash } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
-export function AdminTestimoniesPage() {
+export function AdminTestimoniesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const queryClient = useQueryClient();
@@ -26,10 +26,39 @@ export function AdminTestimoniesPage() {
 			console.log("Fetched testimonies:", response.data);
 			return response.data;
 		},
+		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching testimonies:", err);
 		},
 	});
+
+	const handleDelete = async (id) => {
+		Swal.fire({
+			title: "Are you sure?",
+			text: "You won't be able to revert this!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#d33",
+			cancelButtonColor: "#3085d6",
+			confirmButtonText: "Yes, delete it!",
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				try {
+					const token = localStorage.getItem("token");
+					await api.delete(`/testimoni/${id}`, {
+						headers: { Authorization: `Bearer ${token}` },
+					});
+
+					queryClient.setQueryData(["adminTestimonies"], (oldData) =>
+						oldData.filter((testimonies) => testimonies.id !== id)
+					);
+					Swal.fire("Deleted!", "testimoni has been deleted.", "success");
+				} catch (err) {
+					Swal.fire("Error!", "Failed to delete testimoni.", "error");
+				}
+			}
+		});
+	};
 
 	// Filter data berdasarkan searchTerm
 	const filteredTestimonies = testimonies.filter((p) => {
@@ -49,6 +78,10 @@ export function AdminTestimoniesPage() {
 			tanggalFormatted.toLowerCase().includes(lower)
 		);
 	});
+
+	const handleEdit = (id) => {
+		onNavigate(`admin-edit-testimonials/${id}`);
+	};
 
 	const columns = [
 		{
@@ -115,6 +148,23 @@ export function AdminTestimoniesPage() {
 					</span>
 				),
 			width: "200px",
+		},
+		{
+			name: "Aksi",
+			cell: (row) => (
+				<div className="flex gap-2">
+					<button
+						onClick={() => handleEdit(row.id)}
+						className="text-blue-600 hover:text-blue-800 outline-none focus:outline-none">
+						<Pencil className="w-4 h-4" />
+					</button>
+					<button
+						onClick={() => handleDelete(row.id)}
+						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
+						<Trash className="w-4 h-4" />
+					</button>
+				</div>
+			),
 		},
 	];
 

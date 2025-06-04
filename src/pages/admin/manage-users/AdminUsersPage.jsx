@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
-import { Users, Plus } from "lucide-react";
+import { Users, Plus, UserPlus } from "lucide-react";
 import api from "../../../api";
 import { AddUserModal } from "../../../components/Admin/AddUserModal"; // Sesuaikan path
 
@@ -72,8 +72,8 @@ export function AdminUsersPage() {
 					<h2 className="text-xl font-semibold">User List</h2>
 					<button
 						onClick={() => setShowAddModal(true)}
-						className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-						<Plus className="w-4 h-4 mr-2" />
+						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+						<UserPlus className="w-4 h-4 mr-2" />
 						Add User
 					</button>
 				</div>

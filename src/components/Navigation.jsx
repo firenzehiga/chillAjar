@@ -64,8 +64,10 @@ export function Navigation({
 				return "Edit Course";
 			case "admin-manage-mentors":
 				return "Mentors";
-			case "admin-testimonials":
+			case "admin-testimonial":
 				return "Mentor Testimonials";
+			case "admin-edit-testimonial":
+				return "Edit Mentor Testimonials";
 
 			// Halaman Mentor
 			case "mentor-dashboard":
@@ -78,7 +80,7 @@ export function Navigation({
 				return "Schedule";
 			case "mentor-manage-courses":
 				return "My Courses";
-			case "mentor-testimonials":
+			case "mentor-testimonial":
 				return "Testimonies";
 			case "mentor-add-course":
 				return "Add Course";
@@ -89,6 +91,17 @@ export function Navigation({
 		}
 	};
 
+	const roleCheck = {
+		admin: {
+			redirect: "admin-dashboard",
+		},
+		mentor: {
+			redirect: "mentor-dashboard",
+		},
+		user: {
+			redirect: "home",
+		},
+	};
 	const renderNavLinks = () => {
 		if (userRole === "admin") {
 			return (
@@ -144,9 +157,9 @@ export function Navigation({
 						Mentors
 					</a>
 					<a
-						onClick={() => onNavigate("admin-testimonials")}
+						onClick={() => onNavigate("admin-testimonial")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "admin-testimonials"
+							currentPage === "admin-testimonial"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
@@ -191,9 +204,9 @@ export function Navigation({
 						My Courses
 					</a>
 					<a
-						onClick={() => onNavigate("mentor-testimonials")}
+						onClick={() => onNavigate("mentor-testimonial")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-							currentPage === "mentor-testimonials"
+							currentPage === "mentor-testimonial"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
@@ -408,7 +421,7 @@ export function Navigation({
 					<div className="flex items-center">
 						<div
 							className="flex items-center cursor-pointer"
-							onClick={() => onNavigate("home")}>
+							onClick={() => onNavigate(roleCheck[userRole].redirect)}>
 							<img
 								src={titleLogo}
 								alt="Logo ChillAjar"

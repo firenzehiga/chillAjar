@@ -2,36 +2,64 @@ import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { UserCheck, Plus, Pencil, Trash, Star } from "lucide-react";
 import api from "../../../api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
-export function AdminMentorsPage() {
-	const [mentors, setMentors] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+export function AdminMentorsPage({ onNavigate }) {
+	const queryClient = useQueryClient();
 
-	useEffect(() => {
-		const fetchMentors = async () => {
-			try {
-				const response = await api.get("/admin/mentor", {
-					headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }, // Sertakan token di header
-				});
-				// Pastikan response.data adalah array
-				if (Array.isArray(response.data)) {
-					setMentors(response.data);
-				} else {
-					setMentors([]);
-					console.warn("API response is not an array:", response.data);
+	// Fetch data transaksi yang mencakup detail sesi
+	const {
+		data: mentors = [],
+		isLoading,
+		error,
+	} = useQuery({
+		queryKey: ["adminMentors"],
+		queryFn: async () => {
+			const token = localStorage.getItem("token");
+			const response = await api.get("/admin/mentor", {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			console.log("Fetched mentors:", response.data);
+			return response.data;
+		},
+		retry: 1, // Hanya coba ulang sekali jika gagal
+		onError: (err) => {
+			console.error("Error fetching Mentors:", err);
+		},
+	});
+
+	const handleEdit = (id) => {
+		onNavigate(`admin-edit-mentor/${id}`);
+	};
+
+	const handleDelete = async (id) => {
+		Swal.fire({
+			title: "Are you sure?",
+			text: "You won't be able to revert this!",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#d33",
+			cancelButtonColor: "#3085d6",
+			confirmButtonText: "Yes, delete it!",
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				try {
+					const token = localStorage.getItem("token");
+					await api.delete(`/admin/mentor/${id}`, {
+						headers: { Authorization: `Bearer ${token}` },
+					});
+
+					queryClient.setQueryData(["adminMentors"], (oldData) =>
+						oldData.filter((mentor) => mentor.id !== id)
+					);
+					Swal.fire("Deleted!", response?.data?.message, "success");
+				} catch (err) {
+					Swal.fire("Error!", "Failed to delete mentor.", "error");
 				}
-				setLoading(false);
-			} catch (err) {
-				setError(
-					"Gagal mengambil data mentor: " +
-						(err.response?.data?.message || err.message)
-				);
-				setLoading(false);
 			}
-		};
-		fetchMentors();
-	}, []);
+		});
+	};
 
 	const columns = [
 		{
@@ -66,10 +94,14 @@ export function AdminMentorsPage() {
 			name: "Aksi",
 			cell: (row) => (
 				<div className="flex gap-2">
-					<button className="text-blue-600 hover:text-blue-800">
+					<button
+						onClick={() => handleEdit(row.id)}
+						className="text-blue-600 hover:text-blue-800 outline-none focus:outline-none">
 						<Pencil className="w-4 h-4" />
 					</button>
-					<button className="text-red-600 hover:text-red-800">
+					<button
+						onClick={() => handleDelete(row.id)}
+						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
 						<Trash className="w-4 h-4" />
 					</button>
 				</div>
@@ -77,7 +109,7 @@ export function AdminMentorsPage() {
 		},
 	];
 
-	if (loading) {
+	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
 				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
@@ -112,10 +144,6 @@ export function AdminMentorsPage() {
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Mentor Management</h2>
-					<button className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
-						<Plus className="w-4 h-4 mr-2" />
-						Add Mentor
-					</button>
 				</div>
 
 				<DataTable

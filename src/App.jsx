@@ -30,8 +30,10 @@ import { AdminUsersPage } from "./pages/admin/manage-users/AdminUsersPage";
 import { AdminCoursesPage } from "./pages/admin/manage-courses/AdminCoursesPage";
 import { AdminFormCoursePage } from "./pages/admin/manage-courses/FormCoursePage";
 import { AdminMentorsPage } from "./pages/admin/manage-mentors/AdminMentorsPage";
+import { AdminFormMentorsPage } from "./pages/admin/manage-mentors/FormMentorsPage";
 import { AdminPaymentsPage } from "./pages/admin/manage-payments/AdminPaymentsPage";
 import { AdminTestimoniesPage } from "./pages/admin/manage-testimonials/AdminTestimoniesPage";
+import { AdminFormTestimoniesPage } from "./pages/admin/manage-testimonials/FormTestimoniesPage";
 // Halaman Mentor
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/sessions/MentorSchedulePage";
@@ -57,16 +59,19 @@ const adminPages = [
 	"admin-add-course",
 	"admin-edit-course",
 	"admin-manage-mentors",
+	"admin-add-mentor",
+	"admin-edit-mentor",
 	"admin-profile",
 	"admin-edit-profile",
-	"admin-testimonials",
+	"admin-testimonial",
+	"admin-edit-testimonial",
 ];
 const mentorPages = [
 	"mentor-dashboard",
 	"mentor-manage-schedule",
 	"mentor-manage-courses",
 	"mentor-manage-students",
-	"mentor-testimonials",
+	"mentor-testimonial",
 	"mentor-add-course",
 	"mentor-edit-course",
 	"mentor-profile",
@@ -649,6 +654,23 @@ function App() {
 				);
 			}
 
+			if (currentPage.startsWith("admin-edit-testimonial")) {
+				const id = currentPage.split("admin-edit-testimonial/")[1];
+				return (
+					<AdminFormTestimoniesPage
+						onNavigate={handleNavigate}
+						testimonieId={id}
+					/>
+				);
+			}
+
+			if (currentPage.startsWith("admin-edit-mentor")) {
+				const id = currentPage.split("admin-edit-mentor/")[1];
+				return (
+					<AdminFormMentorsPage onNavigate={handleNavigate} mentorId={id} />
+				);
+			}
+
 			// Gunakan switch untuk halaman statis
 			if (adminPages.includes(currentPage)) {
 				switch (currentPage) {
@@ -675,14 +697,18 @@ function App() {
 						return <AdminUsersPage />;
 					case "admin-manage-payments":
 						return <AdminPaymentsPage />;
-					case "admin-testimonials":
-						return <AdminTestimoniesPage />;
+					case "admin-testimonial":
+						return <AdminTestimoniesPage onNavigate={handleNavigate} />;
 					case "admin-manage-courses":
 						return <AdminCoursesPage onNavigate={handleNavigate} />;
 					case "admin-add-course":
 						return <AdminFormCoursePage onNavigate={handleNavigate} />;
 					case "admin-manage-mentors":
-						return <AdminMentorsPage />;
+						return <AdminMentorsPage onNavigate={handleNavigate} />;
+					case "admin-add-mentor":
+						return <AdminFormMentorsPage onNavigate={handleNavigate} />;
+					case "admin-edit-mentor":
+						return <AdminFormMentorsPage onNavigate={handleNavigate} />;
 					default:
 						break;
 				}
@@ -724,7 +750,7 @@ function App() {
 						return <MentorSchedulePage />;
 					case "mentor-manage-courses":
 						return <MentorCoursesPage onNavigate={handleNavigate} />;
-					case "mentor-testimonials":
+					case "mentor-testimonial":
 						return <MentorTestimoniesPage />;
 					// case "mentor-students":
 					// 	return <MentorStudentsPage />;

@@ -20,7 +20,7 @@ export function AdminDashboard() {
 		isLoading: usersLoading, // status loading (true/false)
 		error: usersError, // error jika terjadi kesalahan
 	} = useQuery({
-		queryKey: ["adminUsers"], // query key untuk cache
+		queryKey: ["users"], // query key untuk cache
 		queryFn: async () => {
 			// query function untuk mengambil data dari API
 			const response = await api.get("/admin/users", {
@@ -52,7 +52,7 @@ export function AdminDashboard() {
 		isLoading: mentorsLoading,
 		error: mentorsError,
 	} = useQuery({
-		queryKey: ["adminMentors"],
+		queryKey: ["mentors"],
 		queryFn: async () => {
 			const response = await api.get("/admin/mentor", {
 				headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
