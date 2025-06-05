@@ -265,6 +265,20 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 								</div>
 							)}
 						</div>
+						<div className="border-t pt-4 mt-4">
+							<div className="flex items-center justify-between text-gray-600">
+								<div className="flex items-center"></div>
+								<div className="flex items-center gap-2">
+									{!session.sudahTestimoni && session.statusSesi === "end" && (
+										<button
+											className="ml-4 px-4 py-2 bg-yellow-400 text-white rounded-lg hover:bg-yellow-500"
+											onClick={() => handleOpenTestimoni(session)}>
+											Beri Testimoni
+										</button>
+									)}
+								</div>
+							</div>
+						</div>
 					</div>
 				))}
 			</div>

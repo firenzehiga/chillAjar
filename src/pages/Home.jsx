@@ -62,7 +62,8 @@ export function Home({
 
 	// Filter sesi yang sedang berlangsung (started) untuk pelanggan ini
 	const ongoingSessions = sessions.filter(
-		(session) => session.statusSesi === "started"
+		(session) =>
+			session.statusSesi === "started" || session.statusSesi === "end"
 	);
 
 	if (errorSessions) {
@@ -120,13 +121,23 @@ export function Home({
 											<h3 className="text-xl font-semibold text-white">
 												{session.kursus?.namaKursus || "Unknown Course"}
 											</h3>
-											<span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-red-600 rounded-full text-sm font-medium">
-												<span className="relative flex h-3 w-3">
-													<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-													<span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+											{session.statusSesi === "end" ? (
+												<span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-green-600 rounded-full text-sm font-medium">
+													<span className="relative flex h-3 w-3">
+														<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+														<span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+													</span>
+													Selesai
 												</span>
-												On Going
-											</span>
+											) : (
+												<span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-red-600 rounded-full text-sm font-medium">
+													<span className="relative flex h-3 w-3">
+														<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+														<span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+													</span>
+													On Going
+												</span>
+											)}
 										</div>
 									</div>
 									<div className="p-6">
