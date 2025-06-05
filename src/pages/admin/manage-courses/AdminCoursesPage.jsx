@@ -30,31 +30,39 @@ export function AdminCoursesPage({ onNavigate }) {
 			});
 			return response.data;
 		},
+		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching courses:", err);
 		},
-		retry: 1, // Hanya coba ulang sekali jika gagal
 	});
 
 	// Gunakan useMutation untuk delete
 	const deleteCourseMutation = useMutation({
+		// Function untuk menghapus kursus berdasarkan ID
 		mutationFn: async (id) => {
-			const token = localStorage.getItem("token");
+			const token = localStorage.getItem("token"); // Ambil token dari local storage
+
+			// Lakukan request DELETE ke endpoint kursus dengan menyertakan token di header
 			return api.delete(`/kursus/${id}`, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 		},
+		// Kode ini akan dijalankan jika proses delete berhasil
 		onSuccess: (_, id) => {
+			// Hapus data course dari cache
 			queryClient.setQueryData(["adminCourses"], (oldData) =>
 				oldData.filter((course) => course.id !== id)
 			);
-			Swal.fire("Deleted!", "Course has been deleted.", "success");
+			Swal.fire("Deleted!", "Course has been deleted.", "success"); // Tampilkan pesan sukses
 		},
+
+		// Kode ini akan dijalankan jika proses delete gagal
 		onError: () => {
-			Swal.fire("Error!", "Failed to delete course.", "error");
+			Swal.fire("Error!", "Failed to delete course.", "error"); // Tampilkan pesan error
 		},
 	});
 
+	// Fungsi untuk menangani penghapusan kursus
 	const handleDelete = (id) => {
 		Swal.fire({
 			title: "Are you sure?",
@@ -66,15 +74,17 @@ export function AdminCoursesPage({ onNavigate }) {
 			confirmButtonText: "Yes, delete it!",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				deleteCourseMutation.mutate(id);
+				deleteCourseMutation.mutate(id); // Panggil fungsi deleteMutation dengan ID kursus
 			}
 		});
 	};
 
+	// Saat tombol edit diklik, navigasikan ke halaman edit course
 	const handleEdit = (id) => {
 		onNavigate(`admin-edit-course/${id}`);
 	};
 
+	// Kolom untuk DataTable
 	const columns = [
 		{
 			name: "No",
@@ -140,6 +150,7 @@ export function AdminCoursesPage({ onNavigate }) {
 		},
 	];
 
+	// Jika Error saat fetching data terjadi, tampilkan pesan error
 	if (error) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
@@ -151,7 +162,8 @@ export function AdminCoursesPage({ onNavigate }) {
 			</div>
 		);
 	}
-	// Filter data berdasarkan searchTerm
+
+	// Filter data untuk DataTable berdasarkan searchTerm
 	const filteredCourses = courses.filter((p) => {
 		const lower = searchTerm.toLowerCase();
 
@@ -163,6 +175,7 @@ export function AdminCoursesPage({ onNavigate }) {
 		);
 	});
 
+	// Tampilan halaman
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -183,6 +196,8 @@ export function AdminCoursesPage({ onNavigate }) {
 						Add Course
 					</button>
 				</div>
+
+				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
 						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
@@ -197,7 +212,9 @@ export function AdminCoursesPage({ onNavigate }) {
 						</p>
 					</div>
 				) : (
+					// Jika data sudah ada, tampilkan DataTable
 					<>
+						{/* Form pencarian */}
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"
@@ -207,6 +224,7 @@ export function AdminCoursesPage({ onNavigate }) {
 								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
 							/>
 						</div>
+						{/* Tampilan DataTable */}
 						<DataTable
 							columns={columns}
 							data={filteredCourses}
@@ -244,10 +262,11 @@ export function AdminCoursesPage({ onNavigate }) {
 													</p>
 												</div>
 											);
-										}) || <p>No schedules available</p>}
+										})}
 									</span>
 								</div>
 							)}
+							// Tambahkan penanganan jika data kosong
 							noDataComponent={
 								<p className="p-4 text-gray-500">No courses available</p>
 							}

@@ -38,28 +38,31 @@ export function AdminMentorsPage({ onNavigate }) {
 		},
 	});
 
-	const handleEdit = (id) => {
-		onNavigate(`admin-edit-mentor/${id}`);
-	};
-
+	// Gunakan useMutation untuk delete
 	const deleteMentorMutation = useMutation({
+		// Function untuk menghapus mentor berdasarkan ID
 		mutationFn: async (id) => {
-			const token = localStorage.getItem("token");
+			const token = localStorage.getItem("token"); // Ambil token dari local storage
+
+			// Lakukan request DELETE ke endpoint kursus dengan menyertakan token di header
 			return api.delete(`/admin/mentor/${id}`, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 		},
+		// Kode ini akan dijalankan jika proses delete berhasil
 		onSuccess: (_, id) => {
+			// Hapus data course dari cache
 			queryClient.setQueryData(["adminMentors"], (oldData) =>
 				oldData.filter((mentor) => mentor.id !== id)
 			);
-			Swal.fire("Deleted!", "Mentor berhasil dihapus.", "success");
+			Swal.fire("Deleted!", "Mentor berhasil dihapus.", "success"); // Tampilkan pesan sukses
 		},
 		onError: () => {
-			Swal.fire("Error!", "Gagal menghapus mentor.", "error");
+			Swal.fire("Error!", "Gagal menghapus mentor.", "error"); // Tampilkan pesan error
 		},
 	});
 
+	// Fungsi untuk menangani penghapusan mentor
 	const handleDelete = (id) => {
 		Swal.fire({
 			title: "Are you sure?",
@@ -71,10 +74,17 @@ export function AdminMentorsPage({ onNavigate }) {
 			confirmButtonText: "Yes, delete it!",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				deleteMentorMutation.mutate(id);
+				deleteMentorMutation.mutate(id); // Panggil fungsi deleteMutation dengan ID mentor
 			}
 		});
 	};
+
+	// Saat tombol edit diklik, navigasikan ke halaman edit course
+	const handleEdit = (id) => {
+		onNavigate(`admin-edit-mentor/${id}`);
+	};
+
+	// Kolom untuk DataTable
 	const columns = [
 		{
 			name: "No",
@@ -123,6 +133,7 @@ export function AdminMentorsPage({ onNavigate }) {
 		},
 	];
 
+	// Jika Error saat fetching data terjadi, tampilkan pesan error
 	if (error) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
@@ -135,12 +146,13 @@ export function AdminMentorsPage({ onNavigate }) {
 		);
 	}
 
-	// Filter data berdasarkan searchTerm
+	// Filter data untuk DataTable berdasarkan searchTerm
 	const filteredMentors = mentors.filter((p) => {
 		const lower = searchTerm.toLowerCase();
 		return p.user?.nama?.toLowerCase().includes(lower);
 	});
 
+	// Tampilan halaman
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -155,6 +167,7 @@ export function AdminMentorsPage({ onNavigate }) {
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Mentor Management</h2>
 				</div>
+				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
 						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
@@ -169,7 +182,9 @@ export function AdminMentorsPage({ onNavigate }) {
 						</p>
 					</div>
 				) : (
+					// Jika data sudah ada, tampilkan DataTable
 					<>
+						{/* Form pencarian */}
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"
@@ -179,6 +194,7 @@ export function AdminMentorsPage({ onNavigate }) {
 								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
 							/>
 						</div>
+						{/* Tampilan DataTable */}
 						<DataTable
 							columns={columns}
 							data={filteredMentors}
