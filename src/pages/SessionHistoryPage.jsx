@@ -40,14 +40,29 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 		enabled: !!pelangganId,
 	});
 
+	// Ambil transaksi yang statusnya "accepted"
+	const acceptedTransactions = transactions.filter(
+		(trx) => trx.statusPembayaran === "accepted"
+	);
+
+	// Filter sesi yang hanya punya transaksi accepted
+	const filteredSessions = sessions.filter((sesi) =>
+		acceptedTransactions.some((trx) => trx.sesi_id === sesi.id)
+	);
+
 	const history = useMemo(() => {
 		if (!sessions.length) return [];
-		return sessions.map((sesi) => {
+		// Filter hanya sesi yang sudah pembayaran accepted
+		const acceptedTransactions = transactions.filter(
+			(trx) => trx.statusPembayaran === "accepted"
+		);
+		const filteredSessions = sessions.filter((sesi) =>
+			acceptedTransactions.some((trx) => trx.sesi_id === sesi.id)
+		);
+		return filteredSessions.map((sesi) => {
 			const transaksi = transactions.find((t) => t.sesi_id === sesi.id);
 			const jadwal = sesi.jadwal_kursus || sesi.jadwalKursus;
-			// Cek apakah sudah ada testimoni untuk sesi ini
 			const sudahTestimoni = sesi.testimoni || sesi.statusSesi === "reviewed";
-			// Ambil status sesi dari field statusSesi pada tabel sesi (mengikuti skema database)
 			const statusSesi = sesi.statusSesi || "-";
 			return {
 				id: sesi.id,
@@ -59,16 +74,15 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 				mode: sesi.kursus?.gayaMengajar || "-",
 				topic: sesi.detailKursus || "No Topic Specified",
 				location: jadwal?.tempat || "-",
-				status: statusSesi, // gunakan status sesi langsung dari tabel sesi
+				status: statusSesi,
 				amount: sesi.mentor?.biayaPerSesi || 0,
 				paymentDate: transaksi?.tanggalPembayaran || null,
 				transaksiId: transaksi?.id,
-				sudahTestimoni, // tambahkan flag
-				statusSesi, // tambahkan status sesi
+				sudahTestimoni,
+				statusSesi,
 			};
 		});
 	}, [sessions, transactions]);
-
 	const getStatusStyle = (status) => {
 		switch (status) {
 			case "pending":

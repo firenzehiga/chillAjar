@@ -32,6 +32,8 @@ import { AdminFormCoursePage } from "./pages/admin/manage-courses/FormCoursePage
 import { AdminMentorsPage } from "./pages/admin/manage-mentors/AdminMentorsPage";
 import { AdminFormMentorsPage } from "./pages/admin/manage-mentors/FormMentorsPage";
 import { AdminPaymentsPage } from "./pages/admin/manage-payments/AdminPaymentsPage";
+import { AdminSessionsPage } from "./pages/admin/manage-sessions/AdminSessionsPage";
+import { AdminFormSessionsPage } from "./pages/admin/manage-sessions/FormSessionsPage";
 import { AdminTestimoniesPage } from "./pages/admin/manage-testimonials/AdminTestimoniesPage";
 import { AdminFormTestimoniesPage } from "./pages/admin/manage-testimonials/FormTestimoniesPage";
 // Halaman Mentor
@@ -55,6 +57,8 @@ const adminPages = [
 	"admin-dashboard",
 	"admin-manage-users",
 	"admin-manage-payments",
+	"admin-manage-sessions",
+	"admin-edit-session",
 	"admin-manage-courses",
 	"admin-add-course",
 	"admin-edit-course",
@@ -671,6 +675,12 @@ function App() {
 				);
 			}
 
+			if (currentPage.startsWith("admin-edit-session")) {
+				const id = currentPage.split("admin-edit-session/")[1];
+				return (
+					<AdminFormSessionsPage onNavigate={handleNavigate} sessionId={id} />
+				);
+			}
 			// Gunakan switch untuk halaman statis
 			if (adminPages.includes(currentPage)) {
 				switch (currentPage) {
@@ -697,6 +707,8 @@ function App() {
 						return <AdminUsersPage />;
 					case "admin-manage-payments":
 						return <AdminPaymentsPage />;
+					case "admin-manage-sessions":
+						return <AdminSessionsPage onNavigate={handleNavigate} />;
 					case "admin-testimonial":
 						return <AdminTestimoniesPage onNavigate={handleNavigate} />;
 					case "admin-manage-courses":

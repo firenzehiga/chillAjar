@@ -15,6 +15,7 @@ import {
 	UserCheck,
 	LucideUserSquare2,
 	CircleDollarSign,
+	UserSquare2,
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 
@@ -56,6 +57,10 @@ export function Navigation({
 				return "Users";
 			case "admin-manage-payments":
 				return "Payments";
+			case "admin-manage-sessions":
+				return "Sessions";
+			case "admin-edit-session":
+				return "Edit Session";
 			case "admin-manage-courses":
 				return "Courses";
 			case "admin-add-course":
@@ -135,6 +140,16 @@ export function Navigation({
 						}`}>
 						<CircleDollarSign className="w-4 h-4 inline-block mr-1" />
 						Payments
+					</a>
+					<a
+						onClick={() => onNavigate("admin-manage-sessions")}
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+							currentPage === "admin-manage-sessions"
+								? "bg-yellow-500 text-gray-900"
+								: "text-gray-900 hover:bg-yellow-500"
+						}`}>
+						<UserSquare2 className="w-4 h-4 inline-block mr-1" />
+						Sessions
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-courses")}
