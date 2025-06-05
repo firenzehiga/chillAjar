@@ -7,7 +7,7 @@ import {
 	AlertCircle,
 	LucideBookPlus,
 } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../api";
 import Swal from "sweetalert2";
 
@@ -36,7 +36,26 @@ export function AdminCoursesPage({ onNavigate }) {
 		retry: 1, // Hanya coba ulang sekali jika gagal
 	});
 
-	const handleDelete = async (id) => {
+	// Gunakan useMutation untuk delete
+	const deleteCourseMutation = useMutation({
+		mutationFn: async (id) => {
+			const token = localStorage.getItem("token");
+			return api.delete(`/kursus/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+		},
+		onSuccess: (_, id) => {
+			queryClient.setQueryData(["adminCourses"], (oldData) =>
+				oldData.filter((course) => course.id !== id)
+			);
+			Swal.fire("Deleted!", "Course has been deleted.", "success");
+		},
+		onError: () => {
+			Swal.fire("Error!", "Failed to delete course.", "error");
+		},
+	});
+
+	const handleDelete = (id) => {
 		Swal.fire({
 			title: "Are you sure?",
 			text: "You won't be able to revert this!",
@@ -45,20 +64,9 @@ export function AdminCoursesPage({ onNavigate }) {
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Yes, delete it!",
-		}).then(async (result) => {
+		}).then((result) => {
 			if (result.isConfirmed) {
-				try {
-					const token = localStorage.getItem("token");
-					await api.delete(`/kursus/${id}`, {
-						headers: { Authorization: `Bearer ${token}` },
-					});
-					queryClient.setQueryData(["adminCourses"], (oldData) =>
-						oldData.filter((course) => course.id !== id)
-					);
-					Swal.fire("Deleted!", "Course has been deleted.", "success");
-				} catch (err) {
-					Swal.fire("Error!", "Failed to delete course.", "error");
-				}
+				deleteCourseMutation.mutate(id);
 			}
 		});
 	};

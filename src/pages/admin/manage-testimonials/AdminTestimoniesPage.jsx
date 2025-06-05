@@ -32,7 +32,25 @@ export function AdminTestimoniesPage({ onNavigate }) {
 		},
 	});
 
-	const handleDelete = async (id) => {
+	const deleteTestimonyMutation = useMutation({
+		mutationFn: async (id) => {
+			const token = localStorage.getItem("token");
+			return api.delete(`/testimoni/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+		},
+		onSuccess: (_, id) => {
+			queryClient.setQueryData(["adminTestimonies"], (oldData) =>
+				oldData.filter((t) => t.id !== id)
+			);
+			Swal.fire("Deleted!", "Testimoni berhasil dihapus.", "success");
+		},
+		onError: () => {
+			Swal.fire("Error!", "Gagal menghapus testimoni.", "error");
+		},
+	});
+
+	const handleDelete = (id) => {
 		Swal.fire({
 			title: "Are you sure?",
 			text: "You won't be able to revert this!",
@@ -41,21 +59,9 @@ export function AdminTestimoniesPage({ onNavigate }) {
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Yes, delete it!",
-		}).then(async (result) => {
+		}).then((result) => {
 			if (result.isConfirmed) {
-				try {
-					const token = localStorage.getItem("token");
-					await api.delete(`/testimoni/${id}`, {
-						headers: { Authorization: `Bearer ${token}` },
-					});
-
-					queryClient.setQueryData(["adminTestimonies"], (oldData) =>
-						oldData.filter((testimonies) => testimonies.id !== id)
-					);
-					Swal.fire("Deleted!", "testimoni has been deleted.", "success");
-				} catch (err) {
-					Swal.fire("Error!", "Failed to delete testimoni.", "error");
-				}
+				deleteTestimonyMutation.mutate(id);
 			}
 		});
 	};

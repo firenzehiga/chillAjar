@@ -42,7 +42,25 @@ export function AdminMentorsPage({ onNavigate }) {
 		onNavigate(`admin-edit-mentor/${id}`);
 	};
 
-	const handleDelete = async (id) => {
+	const deleteMentorMutation = useMutation({
+		mutationFn: async (id) => {
+			const token = localStorage.getItem("token");
+			return api.delete(`/admin/mentor/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+		},
+		onSuccess: (_, id) => {
+			queryClient.setQueryData(["adminMentors"], (oldData) =>
+				oldData.filter((mentor) => mentor.id !== id)
+			);
+			Swal.fire("Deleted!", "Mentor berhasil dihapus.", "success");
+		},
+		onError: () => {
+			Swal.fire("Error!", "Gagal menghapus mentor.", "error");
+		},
+	});
+
+	const handleDelete = (id) => {
 		Swal.fire({
 			title: "Are you sure?",
 			text: "You won't be able to revert this!",
@@ -51,25 +69,12 @@ export function AdminMentorsPage({ onNavigate }) {
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Yes, delete it!",
-		}).then(async (result) => {
+		}).then((result) => {
 			if (result.isConfirmed) {
-				try {
-					const token = localStorage.getItem("token");
-					await api.delete(`/admin/mentor/${id}`, {
-						headers: { Authorization: `Bearer ${token}` },
-					});
-
-					queryClient.setQueryData(["adminMentors"], (oldData) =>
-						oldData.filter((mentor) => mentor.id !== id)
-					);
-					Swal.fire("Deleted!", response?.data?.message, "success");
-				} catch (err) {
-					Swal.fire("Error!", "Failed to delete mentor.", "error");
-				}
+				deleteMentorMutation.mutate(id);
 			}
 		});
 	};
-
 	const columns = [
 		{
 			name: "No",
