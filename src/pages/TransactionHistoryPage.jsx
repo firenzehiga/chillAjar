@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Calendar, Clock, Monitor, MapPin, DollarSign } from 'lucide-react';
-import api from '../api';
-import { PaymentModal } from '../components/PaymentModal';
+import React, { useMemo, useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Calendar, Clock, Monitor, MapPin, DollarSign } from "lucide-react";
+import api from "../api";
+import { PaymentModal } from "../components/PaymentModal";
 
 export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -17,9 +17,9 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
         isLoading: loadingSessions,
         error: errorSessions,
     } = useQuery({
-        queryKey: ['sessions', pelangganId],
+        queryKey: ["sessions", pelangganId],
         queryFn: async () => {
-            const res = await api.get('/pelanggan/daftar-sesi');
+            const res = await api.get("/pelanggan/daftar-sesi");
             return res.data;
         },
         enabled: !!pelangganId,
@@ -30,9 +30,9 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
         isLoading: loadingTransactions,
         error: errorTransactions,
     } = useQuery({
-        queryKey: ['transactions', pelangganId],
+        queryKey: ["transactions", pelangganId],
         queryFn: async () => {
-            const res = await api.get('/transaksi');
+            const res = await api.get("/transaksi");
             return res.data.filter((t) => t.pelanggan_id === pelangganId);
         },
         enabled: !!pelangganId,
@@ -44,26 +44,28 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
             const transaksi = transactions.find((t) => t.sesi_id === sesi.id);
             const jadwal = sesi.jadwal_kursus || sesi.jadwalKursus;
             // Ambil status sesi (bukan status pembayaran)
-            const statusSesi = sesi.status || sesi.statusSesi || '-';
+            const statusSesi = sesi.status || sesi.statusSesi || "-";
+            // Gunakan gayaMengajar dari jadwal_kursus
+            const mode = jadwal?.gayaMengajar || "-";
             return {
                 id: sesi.id,
-                course: sesi.kursus?.namaKursus || '-',
-                mentor: sesi.mentor?.user?.nama || '-',
+                course: sesi.kursus?.namaKursus || "-",
+                mentor: sesi.mentor?.user?.nama || "-",
                 mentor_id: sesi.mentor?.id || null,
-                date: jadwal?.tanggal || '-',
-                time: jadwal?.waktu.slice(0, 5) || '-',
-                mode: sesi.kursus?.gayaMengajar || '-',
-                topic: sesi.detailKursus || 'No Topic Specified',
-                location: jadwal?.tempat || '-',
+                date: jadwal?.tanggal || "-",
+                time: jadwal?.waktu.slice(0, 5) || "-",
+                mode: mode,
+                topic: sesi.detailKursus || "No Topic Specified",
+                location: jadwal?.tempat || "-",
                 status: transaksi
-                    ? transaksi.statusPembayaran === 'menunggu_verifikasi'
-                        ? 'waiting_verification'
-                        : transaksi.statusPembayaran === 'accepted'
-                        ? 'accepted'
-                        : transaksi.statusPembayaran === 'rejected'
-                        ? 'rejected'
-                        : 'pending_payment'
-                    : 'pending_payment',
+                    ? transaksi.statusPembayaran === "menunggu_verifikasi"
+                        ? "waiting_verification"
+                        : transaksi.statusPembayaran === "accepted"
+                        ? "accepted"
+                        : transaksi.statusPembayaran === "rejected"
+                        ? "rejected"
+                        : "pending_payment"
+                    : "pending_payment",
                 amount: sesi.mentor?.biayaPerSesi || 0,
                 paymentDate: transaksi?.tanggalPembayaran || null,
                 transaksiId: transaksi?.id,
@@ -74,29 +76,29 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 
     const getStatusStyle = (status) => {
         switch (status) {
-            case 'waiting_verification':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'accepted':
-                return 'bg-green-100 text-green-800';
-            case 'rejected':
-                return 'bg-red-100 text-red-800';
-            case 'pending_payment':
-                return 'bg-blue-100 text-blue-800';
+            case "waiting_verification":
+                return "bg-yellow-100 text-yellow-800";
+            case "accepted":
+                return "bg-green-100 text-green-800";
+            case "rejected":
+                return "bg-red-100 text-red-800";
+            case "pending_payment":
+                return "bg-blue-100 text-blue-800";
             default:
-                return 'bg-gray-100 text-gray-800';
+                return "bg-gray-100 text-gray-800";
         }
     };
 
     const getStatusText = (status) => {
         switch (status) {
-            case 'waiting_verification':
-                return 'Menunggu Verifikasi';
-            case 'accepted':
-                return 'Disetujui';
-            case 'rejected':
-                return 'Ditolak';
-            case 'pending_payment':
-                return 'Menunggu Pembayaran';
+            case "waiting_verification":
+                return "Menunggu Verifikasi";
+            case "accepted":
+                return "Disetujui";
+            case "rejected":
+                return "Ditolak";
+            case "pending_payment":
+                return "Menunggu Pembayaran";
             default:
                 return status;
         }
@@ -121,8 +123,8 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
         const updatedSession = history.find((s) => s.id === updatingSessionId);
         if (
             updatedSession &&
-            updatedSession.status !== 'pending_payment' &&
-            updatedSession.status !== 'rejected'
+            updatedSession.status !== "pending_payment" &&
+            updatedSession.status !== "rejected"
         ) {
             setUpdatingSessionId(null);
         }
@@ -217,29 +219,33 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
                             <div className="flex items-center text-gray-600">
                                 <Calendar className="w-4 h-4 mr-2 text-blue-600" />
                                 {new Date(session.date).toLocaleDateString(
-                                    'id-ID',
+                                    "id-ID",
                                     {
-                                        day: 'numeric',
-                                        month: 'long',
-                                        year: 'numeric',
+                                        day: "numeric",
+                                        month: "long",
+                                        year: "numeric",
                                     }
-                                )}{' '}
+                                )}{" "}
                             </div>
                             <div className="flex items-center text-gray-600">
                                 <Clock className="w-4 h-4 mr-2 text-blue-600" />
                                 Jam Mulai: {session.time}
                             </div>
                             <div className="flex items-center text-gray-600">
-                                {session.mode === 'online' ? (
+                                {session.mode === "online" ? (
                                     <Monitor className="w-4 h-4 mr-2 text-blue-600" />
+                                ) : session.mode === "offline" ? (
+                                    <MapPin className="w-4 h-4 mr-2 text-blue-600" />
                                 ) : (
                                     <MapPin className="w-4 h-4 mr-2 text-blue-600" />
                                 )}
-                                {session.mode === 'online'
-                                    ? 'Sesi Online'
-                                    : 'Sesi Offline'}
+                                {session.mode === "online"
+                                    ? "Sesi Online"
+                                    : session.mode === "offline"
+                                    ? "Sesi Offline"
+                                    : "Data mode tidak valid"}
                             </div>
-                            {session.mode === 'offline' && (
+                            {session.mode === "offline" && (
                                 <div className="flex items-center text-gray-600">
                                     <MapPin className="w-4 h-4 mr-2 text-blue-600" />
                                     Lokasi: {session.location}
@@ -255,20 +261,20 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm">
-                                        Tanggal Pembayaran:{' '}
+                                        Tanggal Pembayaran:{" "}
                                         {session.paymentDate
                                             ? new Date(
                                                   session.paymentDate
-                                              ).toLocaleDateString('id-ID', {
-                                                  day: 'numeric',
-                                                  month: 'long',
-                                                  year: 'numeric',
+                                              ).toLocaleDateString("id-ID", {
+                                                  day: "numeric",
+                                                  month: "long",
+                                                  year: "numeric",
                                               })
-                                            : '-'}
+                                            : "-"}
                                     </span>
                                 </div>
                             </div>
-                            {session.status === 'waiting_verification' && (
+                            {session.status === "waiting_verification" && (
                                 <div className="mt-4 bg-yellow-50 p-4 rounded-lg">
                                     <p className="text-yellow-800 text-sm">
                                         Pembayaran Anda sedang diverifikasi.
@@ -278,7 +284,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
                                     </p>
                                 </div>
                             )}
-                            {session.status === 'accepted' && (
+                            {session.status === "accepted" && (
                                 <div className="mt-4 bg-green-50 p-4 rounded-lg">
                                     <p className="text-green-800 text-sm">
                                         Pembayaran Anda diterima. Silakan tunggu
@@ -287,7 +293,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
                                 </div>
                             )}
 
-                            {session.status === 'rejected' && (
+                            {session.status === "rejected" && (
                                 <div className="mt-4 bg-red-50 p-4 rounded-lg">
                                     <p className="text-red-800 text-sm mb-3">
                                         Pembayaran Anda ditolak. Silakan kirim
@@ -302,7 +308,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
                                     </button>
                                 </div>
                             )}
-                            {session.status === 'pending_payment' && (
+                            {session.status === "pending_payment" && (
                                 <div className="mt-4">
                                     <button
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
