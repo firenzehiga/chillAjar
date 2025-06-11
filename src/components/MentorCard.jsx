@@ -41,9 +41,7 @@ export function MentorCard({
     // --- Perubahan: Validasi jika tidak ada jadwal dengan gayaMengajar valid ---
     useEffect(() => {
         if (allSchedules.length === 0 || validModes.length === 0) {
-            setModeError(
-                "Mentor belum memiliki jadwal dengan gayaMengajar valid (online/offline)."
-            );
+            setModeError("Mentor belum memiliki jadwal.");
         } else {
             setModeError("");
         }
