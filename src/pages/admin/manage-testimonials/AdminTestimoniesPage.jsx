@@ -23,8 +23,19 @@ export function AdminTestimoniesPage({ onNavigate }) {
             const response = await api.get("/testimoni", {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log("Fetched testimonies:", response.data);
-            return response.data;
+            // Mapping agar sesi.jadwal_kursus selalu ada, baik dari jadwalKursus atau jadwal_kursus
+            return response.data.map((t) => ({
+                ...t,
+                sesi: t.sesi
+                    ? {
+                          ...t.sesi,
+                          jadwal_kursus:
+                              t.sesi.jadwal_kursus ||
+                              t.sesi.jadwalKursus ||
+                              null,
+                      }
+                    : t.sesi,
+            }));
         },
         retry: 1, // Hanya coba ulang sekali jika gagal
         onError: (err) => {
@@ -124,6 +135,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
         {
             name: "Gaya Pembelajaran",
             selector: (row) => {
+                // [gayaMengajar JADWAL ONLY] Ambil mode belajar hanya dari jadwal_kursus.gayaMengajar pada sesi
                 const mode = row.sesi?.jadwal_kursus?.gayaMengajar;
                 if (mode === "online") {
                     return (
@@ -137,9 +149,15 @@ export function AdminTestimoniesPage({ onNavigate }) {
                             Offline
                         </span>
                     );
-                } else {
+                } else if (mode === undefined || mode === null) {
                     return (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            Belum diisi
+                        </span>
+                    );
+                } else {
+                    return (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                             Data mode tidak valid
                         </span>
                     );
