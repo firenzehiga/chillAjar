@@ -66,6 +66,35 @@ export function Home({
             session.statusSesi === "started" || session.statusSesi === "end"
     );
 
+    // --- Mapping agar field dan struktur course konsisten dengan frontend ---
+    // Untuk setiap course:
+    // - courseName: diambil dari namaKursus (backend) atau courseName (fallback)
+    // - courseDescription: diambil dari deskripsi (backend) atau courseDescription (fallback)
+    // - courseImage: diambil dari fotoKursus (backend) atau courseImage (fallback), default jika tidak ada
+    // - price_per_hour: diambil dari mentor.biayaPerSesi (backend) atau price_per_hour (fallback)
+    // - jadwal_kursus: hasil mapping dari jadwal_kursus (backend) atau jadwalKursus (backend),
+    //   agar konsisten dipakai di seluruh komponen frontend (CourseCarousel, dsb)
+    const mappedCourses = courses.map((course) => {
+        // Pastikan field nama dan gambar konsisten
+        return {
+            ...course,
+            courseName: course.namaKursus || course.courseName || "",
+            courseDescription:
+                course.deskripsi || course.courseDescription || "",
+            courseImage:
+                course.fotoKursus ||
+                course.courseImage ||
+                "/storage/foto_kursus/default.jpg",
+            price_per_hour:
+                course.mentor?.biayaPerSesi || course.price_per_hour || 0,
+            jadwal_kursus: Array.isArray(course.jadwal_kursus)
+                ? course.jadwal_kursus
+                : Array.isArray(course.jadwalKursus)
+                ? course.jadwalKursus
+                : [],
+        };
+    });
+
     if (errorSessions) {
         return (
             <div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
@@ -232,7 +261,7 @@ export function Home({
                 </div>
             )}
             <CourseCarousel
-                courses={courses}
+                courses={mappedCourses}
                 onCourseClick={handleCourseClick}
             />
             <div>
