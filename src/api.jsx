@@ -1,24 +1,41 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Pilih baseURL: jika window.location.hostname adalah localhost/127.0.0.1, pakai lokal, selain itu pakai public
-const LOCAL_API = 'http://localhost:8000/api';
-const PUBLIC_API = 'http://13.250.41.78:8000/api';
+// Setup: gunakan PUBLIC_API jika bisa diakses, jika tidak fallback ke LOCAL_API
+const LOCAL_API = "http://localhost:8000/api";
+const PUBLIC_API =
+    "https://manpro-sizzlingchilli-backend-chill-ajar.onrender.com/api";
 
-const isLocal = ['localhost', '127.0.0.1', '::1'].includes(
-    window.location.hostname
-);
+async function checkPublicApiAlive() {
+    try {
+        const res = await fetch(PUBLIC_API + "/ping", { method: "GET" });
+        return res.ok;
+    } catch {
+        return false;
+    }
+}
 
+export async function getApiInstance() {
+    let usePublic = await checkPublicApiAlive();
+    return axios.create({
+        baseURL: usePublic ? PUBLIC_API : LOCAL_API,
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+        },
+    });
+}
+
+// Default export: tetap PUBLIC_API agar tidak breaking, tapi untuk auto fallback gunakan getApiInstance()
 const api = axios.create({
-    baseURL: isLocal ? LOCAL_API : PUBLIC_API,
+    baseURL: PUBLIC_API,
     headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
+        "Content-Type": "application/json",
+        Accept: "application/json",
     },
 });
 
-// Tambahkan interceptor untuk menyisipkan token di setiap request
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
