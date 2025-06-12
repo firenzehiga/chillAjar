@@ -262,8 +262,14 @@ export function AdminPaymentsPage() {
 		);
 	}
 
+	const sortedPayments = [...payments].sort((a, b) => {
+		const dateA = new Date(a.created_at);
+		const dateB = new Date(b.created_at);
+		return dateB - dateA; // descending
+	});
+
 	// Filter data berdasarkan searchTerm
-	const filteredPayments = payments.filter((p) => {
+	const filteredPayments = sortedPayments.filter((p) => {
 		const lower = searchTerm.toLowerCase();
 		const tanggalFormatted = p.tanggalPembayaran
 			? new Date(p.tanggalPembayaran.replace(" ", "T")).toLocaleDateString(

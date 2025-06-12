@@ -55,18 +55,6 @@ export function MentorSchedulePage({ onNavigate }) {
 		},
 	});
 
-	// Filter transaksi yang statusPembayaran === "accepted"
-	const acceptedTransactions = transactions.filter(
-		(transaction) => transaction.statusPembayaran === "accepted"
-	);
-
-	// Filter sesi yang memiliki transaksi dengan status "accepted"
-	const filteredSessions = sessions.filter((session) =>
-		acceptedTransactions.some(
-			(transaction) => transaction.sesi_id === session.id
-		)
-	);
-
 	// Mutasi untuk memulai sesi
 	const startSessionMutation = useMutation({
 		mutationFn: async (sessionId) => {
@@ -142,10 +130,10 @@ export function MentorSchedulePage({ onNavigate }) {
 	};
 
 	const statusCheck = {
-		booked: {
-			label: "Booking",
+		reviewed: {
+			label: "Reviewed",
 			class:
-				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
+				"inline-flex items-center rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-green-600/20 ring-inset",
 		},
 		pending: {
 			label: "Pending",
@@ -181,7 +169,7 @@ export function MentorSchedulePage({ onNavigate }) {
 			name: "Nama Kursus",
 			selector: (row) => row.kursus?.namaKursus || "-",
 			sortable: true,
-			width: "200px",
+			width: "280px",
 		},
 		{
 			name: "Gaya Pembelajaran",
@@ -219,7 +207,7 @@ export function MentorSchedulePage({ onNavigate }) {
 					<span className="text-gray-400 text-sm">-</span>
 				);
 			},
-			width: "250px",
+			width: "200px",
 		},
 		{
 			name: "Aksi",
@@ -245,7 +233,7 @@ export function MentorSchedulePage({ onNavigate }) {
 					)}
 				</div>
 			),
-			width: "200px",
+			width: "180px",
 		},
 	];
 
@@ -263,8 +251,25 @@ export function MentorSchedulePage({ onNavigate }) {
 		);
 	}
 
+	// Filter transaksi yang statusPembayaran === "accepted"
+	const acceptedTransactions = transactions.filter(
+		(transaction) => transaction.statusPembayaran === "accepted"
+	);
+
+	// Filter sesi yang memiliki transaksi dengan status "accepted"
+	const filteredSessions = sessions.filter((session) =>
+		acceptedTransactions.some(
+			(transaction) => transaction.sesi_id === session.id
+		)
+	);
+
+	// Sorting sesi terbaru di paling atas
+	const sortedSessions = [...filteredSessions].sort(
+		(a, b) => new Date(b.created_at) - new Date(a.created_at)
+	);
+
 	// filter pencarian dengan filteredSessions
-	const filteredData = filteredSessions.filter((session) => {
+	const filteredData = sortedSessions.filter((session) => {
 		const lower = searchTerm.toLowerCase();
 		const mode = session.jadwal_kursus?.gayaMengajar || "";
 		return (
