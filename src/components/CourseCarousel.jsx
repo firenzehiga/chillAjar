@@ -7,6 +7,9 @@ export function CourseCarousel({ courses, onCourseClick }) {
 	// Debug: Lihat data courses yang diterima CourseCarousel
 	// console.log("[CourseCarousel] Data courses diterima:", courses);
 
+	const maxCoursesToShow = 5; // Maksimal 5 kursus yang ditampilkan
+	const carouselData = courses.slice(0, maxCoursesToShow);
+
 	const settings = {
 		dots: true,
 		infinite: true,
@@ -19,9 +22,9 @@ export function CourseCarousel({ courses, onCourseClick }) {
 	};
 
 	return (
-		<div className="mb-12 -mx-4 sm:mx-0">
+		<div className="mb-12 mt-7 -mx-4 sm:mx-0">
 			<Slider {...settings}>
-				{courses.map((course) => {
+				{carouselData.map((course) => {
 					// Hanya gunakan jadwal_kursus (sudah dimapping di parent/Home.jsx)
 					const schedules = Array.isArray(course.jadwal_kursus)
 						? course.jadwal_kursus
