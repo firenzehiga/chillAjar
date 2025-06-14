@@ -10,7 +10,7 @@ import {
 	ChevronRight,
 	Info,
 	LogIn,
-	Settings,
+	Clock,
 	Calendar,
 	UserCheck,
 	LucideUserSquare2,
@@ -148,7 +148,7 @@ export function Navigation({
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
-						<UserSquare2 className="w-4 h-4 inline-block mr-1" />
+						<Clock className="w-4 h-4 inline-block mr-1" />
 						Sessions
 					</a>
 					<a

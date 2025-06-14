@@ -111,7 +111,7 @@ export function AdminDashboard() {
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<Clock className="h-8 w-8 text-yellow-600" />
+						<Users className="h-8 w-8 text-yellow-600" />
 						{dataLoading ? (
 							<div className="w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
 						) : dataError ? (

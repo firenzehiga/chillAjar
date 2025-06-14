@@ -1,34 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-import { Users, Plus, UserPlus, AlertCircle } from "lucide-react";
+import { Users, UserPlus, AlertCircle } from "lucide-react";
 import api from "../../../api";
-import { AddUserModal } from "../../../components/Admin/AddUserModal"; // Sesuaikan path
+import { AddUserModal } from "../../../components/Admin/AddUserModal";
+import { useQuery } from "@tanstack/react-query";
 
 export function AdminUsersPage() {
 	const [searchTerm, setSearchTerm] = useState("");
-	const [users, setUsers] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
 	const [showAddModal, setShowAddModal] = useState(false);
 
-	useEffect(() => {
-		const fetchUsers = async () => {
-			try {
-				const response = await api.get("/admin/users", {
-					headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-				});
-				setUsers(response.data);
-				setLoading(false);
-			} catch (err) {
-				setError("Gagal mengambil data pengguna");
-				setLoading(false);
-			}
-		};
-		fetchUsers();
-	}, []);
+	// Fetch users dengan useQuery
+	const {
+		data: users = [],
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useQuery({
+		queryKey: ["adminUsers"],
+		queryFn: async () => {
+			const res = await api.get("/admin/users", {
+				headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+			});
+			return res.data;
+		},
+		retry: 1,
+	});
 
+	// Tambahkan user baru ke cache query
 	const handleUserAdded = (newUser) => {
-		setUsers((prev) => [...prev, newUser]); // Tambahkan pengguna baru ke daftar
+		refetch(); // Atau bisa update cache manual jika ingin lebih cepat
 	};
 
 	const columns = [
@@ -47,16 +48,8 @@ export function AdminUsersPage() {
 		},
 	];
 
-	if (loading) {
-		return (
-			<div className="flex items-center justify-center h-[60vh] flex-col text-gray-600">
-				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-				<p>Loading user data...</p>
-			</div>
-		);
-	}
-
-	if (error) {
+	// Error
+	if (isError || error) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
 				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -71,7 +64,6 @@ export function AdminUsersPage() {
 	// Filter data berdasarkan searchTerm
 	const filteredUsers = users.filter((p) => {
 		const lower = searchTerm.toLowerCase();
-
 		return (
 			p.nama?.toLowerCase().includes(lower) ||
 			p.email?.toLowerCase().includes(lower) ||
@@ -83,7 +75,7 @@ export function AdminUsersPage() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<Users className="w-6 h-6 mr-2 text-blue-600" />
+					<Users className="w-6 h-6 mr-2 text-yellow-600" />
 					Manage Users
 				</h1>
 				<p className="text-gray-600">View and manage all users</p>
@@ -99,11 +91,10 @@ export function AdminUsersPage() {
 						Add User
 					</button>
 				</div>
-
-				{loading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading user data...</p>
+				{isLoading ? (
+					<div className="flex items-center justify-center h-64 text-gray-600 bg-white rounded-lg">
+						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+						<p>Loading course data...</p>
 					</div>
 				) : users.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">

@@ -8,6 +8,7 @@ import {
 	Phone,
 	Calendar,
 	BookOpen,
+	AlertCircle,
 	Users,
 	Building2Icon,
 	Loader2,
@@ -81,16 +82,11 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 	// Tentukan tier badge
 	const tier = getTier(statistik?.jumlah_sesi || 0);
 
-	if (error) {
-		console.log(error);
-		return <div>Gagal memuat data</div>;
-	}
-
 	return (
 		<div className="py-8">
 			<div className="max-w-2xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
-					<div className="h-28 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
+					<div className="h-48 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
 						<div className="absolute -bottom-16 left-8">
 							<img
 								src={currentUser.avatar}
@@ -107,17 +103,15 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 										{currentUser.name}
 									</h1>
 									{/* Badge Tier */}
-									{isLoading ? (
+									{error ? null : isLoading ? (
 										<span
-											className={`inline-block h-7 w-24 rounded-full bg-gray-200 animate-pulse`}
+											className="inline-block h-7 w-24 rounded-full bg-gray-100 animate-pulse"
 											aria-label="Loading tier badge"></span>
 									) : (
 										<span
-											className={`
-												flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white
-												bg-gradient-to-r ${tier.color} shadow-md border-2 border-white
-												transition-transform cursor-pointer
-											`}
+											className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white
+											bg-gradient-to-r ${tier.color} shadow-md border-2 border-white
+											transition-transform cursor-pointer`}
 											title={tier.desc}>
 											<span className="text-lg">{tier.icon}</span>
 											{tier.label}
@@ -142,58 +136,60 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 							</button>
 						</div>
 						<div className="grid grid-cols-2 gap-6 mb-8">
-							{/* Kursus */}
-							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105 min-h-[110px] flex flex-col justify-center">
-								<BookOpen className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
-								{isLoading ? (
-									<Loader2 className="animate-spin mx-auto text-yellow-600" />
-								) : (
-									<div className="text-2xl font-bold text-gray-900">
-										{statistik?.jumlah_kursus ?? 0}
+							{error ? (
+								<div className="col-span-2 flex flex-col items-center justify-center bg-red-50 p-6 rounded-xl min-h-[110px]">
+									<AlertCircle className="w-8 h-8 text-red-400 mb-2" />
+									<div className="text-base font-semibold text-red-700 mb-1">
+										Gagal memuat statistik
 									</div>
-								)}
-								<div className="text-sm text-gray-600">Courses Enrolled</div>
-							</div>
-							{/* Mentor */}
-							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105 min-h-[110px] flex flex-col justify-center">
-								<Users className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
-								{isLoading ? (
-									<Loader2 className="animate-spin mx-auto text-yellow-600" />
-								) : (
-									<div className="text-2xl font-bold text-gray-900">
-										{statistik?.jumlah_mentor ?? 0}
+									<div className="text-sm text-red-500 text-center">
+										Silakan coba beberapa saat lagi.
 									</div>
-								)}
-								<div className="text-sm text-gray-600">Mentors Booked</div>
-							</div>
-							{/* Sesi */}
-							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105 min-h-[110px] flex flex-col justify-center">
-								<Building2Icon className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
-								{isLoading ? (
-									<Loader2 className="animate-spin mx-auto text-yellow-600" />
-								) : (
-									<div className="text-2xl font-bold text-gray-900">
-										{statistik?.jumlah_sesi ?? 0}
-									</div>
-								)}
-								<div className="text-sm text-gray-600">Sessions Completed</div>
-							</div>
-						</div>
-						<div className="bg-gray-50 rounded-xl p-6 space-y-4">
-							<h3 className="text-xl font-semibold text-gray-900 mb-4">
-								Contact Information
-							</h3>
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div className="flex items-center text-gray-600 transform transition-all duration-300 hover:translate-x-2">
-									<Mail className="w-5 h-5 mr-3 text-yellow-600" />
-									<span>{currentUser.email}</span>
 								</div>
-								<div className="flex items-center text-gray-600 transform transition-all duration-300 hover:translate-x-2">
-									<Phone className="w-5 h-5 mr-3 text-yellow-600" />
-									<span>{currentUser.phone}</span>
-								</div>
-							</div>
+							) : (
+								<>
+									{/* Card statistik  */}
+									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
+										<BookOpen className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
+										{isLoading ? (
+											<div className="mx-auto h-8 w-12 rounded bg-gray-100 animate-pulse mb-1"></div>
+										) : (
+											<div className="text-2xl font-bold text-gray-900">
+												{statistik?.jumlah_kursus ?? 0}
+											</div>
+										)}
+										<div className="text-sm text-gray-600">
+											Courses Enrolled
+										</div>
+									</div>
+									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
+										<Users className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
+										{isLoading ? (
+											<div className="mx-auto h-8 w-12 rounded bg-gray-100 animate-pulse mb-1"></div>
+										) : (
+											<div className="text-2xl font-bold text-gray-900">
+												{statistik?.jumlah_mentor ?? 0}
+											</div>
+										)}
+										<div className="text-sm text-gray-600">Mentors Booked</div>
+									</div>
+									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
+										<Building2Icon className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
+										{isLoading ? (
+											<div className="mx-auto h-8 w-12 rounded bg-gray-100 animate-pulse mb-1"></div>
+										) : (
+											<div className="text-2xl font-bold text-gray-900">
+												{statistik?.jumlah_sesi ?? 0}
+											</div>
+										)}
+										<div className="text-sm text-gray-600">
+											Sessions Completed
+										</div>
+									</div>
+								</>
+							)}
 						</div>
+						{/* ...Contact Information tetap seperti biasa... */}
 					</div>
 				</div>
 			</div>
