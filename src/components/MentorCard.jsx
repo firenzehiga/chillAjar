@@ -102,7 +102,18 @@ export function MentorCard({
                             <div className="flex items-center text-yellow-400 mt-1">
                                 <Star className="w-4 h-4 fill-current" />
                                 <span className="ml-1 text-sm">
-                                    {mentor.mentorRating}
+                                    {/*
+                                        Pastikan rating bertipe number dan valid sebelum menggunakan .toFixed(1).
+                                        Ini penting karena data dari backend/public API bisa saja null, string, atau NaN.
+                                        Jika rating tidak valid, tampilkan 0.0 agar UI tetap aman di semua environment.
+                                    */}
+                                    {typeof mentor.mentorRating === "number" &&
+                                    !isNaN(mentor.mentorRating)
+                                        ? mentor.mentorRating.toFixed(1)
+                                        : Number(mentor.mentorRating) &&
+                                          !isNaN(Number(mentor.mentorRating))
+                                        ? Number(mentor.mentorRating).toFixed(1)
+                                        : "0.0"}
                                 </span>
                             </div>
                         </div>
