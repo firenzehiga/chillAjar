@@ -15,6 +15,14 @@ export function CourseCard({ course, onClick }) {
 
     // console.log("Course in CourseCard:", course);
     // console.log("Filtered Schedules:", filteredSchedules);
+    // DEBUG: log url gambar mentor utama
+    const mentorImgUrl =
+        course.mentor && course.mentor.user
+            ? getImageUrl(
+                  course.mentor.user.foto_profil,
+                  "/foto_mentor/default.png"
+              )
+            : "/foto_mentor/default.png";
     return (
         <div
             onClick={() => onClick(course)}
@@ -38,6 +46,21 @@ export function CourseCard({ course, onClick }) {
                         setImgLoaded(true);
                     }}
                 />
+                {/* Avatar mentor utama */}
+                {course.mentor && course.mentor.user && (
+                    <img
+                        src={getImageUrl(
+                            course.mentor.user.foto_profil,
+                            "/foto_mentor/default.png"
+                        )}
+                        alt={course.mentor.user.nama || "Mentor"}
+                        className="absolute bottom-2 left-2 w-10 h-10 rounded-full border-2 border-white shadow object-cover bg-white"
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/foto_mentor/default.png";
+                        }}
+                    />
+                )}
                 <div className="absolute top-3 right-3 bg-blue-900 text-white px-3 py-1 rounded-full text-sm font-medium transform transition-transform duration-300 hover:scale-105">
                     Rp{course.price_per_hour}/sesi
                 </div>
