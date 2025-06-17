@@ -51,8 +51,9 @@ export function EditProfilePage({
                 return;
             }
             setSelectedImage(file);
+            // Preview tetap gunakan URL.createObjectURL, fallback tetap ke default jika gagal
             const imageUrl = URL.createObjectURL(file);
-            setProfileImage(imageUrl);
+            setProfileImage(imageUrl || "/foto_mentor/default.png");
         }
     };
 
@@ -165,6 +166,10 @@ export function EditProfilePage({
                             src={profileImage}
                             alt="Profile"
                             className="rounded-full w-full h-full object-cover border-2 border-gray-300"
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/foto_mentor/default.png";
+                            }}
                         />
                         <label
                             htmlFor="profileImage"
