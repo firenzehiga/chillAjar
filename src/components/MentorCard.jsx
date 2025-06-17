@@ -9,6 +9,7 @@ import {
     AlertCircle,
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
+import { getImageUrl } from "../utils/getImageUrl";
 
 export function MentorCard({
     mentor,
@@ -82,7 +83,10 @@ export function MentorCard({
                     <div className="h-32 bg-gradient-to-r bg-yellow-500" />
                     <div className="absolute -bottom-12 left-6">
                         <img
-                            src={mentor.mentorImage}
+                            src={getImageUrl(
+                                mentor.mentorImage || "foto_profil/default.png",
+                                "/foto_mentor/default.png"
+                            )}
                             alt={mentor.mentorName}
                             className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover object-center"
                             onError={(e) => {
