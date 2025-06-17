@@ -59,6 +59,15 @@ export function AdminEditProfile({
         setLoading(true);
         setError(null);
 
+        // Validasi: jika selectedImage ada, pastikan benar-benar File
+        if (selectedImage && !(selectedImage instanceof File)) {
+            setError(
+                "File foto profil tidak valid. Silakan pilih ulang gambar."
+            );
+            setLoading(false);
+            return;
+        }
+
         try {
             const token = localStorage.getItem("token");
 
@@ -71,7 +80,7 @@ export function AdminEditProfile({
             if (formData.alamat) {
                 userPayload.append("alamat", formData.alamat);
             }
-            if (selectedImage) {
+            if (selectedImage instanceof File) {
                 userPayload.append("foto_profil", selectedImage);
             }
             userPayload.append("_method", "PUT");
@@ -122,10 +131,16 @@ export function AdminEditProfile({
                 throw new Error("Gagal memperbarui profil");
             }
         } catch (err) {
-            const errorMessage =
+            // Tampilkan error detail dari backend jika ada
+            let errorMessage =
                 err.response?.data?.message ||
                 err.message ||
                 "Gagal memperbarui profil";
+            if (err.response?.data?.errors?.foto_profil) {
+                errorMessage += `: ${err.response.data.errors.foto_profil.join(
+                    ", "
+                )}`;
+            }
             setError(errorMessage);
             Swal.fire({
                 icon: "error",
