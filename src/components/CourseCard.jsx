@@ -7,6 +7,7 @@ import {
     Building,
     FileQuestion,
 } from "lucide-react";
+import { getImageUrl } from "../utils/getImageUrl";
 
 export function CourseCard({ course, onClick }) {
     const [imgLoaded, setImgLoaded] = useState(false);
@@ -24,13 +25,16 @@ export function CourseCard({ course, onClick }) {
                 )}
                 <img
                     loading="lazy"
-                    src={course.courseImage}
+                    src={getImageUrl(
+                        course.courseImage,
+                        "/foto_kursus/default.jpg"
+                    )}
                     alt={course.courseName}
                     className="w-full h-48 object-cover transform transition-transform duration-500 group-hover:scale-110"
                     onLoad={() => setImgLoaded(true)}
                     onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = "/foto_kursus/kursus_dummy_1.png"; // Jika gagal memuat gambar(path ada di db tapi file gaada di folder), gunakan gambar default
+                        e.target.src = "/foto_kursus/default.jpg";
                         setImgLoaded(true);
                     }}
                 />
