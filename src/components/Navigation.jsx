@@ -16,6 +16,9 @@ import {
 	LucideUserSquare2,
 	CircleDollarSign,
 	UserSquare2,
+	Building,
+	Users2,
+	DollarSign,
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 
@@ -289,7 +292,7 @@ export function Navigation({
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
-						<Users className="w-5 h-5 mr-3" />
+						<Home className="w-5 h-5 mr-3" />
 						Dashboard
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
@@ -300,8 +303,30 @@ export function Navigation({
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
-						<BookOpen className="w-5 h-5 mr-3" />
+						<Users className="w-5 h-5 mr-3" />
 						Users
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("admin-manage-payments");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<DollarSign className="w-5 h-5 mr-3" />
+						Payments
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("admin-manage-sessions");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<Users className="w-5 h-5 mr-3" />
+						Sessions
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 					<button
@@ -324,6 +349,17 @@ export function Navigation({
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<UserCheck className="w-5 h-5 mr-3" />
 						Mentors
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("admin-testimonial");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<Users2 className="w-5 h-5 mr-3" />
+						Testimonials
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 				</>
@@ -367,12 +403,12 @@ export function Navigation({
 					<button
 						type="button"
 						onClick={() => {
-							onNavigate("mentor-manage-students");
+							onNavigate("mentor-testimonial");
 							setIsMobileMenuOpen(false);
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<Users className="w-5 h-5 mr-3" />
-						Students
+						Testimonials
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 				</>

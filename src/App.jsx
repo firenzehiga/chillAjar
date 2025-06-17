@@ -9,7 +9,7 @@ import { PaymentModal } from "./components/PaymentModal";
 import { Navigation } from "./components/Navigation";
 import { Footer } from "./components/Footer";
 import { CourseSkeletonCard } from "./components/Skeleton/CourseSkeletonCard";
-
+import { NotFoundPage } from "./components/Error/NotFound";
 // Halaman utama
 import { CoursesPage } from "./pages/CoursesPage";
 import { MentorsPage } from "./pages/MentorsPage";
@@ -940,7 +940,7 @@ function App() {
 						/>
 					);
 				default:
-					return "menu yang kamu cari tidak ada (soon bakal dibuat tampilan lebih bagus)";
+					return <NotFoundPage />;
 			}
 		})();
 

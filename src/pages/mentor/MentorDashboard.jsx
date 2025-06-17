@@ -47,13 +47,13 @@ export function MentorDashboard() {
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+				{/* <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<Users className="h-8 w-8 text-yellow-600" />
 						<span className="text-2xl font-bold text-gray-900">Belum</span>
 					</div>
 					<h3 className="text-gray-600 font-medium">Active Students</h3>
-				</div>
+				</div> */}
 				{/* <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
                     <div className="flex items-center justify-between mb-4">
                         <Clock className="h-8 w-8 text-yellow-600" />
