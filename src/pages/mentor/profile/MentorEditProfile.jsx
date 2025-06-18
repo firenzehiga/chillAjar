@@ -44,11 +44,11 @@ export function MentorEditProfile({
 	useEffect(() => {
 		if (mentorProfile) {
 			setFormData({
-				nama: mentorProfile.user?.nama || "",
-				email: mentorProfile.user?.email || "",
-				nomorTelepon: mentorProfile.user?.nomorTelepon || "",
-				alamat: mentorProfile.user?.alamat || "",
-				deskripsi: mentorProfile.deskripsi || "",
+				nama: mentorProfile.mentor?.user?.nama || "",
+				email: mentorProfile.mentor?.user?.email || "",
+				nomorTelepon: mentorProfile.mentor?.user?.nomorTelepon || "",
+				alamat: mentorProfile.mentor?.user?.alamat || "",
+				deskripsi: mentorProfile.mentor?.deskripsi || "",
 			});
 			setProfileImage(
 				getImageUrl(mentorProfile.user?.foto_profil, defaultFoto)
