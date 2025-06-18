@@ -3,6 +3,7 @@ import { Mail, MapPin, Phone, Calendar, BookOpen, Star } from "lucide-react";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import api from "../../../api";
 import { useQuery } from "@tanstack/react-query";
+import { MentorProfileSkeleton } from "../../../components/Skeleton/Mentor/MentorProfileSkeleton";
 
 export function MentorProfilePage({ userData, userRole, onNavigate }) {
 	// console.log("UserData:", userData);
@@ -37,6 +38,10 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 		peran: mentorProfile?.user?.peran || "unknown",
 		deskripsi: mentorProfile?.deskripsi || "No description",
 	};
+
+	if (isLoading) {
+		return <MentorProfileSkeleton />;
+	}
 
 	return (
 		<div className="py-8">

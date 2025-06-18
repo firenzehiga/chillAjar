@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import api from "../../../api";
 import Swal from "sweetalert2";
+import { MentorEditProfileSkeleton } from "../../../components/Skeleton/Mentor/MentorEditProfileSkeleton";
 
 const defaultFoto = "/foto_mentor/default.png";
 
@@ -165,12 +166,7 @@ export function MentorEditProfile({
 	};
 
 	if (isLoadingProfile) {
-		return (
-			<div className="flex items-center justify-center h-64 text-gray-600">
-				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mr-3"></div>
-				<p>Loading profile data...</p>
-			</div>
-		);
+		return <MentorEditProfileSkeleton />;
 	}
 	return (
 		<div className="max-w-3xl mx-auto px-4 py-10">
