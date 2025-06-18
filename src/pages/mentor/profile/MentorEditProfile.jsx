@@ -51,7 +51,7 @@ export function MentorEditProfile({
 				deskripsi: mentorProfile.mentor?.deskripsi || "",
 			});
 			setProfileImage(
-				getImageUrl(mentorProfile.user?.foto_profil, defaultFoto)
+				getImageUrl(mentorProfile.mentor?.user?.foto_profil, defaultFoto)
 			);
 		}
 	}, [mentorProfile]);
