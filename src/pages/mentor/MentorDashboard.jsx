@@ -34,8 +34,8 @@ export function MentorDashboard() {
 		},
 	});
 
-	const jumlahCourse = courses.length;
-	const rating = mentorProfile?.rating || 0;
+	const jumlahCourse = mentorProfile?.jumlah_kursus || 0;
+	const rating = mentorProfile?.mentor?.rating || 0;
 	const loading = isLoadingCourses || isLoadingProfile;
 	const error = errorCourses || errorProfile;
 
