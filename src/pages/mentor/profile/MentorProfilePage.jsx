@@ -20,23 +20,28 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 	});
 
 	const currentUser = {
-		name: mentorProfile?.user?.nama || "Unknown User",
-		email: mentorProfile?.user?.email || "No email provided",
+		name: mentorProfile?.mentor?.user?.nama || "Unknown User",
+		email: mentorProfile?.mentor?.user?.email || "No email provided",
 		avatar: getImageUrl(
-			mentorProfile?.user?.foto_profil,
+			mentorProfile?.mentor?.user?.foto_profil,
 			"/foto_mentor/default.png"
 		),
-		location: mentorProfile?.user?.alamat || "Location not specified",
-		phone: mentorProfile?.user?.nomorTelepon || "Phone not specified",
-		joinedDate: mentorProfile?.user?.created_at
-			? new Date(mentorProfile.user.created_at).toLocaleDateString("id-ID", {
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-			  })
+		location: mentorProfile?.mentor?.user?.alamat || "Location not specified",
+		phone: mentorProfile?.mentor?.user?.nomorTelepon || "Phone not specified",
+		joinedDate: mentorProfile?.mentor?.user?.created_at
+			? new Date(mentorProfile.mentor.user.created_at).toLocaleDateString(
+					"id-ID",
+					{
+						year: "numeric",
+						month: "long",
+						day: "numeric",
+					}
+			  )
 			: "Unknown",
-		peran: mentorProfile?.user?.peran || "unknown",
-		deskripsi: mentorProfile?.deskripsi || "No description",
+		rating: mentorProfile?.mentor?.rating || 0,
+		peran: mentorProfile?.mentor?.user?.peran || "unknown",
+		deskripsi: mentorProfile?.mentor?.deskripsi || "No description",
+		jumlahKursus: mentorProfile?.jumlah_kursus || 0,
 	};
 
 	if (isLoading) {
@@ -89,13 +94,18 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 						<div className="grid grid-cols-2 gap-6 mb-8">
 							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
 								<BookOpen className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">0</div>
-								<div className="text-sm text-gray-600">Courses Completed</div>
+								<div className="text-2xl font-bold text-gray-900">
+									{" "}
+									{currentUser.jumlahKursus}
+								</div>
+								<div className="text-sm text-gray-600">Courses Created</div>
 							</div>
 							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
 								<Star className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">0</div>
-								<div className="text-sm text-gray-600">Average Rating</div>
+								<div className="text-2xl font-bold text-gray-900">
+									{currentUser.rating}
+								</div>
+								<div className="text-sm text-gray-600">Rating</div>
 							</div>
 						</div>
 						<div className="bg-gray-50 rounded-xl p-6 space-y-4">
