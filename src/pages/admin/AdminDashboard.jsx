@@ -8,8 +8,11 @@ import {
 } from "lucide-react";
 import api from "../../api";
 import { useState } from "react";
-import { da } from "date-fns/locale";
-
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/id";
+dayjs.extend(relativeTime);
+dayjs.locale("id");
 export function AdminDashboard() {
 	const [loadingPentest, setLoadingPentest] = useState(false);
 	const [pentestMsg, setPentestMsg] = useState("");
@@ -141,27 +144,86 @@ export function AdminDashboard() {
 				</div>
 			</div>
 
-			<div className="mt-8">
-				<h2 className="text-lg font-semibold mb-2">Admin Utility Actions</h2>
-				<div className="flex flex-wrap gap-4 mb-2">
-					<button
-						disabled={loadingPentest}
-						onClick={handleHapusSesiExpired}
-						className="px-4 py-2 bg-red-700 text-white rounded shadow hover:bg-red-800 disabled:opacity-60 transition-all">
-						Hapus Semua Sesi Expired
-					</button>
-					<button
-						disabled={loadingPentest}
-						onClick={handleUpdateRatingMentor}
-						className="px-4 py-2 bg-emerald-700 text-white rounded shadow hover:bg-emerald-800 disabled:opacity-60 transition-all">
-						Update Seluruh Rating Mentor
-					</button>
-				</div>
-				{pentestMsg && (
-					<div className="text-sm text-blue-800 bg-blue-100 rounded px-3 py-2 mt-2 max-w-lg border border-blue-200">
-						{pentestMsg}
+			<div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+				<div className="mt-8">
+					<h2 className="text-lg font-semibold mb-2">Admin Utility Actions</h2>
+					<div className="flex flex-wrap gap-4 mb-2">
+						<button
+							disabled={loadingPentest}
+							onClick={handleHapusSesiExpired}
+							className="px-4 py-2 bg-red-700 text-white rounded shadow hover:bg-red-800 disabled:opacity-60 transition-all">
+							Hapus Semua Sesi Expired
+						</button>
+						<button
+							disabled={loadingPentest}
+							onClick={handleUpdateRatingMentor}
+							className="px-4 py-2 bg-emerald-700 text-white rounded shadow hover:bg-emerald-800 disabled:opacity-60 transition-all">
+							Update Seluruh Rating Mentor
+						</button>
 					</div>
-				)}
+					{pentestMsg && (
+						<div className="text-sm text-blue-800 bg-blue-100 rounded px-3 py-2 mt-2 max-w-lg border border-blue-200">
+							{pentestMsg}
+						</div>
+					)}
+				</div>
+				{/* Card User Terbaru */}
+				<div className="bg-white rounded-xl shadow-lg p-6">
+					<h2 className="text-lg font-semibold mb-4">User Terbaru</h2>
+					{dataLoading ? (
+						<div className="flex items-center justify-center h-32">
+							<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+						</div>
+					) : dataError ? (
+						<div className="text-red-500 text-sm">Gagal memuat data user.</div>
+					) : !totalData?.user_terbaru?.length ? (
+						<div className="text-gray-500 text-sm">Belum ada user baru.</div>
+					) : (
+						<ul>
+							{totalData.user_terbaru.map((user) => (
+								<li
+									key={user.id}
+									className="flex items-center gap-3 py-2 border-b last:border-b-0">
+									<div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center font-bold text-yellow-700 text-lg uppercase">
+										{user.nama?.[0] || "U"}
+									</div>
+									<div className="flex-1">
+										<div className="flex items-center gap-2">
+											<span className="font-medium text-gray-900">
+												{user.nama}
+											</span>
+											{/* Badge peran di samping nama */}
+											{user.peran === "mentor" ? (
+												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
+													Mentor
+												</span>
+											) : user.peran === "pelanggan" ? (
+												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+													Pelanggan
+												</span>
+											) : user.peran === "admin" ? (
+												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-500">
+													Admin
+												</span>
+											) : (
+												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">
+													{user.peran || "Lainnya"}
+												</span>
+											)}
+										</div>
+										<div className="text-xs text-gray-500">{user.email}</div>
+									</div>
+									<div className="text-xs text-gray-400">
+										<div className="text-xs text-gray-400">
+											{user.created_at ? dayjs(user.created_at).fromNow() : ""}
+										</div>
+									</div>
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+				{/* ...bisa tambahkan card lain di sini... */}
 			</div>
 		</div>
 	);

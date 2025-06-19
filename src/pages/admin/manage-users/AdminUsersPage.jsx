@@ -43,8 +43,13 @@ export function AdminUsersPage() {
 		{ name: "Email", selector: (row) => row.email, sortable: true },
 		{ name: "Role", selector: (row) => row.peran, sortable: true },
 		{
-			name: "Created At",
-			selector: (row) => new Date(row.created_at).toLocaleDateString(),
+			name: "Bergabung",
+			selector: (row) =>
+				new Date(row.created_at).toLocaleDateString("id-ID", {
+					day: "numeric",
+					month: "long",
+					year: "numeric",
+				}),
 		},
 	];
 
@@ -61,8 +66,13 @@ export function AdminUsersPage() {
 		);
 	}
 
+	// Sort users by created_at DESC (terbaru di atas)
+	const sortedUsers = [...users].sort(
+		(a, b) => new Date(b.created_at) - new Date(a.created_at)
+	);
+
 	// Filter data berdasarkan searchTerm
-	const filteredUsers = users.filter((p) => {
+	const filteredUsers = sortedUsers.filter((p) => {
 		const lower = searchTerm.toLowerCase();
 		return (
 			p.nama?.toLowerCase().includes(lower) ||
