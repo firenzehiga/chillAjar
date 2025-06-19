@@ -530,6 +530,7 @@ function App() {
 				setUserData(null);
 				setCurrentPage("home");
 				history.push("/home");
+				queryClient.clear(); // <-- Hapus semua cache query!
 
 				Swal.fire({
 					icon: "success",
