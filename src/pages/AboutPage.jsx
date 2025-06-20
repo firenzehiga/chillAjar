@@ -70,7 +70,7 @@ export function AboutPage() {
 					Empowering Students Through Peer Learning
 				</h1>
 				<p className="text-xl text-gray-600 max-w-2xl mx-auto">
-					BelajarWoy connects students with expert peer mentors to create
+					ChillAjar connects students with expert peer mentors to create
 					meaningful learning experiences.
 				</p>
 			</div>
