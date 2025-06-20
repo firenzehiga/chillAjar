@@ -4,6 +4,7 @@ import DataTable from "react-data-table-component";
 import { AlertCircle, CheckCircle, XCircle, Eye, Download } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 export function AdminPaymentsPage() {
 	const [previewImg, setPreviewImg] = useState(null);
@@ -173,7 +174,7 @@ export function AdminPaymentsPage() {
 			name: "Bukti",
 			cell: (row) => {
 				const imageUrl = row.buktiPembayaran
-					? `/storage/${row.buktiPembayaran}`
+					? getImageUrl(row.buktiPembayaran, "bukti_pembayaran")
 					: null;
 
 				const handleDownload = async (url) => {
