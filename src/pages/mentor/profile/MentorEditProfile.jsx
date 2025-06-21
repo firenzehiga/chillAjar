@@ -64,8 +64,14 @@ export function MentorEditProfile({
 	const handleImageChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
-			if (file.size > 5 * 1024 * 1024) {
-				setError("Ukuran gambar terlalu besar. Maksimal 5MB.");
+			if (file.size > 10 * 1024 * 1024) {
+				setError("Ukuran gambar terlalu besar. Maksimal 10MB.");
+				Swal.fire({
+					icon: "error",
+					title: "Error",
+					text: "Ukuran gambar terlalu besar. Maksimal 10MB.",
+					confirmButtonColor: "#EF4444",
+				});
 				return;
 			}
 			setSelectedImage(file);
