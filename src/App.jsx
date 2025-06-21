@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import defaultPhoto from "../public/foto_kursus/default.jpg";
-import { Search, ArrowLeft } from "lucide-react";
+import { Search, ArrowLeft, ListChecks } from "lucide-react";
 import { CourseCard } from "./components/CourseCard";
 import { MentorCard } from "./components/MentorCard";
 import { CourseCarousel } from "./components/CourseCarousel";
@@ -10,6 +10,9 @@ import { Navigation } from "./components/Navigation";
 import { Footer } from "./components/Footer";
 import { CourseSkeletonCard } from "./components/Skeleton/CourseSkeletonCard";
 import { NotFoundPage } from "./components/Error/NotFound";
+
+import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
+import { HelpButton } from "./components/Button/HelpButton"; // Impor komponen HelpButton
 // Halaman utama
 import { CoursesPage } from "./pages/CoursesPage";
 import { MentorsPage } from "./pages/MentorsPage";
@@ -111,6 +114,10 @@ function App() {
 	const [userData, setUserData] = useState(null);
 	const [showCourseSelection, setShowCourseSelection] = useState(false);
 	const [authChecked, setAuthChecked] = useState(false);
+
+	// State untuk bantuan pemahaman aplikasi
+	const [showHelpMenu, setShowHelpMenu] = useState(false);
+	const [showFlowModal, setShowFlowModal] = useState(false);
 
 	const {
 		data: courses = [],
@@ -1013,6 +1020,7 @@ function App() {
 							setShowPayment(false);
 							setCurrentBooking(null);
 							// [gayaMengajar JADWAL ONLY] Komentar: Menampilkan PaymentModal hanya jika pembayaran sedang berlangsung dan booking sudah ada. Semua data mode belajar (gayaMengajar) sudah diambil dari jadwal_kursus, bukan dari level kursus.
+							// [gayaMengajar JADWAL ONLY] Komentar: Menampilkan PaymentModal hanya jika pembayaran sedang berlangsung dan booking sudah ada. Semua data mode belajar (gayaMengajar) sudah diambil dari jadwal_kursus, bukan dari level kursus.
 							Swal.fire({
 								icon: "warning",
 								title: "Pembayaran Belum Selesai",
@@ -1035,6 +1043,68 @@ function App() {
 				)}
 			</main>
 			<Footer onNavigate={handleNavigate} className="mt-auto" />
+			{userRole === "pelanggan" || userRole === null ? (
+				<>
+					<div
+						className="fixed z-50 bottom-6 right-6 flex flex-col items-end"
+						onMouseEnter={() => setShowHelpMenu(true)}
+						onMouseLeave={() => setShowHelpMenu(false)}>
+						{/* Menu muncul saat hover */}
+						<AnimatePresence>
+							{showHelpMenu && (
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									exit={{ opacity: 0, y: 20 }}
+									transition={{ duration: 0.2 }}
+									className="mb-2 flex flex-col gap-1 items-end">
+									{/* WhatsApp Button */}
+									<a
+										href="https://wa.me/6285882534254?text=Halo%20admin%2C%20saya%20butuh%20bantuan%20tentang%20ChillAjar"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="
+							flex items-center gap-2 px-3 py-1.5 rounded-md bg-green-500
+							text-white font-medium shadow hover:bg-green-600 active:bg-green-700
+							transition-all duration-150 text-sm
+						  ">
+										<svg
+											className="w-4 h-4"
+											fill="currentColor"
+											viewBox="0 0 24 24">
+											<path d="M20.52 3.48A11.87 11.87 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.18 1.6 6.01L0 24l6.18-1.62A11.93 11.93 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 22c-1.85 0-3.67-.5-5.24-1.44l-.37-.22-3.67.96.98-3.58-.24-.37A9.93 9.93 0 0 1 2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.13-7.47c-.28-.14-1.65-.81-1.9-.9-.25-.09-.43-.14-.61.14-.18.28-.7.9-.86 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.41-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.34.42-.51.14-.17.18-.29.28-.48.09-.19.05-.36-.02-.5-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.62-.47-.16-.01-.36-.01-.56-.01-.19 0-.5.07-.76.34-.26.27-1 1-1 2.43 0 1.43 1.03 2.81 1.18 3 .15.19 2.03 3.1 4.93 4.23.69.3 1.23.48 1.65.61.69.22 1.32.19 1.81.12.55-.08 1.65-.67 1.89-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.19-.53-.33z" />
+										</svg>
+										<span>Bantuan?</span>
+									</a>
+
+									{/* Langkah Pemesanan Button */}
+									<button
+										onClick={() => setShowFlowModal(true)}
+										className="
+							flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-500
+							text-white font-medium shadow hover:bg-blue-600 active:bg-blue-700
+							transition-all duration-150 text-sm
+						  "
+										type="button">
+										{/* List/steps icon */}
+										<ListChecks className="w-4 h-4" />
+
+										<span>Langkah Pemesanan</span>
+									</button>
+								</motion.div>
+							)}
+						</AnimatePresence>
+						{/* Tombol utama tanda tanya */}
+						<HelpButton onClick={() => setShowHelpMenu((v) => !v)} />
+					</div>
+					{/* Modal Alur/Langkah Pemesanan */}
+					<GuideModal
+						show={showFlowModal}
+						onClose={() => setShowFlowModal(false)}
+					/>
+				</>
+			) : null}
+			{/* Tombol bantuan dan alur pemesanan */}
 		</div>
 	);
 }
