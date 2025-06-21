@@ -381,7 +381,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 								/>
 								{fotoPreview ? (
 									<img
-										src={fotoPreview}
+										src={fotoPreview || "/foto_kursus/default.jpg"}
 										alt="Preview"
 										className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
 									/>

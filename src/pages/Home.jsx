@@ -159,7 +159,7 @@ export function Home({
 									<div className="p-6">
 										<div className="flex items-center mb-4">
 											<img
-												className="w-12 h-12 rounded-full border-2 border-blue-100 bg-gray-200 object-cover"
+												className="w-12 h-12 rounded-full border-2 border-yellow-100 bg-gray-200 object-cover"
 												src={getImageUrl(
 													session.mentor?.user?.foto_profil,
 													"/foto_mentor/default.png"
@@ -176,7 +176,7 @@ export function Home({
 										</div>
 										<div className="space-y-3">
 											<div className="flex items-center text-gray-600">
-												<Calendar className="w-5 h-5 mr-3 text-blue-600" />
+												<Calendar className="w-5 h-5 mr-3 text-yellow-600" />
 												<span>
 													{new Date(
 														session.jadwal_kursus?.tanggal
@@ -188,7 +188,7 @@ export function Home({
 												</span>
 											</div>
 											<div className="flex items-center text-gray-600">
-												<Clock className="w-5 h-5 mr-3 text-blue-600" />
+												<Clock className="w-5 h-5 mr-3 text-yellow-600" />
 												<span>
 													{session.jadwal_kursus?.waktu
 														? `${session.jadwal_kursus.waktu.slice(0, 5)} WIB`
@@ -201,12 +201,12 @@ export function Home({
 													{
 														mode === "online" ? (
 															<>
-																<Monitor className="w-5 h-5 mr-3 text-blue-600" />
+																<Monitor className="w-5 h-5 mr-3 text-yellow-600" />
 																<span>Online Session</span>
 															</>
 														) : mode === "offline" ? (
 															<>
-																<MapPin className="w-5 h-5 mr-3 text-blue-600" />
+																<MapPin className="w-5 h-5 mr-3 text-yellow-600" />
 																<span>
 																	{session.jadwal_kursus?.tempat ||
 																		"No location"}
@@ -214,7 +214,7 @@ export function Home({
 															</>
 														) : (
 															<>
-																<MapPin className="w-5 h-5 mr-3 text-blue-600" />
+																<MapPin className="w-5 h-5 mr-3 text-yellow-600" />
 																<span>Data mode tidak valid</span>
 															</>
 														);
