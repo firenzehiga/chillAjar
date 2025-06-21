@@ -43,7 +43,14 @@ export function AdminPaymentsPage() {
 			);
 		},
 		onSuccess: () => {
-			Swal.fire("Berhasil!", "Pembayaran telah diverifikasi.", "success");
+			Swal.fire({
+				title: "Berhasil!",
+				text: "Pembayaran telah diverifikasi.",
+				icon: "success",
+				timerProgressBar: true,
+				showConfirmButton: false,
+				timer: 1500,
+			});
 			// Invalidate query untuk memaksa refetch data
 			queryClient.invalidateQueries(["adminPayments"]);
 		},
@@ -65,7 +72,14 @@ export function AdminPaymentsPage() {
 			);
 		},
 		onSuccess: () => {
-			Swal.fire("Ditolak!", "Pembayaran telah ditolak.", "info");
+			Swal.fire({
+				title: "Ditolak!",
+				text: "Pembayaran telah ditolak.",
+				icon: "info",
+				timerProgressBar: true,
+				showConfirmButton: false,
+				timer: 1500,
+			});
 			// Invalidate query untuk memaksa refetch data
 			queryClient.invalidateQueries(["adminPayments"]);
 		},
@@ -76,7 +90,20 @@ export function AdminPaymentsPage() {
 
 	// Handler untuk tombol Setujui
 	const handleVerifikasi = (transaksiId) => {
-		verifikasiMutation.mutate(transaksiId);
+		Swal.fire({
+			title: "Verifikasi Pembayaran?",
+			text: "Pastikan pembayaran sudah benar sebelum menyetujui.",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Ya, setujui!",
+			cancelButtonText: "Batal",
+		}).then((result) => {
+			if (result.isConfirmed) {
+				verifikasiMutation.mutate(transaksiId);
+			}
+		});
 	};
 
 	// Handler untuk tombol Tolak
