@@ -384,6 +384,10 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 										src={fotoPreview}
 										alt="Preview"
 										className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
+										onError={(e) => {
+											e.target.onerror = null;
+											e.target.src = "/foto_kursus/default.jpg"; // Ganti dengan path default
+										}}
 									/>
 								) : (
 									<div className="text-gray-500">
