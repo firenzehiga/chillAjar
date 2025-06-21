@@ -189,7 +189,7 @@ export function AdminCoursesPage({ onNavigate }) {
 						className="h-16 w-16 object-cover rounded-lg border border-gray-200 bg-gray-50 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
 						onError={(e) => {
 							e.target.onerror = null;
-							e.target.src = defaultFoto;
+							e.target.src = "/foto_kursus/default.jpg";
 						}}
 					/>
 				</div>
