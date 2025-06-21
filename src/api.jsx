@@ -5,23 +5,22 @@
 import axios from "axios";
 
 const PUBLIC_API =
-    import.meta.env.VITE_PUBLIC_API ||
-    "https://manpro-sizzlingchilli-backend-chill-ajar.onrender.com/api";
+	import.meta.env.VITE_PUBLIC_API || "https://peladen.my.id/api";
 
 const api = axios.create({
-    baseURL: PUBLIC_API,
-    headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-    },
+	baseURL: PUBLIC_API,
+	headers: {
+		"Content-Type": "application/json",
+		Accept: "application/json",
+	},
 });
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+	const token = localStorage.getItem("token");
+	if (token) {
+		config.headers.Authorization = `Bearer ${token}`;
+	}
+	return config;
 });
 
 export default api;
