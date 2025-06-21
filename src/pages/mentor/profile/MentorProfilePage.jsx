@@ -60,7 +60,7 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 									"/foto_mentor/default.png"
 								)}
 								alt={currentUser.name}
-								className="w-32 h-32 rounded-full border-4 border-white shadow-lg transform transition-transform duration-300 hover:scale-105"
+								className="w-32 h-32 rounded-full border-4 border-white shadow-lg transform transition-transform duration-300 hover:scale-105 object-cover"
 								onError={(e) => {
 									e.target.onerror = null;
 									e.target.src = "/foto_mentor/default.png";
