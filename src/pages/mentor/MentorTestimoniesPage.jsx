@@ -49,7 +49,7 @@ export function MentorTestimoniesPage() {
 			name: "Nama Kursus",
 			selector: (row) => row.kursus?.namaKursus || "-",
 			sortable: true,
-			width: "200px",
+			width: "250px",
 		},
 		{
 			name: "Rating",
@@ -72,7 +72,7 @@ export function MentorTestimoniesPage() {
 				);
 			},
 			sortable: false, // Sorting dinonaktifkan karena ini adalah render visual
-			width: "150px",
+			width: "180px",
 		},
 		{
 			name: "Gaya Pembelajaran",
@@ -104,12 +104,6 @@ export function MentorTestimoniesPage() {
 					);
 				}
 			},
-			width: "200px",
-		},
-		{
-			name: "Komentar",
-			selector: (row) => row.testimoni?.komentar || "-",
-			sortable: true,
 			width: "200px",
 		},
 		{
@@ -201,10 +195,10 @@ export function MentorTestimoniesPage() {
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"
-								placeholder="Cari nama, kursus, atau komentar..."
+								placeholder="Cari nama, kursus, atau tanggal..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-yellow-500"
 							/>
 						</div>
 						<DataTable
@@ -215,6 +209,21 @@ export function MentorTestimoniesPage() {
 							persistTableHead
 							responsive
 							noHeader
+							expandableRows
+							expandableRowsComponent={({ data }) => (
+								<div className="p-4 bg-gray-50 rounded-md">
+									<p className="text-sm text-gray-600">
+										<strong>Gaya Mengajar:</strong>{" "}
+										{data.jadwal_kursus?.gayaMengajar || "-"}
+									</p>
+									<p className="text-sm text-gray-600">
+										<strong>Komentar:</strong>
+									</p>
+									<p className="text-sm text-gray-800 mt-3">
+										{data.testimoni?.komentar || "-"}
+									</p>
+								</div>
+							)}
 						/>
 					</>
 				)}

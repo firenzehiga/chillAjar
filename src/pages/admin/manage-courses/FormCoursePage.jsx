@@ -55,9 +55,9 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 					mentorId: response.data.mentor_id || "", // Set mentorId dari data kursus
 				});
 				if (response.data.fotoKursus) {
-					setFotoPreview(
-						getImageUrl(response.data.fotoKursus || "/foto_kursus/default.jpg")
-					);
+					setFotoPreview(getImageUrl(response.data.fotoKursus));
+				} else {
+					setFotoPreview("/foto_kursus/default.jpg"); // <-- tambahkan ini!
 				}
 				// Simpan jadwal awal dari database
 				if (response.data.jadwal_kursus) {
@@ -381,7 +381,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 								/>
 								{fotoPreview ? (
 									<img
-										src={fotoPreview || "/foto_kursus/default.jpg"}
+										src={fotoPreview}
 										alt="Preview"
 										className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
 									/>

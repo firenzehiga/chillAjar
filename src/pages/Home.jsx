@@ -165,6 +165,10 @@ export function Home({
 													"/foto_mentor/default.png"
 												)}
 												alt={session.mentor?.user?.nama || "Mentor"}
+												onError={(e) => {
+													e.target.onerror = null;
+													e.target.src = "/foto_mentor/default.png";
+												}}
 											/>
 											<div className="ml-4">
 												<p className="font-medium text-gray-900">

@@ -295,7 +295,7 @@ export function MentorSchedulePage({ onNavigate }) {
 				</div>
 				{isLoadingSessions || isLoadingTransactions ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
 						<p className="ml-3">Loading course data...</p>
 					</div>
 				) : filteredSessions.length === 0 ? (
@@ -316,7 +316,7 @@ export function MentorSchedulePage({ onNavigate }) {
 								placeholder="Cari nama, kursus, atau metode..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-yellow-500"
 							/>
 						</div>
 						<DataTable

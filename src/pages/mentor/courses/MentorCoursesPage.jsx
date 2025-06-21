@@ -113,7 +113,7 @@ export function MentorCoursesPage({ onNavigate }) {
 										key="online"
 										title="Online Session"
 										className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200 shadow-sm">
-										<svg
+										{/* <svg
 											xmlns="http://www.w3.org/2000/svg"
 											className="w-3 h-3"
 											fill="none"
@@ -125,7 +125,7 @@ export function MentorCoursesPage({ onNavigate }) {
 												strokeWidth={2}
 												d="M9.75 17h4.5M4 7h16M4 7v10a2 2 0 002 2h12a2 2 0 002-2V7M4 7l8 5 8-5"
 											/>
-										</svg>
+										</svg> */}
 										Online
 									</span>
 								);
@@ -135,7 +135,7 @@ export function MentorCoursesPage({ onNavigate }) {
 										key="offline"
 										title="Offline Session"
 										className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200 shadow-sm">
-										<svg
+										{/* <svg
 											xmlns="http://www.w3.org/2000/svg"
 											className="w-3 h-3"
 											fill="none"
@@ -147,7 +147,7 @@ export function MentorCoursesPage({ onNavigate }) {
 												strokeWidth={2}
 												d="M17.657 16.657L13.414 12.414a4 4 0 10-1.414 1.414l4.243 4.243a1 1 0 001.414-1.414z"
 											/>
-										</svg>
+										</svg> */}
 										Offline
 									</span>
 								);
@@ -280,7 +280,7 @@ export function MentorCoursesPage({ onNavigate }) {
 								placeholder="Cari nama, kursus, deskripsi atau komentar..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-green-500"
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-yellow-500"
 							/>
 						</div>
 
@@ -352,6 +352,10 @@ export function MentorCoursesPage({ onNavigate }) {
 							alt="Preview"
 							className="max-w-[70vw] max-h-[70vh] rounded-lg shadow"
 							style={{ display: "block" }}
+							onError={(e) => {
+								e.target.onerror = null;
+								e.target.src = "/foto_kursus/default.jpg";
+							}}
 						/>
 					</div>
 				</div>
