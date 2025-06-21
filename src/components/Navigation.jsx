@@ -116,7 +116,7 @@ export function Navigation({
 				<>
 					<a
 						onClick={() => onNavigate("admin-dashboard")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "admin-dashboard"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -126,7 +126,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-users")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "admin-manage-users"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -136,7 +136,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-payments")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "admin-manage-payments"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -146,7 +146,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-sessions")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "admin-manage-sessions"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -156,7 +156,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-courses")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "admin-manage-courses"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -166,7 +166,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-mentors")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "admin-manage-mentors"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -176,7 +176,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("admin-testimonial")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "admin-testimonial"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -191,7 +191,7 @@ export function Navigation({
 				<>
 					<a
 						onClick={() => onNavigate("mentor-dashboard")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "mentor-dashboard"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -201,7 +201,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("mentor-manage-schedule")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "mentor-manage-schedule"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -211,7 +211,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("mentor-manage-courses")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "mentor-manage-courses" ||
 							currentPage === "mentor-add-course" ||
 							currentPage.startsWith("mentor-edit-course")
@@ -223,7 +223,7 @@ export function Navigation({
 					</a>
 					<a
 						onClick={() => onNavigate("mentor-testimonial")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "mentor-testimonial"
 								? "bg-yellow-500 text-gray-900"
 								: "text-gray-900 hover:bg-yellow-500"
@@ -239,7 +239,7 @@ export function Navigation({
 			<>
 				<a
 					onClick={() => onNavigate("home")}
-					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 						currentPage === "home"
 							? "bg-yellow-500 text-gray-900"
 							: "text-gray-900 hover:bg-yellow-500"
@@ -249,7 +249,7 @@ export function Navigation({
 				</a>
 				<a
 					onClick={() => onNavigate("courses")}
-					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 						currentPage === "courses"
 							? "bg-yellow-500 text-gray-900"
 							: "text-gray-900 hover:bg-yellow-500"
@@ -259,7 +259,7 @@ export function Navigation({
 				</a>
 				<a
 					onClick={() => onNavigate("mentors")}
-					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 						currentPage === "mentors"
 							? "bg-yellow-500 text-gray-900"
 							: "text-gray-900 hover:bg-yellow-500"
@@ -269,7 +269,7 @@ export function Navigation({
 				</a>
 				<a
 					onClick={() => onNavigate("about")}
-					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 						currentPage === "about"
 							? "bg-yellow-500 text-gray-900"
 							: "text-gray-900 hover:bg-yellow-500"

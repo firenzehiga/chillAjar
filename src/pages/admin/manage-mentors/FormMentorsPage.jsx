@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
+import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
 
 export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 	// Pastikan selalu dalam mode edit
@@ -104,11 +105,7 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 	};
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center h-[60vh] text-gray-600">
-				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-			</div>
-		);
+		return <FormSkeletonCard />;
 	}
 
 	return (

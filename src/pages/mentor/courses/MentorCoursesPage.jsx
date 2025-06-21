@@ -216,12 +216,10 @@ export function MentorCoursesPage({ onNavigate }) {
 		);
 	}
 
-	// Sort courses by namaKursus ASC (A-Z)
+	// Sort courses by created_at in descending order
 	const sortedCourses = courses
-		? [...courses].sort((a, b) =>
-				(a.namaKursus || "").localeCompare(b.namaKursus || "", "id", {
-					sensitivity: "base",
-				})
+		? [...courses].sort(
+				(a, b) => new Date(b.created_at) - new Date(a.created_at)
 		  )
 		: [];
 

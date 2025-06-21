@@ -16,6 +16,19 @@
   background-position: center;
 }
 
+.slick-arrow {
+  transition: none !important;
+}
+
+.slick-arrow:hover,
+.slick-arrow:focus,
+.slick-prev:hover,
+.slick-next:hover {
+  background-color: #bdd5e0 !important;
+  /* kuning muda, atau warna lain sesuai tema */
+  /* Tidak ada transform, scale, dsb */
+}
+
 /* Smooth scrolling and better focus */
 html {
   scroll-behavior: smooth;
@@ -30,18 +43,19 @@ html {
 .slick-prev,
 .slick-next {
   z-index: 10;
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   background-color: rgba(255, 255, 255, 0.8) !important;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  line-height: 1 !important;
+  box-sizing: border-box;
 }
 
-.slick-prev:hover,
-.slick-next:hover {
-  background-color: white !important;
-  transform: scale(1.1);
-}
 
 .slick-prev {
   left: 20px;
@@ -100,9 +114,6 @@ button {
   transition: all 0.3s ease;
 }
 
-button:active {
-  transform: scale(0.95);
-}
 
 /* Card hover effects */
 .hover-card {

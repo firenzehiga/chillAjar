@@ -3,6 +3,7 @@ import { BookOpen, ArrowLeft, AlertCircle, Plus, X } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
 
 export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 	const isEditMode = !!courseId;
@@ -221,7 +222,8 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 					text: isEditMode
 						? "Course updated successfully!"
 						: "Course created successfully!",
-					confirmButtonColor: "#3B82F6",
+					showConfirmButton: false,
+					timer: 1500,
 				});
 				onNavigate("mentor-manage-courses");
 			} else {
@@ -251,15 +253,11 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 	};
 
 	if (loading) {
-		return (
-			<div className="flex items-center justify-center h-[60vh] text-gray-600">
-				<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
-			</div>
-		);
+		return <FormSkeletonCard />;
 	}
 
 	return (
-		<div className="py-5">
+		<div className="py-8">
 			<button
 				onClick={() => onNavigate("mentor-manage-courses")}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"

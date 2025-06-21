@@ -143,8 +143,7 @@ export function MentorTestimoniesPage() {
 
 	// Sorting testimoni terbaru di paling atas
 	const sortedTestimonies = [...testimonies].sort(
-		(a, b) =>
-			new Date(b.created_at || b.tanggal) - new Date(a.created_at || a.tanggal)
+		(a, b) => new Date(b.created_at) - new Date(a.created_at)
 	);
 
 	// Filter data berdasarkan searchTerm
