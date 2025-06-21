@@ -23,7 +23,7 @@ export function AboutPage() {
 	});
 
 	const stats = [
-		{ icon: Users, label: "Active Students", value: "10,000+" },
+		{ icon: Users, label: "Active Students", value: "20+" },
 		{
 			icon: BookOpen,
 			label: "Courses",
@@ -33,7 +33,7 @@ export function AboutPage() {
 				? "Error"
 				: jumlahCourse,
 		},
-		{ icon: Clock, label: "Learning Hours", value: "100,000+" },
+		{ icon: Clock, label: "Learning Hours", value: "40+" },
 	];
 
 	const values = [
