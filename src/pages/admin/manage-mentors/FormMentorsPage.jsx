@@ -33,7 +33,7 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 				setFormData({
 					nama: mentorData.user?.nama || "",
 					email: mentorData.user?.email || "",
-					rating: mentorData.rating || "",
+					rating: mentorData.rating || 0,
 					deskripsi: mentorData.deskripsi || "",
 					biayaPerSesi: mentorData.biayaPerSesi || "",
 				});
