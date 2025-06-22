@@ -18,10 +18,8 @@ const preloadDefaultImage = () => {
 	defaultImg.src = "/foto_kursus/default.jpg";
 	defaultImg.onload = () => {
 		loadedImages.add("/foto_kursus/default.jpg");
-		console.log("Default image preloaded"); // Debug
 	};
 	defaultImg.onerror = () => {
-		console.error("Failed to preload default image");
 	};
 };
 
@@ -34,10 +32,9 @@ export function CourseCard({ course, onClick }) {
 		? getImageUrl(course.courseImage, "/foto_kursus/default.jpg")
 		: "/foto_kursus/default.jpg";
 
-	// Jika menggunakan default image dan sudah di-preload, langsung set loaded
+	// Jadi ini (lebih simpel):
 	const [imgLoaded, setImgLoaded] = useState(
-		loadedImages.has(finalImageUrl) ||
-			(!hasCustomImage && loadedImages.has("/foto_kursus/default.jpg"))
+		!hasCustomImage || loadedImages.has(finalImageUrl)
 	);
 	const handleImgLoad = () => {
 		loadedImages.add(finalImageUrl);
