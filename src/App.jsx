@@ -125,6 +125,8 @@ function App() {
 	const [showHelpMenu, setShowHelpMenu] = useState(false);
 	const [showFlowModal, setShowFlowModal] = useState(false);
 
+	const [showPostLoginLoading, setShowPostLoginLoading] = useState(false);
+
 	const {
 		data: courses = [],
 		isLoading,
@@ -515,6 +517,10 @@ function App() {
 		setUserData(user);
 		setShowAuthModal(false);
 
+		// Tampilkan loading/skeleton sebentar setelah login
+		setShowPostLoginLoading(true);
+		setTimeout(() => setShowPostLoginLoading(false), 1000); // 800ms, bisa diubah sesuai selera
+
 		if (role === "admin") {
 			setCurrentPage("admin-dashboard");
 			history.push("/admin-dashboard");
@@ -550,6 +556,7 @@ function App() {
 					title: "Logged Out!",
 					text: "You have been successfully logged out.",
 					toast: true,
+					position: "bottom-end",
 					timer: 2000,
 					showConfirmButton: false,
 				});
@@ -850,7 +857,13 @@ function App() {
 						/>
 					) : null;
 				case "mentors":
-					return <MentorsPage courses={courses} onSchedule={handleSchedule} />;
+					return (
+						<MentorsPage
+							courses={courses}
+							onSchedule={handleSchedule}
+							showPostLoginLoading={showPostLoginLoading}
+						/>
+					);
 				case "courses":
 					return selectedCourse ? (
 						<div className="py-4">

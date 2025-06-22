@@ -5,7 +5,7 @@ import defaultPhoto from "../../public/foto_kursus/default.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { MentorSkeletonCard } from "../components/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "../utils/getImageUrl";
-export function MentorsPage({ courses, onSchedule }) {
+export function MentorsPage({ courses, onSchedule, showPostLoginLoading }) {
 	const {
 		data: mentors = [],
 		isLoading,
@@ -21,7 +21,7 @@ export function MentorsPage({ courses, onSchedule }) {
 		retry: 1,
 	});
 
-	if (isLoading) {
+	if (isLoading | showPostLoginLoading) {
 		return (
 			<div className="py-8">
 				<h2 className="text-2xl font-bold text-gray-900 mb-6">Our Mentors</h2>
