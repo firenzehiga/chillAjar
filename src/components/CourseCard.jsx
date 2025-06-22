@@ -9,8 +9,41 @@ import {
 } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
 
+// Cache global untuk gambar yang sudah dimuat
+const loadedImages = new Set();
+
+// Preload gambar default// Preload gambar default dari public folder
+const preloadDefaultImage = () => {
+	const defaultImg = new Image();
+	defaultImg.src = "/foto_kursus/default.jpg";
+	defaultImg.onload = () => {
+		loadedImages.add("/foto_kursus/default.jpg");
+		console.log("Default image preloaded"); // Debug
+	};
+	defaultImg.onerror = () => {
+		console.error("Failed to preload default image");
+	};
+};
+
+// Panggil preload saat pertama kali import
+preloadDefaultImage();
 export function CourseCard({ course, onClick }) {
-	const [imgLoaded, setImgLoaded] = useState(false);
+	// Tentukan URL gambar yang akan digunakan
+	const hasCustomImage = course.courseImage && course.courseImage.trim() !== "";
+	const finalImageUrl = hasCustomImage
+		? getImageUrl(course.courseImage, "/foto_kursus/default.jpg")
+		: "/foto_kursus/default.jpg";
+
+	// Jika menggunakan default image dan sudah di-preload, langsung set loaded
+	const [imgLoaded, setImgLoaded] = useState(
+		loadedImages.has(finalImageUrl) ||
+			(!hasCustomImage && loadedImages.has("/foto_kursus/default.jpg"))
+	);
+	const handleImgLoad = () => {
+		loadedImages.add(finalImageUrl);
+		setImgLoaded(true);
+	};
+
 	// const filteredSchedules = course?.mentors?.[0]?.schedules || [];
 
 	// console.log("Course in CourseCard:", course);
@@ -30,23 +63,21 @@ export function CourseCard({ course, onClick }) {
 				)}
 				<img
 					loading="lazy"
-					src={getImageUrl(course.courseImage, "/foto_kursus/default.jpg")}
+					src={finalImageUrl}
 					alt={course.courseName}
 					className="w-full h-48 object-cover transform transition-transform duration-500 group-hover:scale-110"
-					onLoad={() => setImgLoaded(true)}
+					onLoad={handleImgLoad}
 					onError={(e) => {
 						e.target.onerror = null;
 						e.target.src = "/foto_kursus/default.jpg";
-						setImgLoaded(true);
+						loadedImages.add("/foto_kursus/default.jpg"); // Cache default image
+						handleImgLoad(); // Tandai sebagai sudah dimuat meski error
 					}}
 				/>
 				{/* Avatar mentor utama */}
 				{course.mentor && course.mentor.user && (
 					<img
-						src={getImageUrl(
-							course.mentor.user.foto_profil,
-							"/foto_mentor/default.png"
-						)}
+						src={mentorImgUrl}
 						alt={course.mentor.user.nama || "Mentor"}
 						className="absolute bottom-2 left-2 w-10 h-10 rounded-full border-2 border-white shadow object-cover bg-white"
 						onError={(e) => {
