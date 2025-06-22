@@ -106,7 +106,7 @@ const steps = [
 	},
 	{
 		title: "Mulai Sesi Belajar",
-		desc: "Setelah terverifikasi, tunggu mentor kamu untuk memulai sesi belajar",
+		desc: "Setelah terverifikasi, tunggu mentor untuk memulai sesi belajar",
 		icon: (
 			<span className="bg-teal-100 text-teal-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">
 				<svg
@@ -126,13 +126,41 @@ export function GuideModal({ show, onClose }) {
 	return (
 		<AnimatePresence>
 			{show && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+				<motion.div
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.2 }}
+					className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 pt-16">
+					{/* Floating Icon di atas modal */}
+					<motion.div
+						initial={{ y: -30, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+						exit={{ y: -30, opacity: 0 }}
+						transition={{ duration: 0.3 }}
+						className="absolute left-[40%] sm:left-[48%] -translate-x-1/2 top-5 z-20">
+						<div className="rounded-full bg-yellow-200 shadow-lg flex items-center justify-center w-19 h-19 border-4 border-white">
+							<svg width="46" height="46" viewBox="0 0 60 60" fill="none">
+								<circle cx="30" cy="30" r="30" fill="#FDE68A" />
+								<text
+									x="50%"
+									y="52%"
+									textAnchor="middle"
+									fill="#F59E42"
+									fontSize="36"
+									fontWeight="bold"
+									dy=".3em">
+									?
+								</text>
+							</svg>
+						</div>
+					</motion.div>
 					<motion.div
 						initial={{ y: 40, opacity: 0 }}
 						animate={{ y: 0, opacity: 1 }}
 						exit={{ y: 40, opacity: 0 }}
 						transition={{ duration: 0.25 }}
-						className="relative bg-white rounded-2xl shadow-2xl p-0 max-h-[90vh] overflow-y-auto w-full max-w-[95vw] sm:max-w-lg mx-2">
+						className="relative bg-white rounded-2xl shadow-2xl p-0 max-h-[90vh] overflow-visible w-full max-w-[98vw] sm:max-w-lg overflow-y-auto  mx-2 pt-0 mb-10">
 						{/* Tombol Tutup di pojok kanan atas */}
 						<button
 							className="absolute top-3 right-3 bg-white border border-gray-200 shadow px-3 py-1.5 rounded-full font-semibold text-gray-600 hover:text-red-500 transition focus:outline-none z-10"
@@ -141,27 +169,12 @@ export function GuideModal({ show, onClose }) {
 							Tutup
 						</button>
 
-						{/* Header & Illustration */}
-						<div className="bg-gradient-to-r from-yellow-300 via-yellow-300 to-yellow-100 px-4 sm:px-8 pt-8 pb-4 flex flex-col items-center">
-							<span className="mb-2">
-								<svg width="60" height="60" viewBox="0 0 60 60" fill="none">
-									<circle cx="30" cy="30" r="30" fill="#FDE68A" />
-									<text
-										x="50%"
-										y="54%"
-										textAnchor="middle"
-										fill="#F59E42"
-										fontSize="36"
-										fontWeight="bold"
-										dy=".3em">
-										?
-									</text>
-								</svg>
-							</span>
-							<h2 className="text-xl font-bold text-gray-800 mb-1 text-center">
+						{/* Header kuning kecil */}
+						<div className="w-full rounded-t-2xl bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-100 px-4 sm:px-8 pt-8 pb-4 flex flex-col items-center ">
+							<h2 className="text-lg font-bold text-gray-800 mb-1 text-center">
 								Langkah Pemesanan
 							</h2>
-							<p className="text-sm text-gray-600 text-center mb-2">
+							<p className="text-xs text-gray-600 text-center mb-1">
 								Ikuti langkah berikut untuk memesan kursus atau sesi belajar di
 								ChillAjar.
 							</p>
@@ -171,7 +184,13 @@ export function GuideModal({ show, onClose }) {
 						<div className="px-4 sm:px-8 py-6">
 							<ol className="space-y-4">
 								{steps.map((step, idx) => (
-									<li key={idx} className="flex items-start">
+									<motion.li
+										key={idx}
+										className="flex items-start"
+										initial={{ x: 30, opacity: 0 }}
+										animate={{ x: 0, opacity: 1 }}
+										transition={{ delay: 0.1 * idx, duration: 0.3 }}
+										exit={{ x: 30, opacity: 0 }}>
 										{step.icon}
 										<div>
 											<div className="font-semibold text-gray-800">
@@ -179,12 +198,12 @@ export function GuideModal({ show, onClose }) {
 											</div>
 											<div className="text-xs text-gray-500">{step.desc}</div>
 										</div>
-									</li>
+									</motion.li>
 								))}
 							</ol>
 						</div>
 					</motion.div>
-				</div>
+				</motion.div>
 			)}
 		</AnimatePresence>
 	);

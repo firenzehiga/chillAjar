@@ -477,6 +477,10 @@ export function Navigation({
 								src={titleLogo}
 								alt="Logo ChillAjar"
 								className="h-10 w-auto relative -top-2"
+								onClick={() => {
+									onNavigate("home");
+									setIsMobileMenuOpen(false);
+								}}
 							/>
 						</div>
 

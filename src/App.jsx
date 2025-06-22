@@ -101,6 +101,12 @@ function App() {
 	const [currentPage, setCurrentPage] = useState(
 		(history.location && history.location.pathname.slice(1)) || "home"
 	);
+	// setiap kali currentPage berubah, scroll ke atas
+	// ini untuk memastikan setiap kali halaman berubah, scroll akan kembali ke atas
+	useEffect(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, [currentPage]);
+
 	const [selectedCourse, setSelectedCourse] = useState(null);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedMentor, setSelectedMentor] = useState(null);
@@ -1041,7 +1047,11 @@ function App() {
 					/>
 				)}
 			</main>
-			<Footer onNavigate={handleNavigate} className="mt-auto" />
+			<Footer
+				onNavigate={handleNavigate}
+				className="mt-auto"
+				onShowGuideModal={() => setShowFlowModal(true)}
+			/>
 			{userRole === "pelanggan" || userRole === null ? (
 				<>
 					<div

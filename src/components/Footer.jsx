@@ -10,7 +10,7 @@ import {
 	Linkedin,
 } from "lucide-react";
 
-export function Footer({ onNavigate, className = "" }) {
+export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 	return (
 		<footer className={`bg-gray-900 text-gray-300 ${className}`}>
 			<div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -32,7 +32,11 @@ export function Footer({ onNavigate, className = "" }) {
 							<a className="text-gray-400 hover:text-white transition-colors duration-300">
 								<Twitter className="h-5 w-5" />
 							</a>
-							<a className="text-gray-400 hover:text-white transition-colors duration-300">
+							<a
+								className="text-gray-400 hover:text-white transition-colors duration-300"
+								target="_blank"
+								rel="noopener noreferrer"
+								href="https://www.instagram.com/sizzling_chili/">
 								<Instagram className="h-5 w-5" />
 							</a>
 							<a className="text-gray-400 hover:text-white transition-colors duration-300">
@@ -76,9 +80,12 @@ export function Footer({ onNavigate, className = "" }) {
 						<h3 className="text-lg font-semibold text-white mb-4">Support</h3>
 						<ul className="space-y-2">
 							<li>
-								<a className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
+								<button
+									className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300"
+									onClick={onShowGuideModal}
+									type="button">
 									Help Center
-								</a>
+								</button>
 							</li>
 							<li>
 								<a className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
@@ -103,10 +110,16 @@ export function Footer({ onNavigate, className = "" }) {
 								<Mail className="h-5 w-5 mr-2 text-yellow-500" />
 								<span>support@chillajar.com</span>
 							</li>
-							<li className="flex items-center">
-								<Phone className="h-5 w-5 mr-2 text-yellow-500" />
-								<span>+62 123 456 789</span>
-							</li>
+							<a
+								href="https://wa.me/6285882544254"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="flex items-center text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
+								<li className="flex items-center">
+									<Phone className="h-5 w-5 mr-2 text-yellow-500" />
+									<span>+62 858-8254-4254</span>
+								</li>
+							</a>
 							<li className="flex items-center">
 								<MapPin className="h-5 w-5 mr-2 text-yellow-500" />
 								<span>Depok, Indonesia</span>
