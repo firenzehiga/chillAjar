@@ -1082,7 +1082,7 @@ function App() {
 									className="mb-2 flex flex-col gap-1 items-end">
 									{/* WhatsApp Button */}
 									<a
-										href="https://wa.me/6285882534254?text=Halo%20admin%2C%20saya%20butuh%20bantuan%20tentang%20ChillAjar"
+										href="https://wa.me/6283871417229?text=Halo%20admin%2C%20saya%20butuh%20bantuan%20tentang%20ChillAjar"
 										target="_blank"
 										rel="noopener noreferrer"
 										className="

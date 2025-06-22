@@ -87,16 +87,16 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 									Help Center
 								</button>
 							</li>
-							<li>
-								<a className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
-									Terms of Service
-								</a>
-							</li>
-							<li>
-								<a className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
-									Privacy Policy
-								</a>
-							</li>
+							{/* <li>
+									<a className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
+										Terms of Service
+									</a>
+								</li>
+								<li>
+									<a className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
+										Privacy Policy
+									</a>
+								</li> */}
 						</ul>
 					</div>
 
@@ -111,24 +111,30 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 								<span>support@chillajar.com</span>
 							</li>
 							<a
-								href="https://wa.me/6285882544254"
+								href="https://wa.me/6283871417229"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="flex items-center text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
 								<li className="flex items-center">
 									<Phone className="h-5 w-5 mr-2 text-yellow-500" />
-									<span>+62 858-8254-4254</span>
+									<span>+62-838-7141-7229</span>
 								</li>
 							</a>
 							<li className="flex items-center">
 								<MapPin className="h-5 w-5 mr-2 text-yellow-500" />
-								<span>Depok, Indonesia</span>
+								<span>STT Terpadu Nurulfikri, Depok</span>
 							</li>
+							{/* <li className="items-center">
+								<span>Kampus A: Jl. Situ Indah no.116, Cimanggis, Depok</span>
+							</li>
+							<li className="items-center">
+								<span>Kampus B: Jl. Raya Lenteng Agung No.20, Jagakarsa</span>
+							</li> */}
 						</ul>
 					</div>
 				</div>
 
-				<div className="border-t border-gray-800 mt-5 pt-5 text-center text-sm">
+				<div className="border-t border-gray-800 mt-5 pt-5 -mb-6 text-center text-sm">
 					<p>
 						&copy; {new Date().getFullYear()} ChillAjar. All rights reserved.
 					</p>
