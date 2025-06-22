@@ -6,6 +6,7 @@ import {
 	Monitor,
 	BookOpen,
 	MonitorX,
+	Building,
 	AlertCircle,
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
@@ -183,9 +184,12 @@ export function MentorCard({
 												</div>
 											))
 										) : (
-											<div className="text-gray-600 text-sm ml-2">
-												Jadwal offline belum tersedia.
-											</div>
+											<>
+												<Building className="w-4 h-4 mr-2 text-gray-400" />
+												<div className="text-gray-500 text-sm">
+													Offline sessions unavailable
+												</div>
+											</>
 										);
 									})()}
 									{/* --- Perubahan: Status online hanya dari mode valid --- */}

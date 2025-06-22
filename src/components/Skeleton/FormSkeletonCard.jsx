@@ -55,7 +55,7 @@ export function FormSkeletonCard() {
 						<div className="h-4 w-32 bg-gray-200 rounded mb-2 animate-pulse" />
 						<div className="h-24 w-full bg-gray-200 rounded animate-pulse" />
 					</div>
-					<div className="mb-4">
+					{/* <div className="mb-4">
 						<div className="h-4 w-32 bg-gray-200 rounded mb-2 animate-pulse" />
 						<div className="space-y-4">
 							{[1, 2].map((_, idx) => (
@@ -92,7 +92,7 @@ export function FormSkeletonCard() {
 								</div>
 							))}
 						</div>
-					</div>
+					</div> */}
 					<div className="flex justify-end">
 						<div className="h-10 w-40 bg-gray-200 rounded animate-pulse" />
 					</div>
