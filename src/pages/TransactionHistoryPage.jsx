@@ -72,7 +72,8 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				amount: sesi.mentor?.biayaPerSesi || 0,
 				paymentDate: transaksi?.tanggalPembayaran || null,
 				transaksiId: transaksi?.id,
-				statusSesi, // tambahkan status sesi
+				statusSesi,
+				created_at: transaksi?.created_at || sesi.created_at || "-", // <-- tambahkan ini!
 			};
 		});
 	}, [sessions, transactions]);
@@ -82,6 +83,13 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 		if (!statusFilter) return history;
 		return history.filter((session) => session.status === statusFilter);
 	}, [history, statusFilter]);
+
+	const sortedFilteredHistory = [...filteredHistory].sort((a, b) => {
+		// Jika ada paymentDate, pakai itu, jika tidak pakai date
+		const dateA = new Date(a.created_at);
+		const dateB = new Date(b.created_at);
+		return dateB - dateA;
+	});
 
 	const getStatusStyle = (status) => {
 		switch (status) {
@@ -199,7 +207,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 			</div>
 
 			<div className="space-y-4">
-				{filteredHistory.map((session) => (
+				{sortedFilteredHistory.map((session) => (
 					<div
 						key={session.id}
 						className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300">

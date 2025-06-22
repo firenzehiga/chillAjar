@@ -478,7 +478,9 @@ function App() {
 				text: transaksiId
 					? "Your payment proof has been updated. We will verify it shortly."
 					: "Your booking has been confirmed. We will verify your payment shortly.",
-				confirmButtonColor: "#3B82F6",
+				showConfirmButton: false,
+				timer: 1200,
+				timerProgressBar: true,
 			}).then(() => {
 				setCurrentPage("transaction-history");
 				history.push("/transaction-history");
