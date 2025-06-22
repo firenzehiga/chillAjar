@@ -26,7 +26,7 @@ export function CourseCard({ course, onClick }) {
 			className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer group mb-8">
 			<div className="relative overflow-hidden">
 				{!imgLoaded && (
-					<div className="absolute inset-0 bg-gray-200 animate-pulse" />
+					<div className="absolute inset-0 bg-gray-300 animate-pulse" />
 				)}
 				<img
 					loading="lazy"

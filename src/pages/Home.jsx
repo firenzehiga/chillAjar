@@ -94,18 +94,6 @@ export function Home({
 		};
 	});
 
-	if (errorSessions) {
-		return (
-			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
-				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-				<h3 className="text-lg font-semibold mb-2">Error</h3>
-				<p className="text-gray-500 mb-4 text-center">
-					Gagal mengambil data sesi
-				</p>
-			</div>
-		);
-	}
-
 	return (
 		<div className="space-y-8 ">
 			{userRole === "pelanggan" && (
@@ -116,6 +104,14 @@ export function Home({
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						{isLoadingSessions ? (
 							<YourSessionSkeleton />
+						) : errorSessions ? (
+							<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+								<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+								<h3 className="text-lg font-semibold mb-2">Error</h3>
+								<p className="text-gray-500 mb-4 text-center">
+									Gagal mengambil data sesi. Silakan login ulang
+								</p>
+							</div>
 						) : ongoingSessions.length === 0 ? (
 							<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 								<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
