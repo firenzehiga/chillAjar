@@ -28,7 +28,7 @@ export function AdminSessionsPage({ onNavigate }) {
 			const response = await api.get("/sesi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			console.log("Fetched sessions:", response.data);
+			// console.log("Fetched sessions:", response.data);
 			return response.data;
 		},
 		onError: (err) => {
@@ -48,7 +48,7 @@ export function AdminSessionsPage({ onNavigate }) {
 			const response = await api.get("/transaksi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			console.log("Fetched transactions:", response.data);
+			// console.log("Fetched transactions:", response.data);
 			return response.data;
 		},
 		onError: (err) => {

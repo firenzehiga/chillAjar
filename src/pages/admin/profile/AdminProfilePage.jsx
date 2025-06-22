@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone, Calendar } from "lucide-react";
 import { getImageUrl } from "../../../utils/getImageUrl";
 
 export function AdminProfilePage({ userData, userRole, onNavigate }) {
-	console.log("UserData:", userData);
+	// console.log("UserData:", userData);
 
 	const currentUser = {
 		name: userData?.nama || "Unknown User",

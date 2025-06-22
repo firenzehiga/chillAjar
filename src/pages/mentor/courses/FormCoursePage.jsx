@@ -153,7 +153,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 				});
 			}
 
-			console.log("API Response after creating course:", response.data);
+			// console.log("API Response after creating course:", response.data);
 
 			if (response.status === 200 || response.status === 201) {
 				let newCourseId;
@@ -173,7 +173,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 								headers: { Authorization: `Bearer ${token}` },
 							}
 						);
-						console.log("Fetch Course Response:", fetchCourseResponse.data);
+						// console.log("Fetch Course Response:", fetchCourseResponse.data);
 						const latestCourse = fetchCourseResponse.data
 							.filter((course) => course.namaKursus === formData.namaKursus)
 							.sort(
@@ -203,7 +203,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 						tempat: schedule.tempat || "",
 						gayaMengajar: schedule.gayaMengajar,
 					};
-					console.log("Jadwal Payload:", jadwalPayload);
+					// console.log("Jadwal Payload:", jadwalPayload);
 					const jadwalResponse = await api.post(
 						"/mentor/atur-jadwal",
 						jadwalPayload,
@@ -213,7 +213,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 							},
 						}
 					);
-					console.log("Jadwal API Response:", jadwalResponse.data);
+					// console.log("Jadwal API Response:", jadwalResponse.data);
 				}
 
 				Swal.fire({

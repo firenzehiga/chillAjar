@@ -72,7 +72,7 @@ const steps = [
 	},
 	{
 		title: "Upload Bukti Pembayaran",
-		desc: "Unggah bukti pembayaran jika diperlukan pada halaman transaksi.",
+		desc: "Unggah bukti pembayaran jika diperlukan pada profil > histori transaksi.",
 		icon: (
 			<span className="bg-pink-100 text-pink-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">
 				<svg

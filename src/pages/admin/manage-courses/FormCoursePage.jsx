@@ -172,7 +172,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 				});
 			}
 
-			console.log("API Response after creating course:", response.data);
+			// console.log("API Response after creating course:", response.data);
 
 			if (response.status === 200 || response.status === 201) {
 				let newCourseId;

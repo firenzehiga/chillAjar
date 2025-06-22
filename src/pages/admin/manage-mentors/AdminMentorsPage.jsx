@@ -29,7 +29,7 @@ export function AdminMentorsPage({ onNavigate }) {
 			const response = await api.get("/admin/mentor", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			console.log("Fetched mentors:", response.data);
+			// console.log("Fetched mentors:", response.data);
 			return response.data;
 		},
 		retry: 1, // Hanya coba ulang sekali jika gagal

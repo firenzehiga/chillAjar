@@ -9,7 +9,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
-		console.log("Uploaded File:", file); // Debug
+		// console.log("Uploaded File:", file); // Debug
 		if (file) {
 			if (file.size > 2 * 1024 * 1024) {
 				// Maksimal 2MB

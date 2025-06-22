@@ -445,10 +445,10 @@ function App() {
 			);
 			formData.append("buktiPembayaran", proofImage);
 
-			// Log untuk debugging
-			for (let [key, value] of formData.entries()) {
-				console.log(`${key}:`, value);
-			}
+			// // Log untuk debugging
+			// for (let [key, value] of formData.entries()) {
+			// 	console.log(`${key}:`, value);
+			// }
 
 			// Kirim permintaan dengan header multipart/form-data
 			const res = await api.post("/transaksi", formData, {
@@ -462,7 +462,7 @@ function App() {
 			queryClient.invalidateQueries(["transactions", sesi.pelanggan_id]);
 			queryClient.invalidateQueries(["sessions", sesi.pelanggan_id]);
 
-			console.log("Transaksi response:", res.data); // Debugging
+			// console.log("Transaksi response:", res.data); // Debugging
 			setShowPayment(false);
 			Swal.fire({
 				icon: "success",
@@ -519,7 +519,7 @@ function App() {
 	};
 
 	const handleUpdateUserData = (updatedData) => {
-		console.log("Updating userData with:", updatedData);
+		// console.log("Updating userData with:", updatedData);
 		setUserData(updatedData);
 		setUserRole(updatedData.peran?.toLowerCase());
 		localStorage.setItem("user", JSON.stringify(updatedData));
@@ -543,7 +543,6 @@ function App() {
 					icon: "success",
 					title: "Logged Out!",
 					text: "You have been successfully logged out.",
-					position: "bottom-end",
 					toast: true,
 					timer: 2000,
 					showConfirmButton: false,

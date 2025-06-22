@@ -144,7 +144,7 @@ export function MentorEditProfile({
 
 				localStorage.setItem("user", JSON.stringify(updatedUserData));
 				if (onUpdateUserData) {
-					console.log("Calling onUpdateUserData with:", updatedUserData);
+					// console.log("Calling onUpdateUserData with:", updatedUserData);
 
 					onUpdateUserData(updatedUserData);
 				}

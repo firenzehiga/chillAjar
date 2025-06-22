@@ -104,10 +104,10 @@ export function AdminEditProfile({
 					confirmButtonColor: "#3B82F6",
 				});
 
-				console.log(
-					"Updated Profile Data from PUT /user/profil:",
-					userResponse.data
-				);
+				// console.log(
+				// 	"Updated Profile Data from PUT /user/profil:",
+				// 	userResponse.data
+				// );
 
 				const updatedUserData = {
 					...userData,
@@ -122,7 +122,7 @@ export function AdminEditProfile({
 
 				localStorage.setItem("user", JSON.stringify(updatedUserData));
 				if (onUpdateUserData) {
-					console.log("Calling onUpdateUserData with:", updatedUserData);
+					// console.log("Calling onUpdateUserData with:", updatedUserData);
 					onUpdateUserData(updatedUserData);
 				}
 

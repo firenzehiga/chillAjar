@@ -27,7 +27,7 @@ export function MentorSchedulePage({ onNavigate }) {
 			const response = await api.get("/mentor/daftar-sesi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			console.log("Fetched sessions:", response.data);
+			// console.log("Fetched sessions:", response.data);
 			return response.data;
 		},
 		onError: (err) => {
