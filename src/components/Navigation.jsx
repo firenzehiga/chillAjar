@@ -237,46 +237,69 @@ export function Navigation({
 
 		return (
 			<>
-				<a
+				<button
 					onClick={() => onNavigate("home")}
-					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+					className={`focus:outline-none outline-none group relative px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition-all duration-200
+      		${
 						currentPage === "home"
-							? "bg-yellow-500 text-gray-900"
-							: "text-gray-900 hover:bg-yellow-500"
+							? "bg-yellow-500 text-gray-900 shadow"
+							: "bg-transparent text-gray-900 hover:bg-yellow-500"
 					}`}>
-					<Home className="w-4 h-4 inline-block mr-1" />
+					<Home
+						className={`w-5 h-5 mr-2 transition-transform duration-200 text-gray-900
+        ${currentPage !== "home" ? "group-hover:scale-110" : ""}
+      `}
+					/>
 					Home
-				</a>
-				<a
+				</button>
+				<button
 					onClick={() => onNavigate("courses")}
-					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-						currentPage === "courses"
-							? "bg-yellow-500 text-gray-900"
-							: "text-gray-900 hover:bg-yellow-500"
-					}`}>
-					<BookOpen className="w-4 h-4 inline-block mr-1" />
+					className={`focus:outline-none outline-none group relative px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition-all duration-200
+      ${
+				currentPage === "courses"
+					? "bg-yellow-500 text-gray-900 shadow"
+					: "bg-transparent text-gray-900 hover:bg-yellow-500"
+			}
+    `}>
+					<BookOpen
+						className={`w-5 h-5 mr-2 transition-transform duration-200 text-gray-900
+        ${currentPage !== "courses" ? "group-hover:scale-110" : ""}
+      `}
+					/>
 					Courses
-				</a>
-				<a
+				</button>
+				<button
 					onClick={() => onNavigate("mentors")}
-					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-						currentPage === "mentors"
-							? "bg-yellow-500 text-gray-900"
-							: "text-gray-900 hover:bg-yellow-500"
-					}`}>
-					<Users className="w-4 h-4 inline-block mr-1" />
+					className={`focus:outline-none outline-none group relative px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition-all duration-200
+      ${
+				currentPage === "mentors"
+					? "bg-yellow-500 text-gray-900 shadow"
+					: "bg-transparent text-gray-900 hover:bg-yellow-500"
+			}
+    `}>
+					<Users
+						className={`w-5 h-5 mr-2 transition-transform duration-200 text-gray-900
+        ${currentPage !== "mentors" ? "group-hover:scale-110" : ""}
+      `}
+					/>
 					Mentors
-				</a>
-				<a
+				</button>
+				<button
 					onClick={() => onNavigate("about")}
-					className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-						currentPage === "about"
-							? "bg-yellow-500 text-gray-900"
-							: "text-gray-900 hover:bg-yellow-500"
-					}`}>
-					<Info className="w-4 h-4 inline-block mr-1" />
+					className={`focus:outline-none outline-none group relative px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition-all duration-200
+      ${
+				currentPage === "about"
+					? "bg-yellow-500 text-gray-900 shadow"
+					: "bg-transparent text-gray-900 hover:bg-yellow-500"
+			}
+    `}>
+					<Info
+						className={`w-5 h-5 mr-2 transition-transform duration-200 text-gray-900
+        ${currentPage !== "about" ? "group-hover:scale-110" : ""}
+      `}
+					/>
 					About Us
-				</a>
+				</button>
 			</>
 		);
 	};
@@ -501,8 +524,8 @@ export function Navigation({
 							<button
 								type="button"
 								onClick={onAuthClick}
-								className="flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-colors">
-								<LogIn className="w-4 h-4 mr-2" />
+								className="group flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-all duration-200">
+								<LogIn className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
 								Sign In
 							</button>
 						)}
