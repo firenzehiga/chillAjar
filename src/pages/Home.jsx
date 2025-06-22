@@ -263,13 +263,13 @@ export function Home({
 							className="text-yellow-600 text-lg font-medium hover:text-gray-700 transition-colors duration-200 hover:underline outline-none focus:outline-none">
 							View all →
 						</button>
-					) : (
+					) : courses.length > 6 ? (
 						<button
 							className="text-yellow-600 text-lg font-medium hover:text-gray-700 transition-colors duration-200 hover:underline outline-none focus:outline-none"
 							onClick={handleShowLess}>
 							View less
 						</button>
-					)}
+					) : null}
 				</div>
 			</div>
 		</div>
