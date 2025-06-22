@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { X, Upload, CreditCard } from "lucide-react";
+import { X, Upload, CreditCard, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
 
 export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
 	const [proofImage, setProofImage] = useState(null);
 	const [proofPreview, setProofPreview] = useState(null); // Untuk pratinjau
+	const [loading, setLoading] = useState(false); // Tambah state loading
 
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
@@ -40,7 +41,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 		}
 	};
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		if (paymentMethod === "Transfer Bank" && !proofImage) {
 			Swal.fire({
 				icon: "error",
@@ -49,8 +50,14 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 			});
 			return;
 		}
-		console.log("Submitting with proofImage:", proofImage); // Debug
-		onSubmit({ paymentMethod, proofImage, booking });
+		// console.log("Submitting with proofImage:", proofImage); // Debug
+		setLoading(true);
+		try {
+			// Pastikan onSubmit mengembalikan promise!
+			await onSubmit({ paymentMethod, proofImage, booking });
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const totalAmount = booking.course.price_per_hour;
@@ -211,9 +218,14 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 						</button>
 						<button
 							onClick={handleSubmit}
-							className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center">
-							<CreditCard className="w-4 h-4 mr-2" />
-							Complete Payment
+							className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center disabled:opacity-60 disabled:cursor-not-allowed"
+							disabled={loading}>
+							{loading ? (
+								<Loader2 className="w-4 h-4 mr-2 animate-spin" />
+							) : (
+								<CreditCard className="w-4 h-4 mr-2" />
+							)}
+							{loading ? "Processing..." : "Complete Payment"}
 						</button>
 					</div>
 				</div>

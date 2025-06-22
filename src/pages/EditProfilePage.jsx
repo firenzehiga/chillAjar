@@ -94,13 +94,18 @@ export function EditProfilePage({
 					icon: "success",
 					title: "Success",
 					text: "Profil berhasil diperbarui!",
-					confirmButtonColor: "#3B82F6",
+					showConfirmButton: false,
+					timer: 1200,
+					timerProgressBar: true,
+					didOpen: () => {
+						Swal.showLoading();
+					},
 				});
 
-				console.log(
-					"Updated Profile Data from PUT /user/profil:",
-					userResponse.data
-				);
+				// console.log(
+				// 	"Updated Profile Data from PUT /user/profil:",
+				// 	userResponse.data
+				// );
 
 				const updatedUserData = {
 					...userData,

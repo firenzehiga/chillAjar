@@ -6,8 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { MentorProfileSkeleton } from "../../../components/Skeleton/Mentor/MentorProfileSkeleton";
 
 export function MentorProfilePage({ userData, userRole, onNavigate }) {
-	// console.log("UserData:", userData);
-
 	const { data: mentorProfile, isLoading } = useQuery({
 		queryKey: ["mentorProfile"],
 		queryFn: async () => {
@@ -49,18 +47,15 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 	}
 
 	return (
-		<div className="py-8">
-			<div className="max-w-2xl mx-auto">
-				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
+		<div className="py-8 px-4">
+			<div className="max-w-md sm:max-w-lg md:max-w-2xl mx-auto">
+				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
 					<div className="h-48 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
-						<div className="absolute -bottom-16 left-8">
+						<div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-8 md:translate-x-0">
 							<img
-								src={getImageUrl(
-									userData?.foto_profil || "foto_profil/default.png",
-									"/foto_mentor/default.png"
-								)}
+								src={currentUser.avatar}
 								alt={currentUser.name}
-								className="w-32 h-32 rounded-full border-4 border-white shadow-lg transform transition-transform duration-300 hover:scale-105 object-cover"
+								className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
 								onError={(e) => {
 									e.target.onerror = null;
 									e.target.src = "/foto_mentor/default.png";
@@ -68,25 +63,25 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 							/>
 						</div>
 					</div>
-					<div className="pt-20 px-8 pb-8">
-						<div className="flex justify-between items-start mb-6">
+					<div className="pt-20 px-4 sm:px-8 pb-8">
+						<div className="flex flex-col md:flex-row md:justify-between md:items-start mb-6">
 							<div>
-								<h1 className="text-3xl font-bold text-gray-900 mb-2">
+								<h1 className="text-lg sm:text-lg md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 break-words">
 									{currentUser.name}
 								</h1>
-								<div className="flex items-center text-gray-600 space-x-4">
+								<div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-gray-600 text-xs sm:text-sm mb-2">
 									<span className="flex items-center">
-										<Calendar className="w-4 h-4 mr-2 text-yellow-600" />
+										<Calendar className="w-4 h-4 mr-1 text-yellow-600" />
 										Joined {currentUser.joinedDate}
 									</span>
 									<span className="flex items-center">
-										<MapPin className="w-4 h-4 mr-2 text-yellow-600" />
+										<MapPin className="w-4 h-4 mr-1 text-yellow-600" />
 										{currentUser.location}
 									</span>
 								</div>
 							</div>
 							<button
-								className="bg-yellow-600 text-white px-6 py-2 rounded-full font-medium transform transition-all duration-300 hover:scale-105 hover:bg-yellow-700 hover:shadow-lg"
+								className="bg-yellow-600 text-white px-5 py-2 rounded-full font-medium ml-0 md:ml-4 mt-2 md:mt-0 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-yellow-700 hover:shadow-lg"
 								onClick={() => onNavigate("mentor-edit-profile")}>
 								Edit Profile
 							</button>
@@ -95,7 +90,6 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
 								<BookOpen className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
 								<div className="text-2xl font-bold text-gray-900">
-									{" "}
 									{currentUser.jumlahKursus}
 								</div>
 								<div className="text-sm text-gray-600">Courses Created</div>

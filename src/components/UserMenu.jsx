@@ -77,7 +77,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 					{userRole === "mentor" && (
 						<button
 							onClick={() => handleNavigate("mentor-profile")}
-							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 							<User className="w-4 h-4 mr-2" />
 							Profile Saya
 						</button>
@@ -109,7 +109,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 					)}
 					<button
 						onClick={handleLogout}
-						className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+						className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:outline-none">
 						<LogOut className="w-4 h-4 mr-2" />
 						Sign out
 					</button>

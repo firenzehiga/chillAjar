@@ -101,7 +101,12 @@ export function AdminEditProfile({
 					icon: "success",
 					title: "Success",
 					text: "Profil berhasil diperbarui!",
-					confirmButtonColor: "#3B82F6",
+					showConfirmButton: false,
+					timer: 1200,
+					timerProgressBar: true,
+					didOpen: () => {
+						Swal.showLoading();
+					},
 				});
 
 				// console.log(
