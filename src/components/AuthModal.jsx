@@ -302,7 +302,7 @@ export function AuthModal({
 									<button
 										type="button"
 										onClick={() => setMode("register")}
-										className="text-yellow-600 hover:text-yellow-700 font-medium">
+										className="text-yellow-600 hover:text-yellow-700 font-medium focus:outline-none outline-none">
 										Daftar
 									</button>
 								</>
@@ -312,7 +312,7 @@ export function AuthModal({
 									<button
 										type="button"
 										onClick={() => setMode("login")}
-										className="text-yellow-600 hover:text-yellow-700 font-medium">
+										className="text-yellow-600 hover:text-yellow-700 font-medium focus:outline-none outline-none">
 										Masuk
 									</button>
 								</>
