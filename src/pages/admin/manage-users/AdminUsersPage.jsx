@@ -93,12 +93,12 @@ export function AdminUsersPage() {
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">User List</h2>
+					<h2 className="text-xl font-semibold">Daftar Pengguna</h2>
 					<button
 						onClick={() => setShowAddModal(true)}
 						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
 						<UserPlus className="w-4 h-4 mr-2" />
-						Add User
+						Tambah Pengguna
 					</button>
 				</div>
 				{isLoading ? (

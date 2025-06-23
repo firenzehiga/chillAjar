@@ -76,13 +76,13 @@ export function AdminSessionsPage({ onNavigate }) {
 
 	const handleDelete = (id) => {
 		Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
+			title: "Anda Yakin?",
+			text: "Kamu tidak akan bisa mengembalikan ini!",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
+			confirmButtonText: "Ya, Hapus!",
 		}).then((result) => {
 			if (result.isConfirmed) {
 				deleteSessionMutation.mutate(id);
@@ -303,14 +303,14 @@ export function AdminSessionsPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					My Schedules
+					Jadwal Sesi
 				</h1>
-				<p className="text-gray-600">Manage your teaching courses</p>
+				<p className="text-gray-600">Manage teaching courses as an admin</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Session Management</h2>
+					<h2 className="text-xl font-semibold">Manajemen Sesi</h2>
 				</div>
 				{isLoadingSessions || isLoadingTransactions ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
@@ -321,7 +321,7 @@ export function AdminSessionsPage({ onNavigate }) {
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 						<h3 className="text-lg font-semibold mb-2">
-							No Schedules Available
+							Belum Ada Jadwal Sesi
 						</h3>
 						<p className="text-gray-500 mb-4 text-center">
 							Tidak ada sesi dengan pembayaran yang diterima.

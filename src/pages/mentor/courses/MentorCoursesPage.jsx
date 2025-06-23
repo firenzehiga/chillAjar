@@ -59,13 +59,13 @@ export function MentorCoursesPage({ onNavigate }) {
 
 	const handleDelete = (id) => {
 		Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
+			title: "Anda Yakin?",
+			text: "Anda tidak akan bisa mengembalikan ini!",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
+			confirmButtonText: "Ya, Hapus!",
 		}).then((result) => {
 			if (result.isConfirmed) {
 				deleteCourseMutation.mutate(id);
@@ -242,14 +242,14 @@ export function MentorCoursesPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					My Courses
+					Kursus Saya
 				</h1>
-				<p className="text-gray-600">Manage your teaching courses</p>
+				<p className="text-gray-600">Kelola kursus Anda</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Courses You Teach</h2>
+					<h2 className="text-xl font-semibold">Kursus Yang Saya Buat</h2>
 					<button
 						onClick={() => onNavigate("mentor-add-course")}
 						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">

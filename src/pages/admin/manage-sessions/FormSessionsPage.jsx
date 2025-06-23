@@ -189,12 +189,12 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 						/>
 					</svg>
 				</div>
-				<p className="translate-x-2">Cancel</p>
+				<p className="translate-x-2">Batal</p>
 			</button>
 			<div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					Edit Session
+					Edit Sesi
 				</h2>
 
 				<form onSubmit={handleSubmit}>
@@ -339,7 +339,7 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 									? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
 									: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
 							}`}>
-							{loading ? "Processing..." : "Update Session"}
+							{loading ? "Memproses..." : "Perbarui Sesi"}
 						</button>
 					</div>
 				</form>

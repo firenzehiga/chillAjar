@@ -65,13 +65,13 @@ export function AdminMentorsPage({ onNavigate }) {
 	// Fungsi untuk menangani penghapusan mentor
 	const handleDelete = (id) => {
 		Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
+			title: "Apa Kamu Yakin?",
+			text: "Kamu tidak akan bisa mengembalikan ini!",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
+			confirmButtonText: "Ya, hapus!",
 		}).then((result) => {
 			if (result.isConfirmed) {
 				deleteMentorMutation.mutate(id); // Panggil fungsi deleteMutation dengan ID mentor
@@ -178,14 +178,14 @@ export function AdminMentorsPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<UserCheck className="w-6 h-6 mr-2 text-yellow-600" />
-					Manage Mentors
+					Mentor
 				</h1>
 				<p className="text-gray-600">Manage platform mentors</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Mentor Management</h2>
+					<h2 className="text-xl font-semibold">Manajemen Mentor</h2>
 				</div>
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (

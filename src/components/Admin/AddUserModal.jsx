@@ -56,7 +56,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 
 			Swal.fire({
 				icon: "success",
-				title: "User Added!",
+				title: "Pengguna berhasil ditambah!",
 				text: `${formData.nama} has been successfully added as an admin.`,
 				confirmButtonColor: "#3B82F6",
 			});
@@ -86,7 +86,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 				<form onSubmit={handleSubmit} className="p-6">
 					<div className="mb-4">
 						<label className="block text-sm font-medium text-gray-700 mb-1">
-							Full Name
+							Nama Lengkap
 						</label>
 						<div className="relative">
 							<User className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -96,7 +96,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 								value={formData.nama}
 								onChange={handleInputChange}
 								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-								placeholder="Enter full name"
+								placeholder="Masukkan nama lengkap"
 								required
 							/>
 						</div>
@@ -104,7 +104,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 
 					<div className="mb-4">
 						<label className="block text-sm font-medium text-gray-700 mb-1">
-							Email Address
+							Alamat Email
 						</label>
 						<div className="relative">
 							<Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -114,7 +114,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 								value={formData.email}
 								onChange={handleInputChange}
 								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-								placeholder="Enter email"
+								placeholder="Masukkan alamat email"
 								required
 							/>
 						</div>
@@ -122,7 +122,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 
 					<div className="mb-4">
 						<label className="block text-sm font-medium text-gray-700 mb-1">
-							Phone Number
+							No. Telepon
 						</label>
 						<div className="relative">
 							<Phone className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -132,7 +132,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 								value={formData.nomorTelepon}
 								onChange={handleInputChange}
 								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-								placeholder="Enter phone number"
+								placeholder="Masukkan nomor Whatsapp"
 								required
 							/>
 						</div>
@@ -150,7 +150,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 								value={formData.alamat}
 								onChange={handleInputChange}
 								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-								placeholder="Enter address"
+								placeholder="Masukkan alamat"
 								required
 							/>
 						</div>

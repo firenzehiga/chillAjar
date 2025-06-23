@@ -338,7 +338,7 @@ export function AdminPaymentsPage() {
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Payment Management</h2>
+					<h2 className="text-xl font-semibold">Manajemen Pembayaran</h2>
 				</div>
 				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
@@ -348,7 +348,7 @@ export function AdminPaymentsPage() {
 				) : payments.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">No Payments Found</h3>
+						<h3 className="text-lg font-semibold mb-2">Tidak Ada Pembayaran Ditemukan </h3>
 						<p className="text-gray-500 mb-4 text-center">
 							Tidak ada pembayaran yang menunggu verifikasi saat ini.
 						</p>

@@ -239,8 +239,8 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 					icon: "success",
 					title: "Success",
 					text: isEditMode
-						? "Course updated successfully!"
-						: "Course created successfully!",
+						? "Berhasil memperbarui kursus!"
+						: "Kursus berhasil dibuat!",
 					confirmButtonColor: "#3B82F6",
 				});
 				onNavigate("admin-manage-courses");
@@ -538,7 +538,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							type="button"
 							onClick={addSchedule}
 							className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none">
-							<Plus className="w-5 h-5 inline mr-2" /> Add Schedule
+							<Plus className="w-5 h-5 inline mr-2" /> Tambah Jadwal
 						</button>
 					</div>
 
@@ -561,8 +561,8 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							{loading
 								? "Processing..."
 								: isEditMode
-								? "Update Course"
-								: "Create Course"}
+								? "Perbarui Kursus"
+								: "Tambah Kursus"}
 						</button>
 					</div>
 				</form>

@@ -22,14 +22,14 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 
 	const handleLogout = () => {
 		Swal.fire({
-			title: "Are you sure?",
-			text: "You will be logged out of your account.",
+			title: "Apa Kamu Yakin?",
+			text: "Kamu akan keluar dari akunmu.",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#3B82F6",
 			cancelButtonColor: "#EF4444",
-			confirmButtonText: "Yes, log me out",
-			cancelButtonText: "Cancel",
+			confirmButtonText: "Ya, keluar!",
+			cancelButtonText: "Batal",
 		}).then((result) => {
 			if (result.isConfirmed) {
 				onLogout();
@@ -111,7 +111,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 						onClick={handleLogout}
 						className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:outline-none">
 						<LogOut className="w-4 h-4 mr-2" />
-						Sign out
+						Keluar
 					</button>
 				</div>
 			)}

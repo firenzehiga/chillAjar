@@ -169,7 +169,7 @@ export function MentorTestimoniesPage() {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					Students Testimonials
+					Testimoni Murid
 				</h1>
 				<p className="text-gray-600">Overview of your students' testimonials</p>
 			</div>

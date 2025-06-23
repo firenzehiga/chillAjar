@@ -77,8 +77,8 @@ export function AdminDashboard() {
 	return (
 		<div className="py-8">
 			<div className="mb-8">
-				<h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-				<p className="text-gray-600">Overview of your platform's resources</p>
+				<h1 className="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
+				<p className="text-gray-600">Ringkasan data platform Anda, termasuk jumlah pengguna, kursus, dan data lainnya.</p>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -95,7 +95,7 @@ export function AdminDashboard() {
 							</span>
 						)}
 					</div>
-					<h3 className="text-gray-600 font-medium">Total Students</h3>
+					<h3 className="text-gray-600 font-medium">Total Murid</h3>
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
@@ -110,7 +110,7 @@ export function AdminDashboard() {
 							</span>
 						)}
 					</div>
-					<h3 className="text-gray-600 font-medium">Active Courses</h3>
+					<h3 className="text-gray-600 font-medium">Total Kursus</h3>
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
@@ -125,7 +125,7 @@ export function AdminDashboard() {
 							</span>
 						)}
 					</div>
-					<h3 className="text-gray-600 font-medium">Total Mentors</h3>
+					<h3 className="text-gray-600 font-medium">Total Mentor</h3>
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
@@ -140,7 +140,7 @@ export function AdminDashboard() {
 							</span>
 						)}
 					</div>
-					<h3 className="text-gray-600 font-medium">Total Sessions</h3>
+					<h3 className="text-gray-600 font-medium">Total Sesi</h3>
 				</div>
 			</div>
 

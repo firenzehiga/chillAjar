@@ -42,7 +42,7 @@ export function MentorDashboard() {
 	return (
 		<div className="py-8">
 			<div className="mb-8">
-				<h1 className="text-2xl font-bold text-gray-900">Mentor Dashboard</h1>
+				<h1 className="text-2xl font-bold text-gray-900">Dashboard Mentor</h1>
 				<p className="text-gray-600">Overview of your teaching activities</p>
 			</div>
 
@@ -72,7 +72,7 @@ export function MentorDashboard() {
 							<span className="text-2xl font-bold text-gray-900">{rating}</span>
 						)}
 					</div>
-					<h3 className="text-gray-600 font-medium">Average Rating</h3>
+					<h3 className="text-gray-600 font-medium">Rating Saya</h3>
 				</div>
 
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
@@ -88,7 +88,7 @@ export function MentorDashboard() {
 							</span>
 						)}
 					</div>
-					<h3 className="text-gray-600 font-medium">Courses</h3>
+					<h3 className="text-gray-600 font-medium">Kursus Saya</h3>
 				</div>
 			</div>
 
