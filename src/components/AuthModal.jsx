@@ -10,10 +10,9 @@ import {
 	MapPin,
 	Loader2,
 } from "lucide-react";
-import api from "../api"; // Sesuaikan path ke file api.jsx
+import api from "../api";
 import Swal from "sweetalert2";
-// Impor logo aplikasi (sesuaikan path sesuai struktur proyek Anda)
-import logo from "../assets/title.png"; // Ganti dengan path yang benar
+import logo from "../assets/title.png";
 
 export function AuthModal({
 	isOpen,
@@ -24,11 +23,13 @@ export function AuthModal({
 	const [isLoading, setIsLoading] = useState(false);
 	const [mode, setMode] = useState(defaultMode);
 	const [showPassword, setShowPassword] = useState(false);
+	const [supportingDoc, setSupportingDoc] = useState(null);
+
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
 		password: "",
-		role: "pelanggan", // Default ke pelanggan, sesuai backend
+		role: "pelanggan",
 		phone: "",
 		address: "",
 	});
@@ -42,6 +43,10 @@ export function AuthModal({
 			...prev,
 			[name]: value,
 		}));
+	};
+
+	const handleFileChange = (e) => {
+		setSupportingDoc(e.target.files[0]);
 	};
 
 	const handleSubmit = async (e) => {
@@ -63,6 +68,10 @@ export function AuthModal({
 				!formData.address
 			) {
 				setError("Please fill in all required fields");
+				return;
+			}
+			if (formData.role === "mentor" && !supportingDoc) {
+				setError("Silakan upload dokumen pendukung.");
 				return;
 			}
 		}
@@ -93,13 +102,20 @@ export function AuthModal({
 
 				onSuccess(user.peran.toLowerCase(), user);
 			} else {
-				const response = await api.post("/register", {
-					nama: formData.name,
-					email: formData.email,
-					password: formData.password,
-					nomorTelepon: formData.phone,
-					alamat: formData.address,
-					peran: formData.role,
+				// Gunakan FormData agar bisa upload file
+				const formPayload = new FormData();
+				formPayload.append("nama", formData.name);
+				formPayload.append("email", formData.email);
+				formPayload.append("password", formData.password);
+				formPayload.append("nomorTelepon", formData.phone);
+				formPayload.append("alamat", formData.address);
+				formPayload.append("peran", formData.role);
+				if (formData.role === "mentor" && supportingDoc) {
+					formPayload.append("dokumen_pendukung", supportingDoc);
+				}
+
+				const response = await api.post("/register", formPayload, {
+					headers: { "Content-Type": "multipart/form-data" },
 				});
 				const { token, user } = response.data;
 
@@ -113,18 +129,19 @@ export function AuthModal({
 					confirmButtonColor: "#3B82F6",
 				});
 
-				setMode("login"); // Kembali ke mode login setelah registrasi
+				setMode("login");
 			}
 		} catch (error) {
 			console.error(`${mode} failed:`, error);
-			// Swal.fire({
-			// 	icon: "error",
-			// 	title: "Error",
-			// 	text: error.response?.data?.message || "Something went wrong!",
-			// });
-			setError("Email atau password salah!"); // di ganti ke swal aja
+			const msg = error.response?.data?.message || "Email atau password salah!";
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: msg,
+			});
+			setError(msg);
 		} finally {
-			setIsLoading(false); // Set isLoading menjadi false setelah proses selesai
+			setIsLoading(false);
 		}
 	};
 
@@ -146,14 +163,9 @@ export function AuthModal({
 				</div>
 
 				<div className="p-6">
-					{/* Tambahkan logo di tengah untuk mode login */}
 					{mode === "login" && (
 						<div className="flex justify-center mb-6">
-							<img
-								src={logo}
-								alt="ChillAjar Logo"
-								className="h-16 w-auto" // Sesuaikan ukuran logo
-							/>
+							<img src={logo} alt="ChillAjar Logo" className="h-16 w-auto" />
 						</div>
 					)}
 
@@ -227,6 +239,24 @@ export function AuthModal({
 										<option value="mentor">Mentor</option>
 									</select>
 								</div>
+
+								{formData.role === "mentor" && (
+									<div className="mb-4">
+										<label className="block text-sm font-medium text-gray-700 mb-1">
+											Dokumen Pendukung (PDF/JPG/PNG)
+										</label>
+										<input
+											type="file"
+											accept=".pdf,.jpg,.jpeg,.png"
+											onChange={handleFileChange}
+											className="w-full border border-gray-300 rounded-lg px-3 py-2"
+											required
+										/>
+										{error && (
+											<p className="text-red-500 text-sm mt-2">{error}</p>
+										)}
+									</div>
+								)}
 							</>
 						)}
 
@@ -281,7 +311,7 @@ export function AuthModal({
 
 						<button
 							type="submit"
-							disabled={isLoading} // Nonaktifkan tombol saat loading
+							disabled={isLoading}
 							className={`w-full outline-none focus:outline-none transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
 								isLoading ? "opacity-50 cursor-not-allowed" : ""
 							}`}>

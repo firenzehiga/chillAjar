@@ -9,8 +9,9 @@ export function CourseCarousel({ courses, onCourseClick }) {
 	// console.log("[CourseCarousel] Data courses diterima:", courses);
 
 	const maxCoursesToShow = 5; // Maksimal 5 kursus yang ditampilkan
-	const carouselData = courses.slice(0, maxCoursesToShow);
-
+	const carouselData = courses
+		.filter((course) => course.mentor && course.mentor.status === "active")
+		.slice(0, maxCoursesToShow);
 	const settings = {
 		dots: true,
 		infinite: true,

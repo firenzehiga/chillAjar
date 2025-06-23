@@ -11,6 +11,8 @@ import {
 import api from "../../../api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import { getImageUrl } from "../../../utils/getImageUrl";
+
 
 export function AdminMentorsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -126,6 +128,43 @@ export function AdminMentorsPage({ onNavigate }) {
 		},
 		{ name: "Deskripsi", selector: (row) => row.deskripsi || "N/A" },
 		{
+			name: "Status",
+			selector: (row) => row.status || "N/A",
+			cell: (row) => {
+				const status = row.status || "N/A";
+				let color = "bg-gray-300 text-gray-700";
+				if (status === "pending") color = "bg-yellow-100 text-yellow-800";
+				else if (status === "active") color = "bg-green-100 text-green-800";
+				else if (status === "inactive") color = "bg-red-100 text-red-800";
+				else if (status === "rejected")
+					color = "bg-gray-200 text-gray-500 border border-gray-300";
+
+				return (
+					<span
+						className={`px-3 py-1 rounded-full text-xs font-semibold ${color} border border-opacity-30`}
+						style={{
+							minWidth: 70,
+							display: "inline-block",
+							textAlign: "center",
+						}}>
+						{status.charAt(0).toUpperCase() + status.slice(1)}
+					</span>
+				);
+			},
+		},
+		{
+			name: "Tanggal Bergabung",
+			selector: (row) => row.created_at || "N/A",
+			cell: (row) => {
+				const date = new Date(row.created_at);
+				return date.toLocaleDateString("id-ID", {
+					day: "numeric",
+					month: "long",
+					year: "numeric",
+				});
+			},
+		},
+		{
 			name: "Aksi",
 			cell: (row) => (
 				<div className="flex gap-2">
@@ -157,12 +196,10 @@ export function AdminMentorsPage({ onNavigate }) {
 		);
 	}
 
-	// Sorting mentor berdasarkan nama (A-Z)
+	// Sorting mentor berdasarkan tanggal dibuat (terbaru di atas) saja
 	const sortedMentors = mentors
-		? [...mentors].sort((a, b) =>
-				(a.user?.nama || "").localeCompare(b.user?.nama || "", "id", {
-					sensitivity: "base",
-				})
+		? [...mentors].sort(
+				(a, b) => new Date(b.created_at) - new Date(a.created_at)
 		  )
 		: [];
 
@@ -223,6 +260,35 @@ export function AdminMentorsPage({ onNavigate }) {
 							persistTableHead
 							responsive
 							noHeader
+							expandableRows
+							expandableRowsComponent={({ data }) => {
+								const dokumenUrl = data.dokumen_pendukung
+									? getImageUrl(data.dokumen_pendukung, "dokumen_pendukung")
+									: null;
+
+								return (
+									<div className="p-4 bg-gray-50 rounded-md">
+										<p className="text-gray-600 mb-1">Dokumen Pendukung:</p>
+										{dokumenUrl && (
+											<div className="mt-2">
+												<a
+													href={dokumenUrl}
+													// Ambil ekstensi file asli
+													download={`dokumen_${
+														data.user?.nama?.replace(/\s+/g, "_") || "mentor"
+													}.${data.dokumen_pendukung.split(".").pop()}`}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="inline-block no-underline px-3 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition ">
+													Download (dokumen_
+													{data.user?.nama?.replace(/\s+/g, "_") || "mentor"}.
+													{data.dokumen_pendukung.split(".").pop()})
+												</a>
+											</div>
+										)}
+									</div>
+								);
+							}}
 							// Tambahkan penanganan jika data kosong
 							noDataComponent={
 								<p className="p-4 text-gray-500">No mentors available</p>

@@ -3,7 +3,6 @@ import defaultPhoto from "../public/foto_kursus/default.jpg";
 import { Search, ArrowLeft, ListChecks } from "lucide-react";
 import { CourseCard } from "./components/CourseCard";
 import { MentorCard } from "./components/MentorCard";
-import { CourseCarousel } from "./components/CourseCarousel";
 import { BookingModal } from "./components/BookingModal";
 import { PaymentModal } from "./components/PaymentModal";
 import { Navigation } from "./components/Navigation";
@@ -306,9 +305,11 @@ function App() {
 
 	const filteredCourses = courses.filter(
 		(course) =>
-			course.courseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			(course.category &&
-				course.category.toLowerCase().includes(searchQuery.toLowerCase()))
+			course.mentor &&
+			course.mentor.status === "active" && // hanya kursus dengan mentor aktif
+			(course.courseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				(course.category &&
+					course.category.toLowerCase().includes(searchQuery.toLowerCase())))
 	);
 
 	// Fungsi untuk menangani pemilihan mentor dan kursus
@@ -895,15 +896,17 @@ function App() {
 								{selectedCourse.title} - Available Mentors
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-								{selectedCourse.mentors?.map((mentor) => (
-									<MentorCard
-										key={mentor.id}
-										mentor={mentor}
-										onSchedule={handleSchedule}
-										selectedCourse={selectedCourse}
-										schedules={schedules}
-									/>
-								))}
+								{selectedCourse.mentors
+									?.filter((mentor) => mentor.status === "active")
+									.map((mentor) => (
+										<MentorCard
+											key={mentor.id}
+											mentor={mentor}
+											onSchedule={handleSchedule}
+											selectedCourse={selectedCourse}
+											schedules={schedules}
+										/>
+									))}
 							</div>
 						</div>
 					) : (

@@ -42,49 +42,53 @@ export function MentorsPage({ courses, onSchedule, showPostLoginLoading }) {
 		return <p className="text-red-500 text-center mt-8">{msg}</p>;
 	}
 
-	const mentorsData = mentors.map((mentor) => {
-		// Mengambil kursus dari prop courses yang sudah di-fetch di App.jsx
-		const mentorCourses = courses
-			.filter((course) => course.mentor_id === mentor.id)
-			.map((course) => ({
-				...course,
-				mentor: mentor, // <-- tambahkan property mentor agar bisa diakses di CourseSelectionModal
-				id: course.id,
-				courseName: course.courseName,
-				courseDescription: course.courseDescription,
-				courseImage: course.courseImage,
-				learnMethod: course.learnMethod,
-				price_per_hour: course.price_per_hour,
-				schedules: course.mentors[0].schedules, // Ambil schedules dari mentors
-			}));
+	const mentorsData = mentors
+		.filter((mentor) => mentor.status === "active")
+		.map((mentor) => {
+			// Mengambil kursus dari prop courses yang sudah di-fetch di App.jsx
+			const mentorCourses = courses
+				.filter((course) => course.mentor_id === mentor.id)
+				.map((course) => ({
+					...course,
+					mentor: mentor, // <-- tambahkan property mentor agar bisa diakses di CourseSelectionModal
+					id: course.id,
+					courseName: course.courseName,
+					courseDescription: course.courseDescription,
+					courseImage: course.courseImage,
+					learnMethod: course.learnMethod,
+					price_per_hour: course.price_per_hour,
+					schedules: course.mentors[0].schedules, // Ambil schedules dari mentors
+				}));
 
-		const availableLearnMethod = mentorCourses.length
-			? Array.from(
-					new Set(mentorCourses.map((c) => c.learnMethod || "Unknown"))
-			  )
-			: ["Unknown"];
+			const availableLearnMethod = mentorCourses.length
+				? Array.from(
+						new Set(mentorCourses.map((c) => c.learnMethod || "Unknown"))
+				  )
+				: ["Unknown"];
 
-		return {
-			id: mentor.id,
-			mentorName: mentor.user?.nama || "Unknown Mentor",
-			mentorImage: getImageUrl(
-				mentor.user?.foto_profil,
-				"/foto_mentor/default.png"
-			),
-			mentorRating: mentor.rating || 0,
-			mentorAbout: mentor.deskripsi || "No description",
-			availableLearnMethod,
-			teachingMode: {
-				online: mentorCourses.some((c) => c.learnMethod === "Online Learning"),
-				offline: mentorCourses.some(
-					(c) => c.learnMethod === "Offline Learning"
+			return {
+				id: mentor.id,
+				mentorName: mentor.user?.nama || "Unknown Mentor",
+				mentorImage: getImageUrl(
+					mentor.user?.foto_profil,
+					"/foto_mentor/default.png"
 				),
-			},
-			phone: mentor.user?.nomorTelepon || "+1234567890",
-			mentorAddress: mentor.user?.alamat || "Alamat tidak tersedia",
-			courses: mentorCourses,
-		};
-	});
+				mentorRating: mentor.rating || 0,
+				mentorAbout: mentor.deskripsi || "No description",
+				availableLearnMethod,
+				teachingMode: {
+					online: mentorCourses.some(
+						(c) => c.learnMethod === "Online Learning"
+					),
+					offline: mentorCourses.some(
+						(c) => c.learnMethod === "Offline Learning"
+					),
+				},
+				phone: mentor.user?.nomorTelepon || "+1234567890",
+				mentorAddress: mentor.user?.alamat || "Alamat tidak tersedia",
+				courses: mentorCourses,
+			};
+		});
 
 	return (
 		<div className="py-8">

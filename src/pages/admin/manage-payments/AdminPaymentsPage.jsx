@@ -204,26 +204,26 @@ export function AdminPaymentsPage() {
 					? getImageUrl(row.buktiPembayaran, "bukti_pembayaran")
 					: null;
 
-				const handleDownload = async (url) => {
-					try {
-						const response = await fetch(url);
-						if (!response.ok) throw new Error("Gagal mengunduh gambar");
+				// const handleDownload = async (url) => {
+				// 	try {
+				// 		const response = await fetch(url);
+				// 		if (!response.ok) throw new Error("Gagal mengunduh gambar");
 
-						const blob = await response.blob();
-						const downloadUrl = window.URL.createObjectURL(blob);
-						const link = document.createElement("a");
-						link.href = downloadUrl;
-						const fileName = url.split("/").pop();
-						link.download = fileName || "bukti_pembayaran.png";
-						document.body.appendChild(link);
-						link.click();
-						document.body.removeChild(link);
-						window.URL.revokeObjectURL(downloadUrl);
-					} catch (error) {
-						console.error("Error downloading image:", error);
-						alert("Gagal mengunduh gambar. Pastikan file tersedia.");
-					}
-				};
+				// 		const blob = await response.blob();
+				// 		const downloadUrl = window.URL.createObjectURL(blob);
+				// 		const link = document.createElement("a");
+				// 		link.href = downloadUrl;
+				// 		const fileName = url.split("/").pop();
+				// 		link.download = fileName || "bukti_pembayaran.png";
+				// 		document.body.appendChild(link);
+				// 		link.click();
+				// 		document.body.removeChild(link);
+				// 		window.URL.revokeObjectURL(downloadUrl);
+				// 	} catch (error) {
+				// 		console.error("Error downloading image:", error);
+				// 		alert("Gagal mengunduh gambar. Pastikan file tersedia.");
+				// 	}
+				// };
 
 				return row.buktiPembayaran ? (
 					<div className="flex space-x-2">
@@ -233,12 +233,17 @@ export function AdminPaymentsPage() {
 							<Eye className="inline w-5 h-5 mr-1" />
 							Lihat
 						</button>
-						<button
+						<a
+							href={imageUrl}
+							download={
+								row.buktiPembayaran.split("/").pop() || "bukti_pembayaran.png"
+							}
 							className="text-green-600 hover:underline flex items-center outline-none focus:outline-none"
-							onClick={() => handleDownload(imageUrl)}>
+							target="_blank"
+							rel="noopener noreferrer">
 							<Download className="inline w-5 h-5 mr-1" />
 							Download
-						</button>
+						</a>
 					</div>
 				) : (
 					<span className="text-gray-400 text-xs">No Image</span>
@@ -436,8 +441,12 @@ export function AdminPaymentsPage() {
 						<img
 							src={previewImg}
 							alt="Bukti Pembayaran"
-							className="max-w-[70vw] max-h-[70vh] rounded-lg shadow"
+							className="max-w-[95vw] max-h-[90vh] rounded-lg shadow"
 							style={{ display: "block" }}
+							onError={(e) => {
+								e.target.onerror = null;
+								e.target.src = "/foto_mentor/default.png";
+							}}
 						/>
 					</div>
 				</div>
