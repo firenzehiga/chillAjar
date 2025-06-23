@@ -56,7 +56,7 @@ export function AuthModal({
 		// Validasi form
 		if (mode === "login") {
 			if (!formData.email || !formData.password) {
-				setError("Please fill in all fields");
+				setError("Silakan isi semua kolom");
 				return;
 			}
 		} else {
@@ -67,7 +67,7 @@ export function AuthModal({
 				!formData.phone ||
 				!formData.address
 			) {
-				setError("Please fill in all required fields");
+				setError("Silakan isi semua kolom yang diperlukan");
 				return;
 			}
 			if (formData.role === "mentor" && !supportingDoc) {
@@ -91,8 +91,8 @@ export function AuthModal({
 
 				Swal.fire({
 					icon: "success",
-					title: "Login Successful!",
-					text: `Welcome back to ChillAjar! ${user.nama}`,
+					title: "Berhasil Masuk!",
+					text: `Selamat datang kembali di ChillAjar! ${user.nama}`,
 					timer: 2000,
 					timerProgressBar: true,
 					showConfirmButton: false,
@@ -124,8 +124,8 @@ export function AuthModal({
 
 				Swal.fire({
 					icon: "success",
-					title: "Registration Successful!",
-					text: "Please login to continue.",
+					title: "Registrasi Berhasil!",
+					text: "Silakan login untuk melanjutkan.",
 					confirmButtonColor: "#3B82F6",
 				});
 
@@ -136,7 +136,7 @@ export function AuthModal({
 			const msg = error.response?.data?.message || "Email atau password salah!";
 			Swal.fire({
 				icon: "error",
-				title: "Error",
+				title: "Terjadi Kesalahan",
 				text: msg,
 			});
 			setError(msg);
@@ -151,7 +151,7 @@ export function AuthModal({
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
-							{mode === "login" ? "Sign In To Your Account" : "Create Account"}
+							{mode === "login" ? "Masuk ke Akun ChillAjar Anda" : "Buat Akun"}
 						</h2>
 						<button
 							type="button"
@@ -174,7 +174,7 @@ export function AuthModal({
 							<>
 								<div className="mb-4">
 									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Full Name
+										Nama Lengkap
 									</label>
 									<div className="relative">
 										<User className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -184,7 +184,7 @@ export function AuthModal({
 											value={formData.name}
 											onChange={handleInputChange}
 											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-											placeholder="Enter your full name"
+											placeholder="Masukkan nama lengkap"
 											required
 										/>
 									</div>
@@ -192,7 +192,7 @@ export function AuthModal({
 
 								<div className="mb-4">
 									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Phone Number
+										Nomor Telepon (WhatsApp)
 									</label>
 									<div className="relative">
 										<Phone className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -202,7 +202,7 @@ export function AuthModal({
 											value={formData.phone}
 											onChange={handleInputChange}
 											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-											placeholder="Enter your phone number"
+											placeholder="Masukkan nomor whatsapp"
 											required
 										/>
 									</div>
@@ -210,7 +210,7 @@ export function AuthModal({
 
 								<div className="mb-4">
 									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Address
+										Alamat
 									</label>
 									<div className="relative">
 										<MapPin className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -220,7 +220,7 @@ export function AuthModal({
 											value={formData.address}
 											onChange={handleInputChange}
 											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-											placeholder="Enter your address"
+											placeholder="Masukkan alamat"
 											required
 										/>
 									</div>
@@ -228,14 +228,14 @@ export function AuthModal({
 
 								<div className="mb-4">
 									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Register as
+										Daftar sebagai
 									</label>
 									<select
 										name="role"
 										value={formData.role}
 										onChange={handleInputChange}
 										className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-										<option value="pelanggan">Customer</option>
+										<option value="pelanggan">Pelanggan</option>
 										<option value="mentor">Mentor</option>
 									</select>
 								</div>
@@ -262,7 +262,7 @@ export function AuthModal({
 
 						<div className="mb-4">
 							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Email Address
+								Alamat Email
 							</label>
 							<div className="relative">
 								<Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -272,7 +272,7 @@ export function AuthModal({
 									value={formData.email}
 									onChange={handleInputChange}
 									className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-									placeholder="Enter your email"
+									placeholder="Masukkan email"
 									required
 								/>
 							</div>
@@ -280,7 +280,7 @@ export function AuthModal({
 
 						<div className="mb-6">
 							<label className="block text-sm font-medium text-gray-700 mb-1">
-								Password
+								Kata Sandi
 							</label>
 							<div className="relative">
 								<Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -290,7 +290,7 @@ export function AuthModal({
 									value={formData.password}
 									onChange={handleInputChange}
 									className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-									placeholder="Enter your password"
+									placeholder="Masukkan kata sandi"
 									required
 								/>
 								<button
@@ -318,32 +318,32 @@ export function AuthModal({
 							{isLoading ? (
 								<>
 									<Loader2 className="w-5 h-5 animate-spin" />
-									{mode === "login" ? "Signing In..." : "Creating Account..."}
+									{mode === "login" ? "Sedang Masuk..." : "Membuat Akun..."}
 								</>
 							) : (
-								<>{mode === "login" ? "Sign In" : "Create Account"}</>
+								<>{mode === "login" ? "Masuk" : "Buat Akun"}</>
 							)}
 						</button>
 
 						<div className="mt-4 text-center text-sm text-gray-600">
 							{mode === "login" ? (
 								<>
-									Don't have an account?{" "}
+									Belum punya akun?{" "}
 									<button
 										type="button"
 										onClick={() => setMode("register")}
-										className="text-yellow-600 hover:text-yellow-700 font-medium">
-										Sign Up
+										className="text-yellow-600 hover:text-yellow-700 font-medium focus:outline-none outline-none">
+										Daftar
 									</button>
 								</>
 							) : (
 								<>
-									Already have an account?{" "}
+									Sudah punya akun?{" "}
 									<button
 										type="button"
 										onClick={() => setMode("login")}
-										className="text-yellow-600 hover:text-yellow-700 font-medium">
-										Sign In
+										className="text-yellow-600 hover:text-yellow-700 font-medium focus:outline-none outline-none">
+										Masuk
 									</button>
 								</>
 							)}
