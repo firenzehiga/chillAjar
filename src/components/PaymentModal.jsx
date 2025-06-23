@@ -68,7 +68,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 				{/* Header - Fixed */}
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
-						<h2 className="text-xl font-semibold">Complete Payment</h2>
+						<h2 className="text-xl font-semibold">Selesaikan Pembayaran</h2>
 						<button
 							onClick={onClose}
 							className="text-gray-500 hover:text-gray-700">
@@ -81,10 +81,10 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 				<div className="p-6 overflow-y-auto flex-1 space-y-8">
 					{/* Booking Summary */}
 					<div>
-						<h3 className="font-semibold text-xl mb-4">Booking Summary</h3>
+						<h3 className="font-semibold text-xl mb-4">Nih, Ringkasan Pemesananmu</h3>
 						<div className="bg-white border rounded-xl p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
 							<div>
-								<p className="text-sm text-gray-600 mb-1">Course</p>
+								<p className="text-sm text-gray-600 mb-1">Kursus</p>
 								<p className="font-medium">{course?.courseName}</p>
 							</div>
 							<div>
@@ -92,7 +92,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 								<p className="font-medium">{mentor?.mentorName}</p>
 							</div>
 							<div>
-								<p className="text-sm text-gray-600 mb-1">Date</p>
+								<p className="text-sm text-gray-600 mb-1">Tanggal</p>
 								<p className="font-medium">{booking.date}</p>
 							</div>
 							<div>
@@ -100,7 +100,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 								<p className="font-medium">{booking.time.slice(0, 5)} WIB</p>
 							</div>
 							<div>
-								<p className="text-sm text-gray-600 mb-1">Mode</p>
+								<p className="text-sm text-gray-600 mb-1">Gaya Belajar</p>
 								<p className="font-medium">
 									{booking.mode === "online" ? "Online" : "Offline"}
 								</p>
@@ -130,7 +130,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 
 					{/* Payment Method */}
 					<div>
-						<h3 className="font-semibold text-xl mb-4">Payment Method</h3>
+						<h3 className="font-semibold text-xl mb-4">Metode Pembayaran</h3>
 						<div className="space-y-3">
 							<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
 								<input
@@ -149,24 +149,24 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 					{/* Bank Details */}
 					{paymentMethod === "Transfer Bank" && (
 						<div>
-							<h3 className="font-semibold text-xl mb-4">Bank Details</h3>
+							<h3 className="font-semibold text-xl mb-4">Detail Bank</h3>
 							<div className="bg-blue-50 border border-blue-200 rounded-xl p-6 space-y-2">
 								<p>
 									<span className="font-medium">Bank:</span> BCA
 								</p>
 								<p>
-									<span className="font-medium">Account Number:</span>{" "}
+									<span className="font-medium">No. Rekening:</span>{" "}
 									1234567890
 								</p>
 								<p>
-									<span className="font-medium">Account Name:</span> ChillAjar
+									<span className="font-medium">Nama Rekening:</span> ChillAjar
 								</p>
 							</div>
 
 							{/* Upload Proof */}
 							<div className="mt-6">
 								<label className="block font-medium mb-2">
-									Upload Payment Proof
+									Unggah Bukti Pembayaran
 								</label>
 								<div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
 									{proofPreview ? (
@@ -182,14 +182,14 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 													setProofPreview(null);
 												}}
 												className="mt-3 text-red-600 hover:text-red-700 font-medium">
-												Remove
+												Hapus
 											</button>
 										</div>
 									) : (
 										<div>
 											<Upload className="w-8 h-8 mx-auto mb-3 text-gray-400" />
 											<label className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
-												Click to upload
+												Klik untuk mengunggah
 												<input
 													type="file"
 													accept="image/*"
@@ -225,7 +225,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							) : (
 								<CreditCard className="w-4 h-4 mr-2" />
 							)}
-							{loading ? "Processing..." : "Complete Payment"}
+							{loading ? "Sedang Proses..." : "Lanjut Bayar"}
 						</button>
 					</div>
 				</div>

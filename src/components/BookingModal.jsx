@@ -128,7 +128,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
-							Book a Session with {mentor.mentorName}
+							Pesan Sesi dengan {mentor.mentorName}
 						</h2>
 						<button
 							type="button"
@@ -165,20 +165,21 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						<label
 							htmlFor="topic"
 							className="block text-sm font-medium text-gray-700 mb-1">
-							Topic to Discuss (Optional)
+							Kamu ingin membahas apa?
 						</label>
 						<textarea
 							id="topic"
 							value={topic}
 							onChange={(e) => setTopic(e.target.value)}
-							placeholder="Enter the topic you want to discuss in this session..."
+							placeholder="Coba kamu tulis disini, apa yang kamu bingungkan/ingin kamu bahas bersama mentor nanti
+(Bisa nama materinya, nama projectnya dll)"
 							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-							rows="3"
+							rows="4"
 						/>
 					</div>
 
 					<div className="mb-6">
-						<h3 className="font-medium mb-2">Select Learning Mode:</h3>
+						<h3 className="font-medium mb-2">Pilih Gaya Belajar:</h3>
 						<div className="grid grid-cols-2 gap-3">
 							{["online", "offline"].map((mode) => (
 								<button
@@ -211,7 +212,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 
 					{selectedMode === "offline" && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Select Location:</h3>
+							<h3 className="font-medium mb-2">Pilih Lokasi:</h3>
 							<div className="space-y-2 gap-3">
 								{availableLocations.length > 0 ? (
 									availableLocations.map((loc, index) => (
@@ -247,7 +248,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 
 					{selectedMode && (selectedMode === "online" || selectedLocation) && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Select Date:</h3>
+							<h3 className="font-medium mb-2">Pilih Tanggal:</h3>
 							{availableDates.length === 0 ? (
 								<div className="text-red-500 text-sm p-2 bg-red-50 rounded">
 									Belum ada jadwal tersedia untuk{" "}
@@ -278,7 +279,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 
 					{selectedDate && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Select Time:</h3>
+							<h3 className="font-medium mb-2">Pilih Waktu:</h3>
 							<div className="grid grid-cols-2 gap-2">
 								{availableTimes.map((time) => (
 									<button
@@ -307,7 +308,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 							type="button"
 							onClick={onClose}
 							className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none">
-							Cancel
+							Batal
 						</button>
 						<button
 							type="button"
@@ -328,7 +329,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 									? "bg-black text-white hover:bg-yellow-600"
 									: "bg-gray-300 text-gray-500 cursor-not-allowed"
 							}`}>
-							Confirm Booking
+							Konfirmasi Pesan
 						</button>
 					</div>
 				</div>

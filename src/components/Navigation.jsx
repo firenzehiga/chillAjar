@@ -36,9 +36,9 @@ export function Navigation({
 	const getPageTitle = (page) => {
 		switch (page) {
 			case "courses":
-				return "Courses";
+				return "Kursus";
 			case "mentors":
-				return "Mentors";
+				return "Mentor";
 			case "profile":
 				return "Profile";
 			case "transaction-history":
@@ -48,34 +48,34 @@ export function Navigation({
 			case "settings":
 				return "Settings";
 			case "about":
-				return "About Us";
+				return "Tentang Kita";
 			// Halaman Admin
 			case "admin-dashboard":
-				return "Admin Dashboard";
+				return "Dashboard Admin";
 			case "admin-profile":
-				return "Admin Profile";
+				return "Profile Admin";
 			case "admin-edit-profile":
 				return "Admin Edit Profile";
 			case "admin-manage-users":
-				return "Users";
+				return "Pengguna";
 			case "admin-manage-payments":
-				return "Payments";
+				return "Pembayaran";
 			case "admin-manage-sessions":
-				return "Sessions";
+				return "Sesi";
 			case "admin-edit-session":
-				return "Edit Session";
+				return "Edit Sesi";
 			case "admin-manage-courses":
-				return "Courses";
+				return "Kursus";
 			case "admin-add-course":
-				return "Add Course";
+				return "Tambah Kursus";
 			case "admin-edit-course":
-				return "Edit Course";
+				return "Ubah Course";
 			case "admin-manage-mentors":
-				return "Mentors";
+				return "Mentor";
 			case "admin-testimonial":
-				return "Mentor Testimonials";
+				return "Testimoni Mentor";
 			case "admin-edit-testimonial":
-				return "Edit Mentor Testimonials";
+				return "Edit Testimoni Mentor";
 
 			// Halaman Mentor
 			case "mentor-dashboard":
@@ -85,17 +85,17 @@ export function Navigation({
 			case "mentor-edit-profile":
 				return "Mentor Edit Profile";
 			case "mentor-manage-schedule":
-				return "Schedule";
+				return "Sesi Saya";
 			case "mentor-manage-courses":
-				return "My Courses";
+				return "Kursus Saya";
 			case "mentor-testimonial":
-				return "Testimonies";
+				return "Testimoni";
 			case "mentor-add-course":
-				return "Add Course";
+				return "Tambah Kursus";
 			case "mentor-edit-course":
-				return "Edit Course";
+				return "Edit Kursus";
 			default:
-				return "Home";
+				return "Beranda";
 		}
 	};
 
@@ -132,7 +132,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<Users className="w-4 h-4 inline-block mr-1" />
-						Users
+						Pengguna
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-payments")}
@@ -142,7 +142,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<CircleDollarSign className="w-4 h-4 inline-block mr-1" />
-						Payments
+						Pembayaran
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-sessions")}
@@ -152,7 +152,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<Clock className="w-4 h-4 inline-block mr-1" />
-						Sessions
+						Sesi
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-courses")}
@@ -162,7 +162,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<BookOpen className="w-4 h-4 inline-block mr-1" />
-						Courses
+						Kursus
 					</a>
 					<a
 						onClick={() => onNavigate("admin-manage-mentors")}
@@ -172,7 +172,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<LucideUserSquare2 className="w-4 h-4 inline-block mr-1" />
-						Mentors
+						Mentor
 					</a>
 					<a
 						onClick={() => onNavigate("admin-testimonial")}
@@ -182,7 +182,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<UserCheck className="w-4 h-4 inline-block mr-1" />
-						Testimonials
+						Testimoni
 					</a>
 				</>
 			);
@@ -207,7 +207,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<Calendar className="w-4 h-4 inline-block mr-1" />
-						Schedule
+						Sesi Saya
 					</a>
 					<a
 						onClick={() => onNavigate("mentor-manage-courses")}
@@ -219,7 +219,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<BookOpen className="w-4 h-4 inline-block mr-1" />
-						My Courses
+						Kursus Saya
 					</a>
 					<a
 						onClick={() => onNavigate("mentor-testimonial")}
@@ -229,7 +229,7 @@ export function Navigation({
 								: "text-gray-900 hover:bg-yellow-500"
 						}`}>
 						<Users className="w-4 h-4 inline-block mr-1" />
-						Testimonies
+						Testimoni
 					</a>
 				</>
 			);
@@ -250,7 +250,7 @@ export function Navigation({
         ${currentPage !== "home" ? "group-hover:scale-110" : ""}
       `}
 					/>
-					Home
+					Beranda
 				</button>
 				<button
 					onClick={() => onNavigate("courses")}
@@ -266,7 +266,7 @@ export function Navigation({
         ${currentPage !== "courses" ? "group-hover:scale-110" : ""}
       `}
 					/>
-					Courses
+					Kursus
 				</button>
 				<button
 					onClick={() => onNavigate("mentors")}
@@ -282,7 +282,7 @@ export function Navigation({
         ${currentPage !== "mentors" ? "group-hover:scale-110" : ""}
       `}
 					/>
-					Mentors
+					Mentor
 				</button>
 				<button
 					onClick={() => onNavigate("about")}
@@ -298,7 +298,7 @@ export function Navigation({
         ${currentPage !== "about" ? "group-hover:scale-110" : ""}
       `}
 					/>
-					About Us
+					Tentang Kita
 				</button>
 			</>
 		);
@@ -327,7 +327,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<Users className="w-5 h-5 mr-3" />
-						Users
+						Pengguna
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 					<button
@@ -338,7 +338,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<DollarSign className="w-5 h-5 mr-3" />
-						Payments
+						Pembayaran
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 					<button
@@ -349,7 +349,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<Users className="w-5 h-5 mr-3" />
-						Sessions
+						Sesi
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 					<button
@@ -360,7 +360,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<BookOpen className="w-5 h-5 mr-3" />
-						Courses
+						Kursus
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 					<button
@@ -371,7 +371,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<UserCheck className="w-5 h-5 mr-3" />
-						Mentors
+						Mentor
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 					<button
@@ -382,7 +382,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<Users2 className="w-5 h-5 mr-3" />
-						Testimonials
+						Testimoni
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 				</>
@@ -409,7 +409,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<Calendar className="w-5 h-5 mr-3" />
-						Schedule
+						Sesi Saya
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 					<button
@@ -420,7 +420,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<BookOpen className="w-5 h-5 mr-3" />
-						My Courses
+						Kursus Saya
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 					<button
@@ -431,7 +431,7 @@ export function Navigation({
 						}}
 						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 						<Users className="w-5 h-5 mr-3" />
-						Testimonials
+						Testimoni
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
 				</>
@@ -448,7 +448,7 @@ export function Navigation({
 					}}
 					className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 					<Home className="w-5 h-5 mr-3" />
-					Home
+					Beranda
 					<ChevronRight className="w-5 h-5 ml-auto" />
 				</button>
 				<button
@@ -459,7 +459,7 @@ export function Navigation({
 					}}
 					className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 					<BookOpen className="w-5 h-5 mr-3" />
-					Courses
+					Kursus
 					<ChevronRight className="w-5 h-5 ml-auto" />
 				</button>
 				<button
@@ -470,7 +470,7 @@ export function Navigation({
 					}}
 					className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 					<Users className="w-5 h-5 mr-3" />
-					Mentors
+					Mentor
 					<ChevronRight className="w-5 h-5 ml-auto" />
 				</button>
 				<button
@@ -481,7 +481,7 @@ export function Navigation({
 					}}
 					className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
 					<Info className="w-5 h-5 mr-3" />
-					About Us
+					Tentang Kita
 					<ChevronRight className="w-5 h-5 ml-auto" />
 				</button>
 			</>
@@ -572,7 +572,7 @@ export function Navigation({
 								type="button"
 								onClick={() => onNavigate("home")}
 								className="hover:text-yellow-600">
-								{userRole !== "admin" && "mentor" ? "Home" : "Dashboard"}
+								{userRole !== "admin" && "mentor" ? "Beranda" : "Dashboard"}
 							</button>
 							<ChevronRight className="w-4 h-4" />
 							<span className="font-medium   text-gray-900">
