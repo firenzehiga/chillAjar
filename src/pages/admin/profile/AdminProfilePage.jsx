@@ -54,7 +54,7 @@ export function AdminProfilePage({ userData, userRole, onNavigate }) {
 								</div>
 							</div>
 							<button
-								className="bg-gray-600 text-white px-5 py-2 rounded-full font-medium ml-0 md:ml-4 mt-2 md:mt-0 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-gray-700 hover:shadow-lg"
+								className="bg-yellow-600 text-white px-5 py-2 rounded-full font-medium ml-0 md:ml-4 mt-2 md:mt-0 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-gray-700 hover:shadow-lg"
 								onClick={() => onNavigate("admin-edit-profile")}>
 								Edit Profil
 							</button>
