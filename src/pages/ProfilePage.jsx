@@ -137,7 +137,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 							<button
 								className="bg-yellow-600 text-white px-2 py-2 rounded-full font-medium ml-0 md:ml-4 mt-2 md:mt-0 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-yellow-700 hover:shadow-lg"
 								onClick={() => onNavigate("edit-profile")}>
-								Edit Profile
+								Edit Profil
 							</button>
 						</div>
 						<div className="grid grid-cols-2 gap-6 mb-8">
@@ -164,7 +164,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 											</div>
 										)}
 										<div className="text-sm text-gray-600">
-											Courses Enrolled
+											Kursus Yang Diikuti
 										</div>
 									</div>
 									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
@@ -176,7 +176,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 												{statistik?.jumlah_mentor ?? 0}
 											</div>
 										)}
-										<div className="text-sm text-gray-600">Mentors Booked</div>
+										<div className="text-sm text-gray-600">Mentor yang Dipesan</div>
 									</div>
 									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
 										<Building2Icon className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
@@ -196,7 +196,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 						</div>
 						<div className="bg-gray-50 rounded-xl p-6 space-y-4">
 							<h3 className="text-xl font-semibold text-gray-900 mb-4">
-								Contact Information
+								Informasi Kontak
 							</h3>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div className="flex items-center text-gray-600 transform transition-all duration-300 hover:translate-x-2">

@@ -92,7 +92,7 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 								<div className="text-2xl font-bold text-gray-900">
 									{currentUser.jumlahKursus}
 								</div>
-								<div className="text-sm text-gray-600">Courses Created</div>
+								<div className="text-sm text-gray-600">Kursus Yang Dibuat</div>
 							</div>
 							<div className="bg-yellow-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
 								<Star className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
@@ -104,7 +104,7 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 						</div>
 						<div className="bg-gray-50 rounded-xl p-6 space-y-4">
 							<h3 className="text-xl font-semibold text-gray-900 mb-4">
-								Contact Information
+								Informasi Kontak
 							</h3>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div className="flex items-center text-gray-600 transform transition-all duration-300 hover:translate-x-2">
@@ -119,7 +119,7 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 						</div>
 						<div className="bg-gray-50 rounded-xl p-6 mt-6 space-y-4">
 							<h3 className="text-xl font-semibold text-gray-900 mb-4">
-								Mentor Details
+								Detail Mentor
 							</h3>
 							<div className="space-y-2">
 								<p className="text-gray-600">

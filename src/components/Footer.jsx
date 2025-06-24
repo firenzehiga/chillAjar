@@ -26,12 +26,12 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 							experiences.
 						</p>
 						<div className="flex space-x-4">
-							<a className="text-gray-400 hover:text-white transition-colors duration-300">
+							{/* <a className="text-gray-400 hover:text-white transition-colors duration-300">
 								<Facebook className="h-5 w-5" />
 							</a>
 							<a className="text-gray-400 hover:text-white transition-colors duration-300">
 								<Twitter className="h-5 w-5" />
-							</a>
+							</a> */}
 							<a
 								className="text-gray-400 hover:text-white transition-colors duration-300"
 								target="_blank"
@@ -39,9 +39,9 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 								href="https://www.instagram.com/sizzling_chili/">
 								<Instagram className="h-5 w-5" />
 							</a>
-							<a className="text-gray-400 hover:text-white transition-colors duration-300">
+							{/* <a className="text-gray-400 hover:text-white transition-colors duration-300">
 								<Linkedin className="h-5 w-5" />
-							</a>
+							</a> */}
 						</div>
 					</div>
 
@@ -84,7 +84,7 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 									className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300"
 									onClick={onShowGuideModal}
 									type="button">
-									Help Center
+									Langkah Pemesanan
 								</button>
 							</li>
 							{/* <li>
