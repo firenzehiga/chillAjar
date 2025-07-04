@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/firenzehiga/chillajar/deploy-vercel/src/assets/logo.png" alt="Logo Chillajar" width="200"/>
+  <img src="https://raw.githubusercontent.com/firenzehiga/chillAjar/deploy-vercel/src/assets/logo.png" alt="Logo Chillajar" width="200"/>
 </p>
 
 ## About ChillAjar - Peer To Peer Mentoring Platform
