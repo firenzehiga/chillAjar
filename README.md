@@ -30,7 +30,6 @@
 - **Flexible Scheduling** - Pilih jadwal sesuai ketersediaan mentor
 - **Dual Mode Learning** - Support pembelajaran online dan offline
 - **Instant Confirmation** - Konfirmasi booking langsung dan otomatis
-- **Reschedule Options** - Kemudahan mengubah jadwal dengan persetujuan mentor
 
 ### 👥 **Autentikasi Multi-Role**
 - **Three-Tier System** - Admin, mentor, dan pelanggan dengan akses berbeda
