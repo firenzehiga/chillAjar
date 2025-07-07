@@ -22,8 +22,7 @@
 ## ✨ Fitur Utama
 
 ### 🔍 **Pencarian & Filter Kursus**
-- **Smart Search Engine** - Pencarian kursus berdasarkan kategori atau nama
-- **Advanced Filtering** - Filter berdasarkan harga, rating, lokasi, dan metode belajar
+- **Search** - Pencarian kursus berdasarkan nama
 - **Course Preview** - Detail lengkap kursus dan profil mentor
 - **Real-time Availability** - Jadwal ketersediaan mentor yang update real-time
 
