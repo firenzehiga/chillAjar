@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X, Upload, CreditCard, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
 
+
 export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
 	const [proofImage, setProofImage] = useState(null);

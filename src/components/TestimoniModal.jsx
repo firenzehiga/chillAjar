@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import toast from "react-hot-toast";
 
 export const TestimoniModal = ({ isOpen, onClose, onSubmit }) => {
     const [rating, setRating] = useState(5);
@@ -15,12 +16,7 @@ export const TestimoniModal = ({ isOpen, onClose, onSubmit }) => {
         setLoading(true);
         try {
             await onSubmit({ rating, komentar: comment }); // hanya kirim rating & komentar
-            Swal.fire({
-                icon: 'success',
-                title: 'Testimoni berhasil dikirim!',
-                showConfirmButton: false,
-                timer: 1800,
-            });
+            toast.success('Testimoni berhasil dikirim.');
             setRating(5);
             setComment('');
             onClose();

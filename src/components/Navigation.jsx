@@ -21,17 +21,22 @@ import {
 	DollarSign,
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
+import useAppStore from "../stores/useAppStore";
 
 export function Navigation({
-	currentPage,
 	onNavigate,
-	isAuthenticated,
-	userRole,
-	onAuthClick,
 	onLogout,
-	userData,
 }) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	
+	// Get state from Zustand store
+	const {
+		currentPage,
+		isAuthenticated,
+		userRole,
+		userData,
+		setShowAuthModal
+	} = useAppStore();
 
 	const getPageTitle = (page) => {
 		switch (page) {
@@ -523,7 +528,7 @@ export function Navigation({
 						) : (
 							<button
 								type="button"
-								onClick={onAuthClick}
+								onClick={() => setShowAuthModal(true)}
 								className="group flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-all duration-200">
 								<LogIn className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
 								Sign In
@@ -550,7 +555,7 @@ export function Navigation({
 							<button
 								type="button"
 								onClick={() => {
-									onAuthClick();
+									setShowAuthModal(true);
 									setIsMobileMenuOpen(false);
 								}}
 								className="w-full flex items-center px-3 py-2 text-base font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-colors rounded-md">

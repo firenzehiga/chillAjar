@@ -13,13 +13,17 @@ import {
 import api from "../api";
 import Swal from "sweetalert2";
 import logo from "../assets/title.png";
+import useAppStore from "../stores/useAppStore";
 
 export function AuthModal({
-	isOpen,
-	onClose,
-	onSuccess,
 	defaultMode = "login",
 }) {
+	// Get state and actions from store
+	const {
+		showAuthModal,
+		setShowAuthModal,
+		handleAuthSuccess
+	} = useAppStore();
 	const [isLoading, setIsLoading] = useState(false);
 	const [mode, setMode] = useState(defaultMode);
 	const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +39,7 @@ export function AuthModal({
 	});
 	const [error, setError] = useState("");
 
-	if (!isOpen) return null;
+	if (!showAuthModal) return null;
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
@@ -100,7 +104,7 @@ export function AuthModal({
 					toast: true,
 				});
 
-				onSuccess(user.peran.toLowerCase(), user);
+								handleAuthSuccess(user.peran.toLowerCase(), user);
 			} else {
 				// Gunakan FormData agar bisa upload file
 				const formPayload = new FormData();
@@ -155,7 +159,7 @@ export function AuthModal({
 						</h2>
 						<button
 							type="button"
-							onClick={onClose}
+														onClick={() => setShowAuthModal(false)}
 							className="text-gray-500 hover:text-gray-700 transition-colors">
 							<X className="w-5 h-5" />
 						</button>
