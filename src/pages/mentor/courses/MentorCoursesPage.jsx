@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "../../../utils/getImageUrl";
 
@@ -50,10 +51,10 @@ export function MentorCoursesPage({ onNavigate }) {
 			queryClient.setQueryData(["mentorCourses"], (oldData) =>
 				oldData.filter((course) => course.id !== id)
 			);
-			Swal.fire("Deleted!", "Kursus Berhasil Dihapus", "success");
+			toast.success("Kursus berhasil dihapus!");
 		},
 		onError: () => {
-			Swal.fire("Error!", "Gagal Menghapus Kursus!", "error");
+			toast.error("Gagal menghapus kursus. Silakan coba lagi.");
 		},
 	});
 

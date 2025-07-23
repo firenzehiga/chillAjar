@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
+import toast from "react-hot-toast";
 import {
 	BookOpen,
 	AlertCircle,
 	XCircle,
 	PlayCircle,
 	StopCircle,
+	Loader2,
 } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
@@ -67,10 +69,15 @@ export function MentorSchedulePage({ onNavigate }) {
 				}
 			);
 		},
-		onSuccess: () => {
-			Swal.fire("Berhasil!", "Sesi telah dimulai.", "success");
-			queryClient.invalidateQueries(["mentorSessions"]);
-			queryClient.invalidateQueries(["mentorTransactions"]);
+		onSuccess: async () => {
+			// 🔄 Refetch queries dan tunggu selesai
+			await queryClient.refetchQueries(["mentorSessions"]);
+
+			// 🔄 Transaksi refresh tanpa await (gak penting di halaman ini)
+			queryClient.refetchQueries(["mentorTransactions"]);
+
+			// ✅ Success message setelah data fresh
+			toast.success("Sesi berhasil dimulai!");
 		},
 		onError: () => {
 			Swal.fire("Gagal", "Terjadi kesalahan saat memulai sesi.", "error");
@@ -105,10 +112,15 @@ export function MentorSchedulePage({ onNavigate }) {
 				}
 			);
 		},
-		onSuccess: () => {
-			Swal.fire("Berhasil!", "Sesi telah diakhiri.", "success");
-			queryClient.invalidateQueries(["mentorSessions"]);
-			queryClient.invalidateQueries(["mentorTransactions"]);
+		onSuccess: async () => {
+			// 🔄 Tunggu data sesi refresh selesai (yang penting)
+			await queryClient.refetchQueries(["mentorSessions"]);
+
+			// 🔄 Transaksi refresh tanpa await (gak penting di halaman ini)
+			queryClient.refetchQueries(["mentorTransactions"]);
+
+			// ✅ Success message setelah data sesi fresh
+			toast.success("Sesi berhasil diakhiri!");
 		},
 		onError: () => {
 			Swal.fire("Gagal", "Terjadi kesalahan saat mengakhiri sesi.", "error");
@@ -216,19 +228,53 @@ export function MentorSchedulePage({ onNavigate }) {
 					{(row.statusSesi === "booked" || row.statusSesi === "pending") && (
 						<button
 							type="button"
-							className="mt-2 mb-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none"
-							disabled={isLoadingSessions || isLoadingTransactions}
+							className={`mt-2 mb-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none ${
+								startSessionMutation.isPending
+									? "cursor-not-allowed opacity-50"
+									: ""
+							}`}
+							disabled={
+								isLoadingSessions ||
+								isLoadingTransactions ||
+								startSessionMutation.isPending
+							}
 							onClick={() => handleStartSession(row.id)}>
-							<PlayCircle className="w-4 h-4 inline mb-1" /> Mulai Sesi
+							{startSessionMutation.isPending ? ( // 👈 Cek loading state
+								<>
+									<Loader2 className="animate-spin w-4 h-4 inline mr-2" />{" "}
+									Memulai...
+								</>
+							) : (
+								<>
+									<PlayCircle className="w-4 h-4 inline mb-1" /> Mulai Sesi
+								</>
+							)}{" "}
 						</button>
 					)}
 					{row.statusSesi === "started" && (
 						<button
 							type="button"
-							className="mt-2 mb-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 outline-none focus:outline-none"
-							disabled={isLoadingSessions || isLoadingTransactions}
+							className={`mt-2 mb-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 outline-none focus:outline-none ${
+								endSessionMutation.isPending
+									? "cursor-not-allowed opacity-50"
+									: ""
+							}`}
+							disabled={
+								isLoadingSessions ||
+								isLoadingTransactions ||
+								endSessionMutation.isPending
+							}
 							onClick={() => handleEndSession(row.id)}>
-							<StopCircle className="w-4 h-4 inline mb-1" /> Akhiri Sesi
+							{endSessionMutation.isPending ? ( // 👈 Cek loading state
+								<>
+									<Loader2 className="animate-spin w-4 h-4 inline mb-1" />{" "}
+									Mengakhiri...
+								</>
+							) : (
+								<>
+									<StopCircle className="w-4 h-4 inline mb-1" /> Akhiri Sesi
+								</>
+							)}{" "}
 						</button>
 					)}
 				</div>

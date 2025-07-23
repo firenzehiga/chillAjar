@@ -12,15 +12,12 @@ import {
 } from "lucide-react";
 import api from "../api"; // Sesuaikan path ke file api.jsx
 import Swal from "sweetalert2";
-// Impor logo aplikasi (sesuaikan path sesuai struktur proyek Anda)
 import logo from "../assets/title.png"; // Ganti dengan path yang benar
+import useAppStore from "../stores/useAppStore";
 
-export function AuthModal({
-	isOpen,
-	onClose,
-	onSuccess,
-	defaultMode = "login",
-}) {
+export function AuthModal({ defaultMode = "login" }) {
+	// Get state and actions from store
+	const { showAuthModal, setShowAuthModal, handleAuthSuccess } = useAppStore();
 	const [isLoading, setIsLoading] = useState(false);
 	const [mode, setMode] = useState(defaultMode);
 	const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +31,7 @@ export function AuthModal({
 	});
 	const [error, setError] = useState("");
 
-	if (!isOpen) return null;
+	if (!showAuthModal) return null;
 
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
@@ -91,7 +88,7 @@ export function AuthModal({
 					toast: true,
 				});
 
-				onSuccess(user.peran.toLowerCase(), user);
+				handleAuthSuccess(user.peran.toLowerCase(), user);
 			} else {
 				const response = await api.post("/register", {
 					nama: formData.name,
@@ -134,11 +131,13 @@ export function AuthModal({
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
-							{mode === "login" ? "Masuk ke Akun ChillAjar Anda" : "Create Account"}
+							{mode === "login"
+								? "Masuk ke Akun ChillAjar Anda"
+								: "Create Account"}
 						</h2>
 						<button
 							type="button"
-							onClick={onClose}
+							onClick={() => setShowAuthModal(false)}
 							className="text-gray-500 hover:text-gray-700 transition-colors">
 							<X className="w-5 h-5" />
 						</button>

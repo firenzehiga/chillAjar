@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import defaultPhoto from "../public/foto_kursus/default.jpg";
-import { Search, ArrowLeft, ListChecks } from "lucide-react";
-import { CourseCard } from "./components/CourseCard";
+import toast from "react-hot-toast";
+import { ListChecks } from "lucide-react";
 import { MentorCard } from "./components/MentorCard";
-import { CourseCarousel } from "./components/CourseCarousel";
 import { BookingModal } from "./components/BookingModal";
 import { PaymentModal } from "./components/PaymentModal";
 import { Navigation } from "./components/Navigation";
@@ -24,6 +23,9 @@ import { AboutPage } from "./pages/AboutPage";
 import { AuthModal } from "./components/AuthModal";
 import { CourseSelectionModal } from "./components/CourseSelectionModal";
 import { Home } from "./pages/Home";
+
+// Import Zustand Store
+import useAppStore from "./stores/useAppStore";
 
 // Halaman Admin
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
@@ -98,34 +100,51 @@ const hideNavigationPages = ["edit-profile"];
 
 function App() {
 	const queryClient = useQueryClient();
-	const [currentPage, setCurrentPage] = useState(
-		(history.location && history.location.pathname.slice(1)) || "home"
-	);
+
+	// Zustand Store - Authentication & Global State
+	const {
+		// Authentication State
+		isAuthenticated,
+		userRole,
+		userData,
+		authChecked,
+		currentPage,
+		// UI State
+		showAuthModal,
+		showPayment,
+		showBookingModal,
+		showCourseSelection,
+		showPostLoginLoading,
+		showHelpMenu,
+		showFlowModal,
+		// Course & Booking State
+		selectedCourse,
+		selectedMentor,
+		bookingCourse,
+		currentBooking,
+		searchQuery,
+		// Actions
+		setCurrentPage,
+		setSelectedCourse,
+		setSearchQuery,
+		setSelectedMentor,
+		setBookingCourse,
+		setShowPayment,
+		setShowBookingModal,
+		setCurrentBooking,
+		setShowAuthModal,
+		setShowCourseSelection,
+		setShowHelpMenu,
+		setShowFlowModal,
+		handleLogout,
+		initializeAuth,
+	} = useAppStore();
+
 	// setiap kali currentPage berubah, scroll ke atas
 	// ini untuk memastikan setiap kali halaman berubah, scroll akan kembali ke atas
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 	}, [currentPage]);
-
-	const [selectedCourse, setSelectedCourse] = useState(null);
-	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedMentor, setSelectedMentor] = useState(null);
-	const [bookingCourse, setBookingCourse] = useState(null);
-	const [showPayment, setShowPayment] = useState(false);
-	const [showBookingModal, setShowBookingModal] = useState(false);
-	const [currentBooking, setCurrentBooking] = useState(null);
-	const [showAuthModal, setShowAuthModal] = useState(false);
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [userRole, setUserRole] = useState(null);
-	const [userData, setUserData] = useState(null);
-	const [showCourseSelection, setShowCourseSelection] = useState(false);
-	const [authChecked, setAuthChecked] = useState(false);
-
-	// State untuk bantuan pemahaman aplikasi
-	const [showHelpMenu, setShowHelpMenu] = useState(false);
-	const [showFlowModal, setShowFlowModal] = useState(false);
-
-	const [showPostLoginLoading, setShowPostLoginLoading] = useState(false);
 
 	const {
 		data: courses = [],
@@ -162,6 +181,7 @@ function App() {
 				mentors: [
 					{
 						id: course.mentor?.id || null,
+						status: course.mentor?.status || "active", // Tambahkan status field
 						mentorName: course.mentor?.user?.nama || "Unknown Mentor",
 						mentorImage: getImageUrl(
 							course.mentor?.user?.foto_profil,
@@ -261,36 +281,7 @@ function App() {
 
 	// Fungsi untuk memeriksa apakah pengguna sudah terautentikasi
 	useEffect(() => {
-		const token = localStorage.getItem("token");
-		const storedUser = localStorage.getItem("user");
-
-		if (token && storedUser) {
-			try {
-				const user = JSON.parse(storedUser);
-				const roleFromBackend = user.peran?.toLowerCase();
-
-				if (roleFromBackend) {
-					setIsAuthenticated(true);
-					setUserRole(roleFromBackend);
-					setUserData(user);
-				} else {
-					localStorage.removeItem("token");
-					localStorage.removeItem("user");
-					setIsAuthenticated(false);
-					setUserRole(null);
-					setUserData(null);
-				}
-			} catch (error) {
-				console.error("Error parsing stored user:", error);
-				localStorage.removeItem("token");
-				localStorage.removeItem("user");
-				setIsAuthenticated(false);
-				setUserRole(null);
-				setUserData(null);
-			}
-		}
-
-		setAuthChecked(true);
+		initializeAuth();
 
 		const unlisten = history.listen(({ location }) => {
 			const path = location.pathname.slice(1) || "home";
@@ -374,14 +365,35 @@ function App() {
 					detailKursus: topic || "No specific topic",
 					statusSesi: "pending",
 				});
-				Swal.fire({
-					icon: "success",
-					title: "Pemesanan Berhasil!",
-					text: "Selanjutnya, silakan lakukan pembayaran untuk mengonfirmasi sesi Anda.",
-					timer: 1000,
-					timerProgressBar: true,
-					showConfirmButton: false,
-				});
+				// 🍞 Toast multi-line
+				toast.success(
+					<div className="text-center">
+						<div className="font-semibold text-green-800 mb-2">
+							🎉 Pemesanan Berhasil!
+						</div>
+						<div className="text-sm text-gray-700 leading-relaxed">
+							Silakan lakukan pembayaran untuk
+							<br />
+							mengonfirmasi sesi Anda
+						</div>
+					</div>,
+					{
+						duration: 4000, // 4 detik
+						position: "top-center",
+						style: {
+							background: "#f0fdf4", // Light green background
+							border: "1px solid #22c55e",
+							padding: "16px",
+							borderRadius: "8px",
+							minWidth: "300px",
+						},
+						iconTheme: {
+							primary: "#22c55e",
+							secondary: "#f0fdf4",
+						},
+					}
+				);
+
 				// console.log("Sesi response:", response.data); // mau tau apakah data sesi sudah kekirim
 
 				// Simpan data sesi ke state booking
@@ -402,10 +414,28 @@ function App() {
 				setShowPayment(true);
 				setShowBookingModal(false);
 			} catch (err) {
-				Swal.fire(
-					"Gagal booking",
-					err.response?.data?.message || "Terjadi kesalahan saat booking sesi.",
-					"error"
+				// 🍞 Toast error untuk booking gagal
+				toast.error(
+					<div className="text-center">
+						<div className="font-semibold text-red-800 mb-2">
+							❌ Booking Gagal
+						</div>
+						<div className="text-sm text-gray-700">
+							{err.response?.data?.message ||
+								"Terjadi kesalahan saat booking sesi"}
+						</div>
+					</div>,
+					{
+						duration: 5000,
+						position: "top-center",
+						style: {
+							background: "#fef2f2",
+							border: "1px solid #ef4444",
+							padding: "16px",
+							borderRadius: "8px",
+							minWidth: "300px",
+						},
+					}
 				);
 			}
 		}
@@ -512,16 +542,12 @@ function App() {
 		history.push(`/${page}`);
 	};
 
+	// Import store actions yang diperlukan untuk event handlers
+	const { handleAuthSuccess: authSuccess, updateUserData } = useAppStore();
+
 	// Fungsi untuk menangani keberhasilan autentikasi
 	const handleAuthSuccess = (role, user) => {
-		setIsAuthenticated(true);
-		setUserRole(role);
-		setUserData(user);
-		setShowAuthModal(false);
-
-		// Tampilkan loading/skeleton sebentar setelah login
-		setShowPostLoginLoading(true);
-		setTimeout(() => setShowPostLoginLoading(false), 1000); // 800ms, bisa diubah sesuai selera
+		authSuccess(role, user);
 
 		if (role === "admin") {
 			setCurrentPage("admin-dashboard");
@@ -533,22 +559,17 @@ function App() {
 	};
 
 	const handleUpdateUserData = (updatedData) => {
-		// console.log("Updating userData with:", updatedData);
-		setUserData(updatedData);
-		setUserRole(updatedData.peran?.toLowerCase());
-		localStorage.setItem("user", JSON.stringify(updatedData));
+		updateUserData(updatedData);
 	};
 
-	// Fungsi untuk logout
-	const handleLogout = () => {
+	// Fungsi untuk logout - menggunakan kombinasi store dan custom logic
+	const handleLogoutWithHistory = () => {
 		api
 			.post("/logout")
 			.then(() => {
 				localStorage.removeItem("token");
 				localStorage.removeItem("user");
-				setIsAuthenticated(false);
-				setUserRole(null);
-				setUserData(null);
+				handleLogout(); // Store action
 				setCurrentPage("home");
 				history.push("/home");
 				queryClient.clear(); // <-- Hapus semua cache query!
@@ -567,9 +588,7 @@ function App() {
 				console.error("Logout failed:", error);
 				localStorage.removeItem("token");
 				localStorage.removeItem("user");
-				setIsAuthenticated(false);
-				setUserRole(null);
-				setUserData(null);
+				handleLogout(); // Store action
 				setCurrentPage("home");
 				history.push("/home");
 			});
@@ -992,13 +1011,8 @@ function App() {
 		<div className="min-h-screen bg-gray-50 flex flex-col">
 			{!hideNavigationPages.includes(currentPage) && (
 				<Navigation
-					currentPage={currentPage}
 					onNavigate={handleNavigate}
-					isAuthenticated={isAuthenticated}
-					userRole={userRole}
-					onAuthClick={() => setShowAuthModal(true)}
-					onLogout={handleLogout}
-					userData={userData}
+					onLogout={handleLogoutWithHistory}
 				/>
 			)}
 			<main className="flex-grow">
@@ -1053,14 +1067,7 @@ function App() {
 						onSubmit={handlePaymentSubmit}
 					/>
 				)}
-				{showAuthModal && (
-					<AuthModal
-						isOpen={showAuthModal}
-						onClose={() => setShowAuthModal(false)}
-						onSuccess={handleAuthSuccess}
-						defaultMode="login"
-					/>
-				)}
+				{showAuthModal && <AuthModal defaultMode="login" />}
 			</main>
 			<Footer
 				onNavigate={handleNavigate}
