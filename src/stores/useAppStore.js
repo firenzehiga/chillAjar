@@ -51,6 +51,20 @@ const useAppStore = create((set, get) => ({
 	setCurrentBooking: (booking) => set({ currentBooking: booking }),
 	setSearchQuery: (query) => set({ searchQuery: query }),
 
+	// Session Management
+	checkSessionValid: () => {
+		const token = localStorage.getItem("token");
+		const storedUser = localStorage.getItem("user");
+
+		// Kalau tidak ada token atau user, auto logout
+		if (!token || !storedUser) {
+			get().handleLogout();
+			return false;
+		}
+
+		return true;
+	},
+
 	// Composite Actions
 	handleAuthSuccess: (role, user) => {
 		set({
@@ -109,6 +123,11 @@ const useAppStore = create((set, get) => ({
 						userRole: roleFromBackend,
 						userData: user,
 					});
+
+					// Setup periodic session check (setiap 5 menit)
+					setInterval(() => {
+						get().checkSessionValid();
+					}, 5 * 60 * 1000); // 5 menit
 				} else {
 					localStorage.removeItem("token");
 					localStorage.removeItem("user");
