@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/google255c9cb8472bc5cd.html",
+      "destination": "/google255c9cb8472bc5cd.html"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/sitemap.xml"
     },
@@ -33,6 +37,15 @@
         {
           "key": "Content-Type",
           "value": "text/plain"
+        }
+      ]
+    },
+    {
+      "source": "/google255c9cb8472bc5cd.html",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/html"
         }
       ]
     }
