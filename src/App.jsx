@@ -100,12 +100,12 @@ const hideNavigationPages = ["edit-profile"];
 
 function App() {
 	const queryClient = useQueryClient();
-	
+
 	// Zustand Store - Authentication & Global State
 	const {
 		// Authentication State
 		isAuthenticated,
-		userRole, 
+		userRole,
 		userData,
 		authChecked,
 		currentPage,
@@ -137,7 +137,7 @@ function App() {
 		setShowHelpMenu,
 		setShowFlowModal,
 		handleLogout,
-		initializeAuth
+		initializeAuth,
 	} = useAppStore();
 	// setiap kali currentPage berubah, scroll ke atas
 	// ini untuk memastikan setiap kali halaman berubah, scroll akan kembali ke atas
@@ -304,10 +304,7 @@ function App() {
 	);
 
 	// Import store actions yang diperlukan untuk event handlers
-	const { 
-		handleAuthSuccess: authSuccess,
-		updateUserData
-	} = useAppStore();
+	const { handleAuthSuccess: authSuccess, updateUserData } = useAppStore();
 
 	// Helper functions
 	const handleSchedule = (mentor, course, schedules, location) => {
@@ -376,7 +373,7 @@ function App() {
 					icon: "success",
 					title: "Pemesanan Berhasil!",
 					text: "Selanjutnya, silakan lakukan pembayaran untuk mengonfirmasi sesi Anda.",
-					timer: 800,
+					timer: 1000,
 					timerProgressBar: true,
 					showConfirmButton: false,
 				});
@@ -513,7 +510,7 @@ function App() {
 	// Fungsi untuk menangani keberhasilan autentikasi
 	const handleAuthSuccess = (role, user) => {
 		authSuccess(role, user);
-		
+
 		if (role === "admin") {
 			setCurrentPage("admin-dashboard");
 			history.push("/admin-dashboard");
@@ -877,7 +874,7 @@ function App() {
 								<p className="translate-x-2">Go Back</p>
 							</button>
 							<h2 className="text-2xl font-bold text-gray-900 mb-6">
-								{selectedCourse.title} - Available Mentors
+								{selectedCourse.courseName} - Available Mentors
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 								{selectedCourse.mentors
@@ -935,34 +932,16 @@ function App() {
 								{selectedCourse.courseName} - Available Mentors
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-								{(() => {
-									console.log("Selected Course:", selectedCourse);
-									console.log("Selected Course Mentors:", selectedCourse.mentors);
-									
-									const activeMentors = selectedCourse.mentors?.filter((mentor) => mentor.status === "active") || [];
-									console.log("Active Mentors:", activeMentors);
-									
-									// Jika tidak ada mentor aktif, tampilkan semua mentor
-									const mentorsToShow = activeMentors.length > 0 ? activeMentors : (selectedCourse.mentors || []);
-									
-									if (mentorsToShow.length === 0) {
-										return (
-											<div className="col-span-full text-center py-12">
-												<p className="text-gray-500 text-lg">Belum ada mentor tersedia untuk kursus ini.</p>
-											</div>
-										);
-									}
-									
-									return mentorsToShow.map((mentor) => (
+								{selectedCourse.mentors
+									?.filter((mentor) => mentor.status === "active")
+									.map((mentor) => (
 										<MentorCard
 											key={mentor.id}
 											mentor={mentor}
 											onSchedule={handleSchedule}
 											selectedCourse={selectedCourse}
-											schedules={schedules}
 										/>
-									));
-								})()}
+									))}
 							</div>
 						</div>
 					) : (
@@ -1055,9 +1034,7 @@ function App() {
 						onSubmit={handlePaymentSubmit}
 					/>
 				)}
-				{showAuthModal && (
-					<AuthModal defaultMode="login" />
-				)}
+				{showAuthModal && <AuthModal defaultMode="login" />}
 			</main>
 			<Footer
 				onNavigate={handleNavigate}
