@@ -1,0 +1,5 @@
+<!-- filepath: c:\xampp\htdocs\belajar-react\chillAjar-git\public\robots.txt -->
+User-agent: *
+Allow: /
+
+Sitemap: https://chillajar.my.id/sitemap.xml
