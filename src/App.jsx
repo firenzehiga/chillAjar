@@ -911,7 +911,7 @@ function App() {
 								<p className="translate-x-2">Kembali</p>
 							</button>
 							<h2 className="text-2xl font-bold text-gray-900 mb-6">
-								{selectedCourse.title} - Mentor Yang Tersedia
+								{selectedCourse.courseName} - Mentor Yang Tersedia
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 								{selectedCourse.mentors?.map((mentor) => (
@@ -964,7 +964,7 @@ function App() {
 								<p className="translate-x-2">Kembali</p>
 							</button>
 							<h2 className="text-2xl font-bold text-gray-900 mb-6">
-								{selectedCourse.title} - Mentor Yang Tersedia
+								{selectedCourse.courseName} - Mentor Yang Tersedia
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 								{selectedCourse.mentors.map((mentor) => (
