@@ -89,18 +89,6 @@
 - Pembelajaran online dan offline
 - Track progress belajar personal
 
-### 🏢 **Lembaga Kursus**
-- Platform untuk mentor-mentor terdaftar
-- Manajemen kursus yang terorganisir
-- Sistem pembayaran terintegrasi
-- Analytics dan reporting lengkap
-
-### 🔧 **Administrator**
-- Monitoring keseluruhan platform
-- Verifikasi pembayaran dan transaksi
-- Kelola user dan mentor
-- Analytics dan business intelligence
-
 ## 📈 Manfaat Implementasi
 
 ### 💼 **Untuk Bisnis**

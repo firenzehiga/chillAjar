@@ -2,7 +2,10 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/src/assets/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
     <!-- Primary Meta Tags - ENHANCED -->
@@ -17,6 +20,24 @@
     <meta name="geo.region" content="ID" />
     <meta name="geo.country" content="Indonesia" /> 
     <meta name="geo.placename" content="Indonesia" />
+    
+    <!-- JSON-LD Schema for Organization Logo -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "ChillAjar",
+      "url": "https://chillajar.my.id",
+      "logo": "https://chillajar.my.id/logo.png",
+      "description": "Platform pembelajaran yang menghubungkan siswa dengan mentor berpengalaman",
+      "sameAs": [
+        "https://www.instagram.com/sizzling_chilli"
+      ]
+    }
+    </script>
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
     
     <!-- Additional SEO Meta -->
     <meta name="theme-color" content="#3B82F6" />
