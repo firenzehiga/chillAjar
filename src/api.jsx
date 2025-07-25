@@ -25,12 +25,33 @@ api.interceptors.request.use((config) => {
 	return config;
 });
 
+function getErrorAlias(error) {
+	if (error.code === "ERR_NETWORK") return "Network";
+	if (error.response?.status === 401 || error.response?.status === 403)
+		return "Auth";
+	if (error.response?.status >= 500) return "Server";
+	if (error.response?.status === 404) return "Not Found";
+	return "Unknown";
+}
 // Response interceptor - handle session expired
 api.interceptors.response.use(
 	(response) => {
 		return response;
 	},
 	(error) => {
+		const alias = getErrorAlias(error);
+
+		// Global error handler
+		import("./stores/useAppStore").then((module) => {
+			module.default.getState().setApiError({
+				code: error.code + " - " + error.response?.status,
+				alias,
+				message:
+					// error.message ||
+					"Terjadi masalah saat menghubungi server. Silakan coba lagi atau hubungi admin.",
+			});
+		});
+
 		// Cek kalau token expired atau unauthorized
 		if (
 			error.response &&
