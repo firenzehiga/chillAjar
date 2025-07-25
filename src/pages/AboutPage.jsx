@@ -58,10 +58,10 @@ export function AboutPage() {
 	});
 
 	const stats = [
-		{ icon: Users, label: "Active Students", value: "20+" },
+		{ icon: Users, label: "Pelajar Terdaftar", value: "20+" },
 		{
 			icon: BookOpen,
-			label: "Available Courses",
+			label: "Kursus Tersedia",
 			value: coursesLoading ? (
 				<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
 			) : coursesError ? (
@@ -72,7 +72,7 @@ export function AboutPage() {
 		},
 		{
 			icon: Users,
-			label: "Active Mentors",
+			label: "Mentor Aktif",
 			value: mentorsLoading ? (
 				<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
 			) : mentorsError ? (
@@ -136,13 +136,13 @@ export function AboutPage() {
 					Empowering Students Through Peer Learning
 				</h1>
 				<p className="text-xl text-gray-600 max-w-2xl mx-auto">
-					ChillAjar connects students with expert peer mentors to create
-					meaningful learning experiences.
+					ChillAjar menghubungkan siswa dengan mentor sebaya yang ahli untuk
+					menciptakan pengalaman belajar yang bermakna.{" "}
 				</p>
 			</div>
 
 			{/* Stats */}
-			<div className="bg-chill-yellow py-12 mb-16">
+			<div className="bg-chill-yellow py-12 mb-16 rounded-2xl shadow-lg">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 						{stats.map((stat, index) => (
@@ -151,7 +151,9 @@ export function AboutPage() {
 								<div className="text-3xl font-bold text-white mb-1">
 									{stat.value}
 								</div>
-								<div className="text-grey-800 font-semibold">{stat.label}</div>
+								<div className="text-grey-800 font-semibold text-lg">
+									{stat.label}
+								</div>
 							</div>
 						))}
 					</div>
@@ -195,7 +197,7 @@ export function AboutPage() {
 			{/* Team Section */}
 			<div>
 				<h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
-					Our Team
+					Founder
 				</h2>
 				<div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
 					{productManager && (
@@ -235,7 +237,7 @@ export function AboutPage() {
 						</div>
 					)}
 					{anggotaTim.length > 0 && (
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 							{anggotaTim.map((member, index) => (
 								<div
 									key={index}
