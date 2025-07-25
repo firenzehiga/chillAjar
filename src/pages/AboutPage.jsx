@@ -41,18 +41,46 @@ export function AboutPage() {
 		},
 	});
 
+	const {
+		data: jumlahMentor,
+		isLoading: mentorsLoading,
+		error: mentorsError,
+	} = useQuery({
+		queryKey: ["publicCountMentors"],
+		queryFn: async () => {
+			const response = await api.get("/public/mentor", {
+				headers: localStorage.getItem("token")
+					? { Authorization: `Bearer ${localStorage.getItem("token")}` }
+					: {}, // Header hanya ditambahkan jika token ada
+			});
+			return response.data.length;
+		},
+	});
+
 	const stats = [
 		{ icon: Users, label: "Active Students", value: "20+" },
 		{
 			icon: BookOpen,
-			label: "Courses",
-			value: coursesLoading
-				? "Loading..."
-				: coursesError
-				? "Error"
-				: jumlahCourse,
+			label: "Available Courses",
+			value: coursesLoading ? (
+				<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
+			) : coursesError ? (
+				"Error"
+			) : (
+				jumlahCourse
+			),
 		},
-		{ icon: Clock, label: "Learning Hours", value: "40+" },
+		{
+			icon: Users,
+			label: "Active Mentors",
+			value: mentorsLoading ? (
+				<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
+			) : mentorsError ? (
+				"Error"
+			) : (
+				jumlahMentor
+			),
+		},
 	];
 
 	const values = [

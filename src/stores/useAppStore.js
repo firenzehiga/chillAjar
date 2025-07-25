@@ -1,6 +1,9 @@
 import { create } from "zustand";
 
 const useAppStore = create((set, get) => ({
+	// Global API Error State
+	apiError: null,
+	setApiError: (err) => set({ apiError: err }),
 	// Authentication State
 	isAuthenticated: false,
 	userRole: null,

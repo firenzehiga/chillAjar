@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ErrorBoundary from "./components/ErrorBoundary";
+import ErrorBoundary from "./components/Error/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
