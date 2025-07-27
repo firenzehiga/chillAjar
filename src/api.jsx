@@ -35,23 +35,8 @@ function getErrorAlias(error) {
 }
 // Response interceptor - handle session expired
 api.interceptors.response.use(
-	(response) => {
-		return response;
-	},
+	(response) => response,
 	(error) => {
-		const alias = getErrorAlias(error);
-
-		// Global error handler
-		import("./stores/useAppStore").then((module) => {
-			module.default.getState().setApiError({
-				code: error.code + " - " + error.response?.status,
-				alias,
-				message:
-					// error.message ||
-					"Terjadi masalah saat menghubungi server. Silakan coba lagi atau hubungi admin.",
-			});
-		});
-
 		// Cek kalau token expired atau unauthorized
 		if (
 			error.response &&
@@ -83,8 +68,22 @@ api.interceptors.response.use(
 					confirmButtonColor: "#3B82F6",
 					confirmButtonText: "OK",
 				});
+
+				// STOP di sini, JANGAN setApiError!
+				return Promise.reject(error);
 			}
 		}
+
+		// Selain kasus Auth/session expired, baru setApiError
+		const alias = getErrorAlias(error);
+		import("./stores/useAppStore").then((module) => {
+			module.default.getState().setApiError({
+				code: error.code + " - " + error.response?.status,
+				alias,
+				message:
+					"Terjadi masalah saat menghubungi server. Silakan coba lagi atau hubungi admin.",
+			});
+		});
 
 		return Promise.reject(error);
 	}
