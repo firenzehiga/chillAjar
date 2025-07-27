@@ -33,7 +33,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 					return (
 						<div key={course.id} className="px-4">
 							<div
-								className="relative h-[400px] rounded-xl overflow-hidden cursor-pointer"
+								className="relative h-[400px]  rounded-xl overflow-hidden cursor-pointer"
 								onClick={() => onCourseClick(course)}>
 								<img
 									loading="lazy"

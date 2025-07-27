@@ -8,6 +8,7 @@ import { PaymentModal } from "./components/PaymentModal";
 import { Navigation } from "./components/Navigation";
 import { Footer } from "./components/Footer";
 import { CourseSkeletonCard } from "./components/Skeleton/CourseSkeletonCard";
+import { CarouselSkeleton } from "./components/Skeleton/CarouselSkeleton";
 import { NotFoundPage } from "./components/Error/NotFound";
 
 import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
@@ -645,8 +646,9 @@ function App() {
 		if (showSkeleton) {
 			return (
 				<div className="py-8">
+					{currentPage === "home" && <CarouselSkeleton />}
 					<h2 className="text-2xl font-bold text-gray-900 mb-6">
-						Kursus Yang Tersedia
+						{currentPage === "home" ? "Semua Kursus" : "Kursus Yang Tersedia"}
 					</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 						{Array.from({ length: 6 }).map((_, idx) => (

@@ -19,8 +19,12 @@ const api = axios.create({
 // Request interceptor - tambah token ke header
 api.interceptors.request.use((config) => {
 	const token = localStorage.getItem("token");
+	// Hanya tambahkan Authorization jika token ada
 	if (token) {
 		config.headers.Authorization = `Bearer ${token}`;
+	} else {
+		// Pastikan header Authorization tidak dikirim jika tidak login
+		delete config.headers.Authorization;
 	}
 	return config;
 });
@@ -48,8 +52,7 @@ api.interceptors.response.use(
 			if (
 				message.toLowerCase().includes("token") ||
 				message.toLowerCase().includes("expired") ||
-				message.toLowerCase().includes("unauthorized") ||
-				error.response.status === 401
+				message.toLowerCase().includes("unauthorized")
 			) {
 				// Auto logout
 				localStorage.removeItem("token");
@@ -70,6 +73,11 @@ api.interceptors.response.use(
 				});
 
 				// STOP di sini, JANGAN setApiError!
+				return Promise.reject(error);
+			}
+
+			// Jika user memang belum login (tidak ada token), JANGAN setApiError!
+			if (!localStorage.getItem("token")) {
 				return Promise.reject(error);
 			}
 		}
