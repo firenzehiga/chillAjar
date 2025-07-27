@@ -36,7 +36,7 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 								className="text-gray-400 hover:text-white transition-colors duration-300"
 								target="_blank"
 								rel="noopener noreferrer"
-								href="https://www.instagram.com/sizzling_chili/">
+								href="https://www.instagram.com/chill_ajar/">
 								<Instagram className="h-5 w-5" />
 							</a>
 							{/* <a className="text-gray-400 hover:text-white transition-colors duration-300">
