@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import defaultPhoto from "../public/foto_kursus/default.jpg";
-import { Search, ArrowLeft, ListChecks } from "lucide-react";
+import toast from "react-hot-toast";
+import { ListChecks } from "lucide-react";
 import { CourseCard } from "./components/CourseCard";
 import { MentorCard } from "./components/MentorCard";
 import { BookingModal } from "./components/BookingModal";
@@ -255,6 +255,9 @@ function App() {
 		queryKey: ["schedules", selectedCourse?.id],
 		queryFn: async () => {
 			if (!selectedCourse?.id) return [];
+			// Hanya fetch jadwal jika user login
+			if (!isAuthenticated) return []; // Jika tidak login, tidak perlu fetch jadwal
+
 			const response = await api.get(
 				`/jadwal-kursus?kursus_id=${selectedCourse.id}`
 			);
@@ -373,14 +376,35 @@ function App() {
 					detailKursus: topic || "No specific topic",
 					statusSesi: "pending",
 				});
-				Swal.fire({
-					icon: "success",
-					title: "Pemesanan Berhasil!",
-					text: "Selanjutnya, silakan lakukan pembayaran untuk mengonfirmasi sesi Anda.",
-					timer: 1000,
-					timerProgressBar: true,
-					showConfirmButton: false,
-				});
+				// 🍞 Toast multi-line
+				toast.success(
+					<div className="text-center">
+						<div className="font-semibold text-green-800 mb-2">
+							🎉 Pemesanan Berhasil!
+						</div>
+						<div className="text-sm text-gray-700 leading-relaxed">
+							Silakan lakukan pembayaran untuk
+							<br />
+							mengonfirmasi sesi Anda
+						</div>
+					</div>,
+					{
+						duration: 4000, // 4 detik
+						position: "top-center",
+						style: {
+							background: "#f0fdf4", // Light green background
+							border: "1px solid #22c55e",
+							padding: "16px",
+							borderRadius: "8px",
+							minWidth: "300px",
+						},
+						iconTheme: {
+							primary: "#22c55e",
+							secondary: "#f0fdf4",
+						},
+					}
+				);
+
 				// console.log("Sesi response:", response.data); // mau tau apakah data sesi sudah kekirim
 
 				// Simpan data sesi ke state booking
@@ -401,10 +425,28 @@ function App() {
 				setShowPayment(true);
 				setShowBookingModal(false);
 			} catch (err) {
-				Swal.fire(
-					"Gagal booking",
-					err.response?.data?.message || "Terjadi kesalahan saat booking sesi.",
-					"error"
+				// 🍞 Toast error untuk booking gagal
+				toast.error(
+					<div className="text-center">
+						<div className="font-semibold text-red-800 mb-2">
+							❌ Booking Gagal
+						</div>
+						<div className="text-sm text-gray-700">
+							{err.response?.data?.message ||
+								"Terjadi kesalahan saat booking sesi"}
+						</div>
+					</div>,
+					{
+						duration: 5000,
+						position: "top-center",
+						style: {
+							background: "#fef2f2",
+							border: "1px solid #ef4444",
+							padding: "16px",
+							borderRadius: "8px",
+							minWidth: "300px",
+						},
+					}
 				);
 			}
 		}
