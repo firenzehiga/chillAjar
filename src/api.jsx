@@ -42,46 +42,60 @@ function getErrorAlias(error) {
 api.interceptors.response.use(
 	(response) => response,
 	(error) => {
-		// Cek kalau token expired atau unauthorized
+		const originalRequest = error.config;
+		const message = error.response?.data?.message || "";
+
+		// Jangan trigger logout/toast jika error dari /login atau /register
 		if (
 			error.response &&
-			(error.response.status === 401 || error.response.status === 403)
+			(error.response.status === 401 || error.response.status === 403) &&
+			originalRequest &&
+			!["/login", "/register"].some((path) =>
+				originalRequest.url?.includes(path)
+			)
 		) {
-			const message = error.response.data?.message || "";
-
-			// Cek kalau memang session expired (bukan login gagal biasa)
 			if (
 				message.toLowerCase().includes("token") ||
 				message.toLowerCase().includes("expired") ||
 				message.toLowerCase().includes("unauthorized")
-			)
-				// Selalu logout & tampilkan Swal jika API balas 401/403 (token invalid/expired/missing)
+			) {
 				localStorage.removeItem("token");
-			localStorage.removeItem("user");
-			import("./stores/useAppStore").then((module) => {
-				module.default.getState().handleLogout();
-			});
-			toast.error(
-				<div className="text-center">
-					<div className="font-semibold text-red-800 mb-2">
-						Sesi Anda telah berakhir
-					</div>
-					<div className="text-sm text-gray-700">
-						Silakan login kembali untuk melanjutkan.
-					</div>
-				</div>,
-				{
-					duration: 2000,
-					position: "top-center",
-					style: {
-						background: "#fef2f2",
-						border: "1px solid #ef4444",
-						padding: "16px",
-						borderRadius: "8px",
-						minWidth: "300px",
-					},
-				}
-			);
+				localStorage.removeItem("user");
+				import("./stores/useAppStore").then((module) => {
+					module.default.getState().handleLogout();
+				});
+				toast.error(
+					<div className="text-center">
+						<div className="font-semibold text-red-800 mb-2">
+							Sesi Anda telah berakhir
+						</div>
+						<div className="text-sm text-gray-700">
+							Silakan login kembali untuk melanjutkan.
+						</div>
+					</div>,
+					{
+						duration: 2000,
+						position: "top-center",
+						style: {
+							background: "#fef2f2",
+							border: "1px solid #ef4444",
+							padding: "16px",
+							borderRadius: "8px",
+							minWidth: "300px",
+						},
+					}
+				);
+				return Promise.reject(error);
+			}
+		}
+
+		// JANGAN setApiError untuk error dari /login atau /register
+		if (
+			originalRequest &&
+			["/login", "/register"].some((path) =>
+				originalRequest.url?.includes(path)
+			)
+		) {
 			return Promise.reject(error);
 		}
 
