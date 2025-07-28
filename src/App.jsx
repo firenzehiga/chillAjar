@@ -255,6 +255,8 @@ function App() {
 		queryKey: ["schedules", selectedCourse?.id],
 		queryFn: async () => {
 			if (!selectedCourse?.id) return [];
+			// Hanya fetch jadwal jika user login
+			if (!isAuthenticated) return []; // Jika tidak login, tidak perlu fetch jadwal 
 			const response = await api.get(
 				`/jadwal-kursus?kursus_id=${selectedCourse.id}`
 			);

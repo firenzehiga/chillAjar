@@ -4,6 +4,7 @@
 // - Jika .env tidak diisi, fallback ke backend public default
 import axios from "axios";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 const PUBLIC_API =
 	import.meta.env.VITE_PUBLIC_API || "https://peladen.my.id/api";
@@ -64,22 +65,46 @@ api.interceptors.response.use(
 				});
 
 				// Tampilkan pesan
-				Swal.fire({
-					icon: "warning",
-					title: "Sesi Berakhir",
-					text: "Sesi Anda telah berakhir. Silakan login kembali.",
-					confirmButtonColor: "#3B82F6",
-					confirmButtonText: "OK",
-				});
+				toast.error(
+					<div className="text-center">
+						<div className="font-semibold text-red-800 mb-2">
+							Sesi Anda telah berakhir
+						</div>
+						<div className="text-sm text-gray-700">
+							Silakan login kembali untuk melanjutkan.
+						</div>
+					</div>,
+					{
+						duration: 5000,
+						position: "top-center",
+						style: {
+							background: "#fef2f2",
+							border: "1px solid #ef4444",
+							padding: "16px",
+							borderRadius: "8px",
+							minWidth: "300px",
+						},
+					}
+				);
 
 				// STOP di sini, JANGAN setApiError!
 				return Promise.reject(error);
 			}
 
-			// Jika user memang belum login (tidak ada token), JANGAN setApiError!
-			if (!localStorage.getItem("token")) {
-				return Promise.reject(error);
-			}
+			// Selalu logout & tampilkan Swal jika API balas 401/403 (token invalid/expired/missing)
+			localStorage.removeItem("token");
+			localStorage.removeItem("user");
+			import("./stores/useAppStore").then((module) => {
+				module.default.getState().handleLogout();
+			});
+			Swal.fire({
+				icon: "warning",
+				title: "Sesi Berakhir",
+				text: "Sesi Anda telah berakhir. Silakan login kembali.",
+				confirmButtonColor: "#3B82F6",
+				confirmButtonText: "OK",
+			});
+			return Promise.reject(error);
 		}
 
 		// Selain kasus Auth/session expired, baru setApiError
