@@ -15,6 +15,8 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 
 	const queryClient = useQueryClient();
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token && !!userData?.pelanggan?.id;
 	const pelangganId = userData?.pelanggan?.id;
 
 	const {
@@ -24,10 +26,13 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 	} = useQuery({
 		queryKey: ["pelangganSessions", pelangganId],
 		queryFn: async () => {
-			const res = await api.get("/pelanggan/daftar-sesi");
+			if (!isAuthenticated) return [];
+			const res = await api.get("/pelanggan/daftar-sesi", {
+				headers: { Authorization: `Bearer ${token}` },
+			});
 			return res.data;
 		},
-		enabled: !!pelangganId,
+		enabled: isAuthenticated,
 	});
 
 	const {
@@ -37,10 +42,13 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 	} = useQuery({
 		queryKey: ["pelangganTransactions", pelangganId],
 		queryFn: async () => {
-			const res = await api.get("/transaksi");
+			if (!isAuthenticated) return [];
+			const res = await api.get("/transaksi", {
+				headers: { Authorization: `Bearer ${token}` },
+			});
 			return res.data.filter((t) => t.pelanggan_id === pelangganId);
 		},
-		enabled: !!pelangganId,
+		enabled: isAuthenticated,
 	});
 
 	// 1. Filter transaksi yang statusnya "accepted"
