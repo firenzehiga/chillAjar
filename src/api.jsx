@@ -54,39 +54,33 @@ api.interceptors.response.use(
 				originalRequest.url?.includes(path)
 			)
 		) {
-			if (
-				message.toLowerCase().includes("token") ||
-				message.toLowerCase().includes("expired") ||
-				message.toLowerCase().includes("unauthorized")
-			) {
-				localStorage.removeItem("token");
-				localStorage.removeItem("user");
-				import("./stores/useAppStore").then((module) => {
-					module.default.getState().handleLogout();
-				});
-				toast.error(
-					<div className="text-center">
-						<div className="font-semibold text-red-800 mb-2">
-							Sesi Anda telah berakhir
-						</div>
-						<div className="text-sm text-gray-700">
-							Silakan login kembali untuk melanjutkan.
-						</div>
-					</div>,
-					{
-						duration: 2000,
-						position: "top-center",
-						style: {
-							background: "#fef2f2",
-							border: "1px solid #ef4444",
-							padding: "16px",
-							borderRadius: "8px",
-							minWidth: "300px",
-						},
-					}
-				);
-				return Promise.reject(error);
-			}
+			localStorage.removeItem("token");
+			localStorage.removeItem("user");
+			import("./stores/useAppStore").then((module) => {
+				module.default.getState().handleLogout();
+			});
+			toast.error(
+				<div className="text-center">
+					<div className="font-semibold text-red-800 mb-2">
+						Sesi Anda telah berakhir
+					</div>
+					<div className="text-sm text-gray-700">
+						Silakan login kembali untuk melanjutkan.
+					</div>
+				</div>,
+				{
+					duration: 2000,
+					position: "top-center",
+					style: {
+						background: "#fef2f2",
+						border: "1px solid #ef4444",
+						padding: "16px",
+						borderRadius: "8px",
+						minWidth: "300px",
+					},
+				}
+			);
+			return Promise.reject(error);
 		}
 
 		// JANGAN setApiError untuk error dari /login atau /register
