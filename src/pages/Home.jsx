@@ -37,7 +37,8 @@ export function Home({
 	const userData = JSON.parse(localStorage.getItem("user") || "{}");
 	const userId = userData?.id;
 
-	// Fetch daftar sesi pelanggan berdasarkan userId
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token && !!userId;
 	const {
 		data: sessions = [],
 		isLoading: isLoadingSessions,
@@ -45,7 +46,7 @@ export function Home({
 	} = useQuery({
 		queryKey: ["publicPelangganSessions", userId],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get(
 				`/pelanggan/daftar-sesi?user_id=${userId}`,
 				{
@@ -55,11 +56,13 @@ export function Home({
 			console.log("Fetched sessions:", response.data);
 			return response.data;
 		},
-		enabled: !!userId, // Hanya jalankan query jika userId ada
+		enabled: isAuthenticated, // Hanya jalankan query jika login
 		onError: (err) => {
 			console.error("Error fetching sessions:", err);
 		},
 	});
+	// Fetch daftar sesi pelanggan berdasarkan userId, hanya jika login
+	// ...existing code...
 
 	// Filter sesi yang sedang berlangsung (started) untuk pelanggan ini
 	const ongoingSessions = sessions.filter(
@@ -83,8 +86,7 @@ export function Home({
 			courseDescription: course.deskripsi || course.courseDescription || "",
 			courseImage:
 				course.fotoKursus ||
-				course.courseImage ||
-				"/storage/foto_kursus/default.jpg",
+				getImageUrl(course.courseImage, "/storage/foto_kursus/default.jpg"),
 			price_per_hour: course.mentor?.biayaPerSesi || course.price_per_hour || 0,
 			jadwal_kursus: Array.isArray(course.jadwal_kursus)
 				? course.jadwal_kursus
