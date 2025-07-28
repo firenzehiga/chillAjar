@@ -45,7 +45,7 @@ function getTier(jumlahSesi) {
 	};
 }
 
-export function ProfilePage({ userData, userRole, onNavigate }) {
+export function ProfilePage({ userData, onNavigate }) {
 	const currentUser = {
 		name: userData?.nama || "Unknown User",
 		email: userData?.email || "No email provided",
@@ -62,6 +62,8 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 		peran: userData?.peran || "unknown",
 	};
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: statistik,
 		isLoading,
@@ -69,12 +71,13 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 	} = useQuery({
 		queryKey: ["pelangganStatistik"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return null;
 			const res = await api.get("/pelanggan/profil-info", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return res.data;
 		},
+		enabled: isAuthenticated,
 	});
 
 	// Tentukan tier badge
@@ -115,8 +118,8 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 									) : (
 										<span
 											className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white
-                                            bg-gradient-to-r ${tier.color} shadow-md border-2 border-white
-                                            transition-transform cursor-pointer`}
+											bg-gradient-to-r ${tier.color} shadow-md border-2 border-white
+											transition-transform cursor-pointer`}
 											title={tier.desc}>
 											<span className="text-lg">{tier.icon}</span>
 											{tier.label}
@@ -176,7 +179,9 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 												{statistik?.jumlah_mentor ?? 0}
 											</div>
 										)}
-										<div className="text-sm text-gray-600">Mentor yang Dipesan</div>
+										<div className="text-sm text-gray-600">
+											Mentor yang Dipesan
+										</div>
 									</div>
 									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
 										<Building2Icon className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
