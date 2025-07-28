@@ -54,56 +54,34 @@ api.interceptors.response.use(
 				message.toLowerCase().includes("token") ||
 				message.toLowerCase().includes("expired") ||
 				message.toLowerCase().includes("unauthorized")
-			) {
-				// Auto logout
+			)
+				// Selalu logout & tampilkan Swal jika API balas 401/403 (token invalid/expired/missing)
 				localStorage.removeItem("token");
-				localStorage.removeItem("user");
-
-				// Import store function untuk logout
-				import("./stores/useAppStore").then((module) => {
-					module.default.getState().handleLogout();
-				});
-
-				// Tampilkan pesan
-				toast.error(
-					<div className="text-center">
-						<div className="font-semibold text-red-800 mb-2">
-							Sesi Anda telah berakhir
-						</div>
-						<div className="text-sm text-gray-700">
-							Silakan login kembali untuk melanjutkan.
-						</div>
-					</div>,
-					{
-						duration: 5000,
-						position: "top-center",
-						style: {
-							background: "#fef2f2",
-							border: "1px solid #ef4444",
-							padding: "16px",
-							borderRadius: "8px",
-							minWidth: "300px",
-						},
-					}
-				);
-
-				// STOP di sini, JANGAN setApiError!
-				return Promise.reject(error);
-			}
-
-			// Selalu logout & tampilkan Swal jika API balas 401/403 (token invalid/expired/missing)
-			localStorage.removeItem("token");
 			localStorage.removeItem("user");
 			import("./stores/useAppStore").then((module) => {
 				module.default.getState().handleLogout();
 			});
-			Swal.fire({
-				icon: "warning",
-				title: "Sesi Berakhir",
-				text: "Sesi Anda telah berakhir. Silakan login kembali.",
-				confirmButtonColor: "#3B82F6",
-				confirmButtonText: "OK",
-			});
+			toast.error(
+				<div className="text-center">
+					<div className="font-semibold text-red-800 mb-2">
+						Sesi Anda telah berakhir
+					</div>
+					<div className="text-sm text-gray-700">
+						Silakan login kembali untuk melanjutkan.
+					</div>
+				</div>,
+				{
+					duration: 2000,
+					position: "top-center",
+					style: {
+						background: "#fef2f2",
+						border: "1px solid #ef4444",
+						padding: "16px",
+						borderRadius: "8px",
+						minWidth: "300px",
+					},
+				}
+			);
 			return Promise.reject(error);
 		}
 
