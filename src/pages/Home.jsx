@@ -86,7 +86,7 @@ export function Home({
 			courseDescription: course.deskripsi || course.courseDescription || "",
 			courseImage:
 				course.fotoKursus ||
-				getImageUrl(course.courseImage, "/storage/foto_kursus/default.jpg"),
+				getImageUrl(course.courseImage, "/foto_kursus/default.jpg"),
 			price_per_hour: course.mentor?.biayaPerSesi || course.price_per_hour || 0,
 			jadwal_kursus: Array.isArray(course.jadwal_kursus)
 				? course.jadwal_kursus
