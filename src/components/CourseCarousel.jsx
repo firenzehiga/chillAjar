@@ -39,13 +39,13 @@ export function CourseCarousel({ courses, onCourseClick }) {
 									loading="lazy"
 									src={getImageUrl(
 										course.courseImage,
-										"/foto_kursus/kursus_dummy_1.jpg"
+										"/foto_kursus/default.jpg"
 									)}
 									alt={course.courseName}
 									className="w-full h-full object-cover"
 									onError={(e) => {
 										e.target.onerror = null;
-										e.target.src = "/foto_kursus/kursus_dummy_1.jpg";
+										e.target.src = "/foto_kursus/default.jpg";
 									}}
 								/>
 								<div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8">
