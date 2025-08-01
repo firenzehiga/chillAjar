@@ -30,15 +30,18 @@ export function MentorEditProfile({
 	const queryClient = useQueryClient();
 
 	// Ambil data profil mentor dari backend
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const { data: mentorProfile, isLoading: isLoadingProfile } = useQuery({
 		queryKey: ["mentorProfile"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return null;
 			const res = await api.get("/mentor/profil-saya", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return res.data;
 		},
+		enabled: isAuthenticated,
 	});
 	// Inisialisasi formData dari mentorProfile
 	useEffect(() => {

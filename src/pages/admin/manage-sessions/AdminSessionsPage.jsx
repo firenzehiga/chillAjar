@@ -16,7 +16,8 @@ export function AdminSessionsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
-	// Query 1: Fetch daftar sesi mentor
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: sessions = [],
 		isLoading: isLoadingSessions,
@@ -24,19 +25,18 @@ export function AdminSessionsPage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["adminSessions"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/sesi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			// console.log("Fetched sessions:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		onError: (err) => {
 			console.error("Error fetching sessions:", err);
 		},
 	});
 
-	// Query 2: Fetch transaksi
 	const {
 		data: transactions = [],
 		isLoading: isLoadingTransactions,
@@ -44,13 +44,13 @@ export function AdminSessionsPage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["adminTransactions"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/transaksi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			// console.log("Fetched transactions:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		onError: (err) => {
 			console.error("Error fetching transactions:", err);
 		},

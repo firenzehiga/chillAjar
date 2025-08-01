@@ -17,6 +17,9 @@ export function MentorSchedulePage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
+
 	// Query 1: Fetch daftar sesi mentor
 	const {
 		data: sessions = [],
@@ -25,13 +28,13 @@ export function MentorSchedulePage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["mentorSessions"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/mentor/daftar-sesi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			// console.log("Fetched sessions:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		onError: (err) => {
 			console.error("Error fetching sessions:", err);
 		},
@@ -45,13 +48,14 @@ export function MentorSchedulePage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["mentorTransactions"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/transaksi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			console.log("Fetched transactions:", response.data);
+			// console.log("Fetched transactions:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		onError: (err) => {
 			console.error("Error fetching transactions:", err);
 		},
@@ -241,7 +245,7 @@ export function MentorSchedulePage({ onNavigate }) {
 							onClick={() => handleStartSession(row.id)}>
 							{startSessionMutation.isPending ? ( // 👈 Cek loading state
 								<>
-									<Loader2 className="animate-spin w-4 h-4 inline mr-2" />{" "}
+									<Loader2 className="animate-spin w-4 h-4 inline mb-1" />{" "}
 									Memulai...
 								</>
 							) : (

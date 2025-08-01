@@ -16,7 +16,8 @@ export function AdminCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = React.useState("");
 	const queryClient = useQueryClient();
 
-	// Fetch data courses menggunakan useQuery
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: courses = [],
 		isLoading,
@@ -25,12 +26,13 @@ export function AdminCoursesPage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["adminCourses"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/kursus", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching courses:", err);

@@ -114,7 +114,7 @@ export function AuthModal({ defaultMode = "login" }) {
 				setMode("login"); // Kembali ke mode login setelah registrasi
 			}
 		} catch (error) {
-			console.error(`${mode} failed:`, error);
+			// console.error(`${mode} failed:`, error);
 			// Swal.fire({
 			// 	icon: "error",
 			// 	title: "Error",

@@ -10,6 +10,8 @@ export function MentorTestimoniesPage() {
 	const queryClient = useQueryClient();
 
 	// Fetch data transaksi yang mencakup detail sesi
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: testimonies = [],
 		isLoading,
@@ -17,16 +19,16 @@ export function MentorTestimoniesPage() {
 	} = useQuery({
 		queryKey: ["mentorTestimonies"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/mentor/daftar-testimoni", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			// Mapping agar jadwal_kursus selalu ada, baik dari jadwalKursus atau jadwal_kursus
 			return response.data.map((t) => ({
 				...t,
 				jadwal_kursus: t.jadwal_kursus || t.jadwalKursus || null,
 			}));
 		},
+		enabled: isAuthenticated,
 		onError: (err) => {
 			console.error("Error fetching testimonies:", err);
 		},

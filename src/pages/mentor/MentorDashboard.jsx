@@ -4,6 +4,8 @@ import api from "../../api";
 import { useQuery } from "@tanstack/react-query";
 
 export function MentorDashboard() {
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: courses = [],
 		isLoading: isLoadingCourses,
@@ -11,12 +13,13 @@ export function MentorDashboard() {
 	} = useQuery({
 		queryKey: ["mentorCountCourses"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/mentor/daftar-kursus", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return response.data;
 		},
+		enabled: isAuthenticated,
 	});
 
 	const {
@@ -26,12 +29,13 @@ export function MentorDashboard() {
 	} = useQuery({
 		queryKey: ["mentorCountProfile"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return null;
 			const response = await api.get("/mentor/profil-saya", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return response.data;
 		},
+		enabled: isAuthenticated,
 	});
 
 	const jumlahCourse = mentorProfile?.jumlah_kursus || 0;
@@ -55,12 +59,12 @@ export function MentorDashboard() {
 					<h3 className="text-gray-600 font-medium">Active Students</h3>
 				</div> */}
 				{/* <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                        <Clock className="h-8 w-8 text-yellow-600" />
-                        <span className="text-2xl font-bold text-gray-900">156</span>
-                    </div>
-                    <h3 className="text-gray-600 font-medium">Teaching Hours</h3>
-                </div> */}
+					<div className="flex items-center justify-between mb-4">
+						<Clock className="h-8 w-8 text-yellow-600" />
+						<span className="text-2xl font-bold text-gray-900">156</span>
+					</div>
+					<h3 className="text-gray-600 font-medium">Teaching Hours</h3>
+				</div> */}
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<Star className="h-8 w-8 text-yellow-600" />

@@ -30,9 +30,11 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 
 	// Fetch daftar mentor dan data kursus (jika mode edit)
 	useEffect(() => {
+		const token = localStorage.getItem("token");
+		const isAuthenticated = !!token;
 		const fetchMentors = async () => {
+			if (!isAuthenticated) return;
 			try {
-				const token = localStorage.getItem("token");
 				const response = await api.get("/admin/mentor", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
@@ -43,9 +45,9 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 		};
 
 		const fetchCourse = async () => {
+			if (!isAuthenticated) return;
 			try {
 				setLoading(true);
-				const token = localStorage.getItem("token");
 				const response = await api.get(`/kursus/${courseId}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});

@@ -6,15 +6,18 @@ import { useQuery } from "@tanstack/react-query";
 import { MentorProfileSkeleton } from "../../../components/Skeleton/Mentor/MentorProfileSkeleton";
 
 export function MentorProfilePage({ userData, userRole, onNavigate }) {
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const { data: mentorProfile, isLoading } = useQuery({
 		queryKey: ["mentorProfile"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return null;
 			const res = await api.get("/mentor/profil-saya", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return res.data;
 		},
+		enabled: isAuthenticated,
 	});
 
 	const currentUser = {

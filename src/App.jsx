@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import defaultPhoto from "../public/foto_kursus/default.jpg";
 import toast from "react-hot-toast";
 import { ListChecks } from "lucide-react";
 import { MentorCard } from "./components/MentorCard";

@@ -23,10 +23,12 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 
 	// Fetch data mentor
 	useEffect(() => {
+		const token = localStorage.getItem("token");
+		const isAuthenticated = !!token;
 		const fetchMentor = async () => {
+			if (!isAuthenticated) return;
 			try {
 				setLoading(true);
-				const token = localStorage.getItem("token");
 				const response = await api.get(`/admin/mentor/${mentorId}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});

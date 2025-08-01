@@ -17,7 +17,8 @@ export function AdminMentorsPage({ onNavigate }) {
 
 	const queryClient = useQueryClient();
 
-	// Fetch data transaksi yang mencakup detail sesi
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: mentors = [],
 		isLoading,
@@ -25,13 +26,13 @@ export function AdminMentorsPage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["adminMentors"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/admin/mentor", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			// console.log("Fetched mentors:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching Mentors:", err);
