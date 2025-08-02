@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, ArrowLeft, AlertCircle, Plus, X } from "lucide-react";
+import {
+	BookOpen,
+	ArrowLeft,
+	AlertCircle,
+	Plus,
+	X,
+	Package,
+} from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
@@ -13,6 +20,9 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 		mentorId: "", // Field baru untuk menyimpan ID mentor yang dipilih
 	});
 	const [mentors, setMentors] = useState([]); // Daftar mentor untuk dropdown
+	const [packages, setPackages] = useState([]); // Daftar semua paket
+	const [selectedPackages, setSelectedPackages] = useState([]); // Paket yang dipilih untuk kursus ini
+
 	const [schedules, setSchedules] = useState([
 		{
 			tanggal: "",
@@ -28,10 +38,11 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	// Fetch daftar mentor dan data kursus (jika mode edit)
+	// Fetch daftar mentor, paket, dan data kursus (jika mode edit)
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		const isAuthenticated = !!token;
+
 		const fetchMentors = async () => {
 			if (!isAuthenticated) return;
 			try {
@@ -44,10 +55,71 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 			}
 		};
 
-		const fetchCourse = async () => {
+		const fetchPackages = async () => {
 			if (!isAuthenticated) return;
 			try {
+				// Mock data untuk sekarang - nanti bisa diganti dengan API call
+				const mockPackages = [
+					{
+						id: 1,
+						name: "Paket NgeChill",
+						price: 25000,
+						totalPrice: 25000,
+						description: "Paket dasar untuk pembelajaran santai",
+						items: [
+							{ name: "1 Materi pembelajaran", price: 5000 },
+							{ name: "30 menit konsultasi", price: 7000 },
+							{ name: "Akses chat mentor 3 hari", price: 8000 },
+							{ name: "Review tugas", price: 5000 },
+						],
+					},
+					{
+						id: 2,
+						name: "Paket NgeTask & Chill",
+						price: 35000,
+						totalPrice: 35000,
+						description: "Paket lengkap dengan bantuan tugas",
+						items: [
+							{ name: "1 Materi pembelajaran", price: 5000 },
+							{ name: "30 menit konsultasi", price: 7000 },
+							{ name: "Akses chat mentor 3 hari", price: 8000 },
+							{ name: "Review tugas", price: 5000 },
+							{ name: "Bantuan mengerjakan tugas", price: 10000 },
+						],
+					},
+					{
+						id: 3,
+						name: "Paket Premium",
+						price: 50000,
+						totalPrice: 50000,
+						description: "Paket premium dengan fitur lengkap",
+						items: [
+							{ name: "1 Materi pembelajaran", price: 5000 },
+							{ name: "60 menit konsultasi", price: 12000 },
+							{ name: "Akses chat mentor 7 hari", price: 15000 },
+							{ name: "Review tugas", price: 5000 },
+							{ name: "Bantuan mengerjakan tugas", price: 10000 },
+							{ name: "Materi tambahan", price: 3000 },
+						],
+					},
+				];
+				setPackages(mockPackages);
+
+				// Set default: Paket NgeChill (25rb) aktif secara default
+				if (!isEditMode) {
+					setSelectedPackages([
+						{ package_id: 1, is_active: true }, // Paket NgeChill default aktif
+					]);
+				}
+			} catch (err) {
+				setError("Gagal mengambil daftar paket");
+			}
+		};
+
+		const fetchCourse = async () => {
+			try {
 				setLoading(true);
+				const token = localStorage.getItem("token");
 				const response = await api.get(`/kursus/${courseId}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
@@ -74,6 +146,24 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 					setInitialSchedules(initial);
 					setSchedules(initial);
 				}
+
+				// Mock data untuk paket yang sudah dipilih di kursus ini
+				if (response.data.packages) {
+					// Format: [{ package_id: 1, is_active: true }, { package_id: 2, is_active: false }]
+					setSelectedPackages(
+						response.data.packages.map((pkg) => ({
+							package_id: pkg.id,
+							is_active: pkg.pivot?.is_active || true,
+						}))
+					);
+				} else {
+					// Mock data - di production ambil dari API paket_visibility
+					setSelectedPackages([
+						{ package_id: 1, is_active: true }, // Paket NgeChill aktif
+						{ package_id: 2, is_active: true }, // Paket NgeTask & Chill aktif
+						{ package_id: 3, is_active: false }, // Paket Premium nonaktif
+					]);
+				}
 			} catch (err) {
 				setError("Gagal mengambil data kursus");
 			} finally {
@@ -81,8 +171,9 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 			}
 		};
 
-		// Selalu fetch daftar mentor
+		// Selalu fetch daftar mentor dan paket
 		fetchMentors();
+		fetchPackages();
 
 		// Fetch data kursus jika mode edit
 		if (isEditMode) {
@@ -121,6 +212,42 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 		setSchedules(newSchedules);
 	};
 
+	const handlePackageToggle = (packageId) => {
+		setSelectedPackages((prev) => {
+			const existingIndex = prev.findIndex((p) => p.package_id === packageId);
+
+			if (existingIndex >= 0) {
+				// Package exists, toggle is_active
+				const updated = prev.map((p) =>
+					p.package_id === packageId ? { ...p, is_active: !p.is_active } : p
+				);
+
+				// Validasi: minimal harus ada 1 paket yang aktif
+				const activeCount = updated.filter((p) => p.is_active).length;
+				if (activeCount === 0) {
+					Swal.fire({
+						title: "Tidak bisa nonaktifkan semua paket",
+						text: "Minimal harus ada 1 paket yang aktif untuk kursus ini",
+						icon: "warning",
+						confirmButtonText: "OK",
+					});
+					return prev; // Kembalikan state sebelumnya
+				}
+
+				return updated;
+			} else {
+				// Package tidak ada, tambahkan dengan is_active: true
+				return [...prev, { package_id: packageId, is_active: true }];
+			}
+		});
+	};
+
+	// Helper function to check if package is active
+	const isPackageActive = (packageId) => {
+		const found = selectedPackages.find((p) => p.package_id === packageId);
+		return found ? found.is_active : false;
+	};
+
 	const addSchedule = () => {
 		setSchedules([
 			...schedules,
@@ -152,6 +279,19 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 			payload.append("namaKursus", formData.namaKursus);
 			payload.append("deskripsi", formData.deskripsi);
 			payload.append("mentor_id", formData.mentorId); // Sertakan mentorId dalam payload
+
+			// Add selected packages with is_active status
+			selectedPackages.forEach((packageData, index) => {
+				payload.append(
+					`packages[${index}][package_id]`,
+					packageData.package_id
+				);
+				payload.append(
+					`packages[${index}][is_active]`,
+					packageData.is_active ? 1 : 0
+				);
+			});
+
 			if (fotoKursus) {
 				payload.append("fotoKursus", fotoKursus);
 			}
@@ -241,8 +381,8 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 					icon: "success",
 					title: "Success",
 					text: isEditMode
-						? "Berhasil memperbarui kursus!"
-						: "Kursus berhasil dibuat!",
+						? "Course updated successfully!"
+						: "Course created successfully!",
 					confirmButtonColor: "#3B82F6",
 				});
 				onNavigate("admin-manage-courses");
@@ -347,6 +487,125 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							</select>
 						</div>
 					</div>
+
+					{/* Package Selection */}
+					<div className="mb-6">
+						<label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+							<Package className="w-4 h-4 mr-2" />
+							Paket yang Tersedia untuk Kursus Ini
+						</label>
+						<p className="text-sm text-gray-600 mb-4">
+							Toggle paket yang ingin diaktifkan untuk kursus ini. Minimal harus
+							ada 1 paket yang aktif.
+						</p>
+
+						{packages.length === 0 ? (
+							<div className="text-gray-500 text-sm">
+								Belum ada paket tersedia
+							</div>
+						) : (
+							<div className="space-y-3">
+								{packages.map((pkg) => {
+									const isActive = isPackageActive(pkg.id);
+
+									return (
+										<div
+											key={pkg.id}
+											className={`border rounded-lg p-4 transition-colors ${
+												isActive
+													? "border-yellow-300 bg-yellow-50"
+													: "border-gray-200 bg-gray-50"
+											}`}>
+											<div className="flex items-start justify-between">
+												<div className="flex-1">
+													<div className="flex items-center gap-3 mb-2">
+														<h4 className="font-medium text-gray-900">
+															{pkg.name}
+														</h4>
+														<span className="text-lg font-bold text-yellow-600">
+															Rp {pkg.totalPrice.toLocaleString()}
+														</span>
+													</div>
+													<p className="text-sm text-gray-600 mb-3">
+														{pkg.description}
+													</p>
+
+													{/* Items preview */}
+													<div>
+														<div className="text-xs text-gray-500 mb-1">
+															Items termasuk:
+														</div>
+														<div className="flex flex-wrap gap-1">
+															{pkg.items.map((item, idx) => (
+																<span
+																	key={idx}
+																	className="inline-block bg-white text-gray-700 px-2 py-1 rounded text-xs border">
+																	{item.name}
+																</span>
+															))}
+														</div>
+													</div>
+												</div>
+
+												{/* Toggle Switch */}
+												<div className="flex flex-col items-end">
+													<button
+														type="button"
+														onClick={() => handlePackageToggle(pkg.id)}
+														className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 ${
+															isActive ? "bg-yellow-600" : "bg-gray-300"
+														}`}>
+														<span
+															className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+																isActive ? "translate-x-6" : "translate-x-1"
+															}`}
+														/>
+													</button>
+													<div className="mt-1 text-center">
+														<span
+															className={`text-xs font-medium ${
+																isActive ? "text-yellow-700" : "text-gray-500"
+															}`}>
+															{isActive ? "Aktif" : "Nonaktif"}
+														</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						)}
+
+						{/* Summary */}
+						{selectedPackages.length > 0 && (
+							<div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+								<div className="text-sm font-medium text-blue-800 mb-2">
+									Paket Aktif:{" "}
+									{selectedPackages.filter((p) => p.is_active).length} dari{" "}
+									{packages.length} paket
+								</div>
+								<div className="space-y-1">
+									{selectedPackages
+										.filter((sp) => sp.is_active)
+										.map((sp) => {
+											const pkg = packages.find((p) => p.id === sp.package_id);
+											return pkg ? (
+												<div
+													key={sp.package_id}
+													className="flex justify-between items-center text-sm">
+													<span className="text-blue-700">{pkg.name}</span>
+													<span className="text-blue-600 font-medium">
+														Rp {pkg.totalPrice.toLocaleString()}
+													</span>
+												</div>
+											) : null;
+										})}
+								</div>
+							</div>
+						)}
+					</div>
+
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 						<div>
 							<label
@@ -413,23 +672,22 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 								)}
 							</div>
 						</div>
-					</div>
-
-					<div className="mb-4">
-						<label
-							htmlFor="deskripsi"
-							className="block text-sm font-medium text-gray-700 mb-1">
-							Description
-						</label>
-						<textarea
-							id="deskripsi"
-							name="deskripsi"
-							value={formData.deskripsi}
-							onChange={handleChange}
-							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
-							placeholder="Enter course description"
-							rows="4"
-						/>
+						<div className="mb-4">
+							<label
+								htmlFor="deskripsi"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Description
+							</label>
+							<textarea
+								id="deskripsi"
+								name="deskripsi"
+								value={formData.deskripsi}
+								onChange={handleChange}
+								className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+								placeholder="Enter course description"
+								rows="4"
+							/>
+						</div>
 					</div>
 
 					<div className="mb-4">
@@ -540,7 +798,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							type="button"
 							onClick={addSchedule}
 							className="mt-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none">
-							<Plus className="w-5 h-5 inline mr-2" /> Tambah Jadwal
+							<Plus className="w-5 h-5 inline mr-2" /> Add Schedule
 						</button>
 					</div>
 
@@ -563,8 +821,8 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							{loading
 								? "Processing..."
 								: isEditMode
-								? "Perbarui Kursus"
-								: "Tambah Kursus"}
+								? "Update Course"
+								: "Create Course"}
 						</button>
 					</div>
 				</form>

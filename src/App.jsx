@@ -41,6 +41,10 @@ import { AdminSessionsPage } from "./pages/admin/manage-sessions/AdminSessionsPa
 import { AdminFormSessionsPage } from "./pages/admin/manage-sessions/FormSessionsPage";
 import { AdminTestimoniesPage } from "./pages/admin/manage-testimonials/AdminTestimoniesPage";
 import { AdminFormTestimoniesPage } from "./pages/admin/manage-testimonials/FormTestimoniesPage";
+import { AdminItemsPage } from "./pages/admin/manage-items/AdminItemsPage";
+import { AdminFormItemPage } from "./pages/admin/manage-items/FormItemPage";
+import { AdminPackagesPage } from "./pages/admin/manage-packages/AdminPackagesPage";
+import { AdminFormPackagePage } from "./pages/admin/manage-packages/FormPackagePage";
 // Halaman Mentor
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/sessions/MentorSchedulePage";
@@ -73,6 +77,12 @@ const adminPages = [
 	"admin-manage-mentors",
 	"admin-add-mentor",
 	"admin-edit-mentor",
+	"admin-manage-items",
+	"admin-add-item",
+	"admin-edit-item",
+	"admin-manage-packages",
+	"admin-add-package",
+	"admin-edit-package",
 	"admin-profile",
 	"admin-edit-profile",
 	"admin-testimonial",
@@ -255,7 +265,7 @@ function App() {
 		queryFn: async () => {
 			if (!selectedCourse?.id) return [];
 			// Hanya fetch jadwal jika user login
-			if (!isAuthenticated) return []; // Jika tidak login, tidak perlu fetch jadwal 
+			if (!isAuthenticated) return []; // Jika tidak login, tidak perlu fetch jadwal
 			const response = await api.get(
 				`/jadwal-kursus?kursus_id=${selectedCourse.id}`
 			);
@@ -783,6 +793,18 @@ function App() {
 						return <AdminFormMentorsPage onNavigate={handleNavigate} />;
 					case "admin-edit-mentor":
 						return <AdminFormMentorsPage onNavigate={handleNavigate} />;
+					case "admin-manage-items":
+						return <AdminItemsPage onNavigate={handleNavigate} />;
+					case "admin-add-item":
+						return <AdminFormItemPage onNavigate={handleNavigate} />;
+					case "admin-edit-item":
+						return <AdminFormItemPage onNavigate={handleNavigate} />;
+					case "admin-manage-packages":
+						return <AdminPackagesPage onNavigate={handleNavigate} />;
+					case "admin-add-package":
+						return <AdminFormPackagePage onNavigate={handleNavigate} />;
+					case "admin-edit-package":
+						return <AdminFormPackagePage onNavigate={handleNavigate} />;
 					default:
 						break;
 				}

@@ -18,6 +18,9 @@ export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
+
 	// Pastikan testimonieId ada, jika tidak redirect ke admin-testimonials
 	useEffect(() => {
 		if (!testimonieId) {
@@ -34,9 +37,9 @@ export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 	// Fetch data testimoni
 	useEffect(() => {
 		const fetchTestimonie = async () => {
+			if (!isAuthenticated) return;
 			try {
 				setLoading(true);
-				const token = localStorage.getItem("token");
 				const response = await api.get(`/testimoni/${testimonieId}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
@@ -73,7 +76,6 @@ export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 		setError(null);
 
 		try {
-			const token = localStorage.getItem("token");
 			const payload = { ...formData };
 
 			const response = await api.put(`/testimoni/${testimonieId}`, payload, {

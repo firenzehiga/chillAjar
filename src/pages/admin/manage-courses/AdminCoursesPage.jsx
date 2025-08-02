@@ -346,6 +346,27 @@ export function AdminCoursesPage({ onNavigate }) {
 											);
 										})}
 									</span>
+									<p className="flex">
+										<span className="w-20 font-medium text-gray-900 mb-2">
+											Paket Aktif:
+										</span>
+									</p>
+									<div>
+										{(data.packages && data.packages.length > 0
+											? data.packages
+											: [
+													{ id: 1, name: "NgeChill", price: 25000 },
+													{ id: 2, name: "NgeTask & Chill", price: 35000 },
+											  ]
+										).map((pkg) => (
+											<span
+												key={pkg.id}
+												className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2"
+												title={`Rp ${pkg.price.toLocaleString()}`}>
+												{pkg.name}
+											</span>
+										))}
+									</div>
 								</div>
 							)}
 							// Tambahkan penanganan jika data kosong

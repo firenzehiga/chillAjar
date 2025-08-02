@@ -43,8 +43,6 @@ export function AdminMentorsPage({ onNavigate }) {
 	const deleteMentorMutation = useMutation({
 		// Function untuk menghapus mentor berdasarkan ID
 		mutationFn: async (id) => {
-			const token = localStorage.getItem("token"); // Ambil token dari local storage
-
 			// Lakukan request DELETE ke endpoint kursus dengan menyertakan token di header
 			return api.delete(`/admin/mentor/${id}`, {
 				headers: { Authorization: `Bearer ${token}` },

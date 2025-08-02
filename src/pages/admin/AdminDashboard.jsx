@@ -23,6 +23,10 @@ export function AdminDashboard() {
 	// Query function akan dijalankan jika belum ada data di cache
 	// Jika ada error, maka akan mengembalikan error
 	// Jika berhasil, maka akan mengembalikan data dalam bentuk jumlah pengguna
+
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
+
 	const {
 		data: totalData, // data yang diambil dari API
 		isLoading: dataLoading, // status loading (true/false)
@@ -30,6 +34,7 @@ export function AdminDashboard() {
 	} = useQuery({
 		queryKey: ["adminSummaryData"], // query key untuk cache
 		queryFn: async () => {
+			if (!isAuthenticated) return {}; // Jika tidak terautentikasi, kembalikan objek kosong
 			// query function untuk mengambil data dari API
 			const response = await api.get("/admin/dashboard-info", {
 				// jalankan request GET ke API
@@ -39,6 +44,8 @@ export function AdminDashboard() {
 			});
 			return response.data; // kembalikan data
 		},
+		enabled: isAuthenticated, // hanya jalankan query jika terautentikasi
+		retry: 1, // hanya coba ulang sekali jika gagal
 	});
 
 	// Handler untuk API pentest: hapus sesi expired
@@ -78,7 +85,10 @@ export function AdminDashboard() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
-				<p className="text-gray-600">Ringkasan data platform Anda, termasuk jumlah pengguna, kursus, dan data lainnya.</p>
+				<p className="text-gray-600">
+					Ringkasan data platform Anda, termasuk jumlah pengguna, kursus, dan
+					data lainnya.
+				</p>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
