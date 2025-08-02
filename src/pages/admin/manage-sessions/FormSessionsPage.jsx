@@ -26,11 +26,13 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	// Fetch data sesi dan data relasi
 	useEffect(() => {
 		const fetchMentors = async () => {
+			if (!isAuthenticated) return;
 			try {
-				const token = localStorage.getItem("token");
 				const response = await api.get("/admin/mentor", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
@@ -41,8 +43,8 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 		};
 
 		const fetchPelanggans = async () => {
+			if (!isAuthenticated) return;
 			try {
-				const token = localStorage.getItem("token");
 				const response = await api.get("/admin/pelanggan", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
@@ -53,8 +55,8 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 		};
 
 		const fetchKursus = async () => {
+			if (!isAuthenticated) return;
 			try {
-				const token = localStorage.getItem("token");
 				const response = await api.get("/kursus", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
@@ -65,8 +67,8 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 		};
 
 		const fetchJadwalKursus = async () => {
+			if (!isAuthenticated) return;
 			try {
-				const token = localStorage.getItem("token");
 				const response = await api.get("/jadwal-kursus", {
 					headers: { Authorization: `Bearer ${token}` },
 				});
@@ -77,9 +79,9 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 		};
 
 		const fetchSession = async () => {
+			if (!isAuthenticated) return;
 			try {
 				setLoading(true);
-				const token = localStorage.getItem("token");
 				const response = await api.get(`/sesi/${sessionId}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
@@ -117,7 +119,6 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 		setError(null);
 
 		try {
-			const token = localStorage.getItem("token");
 			const payload = {
 				mentor_id: formData.mentorId,
 				pelanggan_id: formData.pelangganId,

@@ -13,13 +13,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
 
-
 export function AdminMentorsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const queryClient = useQueryClient();
 
 	// Fetch data transaksi yang mencakup detail sesi
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: mentors = [],
 		isLoading,
@@ -27,13 +28,13 @@ export function AdminMentorsPage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["adminMentors"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/admin/mentor", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			// console.log("Fetched mentors:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching Mentors:", err);
@@ -44,8 +45,6 @@ export function AdminMentorsPage({ onNavigate }) {
 	const deleteMentorMutation = useMutation({
 		// Function untuk menghapus mentor berdasarkan ID
 		mutationFn: async (id) => {
-			const token = localStorage.getItem("token"); // Ambil token dari local storage
-
 			// Lakukan request DELETE ke endpoint kursus dengan menyertakan token di header
 			return api.delete(`/admin/mentor/${id}`, {
 				headers: { Authorization: `Bearer ${token}` },

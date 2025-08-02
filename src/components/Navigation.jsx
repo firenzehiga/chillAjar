@@ -8,6 +8,7 @@ import {
 	Home,
 	X,
 	ChevronRight,
+	ChevronDown,
 	Info,
 	LogIn,
 	Clock,
@@ -19,24 +20,34 @@ import {
 	Building,
 	Users2,
 	DollarSign,
+	Package,
+	Gift,
+	Settings,
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 import useAppStore from "../stores/useAppStore";
 
-export function Navigation({
-	onNavigate,
-	onLogout,
-}) {
+export function Navigation({ onNavigate, onLogout }) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-	
+	const [isManagementDropdownOpen, setIsManagementDropdownOpen] =
+		useState(false);
 	// Get state from Zustand store
-	const {
-		currentPage,
-		isAuthenticated,
-		userRole,
-		userData,
-		setShowAuthModal
-	} = useAppStore();
+	const { currentPage, isAuthenticated, userRole, userData, setShowAuthModal } =
+		useAppStore();
+
+	// Close dropdown when clicking outside
+	React.useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (isManagementDropdownOpen && !event.target.closest(".relative")) {
+				setIsManagementDropdownOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [isManagementDropdownOpen]);
 
 	const getPageTitle = (page) => {
 		switch (page) {
@@ -77,6 +88,18 @@ export function Navigation({
 				return "Edit Course";
 			case "admin-manage-mentors":
 				return "Mentors";
+			case "admin-manage-items":
+				return "Items";
+			case "admin-add-item":
+				return "Tambah Item";
+			case "admin-edit-item":
+				return "Edit Item";
+			case "admin-manage-packages":
+				return "Paket";
+			case "admin-add-package":
+				return "Tambah Paket";
+			case "admin-edit-package":
+				return "Edit Paket";
 			case "admin-testimonial":
 				return "Mentor Testimonials";
 			case "admin-edit-testimonial":
@@ -160,16 +183,6 @@ export function Navigation({
 						Sessions
 					</a>
 					<a
-						onClick={() => onNavigate("admin-manage-courses")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-							currentPage === "admin-manage-courses"
-								? "bg-yellow-500 text-gray-900"
-								: "text-gray-900 hover:bg-yellow-500"
-						}`}>
-						<BookOpen className="w-4 h-4 inline-block mr-1" />
-						Courses
-					</a>
-					<a
 						onClick={() => onNavigate("admin-manage-mentors")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
 							currentPage === "admin-manage-mentors"
@@ -179,6 +192,74 @@ export function Navigation({
 						<LucideUserSquare2 className="w-4 h-4 inline-block mr-1" />
 						Mentors
 					</a>
+
+					{/* Management Dropdown */}
+					<div className="relative">
+						<button
+							onClick={() =>
+								setIsManagementDropdownOpen(!isManagementDropdownOpen)
+							}
+							className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer flex items-center ${
+								currentPage === "admin-manage-items" ||
+								currentPage === "admin-manage-packages" ||
+								currentPage === "admin-manage-courses"
+									? "bg-yellow-500 text-gray-900"
+									: "text-gray-900 hover:bg-yellow-500"
+							}`}>
+							<Settings className="w-4 h-4 inline-block mr-1" />
+							Management
+							{isManagementDropdownOpen ? (
+								<ChevronDown className="w-4 h-4 ml-1" />
+							) : (
+								<ChevronRight className="w-4 h-4 ml-1" />
+							)}
+						</button>
+
+						{isManagementDropdownOpen && (
+							<div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px]">
+								<a
+									onClick={() => {
+										onNavigate("admin-manage-courses");
+										setIsManagementDropdownOpen(false);
+									}}
+									className={`block px-4 py-2 text-sm hover:bg-yellow-50 cursor-pointer first:rounded-t-lg ${
+										currentPage === "admin-manage-courses"
+											? "bg-yellow-100 text-yellow-800"
+											: "text-gray-700"
+									}`}>
+									<BookOpen className="w-4 h-4 inline-block mr-2" />
+									Kursus
+								</a>
+								<a
+									onClick={() => {
+										onNavigate("admin-manage-items");
+										setIsManagementDropdownOpen(false);
+									}}
+									className={`block px-4 py-2 text-sm hover:bg-yellow-50 cursor-pointer ${
+										currentPage === "admin-manage-items"
+											? "bg-yellow-100 text-yellow-800"
+											: "text-gray-700"
+									}`}>
+									<Package className="w-4 h-4 inline-block mr-2" />
+									Items
+								</a>
+								<a
+									onClick={() => {
+										onNavigate("admin-manage-packages");
+										setIsManagementDropdownOpen(false);
+									}}
+									className={`block px-4 py-2 text-sm hover:bg-yellow-50 cursor-pointer last:rounded-b-lg ${
+										currentPage === "admin-manage-packages"
+											? "bg-yellow-100 text-yellow-800"
+											: "text-gray-700"
+									}`}>
+									<Gift className="w-4 h-4 inline-block mr-2" />
+									Paket
+								</a>
+							</div>
+						)}
+					</div>
+
 					<a
 						onClick={() => onNavigate("admin-testimonial")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
@@ -245,49 +326,45 @@ export function Navigation({
 				<button
 					onClick={() => onNavigate("home")}
 					className={`focus:outline-none outline-none group relative px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition-all duration-200
-      		${
-						currentPage === "home"
-							? "bg-yellow-500 text-gray-900 shadow"
-							: "bg-transparent text-gray-900 hover:bg-yellow-500"
-					}`}>
+      					${
+									currentPage === "home"
+										? "bg-yellow-500 text-gray-900 shadow"
+										: "bg-transparent text-gray-900 hover:bg-yellow-500"
+								}`}>
 					<Home
 						className={`w-5 h-5 mr-2 transition-transform duration-200 text-gray-900
-        ${currentPage !== "home" ? "group-hover:scale-110" : ""}
-      `}
+      	  ${currentPage !== "home" ? "group-hover:scale-110" : ""}`}
 					/>
-					Home
+					Beranda
 				</button>
 				<button
 					onClick={() => onNavigate("courses")}
 					className={`focus:outline-none outline-none group relative px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition-all duration-200
-      ${
-				currentPage === "courses"
-					? "bg-yellow-500 text-gray-900 shadow"
-					: "bg-transparent text-gray-900 hover:bg-yellow-500"
-			}
-    `}>
+      			${
+							currentPage === "courses"
+								? "bg-yellow-500 text-gray-900 shadow"
+								: "bg-transparent text-gray-900 hover:bg-yellow-500"
+						}`}>
 					<BookOpen
 						className={`w-5 h-5 mr-2 transition-transform duration-200 text-gray-900
-        ${currentPage !== "courses" ? "group-hover:scale-110" : ""}
-      `}
+        	${currentPage !== "courses" ? "group-hover:scale-110" : ""}`}
 					/>
-					Courses
+					Kursus
 				</button>
 				<button
 					onClick={() => onNavigate("mentors")}
 					className={`focus:outline-none outline-none group relative px-3 py-2 rounded-xl text-sm font-semibold flex items-center transition-all duration-200
-      ${
-				currentPage === "mentors"
-					? "bg-yellow-500 text-gray-900 shadow"
-					: "bg-transparent text-gray-900 hover:bg-yellow-500"
-			}
-    `}>
+     		${
+					currentPage === "mentors"
+						? "bg-yellow-500 text-gray-900 shadow"
+						: "bg-transparent text-gray-900 hover:bg-yellow-500"
+				}`}>
 					<Users
 						className={`w-5 h-5 mr-2 transition-transform duration-200 text-gray-900
         ${currentPage !== "mentors" ? "group-hover:scale-110" : ""}
       `}
 					/>
-					Mentors
+					Mentor
 				</button>
 				<button
 					onClick={() => onNavigate("about")}
@@ -303,7 +380,7 @@ export function Navigation({
         ${currentPage !== "about" ? "group-hover:scale-110" : ""}
       `}
 					/>
-					About Us
+					Tentang Kita
 				</button>
 			</>
 		);
@@ -360,17 +437,6 @@ export function Navigation({
 					<button
 						type="button"
 						onClick={() => {
-							onNavigate("admin-manage-courses");
-							setIsMobileMenuOpen(false);
-						}}
-						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
-						<BookOpen className="w-5 h-5 mr-3" />
-						Courses
-						<ChevronRight className="w-5 h-5 ml-auto" />
-					</button>
-					<button
-						type="button"
-						onClick={() => {
 							onNavigate("admin-manage-mentors");
 							setIsMobileMenuOpen(false);
 						}}
@@ -379,6 +445,41 @@ export function Navigation({
 						Mentors
 						<ChevronRight className="w-5 h-5 ml-auto" />
 					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("admin-manage-courses");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<BookOpen className="w-5 h-5 mr-3" />
+						Courses
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("admin-manage-items");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<Package className="w-5 h-5 mr-3" />
+						Items
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+					<button
+						type="button"
+						onClick={() => {
+							onNavigate("admin-manage-packages");
+							setIsMobileMenuOpen(false);
+						}}
+						className="w-full flex items-center px-3 py-2 text-base font-medium text-gray-900 hover:bg-yellow-500 rounded-md">
+						<Gift className="w-5 h-5 mr-3" />
+						Paket
+						<ChevronRight className="w-5 h-5 ml-auto" />
+					</button>
+
 					<button
 						type="button"
 						onClick={() => {

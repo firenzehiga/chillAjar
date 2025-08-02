@@ -17,6 +17,9 @@ export function MentorSchedulePage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
+
 	// Query 1: Fetch daftar sesi mentor
 	const {
 		data: sessions = [],
@@ -25,13 +28,14 @@ export function MentorSchedulePage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["mentorSessions"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/mentor/daftar-sesi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			// console.log("Fetched sessions:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		onError: (err) => {
 			console.error("Error fetching sessions:", err);
 		},
@@ -45,13 +49,14 @@ export function MentorSchedulePage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["mentorTransactions"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/transaksi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			console.log("Fetched transactions:", response.data);
+			// console.log("Fetched transactions:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		onError: (err) => {
 			console.error("Error fetching transactions:", err);
 		},
@@ -60,7 +65,6 @@ export function MentorSchedulePage({ onNavigate }) {
 	// Mutasi untuk memulai sesi
 	const startSessionMutation = useMutation({
 		mutationFn: async (sessionId) => {
-			const token = localStorage.getItem("token");
 			await api.post(
 				`/mentor/mulai-sesi/${sessionId}`,
 				{},
@@ -102,7 +106,6 @@ export function MentorSchedulePage({ onNavigate }) {
 	// Mutasi untuk mengakhiri sesi
 	const endSessionMutation = useMutation({
 		mutationFn: async (sessionId) => {
-			const token = localStorage.getItem("token");
 			await api.post(
 				`/mentor/selesai-sesi/${sessionId}`,
 				{},

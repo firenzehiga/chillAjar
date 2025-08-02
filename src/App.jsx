@@ -8,6 +8,7 @@ import { PaymentModal } from "./components/PaymentModal";
 import { Navigation } from "./components/Navigation";
 import { Footer } from "./components/Footer";
 import { CourseSkeletonCard } from "./components/Skeleton/CourseSkeletonCard";
+import { CarouselSkeleton } from "./components/Skeleton/CarouselSkeleton";
 import { NotFoundPage } from "./components/Error/NotFound";
 
 import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
@@ -41,6 +42,10 @@ import { AdminSessionsPage } from "./pages/admin/manage-sessions/AdminSessionsPa
 import { AdminFormSessionsPage } from "./pages/admin/manage-sessions/FormSessionsPage";
 import { AdminTestimoniesPage } from "./pages/admin/manage-testimonials/AdminTestimoniesPage";
 import { AdminFormTestimoniesPage } from "./pages/admin/manage-testimonials/FormTestimoniesPage";
+import { AdminItemsPage } from "./pages/admin/manage-items/AdminItemsPage";
+import { AdminFormItemPage } from "./pages/admin/manage-items/FormItemPage";
+import { AdminPackagesPage } from "./pages/admin/manage-packages/AdminPackagesPage";
+import { AdminFormPackagePage } from "./pages/admin/manage-packages/FormPackagePage";
 // Halaman Mentor
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/sessions/MentorSchedulePage";
@@ -74,6 +79,12 @@ const adminPages = [
 	"admin-manage-mentors",
 	"admin-add-mentor",
 	"admin-edit-mentor",
+	"admin-manage-items",
+	"admin-add-item",
+	"admin-edit-item",
+	"admin-manage-packages",
+	"admin-add-package",
+	"admin-edit-package",
 	"admin-profile",
 	"admin-edit-profile",
 	"admin-testimonial",
@@ -652,8 +663,9 @@ function App() {
 		if (showSkeleton) {
 			return (
 				<div className="py-8">
+					{currentPage === "home" && <CarouselSkeleton />}
 					<h2 className="text-2xl font-bold text-gray-900 mb-6">
-						Available Courses
+						{currentPage === "home" ? "Semua Kursus" : "Kursus Yang Tersedia"}
 					</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 						{Array.from({ length: 6 }).map((_, idx) => (
@@ -663,7 +675,6 @@ function App() {
 				</div>
 			);
 		}
-
 		// Menampilkan pesan error jika terjadi kesalahan saat mengambil data
 		if (error) {
 			let msg = error.message;
@@ -787,6 +798,18 @@ function App() {
 						return <AdminFormMentorsPage onNavigate={handleNavigate} />;
 					case "admin-edit-mentor":
 						return <AdminFormMentorsPage onNavigate={handleNavigate} />;
+					case "admin-manage-items":
+						return <AdminItemsPage onNavigate={handleNavigate} />;
+					case "admin-add-item":
+						return <AdminFormItemPage onNavigate={handleNavigate} />;
+					case "admin-edit-item":
+						return <AdminFormItemPage onNavigate={handleNavigate} />;
+					case "admin-manage-packages":
+						return <AdminPackagesPage onNavigate={handleNavigate} />;
+					case "admin-add-package":
+						return <AdminFormPackagePage onNavigate={handleNavigate} />;
+					case "admin-edit-package":
+						return <AdminFormPackagePage onNavigate={handleNavigate} />;
 					default:
 						break;
 				}

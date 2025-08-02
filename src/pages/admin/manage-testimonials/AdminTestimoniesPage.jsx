@@ -11,6 +11,8 @@ export function AdminTestimoniesPage({ onNavigate }) {
 
 	const queryClient = useQueryClient();
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	// Fetch data transaksi yang mencakup detail sesi
 	const {
 		data: testimonies = [],
@@ -19,7 +21,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["adminTestimonies"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/testimoni", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
@@ -35,6 +37,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 					: t.sesi,
 			}));
 		},
+		enabled: isAuthenticated,
 		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching testimonies:", err);
@@ -43,7 +46,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 
 	const deleteTestimonyMutation = useMutation({
 		mutationFn: async (id) => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) throw new Error("Not authenticated");
 			return api.delete(`/testimoni/${id}`, {
 				headers: { Authorization: `Bearer ${token}` },
 			});

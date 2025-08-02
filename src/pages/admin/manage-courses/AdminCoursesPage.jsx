@@ -16,7 +16,8 @@ export function AdminCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = React.useState("");
 	const queryClient = useQueryClient();
 
-	// Fetch data courses menggunakan useQuery
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: courses = [],
 		isLoading,
@@ -25,12 +26,13 @@ export function AdminCoursesPage({ onNavigate }) {
 	} = useQuery({
 		queryKey: ["adminCourses"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/kursus", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching courses:", err);
@@ -54,25 +56,25 @@ export function AdminCoursesPage({ onNavigate }) {
 			queryClient.setQueryData(["adminCourses"], (oldData) =>
 				oldData.filter((course) => course.id !== id)
 			);
-			Swal.fire("Deleted!", "Course has been deleted.", "success"); // Tampilkan pesan sukses
+			Swal.fire("Dihapus!", "Kursus berhasil dihapus.", "success"); // Tampilkan pesan sukses
 		},
 
 		// Kode ini akan dijalankan jika proses delete gagal
 		onError: () => {
-			Swal.fire("Error!", "Failed to delete course.", "error"); // Tampilkan pesan error
+			Swal.fire("Error!", "Gagal menghapus kursus.", "error"); // Tampilkan pesan error
 		},
 	});
 
 	// Fungsi untuk menangani penghapusan kursus
 	const handleDelete = (id) => {
 		Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
+			title: "Apa Anda yakin?",
+			text: "Kamu tidak akan bisa mengembalikan ini!",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
+			confirmButtonText: "Ya, hapus!",
 		}).then((result) => {
 			if (result.isConfirmed) {
 				deleteCourseMutation.mutate(id); // Panggil fungsi deleteMutation dengan ID kursus
@@ -255,19 +257,19 @@ export function AdminCoursesPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					Manage All Courses
+					Semua Kursus
 				</h1>
 				<p className="text-gray-600">Manage all courses as an admin</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Courses</h2>
+					<h2 className="text-xl font-semibold">Kursus</h2>
 					<button
 						onClick={() => onNavigate("admin-add-course")}
 						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 outline-none focus:outline-none">
 						<LucideBookPlus className="w-4 h-4 mr-2" />
-						Add Course
+						Tambah Kursus
 					</button>
 				</div>
 
@@ -344,6 +346,27 @@ export function AdminCoursesPage({ onNavigate }) {
 											);
 										})}
 									</span>
+									<p className="flex">
+										<span className="w-20 font-medium text-gray-900 mb-2">
+											Paket Aktif:
+										</span>
+									</p>
+									<div>
+										{(data.packages && data.packages.length > 0
+											? data.packages
+											: [
+													{ id: 1, name: "NgeChill", price: 25000 },
+													{ id: 2, name: "NgeTask & Chill", price: 35000 },
+											  ]
+										).map((pkg) => (
+											<span
+												key={pkg.id}
+												className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2"
+												title={`Rp ${pkg.price.toLocaleString()}`}>
+												{pkg.name}
+											</span>
+										))}
+									</div>
 								</div>
 							)}
 							// Tambahkan penanganan jika data kosong

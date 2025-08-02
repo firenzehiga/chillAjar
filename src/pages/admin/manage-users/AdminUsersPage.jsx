@@ -9,6 +9,8 @@ export function AdminUsersPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [showAddModal, setShowAddModal] = useState(false);
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	// Fetch users dengan useQuery
 	const {
 		data: users = [],
@@ -19,11 +21,13 @@ export function AdminUsersPage() {
 	} = useQuery({
 		queryKey: ["adminUsers"],
 		queryFn: async () => {
+			if (!isAuthenticated) return [];
 			const res = await api.get("/admin/users", {
 				headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
 			});
 			return res.data;
 		},
+		enabled: isAuthenticated,
 		retry: 1,
 	});
 

@@ -23,6 +23,8 @@ export function AdminDashboard() {
 	// Query function akan dijalankan jika belum ada data di cache
 	// Jika ada error, maka akan mengembalikan error
 	// Jika berhasil, maka akan mengembalikan data dalam bentuk jumlah pengguna
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	const {
 		data: totalData, // data yang diambil dari API
 		isLoading: dataLoading, // status loading (true/false)
@@ -30,6 +32,7 @@ export function AdminDashboard() {
 	} = useQuery({
 		queryKey: ["adminSummaryData"], // query key untuk cache
 		queryFn: async () => {
+			if (!isAuthenticated) return {}; // Jika tidak terautentikasi, kembalikan objek kosong
 			// query function untuk mengambil data dari API
 			const response = await api.get("/admin/dashboard-info", {
 				// jalankan request GET ke API
@@ -39,6 +42,8 @@ export function AdminDashboard() {
 			});
 			return response.data; // kembalikan data
 		},
+		enabled: isAuthenticated, // hanya jalankan query jika terautentikasi
+		retry: 1, // hanya coba ulang sekali jika gagal
 	});
 
 	// Handler untuk API pentest: hapus sesi expired

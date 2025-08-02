@@ -11,6 +11,8 @@ export function AdminPaymentsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 	// Fetch data pembayaran menggunakan useQuery
 	const {
 		data: payments = [],
@@ -19,12 +21,13 @@ export function AdminPaymentsPage() {
 	} = useQuery({
 		queryKey: ["adminPayments"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/transaksi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			return response.data;
 		},
+		enabled: isAuthenticated,
 		onError: () => {
 			setError("Gagal mengambil data pembayaran");
 		},
