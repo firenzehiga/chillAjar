@@ -26,13 +26,23 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 				headers: token ? { Authorization: `Bearer ${token}` } : {},
 			});
 
-			// Filter paket yang aktif (tidak expired)
+			// Filter paket yang aktif dan sudah dimulai
 			const activePackages = response.data.filter((pkg) => {
-				if (!pkg.tanggal_berakhir) return true; // Paket tanpa batas waktu
-
-				const endDate = new Date(pkg.tanggal_berakhir);
 				const now = new Date();
-				return endDate >= now; // Paket yang belum expired
+
+				// Cek tanggal mulai - paket harus sudah dimulai
+				if (pkg.tanggal_mulai) {
+					const startDate = new Date(pkg.tanggal_mulai);
+					if (startDate > now) return false; // Paket belum dimulai
+				}
+
+				// Cek tanggal berakhir - paket tidak boleh expired
+				if (pkg.tanggal_berakhir) {
+					const endDate = new Date(pkg.tanggal_berakhir);
+					if (endDate < now) return false; // Paket sudah expired
+				}
+
+				return true; // Paket aktif dan dapat dibeli
 			});
 
 			// Map data untuk konsistensi
@@ -83,45 +93,49 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 	if (!course) return null;
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
-				{/* Header */}
-				<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 p-3 text-white">
+		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+			<div className="bg-white rounded-2xl shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden">
+				{/* Header - More compact and mobile-friendly */}
+				<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 p-3 sm:p-4 text-white">
 					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-3">
-							<h2 className="text-2xl font-bold flex items-center">
-								<Gift className="w-7 h-7 mr-3" />
-								Pilih Paket untuk Kursus -
+						<div>
+							<h2 className="text-lg sm:text-xl font-bold flex items-center">
+								<Gift className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
+								<span className=" sm:inline">
+									Pilih Paket - {course?.courseName}{" "}
+								</span>
 							</h2>
-							<p className="text-yellow-100 mt-1 text-xl">
-								{course?.courseName}
+							<p className="text-yellow-100 text-xs mt-1 hidden sm:block">
+								Pilih paket yang sesuai dengan kebutuhan pembelajaran Anda
 							</p>
 						</div>
 						<button
 							onClick={handleClose}
-							className="text-white hover:text-yellow-200 transition-colors p-2">
-							<X className="w-6 h-6" />
+							className="text-white hover:text-yellow-200 transition-colors p-1 sm:p-2">
+							<X className="w-5 h-5 sm:w-6 sm:h-6" />
 						</button>
 					</div>
 				</div>
 
 				{/* Content */}
-				<div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+				<div className="p-3 sm:p-6 overflow-y-auto max-h-[calc(95vh-200px)]">
 					{loading ? (
 						<div className="flex items-center justify-center h-64">
 							<div className="text-center">
 								<div className="w-12 h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-								<p className="text-gray-600">Memuat paket tersedia...</p>
+								<p className="text-gray-600 text-sm sm:text-base">
+									Memuat paket tersedia...
+								</p>
 							</div>
 						</div>
 					) : error ? (
 						<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 							<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 							<h3 className="text-lg font-semibold mb-2">Error</h3>
-							<p className="text-gray-500 mb-4 text-center">{error}</p>
+							<p className="text-gray-500 mb-4 text-center text-sm">{error}</p>
 							<button
 								onClick={fetchPackages}
-								className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+								className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 text-sm">
 								Coba Lagi
 							</button>
 						</div>
@@ -129,7 +143,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 						<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 							<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 							<h3 className="text-lg font-semibold mb-2">Belum Ada Paket</h3>
-							<p className="text-gray-500 text-center">
+							<p className="text-gray-500 text-center text-sm">
 								Belum ada paket yang tersedia untuk kursus ini.
 								<br />
 								Silakan hubungi admin untuk informasi lebih lanjut.
@@ -137,17 +151,14 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 						</div>
 					) : (
 						<>
-							<div className="mb-6">
-								<h3 className="text-lg font-semibold text-gray-800 mb-2">
-									Pilih paket yang sesuai dengan kebutuhan Anda
-								</h3>
-								<p className="text-gray-600 text-sm">
+							<div className="mb-3 sm:mb-4">
+								<h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
 									Setiap paket memiliki benefit yang berbeda. Pilih yang paling
-									cocok untuk pembelajaran Anda.
-								</p>
+									cocok untuk pembelajaran Anda.{" "}
+								</h3>
 							</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+							<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
 								{packages.map((pkg) => (
 									<CoursePackageCard
 										key={pkg.id}
@@ -161,11 +172,11 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 					)}
 				</div>
 
-				{/* Footer */}
+				{/* Footer - Mobile-friendly */}
 				{!loading && !error && packages.length > 0 && (
-					<div className="bg-gray-50 px-6 py-4 border-t">
-						<div className="flex items-center justify-between">
-							<div className="text-sm text-gray-600">
+					<div className="bg-gray-50 px-3 sm:px-6 py-3 sm:py-3 border-t">
+						<div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+							<div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
 								{selectedPackage ? (
 									<span className="text-green-600 font-medium">
 										✓ Paket "{selectedPackage.name}" dipilih
@@ -174,22 +185,22 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 									"Pilih salah satu paket untuk melanjutkan"
 								)}
 							</div>
-							<div className="flex gap-3">
+							<div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
 								<button
 									onClick={handleClose}
-									className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+									className="flex-1 sm:flex-none px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
 									Batal
 								</button>
 								<button
 									onClick={handleContinue}
 									disabled={!selectedPackage}
-									className={`flex items-center px-6 py-2 rounded-lg transition-colors ${
+									className={`flex-1 sm:flex-none flex items-center justify-center px-4 sm:px-6 py-2 rounded-lg transition-colors text-sm ${
 										selectedPackage
 											? "bg-yellow-600 text-white hover:bg-yellow-700"
 											: "bg-gray-300 text-gray-500 cursor-not-allowed"
 									}`}>
 									Lanjutkan
-									<ArrowRight className="w-4 h-4 ml-2" />
+									<ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />
 								</button>
 							</div>
 						</div>
