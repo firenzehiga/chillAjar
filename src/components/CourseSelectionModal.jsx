@@ -47,14 +47,14 @@ export function CourseSelectionModal({
 										{course.mentor && course.mentor.user && (
 											<img
 												src={getImageUrl(
-													course.mentor.user.foto_profil,
-													"/foto_mentor/default.png"
+													course.courseImage,
+													"/foto_kursus/default.jpg"
 												)}
-												alt={course.mentor.user.nama || "Mentor"}
+												alt={course.mentor.user.nama || "Nama Mentor"}
 												className="w-10 h-10 rounded-full border-2 border-yellow-400 shadow object-cover bg-white"
 												onError={(e) => {
 													e.target.onerror = null;
-													e.target.src = "/foto_mentor/default.png";
+													e.target.src = "/foto_kursus/default.jpg";
 												}}
 											/>
 										)}

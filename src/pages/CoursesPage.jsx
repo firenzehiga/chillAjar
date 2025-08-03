@@ -1,5 +1,6 @@
 import React from "react";
 import { CourseCard } from "../components/CourseCard";
+import { CourseSkeletonCard } from "../components/Skeleton/CourseSkeletonCard";
 
 import { Search } from "lucide-react";
 export function CoursesPage({
@@ -8,7 +9,7 @@ export function CoursesPage({
 	searchQuery,
 	setSearchQuery,
 	filteredCourses,
-	loading,
+	isLoading,
 	userRole,
 }) {
 	return (
@@ -28,11 +29,24 @@ export function CoursesPage({
 					/>
 				</div>
 			)}
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{filteredCourses.map((course) => (
-					<CourseCard key={course.id} course={course} onClick={onCourseClick} />
-				))}
-			</div>
+			{/* Loading Skeleton */}
+			{isLoading ? (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{Array.from({ length: 6 }).map((_, idx) => (
+						<CourseSkeletonCard key={idx} />
+					))}
+				</div>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{filteredCourses.map((course) => (
+						<CourseCard
+							key={course.id}
+							course={course}
+							onClick={onCourseClick}
+						/>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

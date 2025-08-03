@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../../../api.jsx";
 import { Gift, ArrowLeft, AlertCircle, X, Calendar } from "lucide-react";
 import Swal from "sweetalert2";
+import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { is } from "date-fns/locale";
 
-export function AdminFormPackagePage({ onNavigate, packageId }) {
+export function AdminFormPackagesPage({ onNavigate, packageId }) {
 	const isEditMode = !!packageId;
 
 	const [formData, setFormData] = useState({
 		name: "",
 		description: "",
+		diskon: 0,
 		selectedItems: [],
 		tanggal_mulai: "",
 		tanggal_berakhir: "",
@@ -15,56 +19,88 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	// Mock data items yang tersedia
-	const [availableItems] = useState([
-		{
-			id: 1,
-			name: "1 Materi pembelajaran",
-			price: 5000,
-			description: "Belajar 1 topik materi dengan mentor",
-		},
-		{
-			id: 2,
-			name: "1 Bantuan tugas",
-			price: 8000,
-			description: "Bantuan mengerjakan 1 tugas dari mentor",
-		},
-		{
-			id: 3,
-			name: "2 Materi pembelajaran",
-			price: 10000,
-			description: "Belajar 2 topik materi dengan mentor",
-		},
-		{
-			id: 4,
-			name: "Review 24 jam",
-			price: 3000,
-			description: "Review hasil belajar dalam 24 jam",
-		},
-		{
-			id: 5,
-			name: "Follow-up session",
-			price: 7000,
-			description: "Sesi lanjutan 30 menit",
-		},
-	]);
+	// Ambil daftar item dari backend
+	const [availableItems, setAvailableItems] = useState([]);
+	const [loadingItems, setLoadingItems] = useState(false);
+	useEffect(() => {
+		const fetchItems = async () => {
+			try {
+				setLoadingItems(true);
+				const token = localStorage.getItem("token");
+				const res = await api.get("/item-paket", {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				// Pastikan mapping sesuai backend
+				setAvailableItems(
+					Array.isArray(res.data)
+						? res.data.map((item) => ({
+								id: item.id,
+								name: item.nama,
+								price: item.harga,
+								diskon: item.diskon || 0,
+								description: item.deskripsi,
+						  }))
+						: []
+				);
+			} catch (err) {
+				console.error("Error fetching items:", err);
+				setAvailableItems([]);
+			}
+			setLoadingItems(false);
+		};
+		fetchItems();
+	}, []);
 
-	// Mock data untuk edit mode
-	React.useEffect(() => {
-		if (isEditMode) {
-			const mockPackage = {
-				name: "NgeTask & Chill",
-				description: "Paket lengkap pembelajaran + tugas",
-				selectedItems: [
-					{ id: 1, name: "1 Materi pembelajaran", price: 5000 },
-					{ id: 2, name: "1 Bantuan tugas", price: 8000 },
-				],
-				tanggal_mulai: "2024-01-20",
-				tanggal_berakhir: "2024-02-29",
+	// Ambil data paket dari backend jika edit mode
+	useEffect(() => {
+		if (isEditMode && packageId) {
+			const fetchPackage = async () => {
+				try {
+					setLoading(true);
+					const token = localStorage.getItem("token");
+					const response = await api.get(`/paket/${packageId}`, {
+						headers: { Authorization: `Bearer ${token}` },
+					});
+
+					const pkg = response.data;
+					setFormData({
+						name: pkg.nama || "",
+						description: pkg.deskripsi || "",
+						diskon: pkg.diskon || 0,
+						selectedItems: Array.isArray(pkg.items)
+							? pkg.items.map((item) => ({
+									id: item.id,
+									name: item.nama,
+									price: item.harga,
+									diskon: item.diskon || 0,
+									description: item.deskripsi,
+							  }))
+							: [],
+						tanggal_mulai: pkg.tanggal_mulai
+							? pkg.tanggal_mulai.substring(0, 10)
+							: "",
+						tanggal_berakhir: pkg.tanggal_berakhir
+							? pkg.tanggal_berakhir.substring(0, 10)
+							: "",
+					});
+				} catch (err) {
+					setError("Gagal mengambil data paket");
+					console.error("Error fetching package:", err);
+					Swal.fire({
+						icon: "error",
+						title: "Error!",
+						text: "Gagal mengambil data paket. Paket mungkin tidak ditemukan.",
+						confirmButtonColor: "#EF4444",
+					});
+					// Redirect kembali ke manage packages jika package tidak ditemukan
+					onNavigate("admin-manage-packages");
+				} finally {
+					setLoading(false);
+				}
 			};
-			setFormData(mockPackage);
+			fetchPackage();
 		}
-	}, [isEditMode]);
+	}, [isEditMode, packageId, onNavigate]);
 
 	const handleChange = (e) => {
 		const { name, value, type, checked } = e.target;
@@ -82,10 +118,11 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 		) {
 			setFormData((prev) => ({
 				...prev,
-				selectedItems: [...prev.selectedItems, item],
+				selectedItems: [...prev.selectedItems, { ...item }],
 			}));
 		}
 	};
+	// Tidak perlu handler deskripsi custom item
 
 	const handleRemoveItem = (itemId) => {
 		setFormData((prev) => ({
@@ -94,11 +131,20 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 		}));
 	};
 
+	// Helper function untuk menghitung harga setelah discount
+	const calculateDiscountedPrice = (originalPrice, discountAmount) => {
+		if (!discountAmount || discountAmount === 0) return originalPrice;
+		return Math.max(originalPrice - discountAmount, 0);
+	};
+
+	// Hitung harga total item dikurangi diskon
 	const calculateTotalPrice = () => {
-		return formData.selectedItems.reduce(
-			(total, item) => total + item.price,
+		const total = formData.selectedItems.reduce(
+			(sum, item) => sum + calculateDiscountedPrice(item.price, item.diskon),
 			0
 		);
+		const diskon = Number(formData.diskon) || 0;
+		return Math.max(total - diskon, 0);
 	};
 
 	const handleSubmit = async (e) => {
@@ -119,13 +165,10 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 			if (formData.tanggal_mulai && formData.tanggal_berakhir) {
 				const startDate = new Date(formData.tanggal_mulai);
 				const endDate = new Date(formData.tanggal_berakhir);
-
 				if (endDate <= startDate) {
 					throw new Error("Tanggal berakhir harus setelah tanggal mulai");
 				}
 			}
-
-			// Jika hanya satu tanggal yang diisi
 			if (
 				(formData.tanggal_mulai && !formData.tanggal_berakhir) ||
 				(!formData.tanggal_mulai && formData.tanggal_berakhir)
@@ -135,30 +178,68 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 				);
 			}
 
-			// Simulasi API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const token = localStorage.getItem("token");
+
+			// Kirim data ke backend
+			const payload = {
+				nama: formData.name,
+				deskripsi: formData.description,
+				harga_dasar: calculateTotalPrice(),
+				diskon: Number(formData.diskon) || 0,
+				tanggal_mulai: formData.tanggal_mulai || null,
+				tanggal_berakhir: formData.tanggal_berakhir || null,
+				items: formData.selectedItems.map((item) => ({
+					id: item.id,
+					jumlah_item: 1,
+				})),
+			};
+
+			let response;
+			if (isEditMode && packageId) {
+				response = await api.put(`/paket/${packageId}`, payload, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+			} else {
+				response = await api.post("/paket", payload, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+			}
+
+			if (response?.data?.success === false || response?.status >= 400) {
+				throw new Error(
+					response?.data?.message || "Gagal menyimpan data paket"
+				);
+			}
 
 			Swal.fire({
 				icon: "success",
 				title: "Berhasil!",
-				text: `Paket ${
-					isEditMode ? "diperbarui" : "ditambahkan"
-				} successfully!`,
-				confirmButtonColor: "#3B82F6",
+				text: `Paket ${isEditMode ? "diperbarui" : "ditambahkan"} berhasil!`,
+				showConfirmButton: false,
+				timer: 1500,
 			});
 			onNavigate("admin-manage-packages");
 		} catch (err) {
-			setError(err.message);
+			const errorMessage =
+				err.response?.data?.message ||
+				err.message ||
+				(isEditMode ? "Gagal memperbarui paket" : "Gagal membuat paket");
+			setError(errorMessage);
 			Swal.fire({
 				icon: "error",
 				title: "Error!",
-				text: err.message,
+				text: errorMessage,
 				confirmButtonColor: "#EF4444",
 			});
+			console.error("Error details:", err.response ? err.response.data : err);
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	if (loading) {
+		return <FormSkeletonCard />;
+	}
 
 	return (
 		<div className="py-8">
@@ -214,6 +295,23 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 									className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
 									placeholder="Jelaskan detail paket ini..."
 									rows="4"
+								/>
+							</div>
+							<div className="mb-4">
+								<label
+									htmlFor="diskon"
+									className="block text-sm font-medium text-gray-700 mb-1">
+									Diskon Paket (Rp)
+								</label>
+								<input
+									type="number"
+									id="diskon"
+									name="diskon"
+									value={formData.diskon}
+									min={0}
+									onChange={handleChange}
+									className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+									placeholder="Diskon dalam rupiah, contoh: 5000"
 								/>
 							</div>
 
@@ -274,23 +372,28 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 								) : (
 									<div className="space-y-2">
 										{formData.selectedItems.map((item) => (
-											<div
-												key={item.id}
-												className="flex justify-between items-center bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-												<div>
-													<div className="font-medium text-gray-900">
-														{item.name}
-													</div>
-													<div className="text-sm text-gray-600">
-														Rp {item.price.toLocaleString()}
+											<div key={item.id} className="mb-2">
+												<div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+													<div className="flex justify-between items-center">
+														<div>
+															<div className="font-medium text-gray-900">
+																{item.name}
+															</div>
+															<div className="text-sm text-gray-600">
+																Rp {item.price.toLocaleString()}
+															</div>
+															<div className="text-xs text-gray-500 mt-1">
+																{item.description}
+															</div>
+														</div>
+														<button
+															type="button"
+															onClick={() => handleRemoveItem(item.id)}
+															className="text-red-600 hover:text-red-800">
+															<X className="w-4 h-4" />
+														</button>
 													</div>
 												</div>
-												<button
-													type="button"
-													onClick={() => handleRemoveItem(item.id)}
-													className="text-red-600 hover:text-red-800">
-													<X className="w-4 h-4" />
-												</button>
 											</div>
 										))}
 										<div className="pt-2 border-t border-yellow-200">
@@ -300,6 +403,19 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 													Rp {calculateTotalPrice().toLocaleString()}
 												</span>
 											</div>
+											{formData.diskon > 0 && (
+												<div className="flex justify-between items-center text-sm text-gray-500 mt-1">
+													<span>Rincian: </span>
+													<span>
+														(Total item Rp{" "}
+														{formData.selectedItems
+															.reduce((sum, item) => sum + item.price, 0)
+															.toLocaleString()}
+														) - Diskon Rp{" "}
+														{Number(formData.diskon).toLocaleString()}
+													</span>
+												</div>
+											)}
 
 											{/* Preview Status Promo */}
 											{(formData.tanggal_mulai ||
@@ -391,52 +507,63 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 						</div>
 
 						{/* Daftar Items Tersedia */}
-						<div>
-							<h3 className="text-lg font-medium text-gray-900 mb-3">
-								Items Tersedia
-							</h3>
-							<div className="space-y-2 max-h-96 overflow-y-auto">
-								{availableItems.map((item) => {
-									const isSelected = formData.selectedItems.find(
-										(selectedItem) => selectedItem.id === item.id
-									);
-									return (
-										<div
-											key={item.id}
-											className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-												isSelected
-													? "bg-gray-100 border-gray-300 cursor-not-allowed"
-													: "bg-white border-gray-200 hover:border-yellow-300 hover:bg-yellow-50"
-											}`}
-											onClick={() => !isSelected && handleAddItem(item)}>
-											<div className="flex justify-between items-start">
-												<div className="flex-1">
-													<div className="font-medium text-gray-900">
-														{item.name}
-													</div>
-													<div className="text-sm text-gray-600 mt-1">
-														{item.description}
-													</div>
-												</div>
-												<div className="ml-3 text-right">
-													<div className="font-semibold text-yellow-600">
-														Rp {item.price.toLocaleString()}
-													</div>
-													{isSelected && (
-														<div className="text-xs text-gray-500 mt-1">
-															Sudah dipilih
+						{loadingItems ? (
+							<div className="flex justify-center mb-6">
+								<span className="text-gray-500 text-base font-medium">
+									Loading Items...
+								</span>
+								<div className="ml-2 w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+							</div>
+						) : (
+							<div>
+								<h3 className="text-lg font-medium text-gray-900 mb-3">
+									Items Tersedia
+								</h3>
+								<div className="space-y-2 max-h-96 overflow-y-auto">
+									{availableItems.map((item) => {
+										const isSelected = formData.selectedItems.find(
+											(selectedItem) => selectedItem.id === item.id
+										);
+										return (
+											<div
+												key={item.id}
+												className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+													isSelected
+														? "bg-yellow-100 border-yellow-300 cursor-not-allowed"
+														: "bg-white border-gray-200 hover:border-yellow-300 hover:bg-yellow-50"
+												}`}
+												onClick={() => !isSelected && handleAddItem(item)}>
+												<div className="flex justify-between items-start">
+													<div className="flex-1">
+														<div className="font-medium text-gray-900">
+															{item.name}
 														</div>
-													)}
+														<div className="text-sm text-gray-600 mt-1">
+															Rp {item.price.toLocaleString()}
+														</div>
+														{item.description && (
+															<div className="text-xs text-gray-500 mt-1">
+																{item.description}
+															</div>
+														)}
+													</div>
+													<div className="ml-3 text-right">
+														{isSelected && (
+															<div className="text-xs text-yellow-500 mt-1">
+																Sudah dipilih
+															</div>
+														)}
+													</div>
 												</div>
 											</div>
-										</div>
-									);
-								})}
+										);
+									})}
+								</div>
+								<p className="text-xs text-gray-500 mt-2">
+									* Klik item untuk menambahkan ke paket
+								</p>
 							</div>
-							<p className="text-xs text-gray-500 mt-2">
-								* Klik item untuk menambahkan ke paket
-							</p>
-						</div>
+						)}
 					</div>
 				</form>
 			</div>
@@ -444,4 +571,4 @@ export function AdminFormPackagePage({ onNavigate, packageId }) {
 	);
 }
 
-export default AdminFormPackagePage;
+export default AdminFormPackagesPage;

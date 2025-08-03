@@ -51,9 +51,11 @@ export function AboutPage() {
 			const response = await api.get("/public/mentor", {
 				headers: localStorage.getItem("token")
 					? { Authorization: `Bearer ${localStorage.getItem("token")}` }
-					: {}, // Header hanya ditambahkan jika token ada
+					: {},
 			});
-			return response.data.length;
+			// Hanya hitung mentor dengan status 'aktif'
+			return response.data.filter((mentor) => mentor.status === "active")
+				.length;
 		},
 	});
 

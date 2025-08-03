@@ -13,6 +13,7 @@ import { CourseCarousel } from "../components/CourseCarousel";
 import api from "../api";
 import { useQuery } from "@tanstack/react-query";
 import { YourSessionSkeleton } from "../components/Skeleton/YourSessionSkeleton";
+import { CarouselSkeleton } from "../components/Skeleton/CarouselSkeleton";
 import { getImageUrl } from "../utils/getImageUrl";
 export function Home({
 	courses,
@@ -228,10 +229,15 @@ export function Home({
 					</div>
 				</div>
 			)}
-			<CourseCarousel
-				courses={mappedCourses}
-				onCourseClick={handleCourseClick}
-			/>
+			{/* Carousel Section - Di luar dari Your Sessions */}
+			{isLoadingSessions ? (
+				<CarouselSkeleton />
+			) : (
+				<CourseCarousel
+					courses={mappedCourses}
+					onCourseClick={handleCourseClick}
+				/>
+			)}{" "}
 			<div>
 				<h2 className="text-2xl font-bold text-gray-900 mb-6">All Courses</h2>
 				{userRole !== "admin" && userRole !== "mentor" && (

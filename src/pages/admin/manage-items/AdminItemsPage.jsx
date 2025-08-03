@@ -1,49 +1,68 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
 import { Package, Plus, Pencil, Trash, AlertCircle } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
+import api from "../../../api.jsx";
 
 export function AdminItemsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
+	const queryClient = useQueryClient();
 
-	// Mock data untuk preview
-	const [items, setItems] = useState([
-		{
-			id: 1,
-			name: "1 Materi pembelajaran",
-			price: 5000,
-			description: "Belajar 1 topik materi dengan mentor",
-			created_at: "2024-01-15",
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
+
+	// UseQuery untuk fetch items
+	const {
+		data: items = [],
+		isLoading,
+		isError,
+		error,
+	} = useQuery({
+		queryKey: ["adminItems"],
+		queryFn: async () => {
+			if (!isAuthenticated) return [];
+			const response = await api.get("/item-paket", {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			return Array.isArray(response.data)
+				? response.data.map((item) => ({
+						id: item.id,
+						name: item.nama,
+						price: item.harga,
+						diskon: item.diskon || 0,
+						description: item.deskripsi,
+						created_at: item.created_at,
+				  }))
+				: [];
 		},
-		{
-			id: 2,
-			name: "1 Bantuan tugas",
-			price: 8000,
-			description: "Bantuan mengerjakan 1 tugas dari mentor",
-			created_at: "2024-01-15",
+		enabled: isAuthenticated,
+		retry: 1,
+		onError: (err) => {
+			console.error("Error fetching items:", err);
 		},
-		{
-			id: 3,
-			name: "2 Materi pembelajaran",
-			price: 10000,
-			description: "Belajar 2 topik materi dengan mentor",
-			created_at: "2024-01-16",
+	});
+
+	// UseMutation untuk delete item
+	const deleteItemMutation = useMutation({
+		mutationFn: async (id) => {
+			const token = localStorage.getItem("token");
+			return api.delete(`/item-paket/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
 		},
-		{
-			id: 4,
-			name: "Review 24 jam",
-			price: 3000,
-			description: "Review hasil belajar dalam 24 jam",
-			created_at: "2024-01-16",
+		onSuccess: (_, id) => {
+			// Update cache dengan menghapus item yang dihapus
+			queryClient.setQueryData(["adminItems"], (oldData) =>
+				oldData.filter((item) => item.id !== id)
+			);
+			toast.success("Item berhasil dihapus!");
 		},
-		{
-			id: 5,
-			name: "Follow-up session",
-			price: 7000,
-			description: "Sesi lanjutan 30 menit",
-			created_at: "2024-01-17",
+		onError: () => {
+			Swal.fire("Error!", "Gagal menghapus item.", "error");
 		},
-	]);
+	});
 
 	const handleDelete = (id) => {
 		Swal.fire({
@@ -57,14 +76,17 @@ export function AdminItemsPage({ onNavigate }) {
 			cancelButtonText: "Batal",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				setItems(items.filter((item) => item.id !== id));
-				Swal.fire("Deleted!", "Item berhasil dihapus.", "success");
+				deleteItemMutation.mutate(id);
 			}
 		});
 	};
 
 	const handleEdit = (id) => {
 		onNavigate(`admin-edit-item/${id}`);
+	};
+
+	const handleToggleActive = (id) => {
+		// Remove this function since items don't have status anymore
 	};
 
 	const columns = [
@@ -78,19 +100,36 @@ export function AdminItemsPage({ onNavigate }) {
 			name: "Nama Item",
 			selector: (row) => row.name,
 			sortable: true,
-			width: "250px",
+			width: "300px",
 		},
 		{
 			name: "Harga",
-			selector: (row) => `Rp ${row.price.toLocaleString()}`,
+			selector: (row) => {
+				const hargaAkhir = Math.max((row.price || 0) - (row.diskon || 0), 0);
+				return `Rp ${hargaAkhir.toLocaleString()}`;
+			},
 			sortable: true,
-			width: "120px",
+			width: "220px",
 		},
 		{
 			name: "Deskripsi",
-			selector: (row) => row.description,
+			cell: (row) => (
+				<div>
+					<div>{row.description}</div>
+					{row.diskon > 0 && (
+						<div className="text-xs text-gray-500 mt-1">
+							Rincian: (Harga Rp {row.price.toLocaleString()}) - Diskon Rp{" "}
+							{row.diskon.toLocaleString()} = Rp{" "}
+							{Math.max(
+								(row.price || 0) - (row.diskon || 0),
+								0
+							).toLocaleString()}
+						</div>
+					)}
+				</div>
+			),
 			sortable: true,
-			width: "300px",
+			width: "450px",
 		},
 		{
 			name: "Aksi",
@@ -123,6 +162,19 @@ export function AdminItemsPage({ onNavigate }) {
 		);
 	});
 
+	// Jika Error saat fetching data terjadi, tampilkan pesan error
+	if (error) {
+		return (
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+				<h3 className="text-lg font-semibold mb-2">Error</h3>
+				<p className="text-gray-500 mb-4 text-center">
+					Gagal mengambil data items
+				</p>
+			</div>
+		);
+	}
+
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -146,7 +198,13 @@ export function AdminItemsPage({ onNavigate }) {
 					</button>
 				</div>
 
-				{items.length === 0 ? (
+				{/* Tampilan Loading jika data belum selesai diambil  */}
+				{isLoading ? (
+					<div className="flex items-center justify-center h-64 text-gray-600">
+						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<p className="ml-3">Loading items data...</p>
+					</div>
+				) : items.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 						<h3 className="text-lg font-semibold mb-2">Belum Ada Items</h3>

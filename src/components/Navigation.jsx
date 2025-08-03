@@ -199,7 +199,7 @@ export function Navigation({ onNavigate, onLogout }) {
 							onClick={() =>
 								setIsManagementDropdownOpen(!isManagementDropdownOpen)
 							}
-							className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer flex items-center ${
+							className={`outline-none focus:outline-none px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer flex items-center ${
 								currentPage === "admin-manage-items" ||
 								currentPage === "admin-manage-packages" ||
 								currentPage === "admin-manage-courses"
@@ -275,16 +275,21 @@ export function Navigation({ onNavigate, onLogout }) {
 		} else if (userRole === "mentor") {
 			return (
 				<>
-					<a
+					<button
 						onClick={() => onNavigate("mentor-dashboard")}
-						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-							currentPage === "mentor-dashboard"
-								? "bg-yellow-500 text-gray-900"
-								: "text-gray-900 hover:bg-yellow-500"
-						}`}>
-						<Home className="w-4 h-4 inline-block mr-1" />
-						Dashboard
-					</a>
+						className={`focus:outline-none outline-none group relative px-3 py-2 
+							rounded-xl text-sm font-semibold flex items-center transition-all duration-200
+      					${
+									currentPage === "mentor-dashboard"
+										? "bg-yellow-500 text-gray-900 shadow"
+										: "bg-transparent text-gray-900 hover:bg-yellow-500"
+								}`}>
+						<Home
+							className={`w-5 h-5 mr-2 transition-transform duration-200 text-gray-900
+      	 					 ${currentPage !== "mentor-dashboard" ? "group-hover:scale-110" : ""}`}
+						/>
+						Dashboard{" "}
+					</button>
 					<a
 						onClick={() => onNavigate("mentor-manage-schedule")}
 						className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${

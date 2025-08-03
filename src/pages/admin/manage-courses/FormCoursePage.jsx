@@ -58,57 +58,33 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 		const fetchPackages = async () => {
 			if (!isAuthenticated) return;
 			try {
-				// Mock data untuk sekarang - nanti bisa diganti dengan API call
-				const mockPackages = [
-					{
-						id: 1,
-						name: "Paket NgeChill",
-						price: 25000,
-						totalPrice: 25000,
-						description: "Paket dasar untuk pembelajaran santai",
-						items: [
-							{ name: "1 Materi pembelajaran", price: 5000 },
-							{ name: "30 menit konsultasi", price: 7000 },
-							{ name: "Akses chat mentor 3 hari", price: 8000 },
-							{ name: "Review tugas", price: 5000 },
-						],
-					},
-					{
-						id: 2,
-						name: "Paket NgeTask & Chill",
-						price: 35000,
-						totalPrice: 35000,
-						description: "Paket lengkap dengan bantuan tugas",
-						items: [
-							{ name: "1 Materi pembelajaran", price: 5000 },
-							{ name: "30 menit konsultasi", price: 7000 },
-							{ name: "Akses chat mentor 3 hari", price: 8000 },
-							{ name: "Review tugas", price: 5000 },
-							{ name: "Bantuan mengerjakan tugas", price: 10000 },
-						],
-					},
-					{
-						id: 3,
-						name: "Paket Premium",
-						price: 50000,
-						totalPrice: 50000,
-						description: "Paket premium dengan fitur lengkap",
-						items: [
-							{ name: "1 Materi pembelajaran", price: 5000 },
-							{ name: "60 menit konsultasi", price: 12000 },
-							{ name: "Akses chat mentor 7 hari", price: 15000 },
-							{ name: "Review tugas", price: 5000 },
-							{ name: "Bantuan mengerjakan tugas", price: 10000 },
-							{ name: "Materi tambahan", price: 3000 },
-						],
-					},
-				];
-				setPackages(mockPackages);
+				const response = await api.get("/paket", {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+				// Pastikan struktur data sesuai kebutuhan frontend
+				const paketData = Array.isArray(response.data)
+					? response.data.map((p) => ({
+							id: p.id,
+							name: p.nama,
+							price: p.harga_dasar,
+							totalPrice: p.harga_dasar - (p.diskon || 0),
+							description: p.deskripsi,
+							items: Array.isArray(p.items)
+								? p.items.map((item) => ({
+										name: item.nama,
+										price: item.harga_dasar - (item.diskon || 0),
+										description: item.deskripsi,
+								  }))
+								: [],
+							diskon: p.diskon || 0,
+					  }))
+					: [];
+				setPackages(paketData);
 
-				// Set default: Paket NgeChill (25rb) aktif secara default
-				if (!isEditMode) {
+				// Set default: aktifkan paket pertama jika ada
+				if (!isEditMode && paketData.length > 0) {
 					setSelectedPackages([
-						{ package_id: 1, is_active: true }, // Paket NgeChill default aktif
+						{ package_id: paketData[0].id, is_active: true },
 					]);
 				}
 			} catch (err) {
@@ -147,22 +123,27 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 					setSchedules(initial);
 				}
 
-				// Mock data untuk paket yang sudah dipilih di kursus ini
-				if (response.data.packages) {
-					// Format: [{ package_id: 1, is_active: true }, { package_id: 2, is_active: false }]
+				// Set selectedPackages berdasarkan visibilitas_paket
+				if (
+					response.data.visibilitas_paket &&
+					Array.isArray(response.data.visibilitas_paket)
+				) {
+					setSelectedPackages(
+						response.data.visibilitas_paket.map((vp) => ({
+							package_id: vp.paket_id,
+							is_active: !!vp.visibilitas,
+						}))
+					);
+				} else if (response.data.packages) {
+					// Fallback jika visibilitas_paket tidak ada
 					setSelectedPackages(
 						response.data.packages.map((pkg) => ({
 							package_id: pkg.id,
-							is_active: pkg.pivot?.is_active || true,
+							is_active: true,
 						}))
 					);
 				} else {
-					// Mock data - di production ambil dari API paket_visibility
-					setSelectedPackages([
-						{ package_id: 1, is_active: true }, // Paket NgeChill aktif
-						{ package_id: 2, is_active: true }, // Paket NgeTask & Chill aktif
-						{ package_id: 3, is_active: false }, // Paket Premium nonaktif
-					]);
+					setSelectedPackages([]);
 				}
 			} catch (err) {
 				setError("Gagal mengambil data kursus");
@@ -280,15 +261,20 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 			payload.append("deskripsi", formData.deskripsi);
 			payload.append("mentor_id", formData.mentorId); // Sertakan mentorId dalam payload
 
-			// Add selected packages with is_active status
-			selectedPackages.forEach((packageData, index) => {
+			// Kirim paket aktif sebagai paket_ids[] sesuai ekspektasi backend
+			const paketIds = selectedPackages
+				.filter((p) => p.is_active)
+				.map((p) => p.package_id);
+			paketIds.forEach((id, idx) => {
+				payload.append(`paket_ids[${idx}]`, id);
+			});
+
+			// Kirim visibilitas paket (opsional, jika backend ingin status aktif/nonaktif per paket)
+			selectedPackages.forEach((p, idx) => {
+				payload.append(`visibilitas_paket[${idx}][paket_id]`, p.package_id);
 				payload.append(
-					`packages[${index}][package_id]`,
-					packageData.package_id
-				);
-				payload.append(
-					`packages[${index}][is_active]`,
-					packageData.is_active ? 1 : 0
+					`visibilitas_paket[${idx}][visibilitas]`,
+					p.is_active ? 1 : 0
 				);
 			});
 

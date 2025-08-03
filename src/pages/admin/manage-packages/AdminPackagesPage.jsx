@@ -1,52 +1,78 @@
 import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "../../../api.jsx";
 import DataTable from "react-data-table-component";
 import { Gift, Plus, Pencil, Trash, AlertCircle, Eye } from "lucide-react";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 export function AdminPackagesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
+	const queryClient = useQueryClient();
 
-	// Mock data untuk preview
-	const [packages, setPackages] = useState([
-		{
-			id: 1,
-			name: "NgeChill",
-			description: "Paket dasar untuk pembelajaran santai",
-			items: [{ id: 1, name: "1 Materi pembelajaran", price: 5000 }],
-			totalPrice: 5000,
-			created_at: "2024-01-15",
-			tanggal_mulai: null,
-			tanggal_berakhir: null,
-		},
-		{
-			id: 2,
-			name: "NgeTask & Chill",
-			description: "Paket lengkap pembelajaran + tugas",
-			items: [
-				{ id: 1, name: "1 Materi pembelajaran", price: 5000 },
-				{ id: 2, name: "1 Bantuan tugas", price: 8000 },
-			],
-			totalPrice: 13000,
-			created_at: "2024-01-15",
-			tanggal_mulai: "2024-01-20",
-			tanggal_berakhir: "2024-02-29",
-		},
-		{
-			id: 3,
-			name: "Premium Learning",
-			description: "Paket maksimal dengan review",
-			items: [
-				{ id: 3, name: "2 Materi pembelajaran", price: 10000 },
-				{ id: 2, name: "1 Bantuan tugas", price: 8000 },
-				{ id: 4, name: "Review 24 jam", price: 3000 },
-			],
-			totalPrice: 21000,
-			created_at: "2024-01-16",
-			tanggal_mulai: "2024-01-01",
-			tanggal_berakhir: "2024-12-31",
-		},
-	]);
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 
+	// UseQuery untuk fetch packages
+	const {
+		data: packages = [],
+		isLoading,
+		isError,
+		error,
+	} = useQuery({
+		queryKey: ["adminPackages"],
+		queryFn: async () => {
+			if (!isAuthenticated) return [];
+			const response = await api.get("/paket", {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			// Mapping agar field sesuai database
+			const mapped = response.data.map((pkg) => ({
+				id: pkg.id,
+				name: pkg.nama,
+				description: pkg.deskripsi,
+				totalPrice: pkg.harga_dasar || 0,
+				diskon: pkg.diskon || 0,
+				items:
+					pkg.items?.map((item) => ({
+						id: item.id,
+						name: item.nama,
+						price: item.harga,
+						jumlah_item: item.pivot?.jumlah_item || 1,
+					})) || [],
+				created_at: pkg.created_at,
+				tanggal_mulai: pkg.tanggal_mulai,
+				tanggal_berakhir: pkg.tanggal_berakhir,
+				max_pembelian_per_user: pkg.max_pembelian_per_user,
+			}));
+			return mapped;
+		},
+		enabled: isAuthenticated,
+		retry: 1,
+		onError: (err) => {
+			console.error("Error fetching packages:", err);
+		},
+	});
+
+	// UseMutation untuk delete package
+	const deletePackageMutation = useMutation({
+		mutationFn: async (id) => {
+			const token = localStorage.getItem("token");
+			return api.delete(`/paket/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+		},
+		onSuccess: (_, id) => {
+			// Update cache dengan menghapus package yang dihapus
+			queryClient.setQueryData(["adminPackages"], (oldData) =>
+				oldData.filter((pkg) => pkg.id !== id)
+			);
+			toast.success("Paket berhasil dihapus!");
+		},
+		onError: () => {
+			Swal.fire("Error!", "Gagal menghapus paket.", "error");
+		},
+	});
 	const handleDelete = (id) => {
 		Swal.fire({
 			title: "Apa Anda yakin?",
@@ -59,8 +85,7 @@ export function AdminPackagesPage({ onNavigate }) {
 			cancelButtonText: "Batal",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				setPackages(packages.filter((pkg) => pkg.id !== id));
-				Swal.fire("Deleted!", "Paket berhasil dihapus.", "success");
+				deletePackageMutation.mutate(id);
 			}
 		});
 	};
@@ -80,19 +105,22 @@ export function AdminPackagesPage({ onNavigate }) {
 			name: "Nama Paket",
 			selector: (row) => row.name,
 			sortable: true,
-			width: "200px",
+			width: "250px",
 		},
 		{
 			name: "Total Harga",
-			selector: (row) => `Rp ${row.totalPrice.toLocaleString()}`,
+			selector: (row) => {
+				const hargaAkhir = Math.max(row.totalPrice || 0, 0);
+				return `Rp ${hargaAkhir.toLocaleString()}`;
+			},
 			sortable: true,
-			width: "120px",
+			width: "200px",
 		},
 		{
 			name: "Jumlah Item",
 			selector: (row) => `${row.items.length} item`,
 			sortable: true,
-			width: "100px",
+			width: "200px",
 		},
 		{
 			name: "Status Promo",
@@ -130,7 +158,7 @@ export function AdminPackagesPage({ onNavigate }) {
 				}
 			},
 			sortable: false,
-			width: "120px",
+			width: "250px",
 		},
 		{
 			name: "Aksi",
@@ -163,6 +191,19 @@ export function AdminPackagesPage({ onNavigate }) {
 		);
 	});
 
+	// Jika Error saat fetching data terjadi, tampilkan pesan error
+	if (error) {
+		return (
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+				<h3 className="text-lg font-semibold mb-2">Error</h3>
+				<p className="text-gray-500 mb-4 text-center">
+					Gagal mengambil data packages
+				</p>
+			</div>
+		);
+	}
+
 	return (
 		<div className="py-8">
 			<div className="mb-8">
@@ -186,7 +227,13 @@ export function AdminPackagesPage({ onNavigate }) {
 					</button>
 				</div>
 
-				{packages.length === 0 ? (
+				{/* Tampilan Loading jika data belum selesai diambil  */}
+				{isLoading ? (
+					<div className="flex items-center justify-center h-64 text-gray-600">
+						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+						<p className="ml-3">Loading packages data...</p>
+					</div>
+				) : packages.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 						<h3 className="text-lg font-semibold mb-2">Belum Ada Paket</h3>
@@ -246,9 +293,22 @@ export function AdminPackagesPage({ onNavigate }) {
 											<div className="flex justify-between items-center font-semibold">
 												<span>Total Harga:</span>
 												<span className="text-yellow-600">
-													Rp {data.totalPrice.toLocaleString()}
+													Rp{" "}
+													{Math.max(
+														(data.totalPrice || 0) - (data.diskon || 0),
+														0
+													).toLocaleString()}
 												</span>
 											</div>
+											{data.diskon > 0 && (
+												<div className="flex justify-between items-center text-sm text-gray-500 mt-1">
+													<span>Rincian: </span>
+													<span>
+														(Harga dasar Rp {data.totalPrice.toLocaleString()})
+														- Diskon Rp {data.diskon.toLocaleString()}
+													</span>
+												</div>
+											)}
 										</div>
 									</div>
 								</div>

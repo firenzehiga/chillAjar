@@ -43,9 +43,9 @@ import { AdminFormSessionsPage } from "./pages/admin/manage-sessions/FormSession
 import { AdminTestimoniesPage } from "./pages/admin/manage-testimonials/AdminTestimoniesPage";
 import { AdminFormTestimoniesPage } from "./pages/admin/manage-testimonials/FormTestimoniesPage";
 import { AdminItemsPage } from "./pages/admin/manage-items/AdminItemsPage";
-import { AdminFormItemPage } from "./pages/admin/manage-items/FormItemPage";
+import { AdminFormItemsPage } from "./pages/admin/manage-items/FormItemPage";
 import { AdminPackagesPage } from "./pages/admin/manage-packages/AdminPackagesPage";
-import { AdminFormPackagePage } from "./pages/admin/manage-packages/FormPackagePage";
+import { AdminFormPackagesPage } from "./pages/admin/manage-packages/FormPackagePage";
 // Halaman Mentor
 import { MentorDashboard } from "./pages/mentor/MentorDashboard";
 import { MentorSchedulePage } from "./pages/mentor/sessions/MentorSchedulePage";
@@ -657,9 +657,10 @@ function App() {
 
 		// Menampilkan skeleton loading jika halaman yang diakses sedang loading dan termasuk dalam array skeletonPages
 		const skeletonPages = ["home", "courses"];
-		const showSkeleton = isLoading && skeletonPages.includes(currentPage);
+		const showSkeleton =
+			isLoading && skeletonPages.includes(currentPage) && !isAuthenticated; // Hanya untuk pelanggan atau guest
 
-		// jika showSkeleton bernilai true, maka tampilkan skeleton card sebanyak 6 buah dalam grid
+		// Menampilkan skeleton loading untuk guest belum login
 		if (showSkeleton) {
 			return (
 				<div className="py-8">
@@ -726,6 +727,7 @@ function App() {
 			}
 		}
 
+		// LOGIKA UNTUK HANDLE EDIT DATA (ADMIN)
 		if (userRole === "admin") {
 			// Tangani URL dinamis terlebih dahulu
 			if (currentPage.startsWith("admin-edit-course")) {
@@ -758,6 +760,20 @@ function App() {
 					<AdminFormSessionsPage onNavigate={handleNavigate} sessionId={id} />
 				);
 			}
+
+			if (currentPage.startsWith("admin-edit-item")) {
+				const id = currentPage.split("admin-edit-item/")[1];
+				return <AdminFormItemsPage onNavigate={handleNavigate} itemId={id} />;
+			}
+
+			if (currentPage.startsWith("admin-edit-package")) {
+				const id = currentPage.split("admin-edit-package/")[1];
+				return (
+					<AdminFormPackagesPage onNavigate={handleNavigate} packageId={id} />
+				);
+			}
+
+			// LOGIKA UNTUK HANDLE HALAMAN ADMIN
 			// Gunakan switch untuk halaman statis
 			if (adminPages.includes(currentPage)) {
 				switch (currentPage) {
@@ -796,26 +812,21 @@ function App() {
 						return <AdminMentorsPage onNavigate={handleNavigate} />;
 					case "admin-add-mentor":
 						return <AdminFormMentorsPage onNavigate={handleNavigate} />;
-					case "admin-edit-mentor":
-						return <AdminFormMentorsPage onNavigate={handleNavigate} />;
 					case "admin-manage-items":
 						return <AdminItemsPage onNavigate={handleNavigate} />;
 					case "admin-add-item":
-						return <AdminFormItemPage onNavigate={handleNavigate} />;
-					case "admin-edit-item":
-						return <AdminFormItemPage onNavigate={handleNavigate} />;
+						return <AdminFormItemsPage onNavigate={handleNavigate} />;
 					case "admin-manage-packages":
 						return <AdminPackagesPage onNavigate={handleNavigate} />;
 					case "admin-add-package":
-						return <AdminFormPackagePage onNavigate={handleNavigate} />;
-					case "admin-edit-package":
-						return <AdminFormPackagePage onNavigate={handleNavigate} />;
+						return <AdminFormPackagesPage onNavigate={handleNavigate} />;
 					default:
 						break;
 				}
 			}
 		}
 
+		// LOGIKA UNTUK HANDLE EDIT DATA (MENTOR)
 		if (userRole === "mentor") {
 			// Tangani URL dinamis terlebih dahulu
 			if (currentPage.startsWith("mentor-edit-course")) {
@@ -825,6 +836,7 @@ function App() {
 				);
 			}
 
+			// LOGIKA UNTUK HANDLE HALAMAN MENTOR
 			// Gunakan switch untuk halaman statis
 			if (mentorPages.includes(currentPage)) {
 				switch (currentPage) {

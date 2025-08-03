@@ -1,30 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import api from "../../../api.jsx";
 import { Package, ArrowLeft, AlertCircle } from "lucide-react";
 import Swal from "sweetalert2";
+import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
 
-export function AdminFormItemPage({ onNavigate, itemId }) {
+export function AdminFormItemsPage({ onNavigate, itemId }) {
 	const isEditMode = !!itemId;
 
 	const [formData, setFormData] = useState({
 		name: "",
 		price: "",
+		diskon: 0,
 		description: "",
 	});
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	// Mock data untuk edit mode
-	React.useEffect(() => {
-		if (isEditMode) {
-			// Simulasi fetch data item
-			const mockItem = {
-				name: "1 Materi pembelajaran",
-				price: 5000,
-				description: "Belajar 1 topik materi dengan mentor",
+	// Fetch data item untuk edit mode
+	useEffect(() => {
+		if (isEditMode && itemId) {
+			const fetchItem = async () => {
+				try {
+					setLoading(true);
+					const token = localStorage.getItem("token");
+					const response = await api.get(`/item-paket/${itemId}`, {
+						headers: { Authorization: `Bearer ${token}` },
+					});
+
+					// Mapping data dari response ke formData
+					setFormData({
+						name: response.data.nama || "",
+						price: response.data.harga || "",
+						diskon: response.data.diskon || 0,
+						description: response.data.deskripsi || "",
+					});
+				} catch (err) {
+					setError("Gagal mengambil data item");
+					console.error("Error fetching item:", err);
+					Swal.fire({
+						icon: "error",
+						title: "Error!",
+						text: "Gagal mengambil data item. Item mungkin tidak ditemukan.",
+						confirmButtonColor: "#EF4444",
+					});
+					// Redirect kembali ke manage items jika item tidak ditemukan
+					onNavigate("admin-manage-items");
+				} finally {
+					setLoading(false);
+				}
 			};
-			setFormData(mockItem);
+			fetchItem();
 		}
-	}, [isEditMode]);
+	}, [itemId, isEditMode, onNavigate]);
 
 	const handleChange = (e) => {
 		const { name, value, type, checked } = e.target;
@@ -47,29 +74,64 @@ export function AdminFormItemPage({ onNavigate, itemId }) {
 			if (!formData.price || formData.price <= 0) {
 				throw new Error("Harga harus lebih dari 0");
 			}
+			if (formData.diskon < 0) {
+				throw new Error("Diskon tidak boleh negatif");
+			}
 
-			// Simulasi API call
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const token = localStorage.getItem("token");
+
+			// Payload sesuai database
+			const payload = {
+				nama: formData.name,
+				harga: Number(formData.price),
+				diskon: Number(formData.diskon) || 0,
+				deskripsi: formData.description,
+			};
+
+			let response;
+			if (isEditMode && itemId) {
+				response = await api.put(`/item-paket/${itemId}`, payload, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+			} else {
+				response = await api.post("/item-paket", payload, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
+			}
+
+			if (response?.data?.success === false || response?.status >= 400) {
+				throw new Error(response?.data?.message || "Gagal menyimpan data item");
+			}
 
 			Swal.fire({
 				icon: "success",
 				title: "Berhasil!",
-				text: `Item ${isEditMode ? "diperbarui" : "ditambahkan"} successfully!`,
-				confirmButtonColor: "#3B82F6",
+				text: `Item ${isEditMode ? "diperbarui" : "ditambahkan"} berhasil!`,
+				showConfirmButton: false,
+				timer: 1500,
 			});
 			onNavigate("admin-manage-items");
 		} catch (err) {
-			setError(err.message);
+			const errorMessage =
+				err.response?.data?.message ||
+				err.message ||
+				(isEditMode ? "Gagal memperbarui item" : "Gagal membuat item");
+			setError(errorMessage);
 			Swal.fire({
 				icon: "error",
 				title: "Error!",
-				text: err.message,
+				text: errorMessage,
 				confirmButtonColor: "#EF4444",
 			});
+			console.error("Error details:", err.response ? err.response.data : err);
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	if (loading && isEditMode) {
+		return <FormSkeletonCard />;
+	}
 
 	return (
 		<div className="py-8">
@@ -90,7 +152,7 @@ export function AdminFormItemPage({ onNavigate, itemId }) {
 				</h2>
 
 				<form onSubmit={handleSubmit}>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
 						<div>
 							<label
 								htmlFor="name"
@@ -124,6 +186,23 @@ export function AdminFormItemPage({ onNavigate, itemId }) {
 								placeholder="5000"
 								min="0"
 								required
+							/>
+						</div>
+						<div>
+							<label
+								htmlFor="diskon"
+								className="block text-sm font-medium text-gray-700 mb-1">
+								Diskon (Rupiah)
+							</label>
+							<input
+								type="number"
+								id="diskon"
+								name="diskon"
+								value={formData.diskon}
+								onChange={handleChange}
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+								placeholder="Diskon, contoh: 1000"
+								min="0"
 							/>
 						</div>
 					</div>
@@ -174,4 +253,4 @@ export function AdminFormItemPage({ onNavigate, itemId }) {
 	);
 }
 
-export default AdminFormItemPage;
+export default AdminFormItemsPage;
