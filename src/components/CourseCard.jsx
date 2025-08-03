@@ -19,8 +19,7 @@ const preloadDefaultImage = () => {
 	defaultImg.onload = () => {
 		loadedImages.add("/foto_kursus/default.jpg");
 	};
-	defaultImg.onerror = () => {
-	};
+	defaultImg.onerror = () => {};
 };
 
 // Panggil preload saat pertama kali import
@@ -83,9 +82,7 @@ export function CourseCard({ course, onClick }) {
 						}}
 					/>
 				)}
-				<div className="absolute top-3 right-3 bg-blue-900 text-white px-3 py-1 rounded-full text-sm font-medium transform transition-transform duration-300 hover:scale-105">
-					Rp{course.price_per_hour}/sesi
-				</div>
+				{/* Harga dihilangkan karena sekarang ada di paket */}
 			</div>
 			<div className="p-5">
 				<h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-800 transition-colors duration-300">

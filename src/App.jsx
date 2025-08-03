@@ -23,6 +23,7 @@ import { SessionHistoryPage } from "./pages/SessionHistoryPage";
 import { AboutPage } from "./pages/AboutPage";
 import { AuthModal } from "./components/AuthModal";
 import { CourseSelectionModal } from "./components/CourseSelectionModal";
+import { CoursePackageSelectionModal } from "./components/CoursePackageSelectionModal";
 import { Home } from "./pages/Home";
 
 // Import Zustand Store
@@ -127,12 +128,14 @@ function App() {
 		showPayment,
 		showBookingModal,
 		showCourseSelection,
+		showPackageSelection,
 		showPostLoginLoading,
 		showHelpMenu,
 		showFlowModal,
 		// Course & Booking State
 		selectedCourse,
 		selectedMentor,
+		selectedPackage,
 		bookingCourse,
 		currentBooking,
 		searchQuery,
@@ -141,12 +144,14 @@ function App() {
 		setSelectedCourse,
 		setSearchQuery,
 		setSelectedMentor,
+		setSelectedPackage,
 		setBookingCourse,
 		setShowPayment,
 		setShowBookingModal,
 		setCurrentBooking,
 		setShowAuthModal,
 		setShowCourseSelection,
+		setShowPackageSelection,
 		setShowHelpMenu,
 		setShowFlowModal,
 		handleLogout,
@@ -325,17 +330,25 @@ function App() {
 	const { handleAuthSuccess: authSuccess, updateUserData } = useAppStore();
 
 	// Helper functions
-	const handleSchedule = (mentor, course, schedules, location) => {
+	const handleSchedule = (mentor, course, packageData) => {
 		if (!isAuthenticated) {
 			setShowAuthModal(true);
 			return;
 		}
+
+		// Close all modals first
+		setShowCourseSelection(false);
+		setShowPackageSelection(false);
+
 		setSelectedMentor(mentor);
 		setBookingCourse(course);
+		if (packageData) {
+			setSelectedPackage(packageData);
+		}
 		// Cari course asli dari courses utama
 		const fullCourse = courses.find((c) => c.id === course.id);
 		setSelectedCourse(fullCourse || course); //Memastikan state selectedCourse selalu sesuai dengan course yang akan di-booking
-		setCurrentBooking({ schedules, location, mentor, course }); // Simpan semua data sementara
+		setCurrentBooking({ mentor, course, packageData }); // Simpan semua data sementara
 		setShowBookingModal(true); // state untuk membuka modal
 	};
 
@@ -343,6 +356,19 @@ function App() {
 	const handleCourseSelectionClose = () => {
 		setShowCourseSelection(false);
 		setBookingCourse(null); // Reset bookingCourse jika Cancel ditekan
+	};
+
+	// Handler untuk course package selection dari mentor flow
+	const handleCoursePackageSelect = (course) => {
+		setSelectedCourse(course);
+		// PENTING: Simpan mentor dari course yang dipilih
+		if (course.mentor) {
+			setSelectedMentor(course.mentor);
+		} else {
+			console.warn("Course doesn't have mentor data:", course);
+		}
+		setShowCourseSelection(false); // Tutup course selection modal
+		setShowPackageSelection(true); // Buka package selection modal
 	};
 
 	// Fungsi untuk memilih kursus dari CourseSelectionModal
@@ -616,6 +642,16 @@ function App() {
 	// Fungsi untuk menangani klik kursus
 	const handleCourseClick = (course) => {
 		setSelectedCourse(course);
+		setShowPackageSelection(true);
+	};
+
+	// Fungsi untuk menangani pemilihan paket
+	const handlePackageSelected = (packageData) => {
+		setSelectedPackage(packageData);
+		setShowPackageSelection(false);
+		// Setelah pilih paket, tampilkan mentor dari course yang dipilih
+		console.log("Package selected:", packageData);
+		console.log("Course selected:", selectedCourse);
 	};
 
 	// Fungsi untuk menutup BookingModal
@@ -623,7 +659,15 @@ function App() {
 		setSelectedMentor(null);
 		setBookingCourse(null);
 		setSelectedCourse(null); // kalo gajadi, reset selectedCourse juga
+		setSelectedPackage(null);
 		setShowBookingModal(false);
+	};
+
+	// Fungsi untuk menutup PackageSelectionModal
+	const handlePackageSelectionClose = () => {
+		setSelectedCourse(null);
+		setSelectedPackage(null);
+		setShowPackageSelection(false);
 	};
 
 	// Render konten berdasarkan halaman
@@ -926,14 +970,18 @@ function App() {
 						<MentorsPage
 							courses={courses}
 							onSchedule={handleSchedule}
+							onCoursePackageSelect={handleCoursePackageSelect}
 							showPostLoginLoading={showPostLoginLoading}
 						/>
 					);
 				case "courses":
-					return selectedCourse ? (
+					return selectedCourse && selectedPackage ? (
 						<div className="py-4">
 							<button
-								onClick={() => setSelectedCourse(null)}
+								onClick={() => {
+									setSelectedCourse(null);
+									setSelectedPackage(null);
+								}}
 								className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 								type="button">
 								<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
@@ -954,8 +1002,35 @@ function App() {
 								</div>
 								<p className="translate-x-2">Go Back</p>
 							</button>
+
+							{/* Course & Package Info */}
+							<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+								<h3 className="text-xl font-semibold text-gray-900 mb-2">
+									{selectedCourse.courseName}
+								</h3>
+								<p className="text-gray-600 mb-3">
+									{selectedCourse.courseDescription}
+								</p>
+								<div className="flex items-center gap-4">
+									<div className="bg-white px-3 py-1 rounded-lg border">
+										<span className="text-sm font-medium text-gray-700">
+											Paket: {selectedPackage.name}
+										</span>
+									</div>
+									<div className="bg-white px-3 py-1 rounded-lg border">
+										<span className="text-sm font-medium text-green-600">
+											Rp{" "}
+											{(
+												selectedPackage.totalPrice -
+												(selectedPackage.diskon || 0)
+											).toLocaleString()}
+										</span>
+									</div>
+								</div>
+							</div>
+
 							<h2 className="text-2xl font-bold text-gray-900 mb-6">
-								{selectedCourse.courseName} - Available Mentors
+								Pilih Mentor untuk {selectedCourse.courseName}
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 								{selectedCourse.mentors
@@ -964,7 +1039,9 @@ function App() {
 										<MentorCard
 											key={mentor.id}
 											mentor={mentor}
-											onSchedule={handleSchedule}
+											onSchedule={(selectedMentor, course) =>
+												handleSchedule(selectedMentor, course, selectedPackage)
+											}
 											selectedCourse={selectedCourse}
 											schedules={schedules}
 										/>
@@ -974,7 +1051,7 @@ function App() {
 					) : (
 						<CoursesPage
 							courses={courses}
-							onCourseClick={setSelectedCourse}
+							onCourseClick={handleCourseClick}
 							isLoading={isLoading}
 							searchQuery={searchQuery}
 							setSearchQuery={setSearchQuery}
@@ -985,10 +1062,13 @@ function App() {
 				case "about":
 					return <AboutPage />;
 				case "home":
-					return selectedCourse ? (
+					return selectedCourse && selectedPackage ? (
 						<div className="py-4">
 							<button
-								onClick={() => setSelectedCourse(null)}
+								onClick={() => {
+									setSelectedCourse(null);
+									setSelectedPackage(null);
+								}}
 								className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 								type="button">
 								<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
@@ -1009,8 +1089,35 @@ function App() {
 								</div>
 								<p className="translate-x-2">Go Back</p>
 							</button>
+
+							{/* Course & Package Info */}
+							<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+								<h3 className="text-xl font-semibold text-gray-900 mb-2">
+									{selectedCourse.courseName}
+								</h3>
+								<p className="text-gray-600 mb-3">
+									{selectedCourse.courseDescription}
+								</p>
+								<div className="flex items-center gap-4">
+									<div className="bg-white px-3 py-1 rounded-lg border">
+										<span className="text-sm font-medium text-gray-700">
+											Paket: {selectedPackage.name}
+										</span>
+									</div>
+									<div className="bg-white px-3 py-1 rounded-lg border">
+										<span className="text-sm font-medium text-green-600">
+											Rp{" "}
+											{(
+												selectedPackage.totalPrice -
+												(selectedPackage.diskon || 0)
+											).toLocaleString()}
+										</span>
+									</div>
+								</div>
+							</div>
+
 							<h2 className="text-2xl font-bold text-gray-900 mb-6">
-								{selectedCourse.courseName} - Available Mentors
+								Pilih Mentor untuk {selectedCourse.courseName}
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
 								{selectedCourse.mentors
@@ -1019,7 +1126,9 @@ function App() {
 										<MentorCard
 											key={mentor.id}
 											mentor={mentor}
-											onSchedule={handleSchedule}
+											onSchedule={(selectedMentor, course) =>
+												handleSchedule(selectedMentor, course, selectedPackage)
+											}
 											selectedCourse={selectedCourse}
 										/>
 									))}
@@ -1135,10 +1244,12 @@ function App() {
 						onSelect={handleCourseSelect}
 						onClose={handleCourseSelectionClose}
 						onConfirm={() => {
-							setShowCourseSelection(false);
-							// handleSchedule akan menggunakan jadwal_kursus dari course yang dipilih
-							handleSchedule(selectedMentor, bookingCourse);
+							// Sekarang semua course selection harus melalui package selection
+							if (bookingCourse) {
+								handleCoursePackageSelect(bookingCourse);
+							}
 						}}
+						onCoursePackageSelect={handleCoursePackageSelect}
 						selectedCourse={bookingCourse}
 					/>
 				)}
@@ -1230,6 +1341,38 @@ function App() {
 						show={showFlowModal}
 						onClose={() => setShowFlowModal(false)}
 					/>
+
+					{/* Package Selection Modal */}
+					{showPackageSelection && selectedCourse && (
+						<CoursePackageSelectionModal
+							course={selectedCourse}
+							onClose={() => {
+								setShowPackageSelection(false);
+								// Reset if coming from mentor flow
+								if (selectedMentor) {
+									setSelectedCourse(null);
+								}
+							}}
+							onConfirm={(selectedPackage) => {
+								setSelectedPackage(selectedPackage);
+								setShowPackageSelection(false);
+
+								// If we have a mentor (mentor -> course -> package flow)
+								if (selectedMentor) {
+									// Trigger booking modal with mentor, course, and package
+									handleSchedule(
+										selectedMentor,
+										selectedCourse,
+										selectedPackage
+									);
+									// Don't clear mentor selection immediately - let booking modal handle it
+									// setSelectedMentor(null);
+								}
+								// If no mentor (course -> package -> mentor flow),
+								// the mentor selection will be shown via the course/home page rendering logic
+							}}
+						/>
+					)}
 				</>
 			) : null}
 			{/* Tombol bantuan dan alur pemesanan */}

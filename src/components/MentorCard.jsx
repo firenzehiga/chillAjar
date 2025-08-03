@@ -15,6 +15,7 @@ import { getImageUrl } from "../utils/getImageUrl";
 export function MentorCard({
 	mentor,
 	onSchedule,
+	onCoursePackageSelect, // New prop for package selection
 	selectedCourse = null,
 	resetCourseSelection,
 }) {
@@ -62,7 +63,13 @@ export function MentorCard({
 	const handleConfirmCourse = () => {
 		if (selectedMentorCourse) {
 			setShowCourseModal(false);
-			onSchedule(mentor, selectedMentorCourse);
+			// Use package selection flow instead of direct scheduling
+			if (onCoursePackageSelect) {
+				onCoursePackageSelect(selectedMentorCourse);
+			} else {
+				// Fallback to old behavior if no package selection handler
+				onSchedule(mentor, selectedMentorCourse);
+			}
 		}
 	};
 
@@ -243,6 +250,7 @@ export function MentorCard({
 					selectedCourse={selectedMentorCourse}
 					onSelect={handleCourseSelect}
 					onConfirm={handleConfirmCourse}
+					onCoursePackageSelect={onCoursePackageSelect}
 					onClose={handleCloseCourseModal}
 				/>
 			)}

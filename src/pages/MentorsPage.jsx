@@ -5,7 +5,12 @@ import defaultPhoto from "../../public/foto_kursus/default.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { MentorSkeletonCard } from "../components/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "../utils/getImageUrl";
-export function MentorsPage({ courses, onSchedule, showPostLoginLoading }) {
+export function MentorsPage({
+	courses,
+	onSchedule,
+	onCoursePackageSelect,
+	showPostLoginLoading,
+}) {
 	const {
 		data: mentors = [],
 		isLoading,
@@ -45,12 +50,28 @@ export function MentorsPage({ courses, onSchedule, showPostLoginLoading }) {
 	const mentorsData = mentors
 		.filter((mentor) => mentor.status === "active")
 		.map((mentor) => {
+			// Buat mapped mentor object dulu
+			const mappedMentor = {
+				id: mentor.id,
+				mentorName: mentor.user?.nama || "Unknown Mentor",
+				mentorImage: getImageUrl(
+					mentor.user?.foto_profil,
+					"/foto_mentor/default.png"
+				),
+				mentorRating: mentor.rating || 0,
+				mentorAbout: mentor.deskripsi || "No description",
+				phone: mentor.user?.nomorTelepon || "+1234567890",
+				mentorAddress: mentor.user?.alamat || "Alamat tidak tersedia",
+				// Keep original mentor data for compatibility
+				...mentor,
+			};
+
 			// Mengambil kursus dari prop courses yang sudah di-fetch di App.jsx
 			const mentorCourses = courses
 				.filter((course) => course.mentor_id === mentor.id)
 				.map((course) => ({
 					...course,
-					mentor: mentor, // <-- tambahkan property mentor agar bisa diakses di CourseSelectionModal
+					mentor: mappedMentor, // <-- gunakan mapped mentor, bukan raw mentor
 					id: course.id,
 					courseName: course.courseName,
 					courseDescription: course.courseDescription,
@@ -67,14 +88,7 @@ export function MentorsPage({ courses, onSchedule, showPostLoginLoading }) {
 				: ["Unknown"];
 
 			return {
-				id: mentor.id,
-				mentorName: mentor.user?.nama || "Unknown Mentor",
-				mentorImage: getImageUrl(
-					mentor.user?.foto_profil,
-					"/foto_mentor/default.png"
-				),
-				mentorRating: mentor.rating || 0,
-				mentorAbout: mentor.deskripsi || "No description",
+				...mappedMentor,
 				availableLearnMethod,
 				teachingMode: {
 					online: mentorCourses.some(
@@ -84,8 +98,6 @@ export function MentorsPage({ courses, onSchedule, showPostLoginLoading }) {
 						(c) => c.learnMethod === "Offline Learning"
 					),
 				},
-				phone: mentor.user?.nomorTelepon || "+1234567890",
-				mentorAddress: mentor.user?.alamat || "Alamat tidak tersedia",
 				courses: mentorCourses,
 			};
 		});
@@ -99,6 +111,7 @@ export function MentorsPage({ courses, onSchedule, showPostLoginLoading }) {
 						key={mentor.id}
 						mentor={mentor}
 						onSchedule={onSchedule}
+						onCoursePackageSelect={onCoursePackageSelect}
 						showCourseSelect={true}
 					/>
 				))}

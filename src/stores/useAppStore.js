@@ -18,6 +18,7 @@ const useAppStore = create((set, get) => ({
 	showPayment: false,
 	showBookingModal: false,
 	showCourseSelection: false,
+	showPackageSelection: false,
 	showPostLoginLoading: false,
 	showHelpMenu: false,
 	showFlowModal: false,
@@ -25,6 +26,7 @@ const useAppStore = create((set, get) => ({
 	// Course & Booking State
 	selectedCourse: null,
 	selectedMentor: null,
+	selectedPackage: null,
 	bookingCourse: null,
 	currentBooking: null,
 	searchQuery: "",
@@ -43,6 +45,7 @@ const useAppStore = create((set, get) => ({
 	setShowPayment: (show) => set({ showPayment: show }),
 	setShowBookingModal: (show) => set({ showBookingModal: show }),
 	setShowCourseSelection: (show) => set({ showCourseSelection: show }),
+	setShowPackageSelection: (show) => set({ showPackageSelection: show }),
 	setShowPostLoginLoading: (show) => set({ showPostLoginLoading: show }),
 	setShowHelpMenu: (show) => set({ showHelpMenu: show }),
 	setShowFlowModal: (show) => set({ showFlowModal: show }),
@@ -50,6 +53,7 @@ const useAppStore = create((set, get) => ({
 	// Actions - Course & Booking
 	setSelectedCourse: (course) => set({ selectedCourse: course }),
 	setSelectedMentor: (mentor) => set({ selectedMentor: mentor }),
+	setSelectedPackage: (packageData) => set({ selectedPackage: packageData }),
 	setBookingCourse: (course) => set({ bookingCourse: course }),
 	setCurrentBooking: (booking) => set({ currentBooking: booking }),
 	setSearchQuery: (query) => set({ searchQuery: query }),

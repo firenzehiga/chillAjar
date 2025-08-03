@@ -8,6 +8,7 @@ export function CourseSelectionModal({
 	onConfirm,
 	onClose,
 	selectedCourse,
+	onCoursePackageSelect, // New prop to handle course selection and trigger package modal
 }) {
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -69,9 +70,6 @@ export function CourseSelectionModal({
 												{course.mentor?.user?.nama}
 											</span>
 										</div>
-										<span className="text-sm font-bold text-yellow-600 whitespace-nowrap">
-											Rp{course.price_per_hour}/sesi
-										</span>
 									</div>
 									<div className="pl-1">
 										<p className="text-xs text-gray-700 mb-1 leading-snug">
@@ -155,14 +153,20 @@ export function CourseSelectionModal({
 						</button>
 						<button
 							type="button"
-							onClick={onConfirm}
+							onClick={() => {
+								if (selectedCourse && onCoursePackageSelect) {
+									onCoursePackageSelect(selectedCourse);
+								} else {
+									onConfirm();
+								}
+							}}
 							className={`px-4 py-2 rounded-lg font-medium ${
 								selectedCourse
 									? "bg-black text-white hover:bg-yellow-600"
 									: "bg-gray-200 text-gray-500 cursor-not-allowed"
 							}`}
 							disabled={!selectedCourse}>
-							Confirm Selection
+							{onCoursePackageSelect ? "Select Package" : "Confirm Selection"}
 						</button>
 					</div>
 				</div>
