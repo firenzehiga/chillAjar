@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { X, Clock, Monitor, MapPin, BookOpen, AlertCircle } from "lucide-react";
+import {
+	X,
+	Clock,
+	Monitor,
+	MapPin,
+	BookOpen,
+	AlertCircle,
+	Gift,
+} from "lucide-react";
 
-export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
+export function BookingModal({
+	mentor,
+	selectedCourse,
+	selectedPackage,
+	onClose,
+	onSubmit,
+}) {
 	const [selectedMode, setSelectedMode] = useState(null);
 	const [selectedLocation, setSelectedLocation] = useState(null);
 	const [selectedDate, setSelectedDate] = useState(null);
@@ -10,14 +24,14 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 	const [topic, setTopic] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 
-	// Only use schedules with valid gayaMengajar
+	// Memastikan hanya menggunakan jadwal dengan gayaMengajar valid
 	const filteredSchedules = (
 		selectedCourse?.schedules ||
 		selectedCourse?.mentors?.[0]?.schedules ||
 		[]
 	).filter((s) => s.gayaMengajar === "online" || s.gayaMengajar === "offline");
 
-	// Build available modes from schedules
+	// Buat available modes dari jadwal
 	const availableModes = Array.from(
 		new Set(filteredSchedules.map((s) => s.gayaMengajar))
 	);
@@ -32,7 +46,7 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 		}
 	}, [selectedCourse]);
 
-	// Build available locations for offline
+	// Buat available locations untuk offline
 	const availableLocations =
 		selectedMode === "offline"
 			? [
@@ -45,8 +59,8 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 			  ]
 			: [];
 
-	// Build available dates for selected mode/location
-	// --- Perubahan: Build daftar tanggal hanya dari jadwal dengan gayaMengajar valid dan sesuai mode & lokasi ---
+	// Buat available dates dari jadwal
+	// --- Perubahan: Buat daftar tanggal hanya dari jadwal dengan gayaMengajar valid dan sesuai mode & lokasi ---
 	const availableDates =
 		selectedMode && filteredSchedules.length > 0
 			? [
@@ -66,8 +80,8 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 			: [];
 	// --- END Perubahan ---
 
-	// Build available times for selected date/mode/location
-	// --- Perubahan: Build daftar waktu hanya dari jadwal dengan gayaMengajar valid, tanggal, mode, dan lokasi ---
+	// Buat available times dari jadwal untuk selected date/mode/location
+	// --- Perubahan: Buat daftar waktu hanya dari jadwal dengan gayaMengajar valid, tanggal, mode, dan lokasi ---
 	const availableTimes =
 		selectedDate && selectedMode && filteredSchedules.length > 0
 			? filteredSchedules
@@ -117,14 +131,20 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 			selectedMode,
 			selectedCourse,
 			topic,
-			selectedLocation
+			selectedLocation,
+			selectedPackage // Ngirim paket yang dipilih ke parent(App.jsx)
 		);
 		onClose();
 	};
 
+	// Hitung Harga Paket
+	const packagePrice = selectedPackage?.totalPrice || 0;
+	const packageDiscount = selectedPackage?.diskon || 0;
+	const finalPrice = Math.max(packagePrice - packageDiscount, 0);
+
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] flex flex-col">
+			<div className="bg-white rounded-lg w-full max-w-lg max-h-[90vh] flex flex-col">
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
@@ -140,17 +160,91 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 				</div>
 
 				<div className="flex-1 overflow-y-auto p-6">
+					{/* Course Information */}
 					{selectedCourse && (
-						<div className="mb-6 p-4 bg-blue-50 rounded-lg">
+						<div className="mb-4 p-4 bg-blue-50 rounded-lg">
 							<div className="flex items-center">
 								<BookOpen className="w-5 h-5 text-blue-600 mr-2" />
 								<h3 className="font-medium text-blue-900">
 									{selectedCourse.courseName}
 								</h3>
 							</div>
-							<p className="text-sm text-blue-700">
-								Rp{selectedCourse.price_per_hour}/sesi
+							<p className="text-sm text-blue-700 mt-1">
+								{selectedCourse.description ||
+									"Kursus pembelajaran dengan mentor berpengalaman"}
 							</p>
+						</div>
+					)}
+
+					{/* Package Information */}
+					{selectedPackage && (
+						<div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+							<div className="flex items-start justify-between">
+								<div className="flex-1">
+									<div className="flex items-center mb-2">
+										<Gift className="w-5 h-5 text-yellow-600 mr-2" />
+										<h3 className="font-medium text-yellow-900">
+											{selectedPackage.name}
+										</h3>
+									</div>
+
+									<p className="text-sm text-yellow-700 mb-3">
+										{selectedPackage.description}
+									</p>
+
+									{/* Package Items */}
+									{selectedPackage.items &&
+										selectedPackage.items.length > 0 && (
+											<div className="mb-3">
+												<h4 className="text-xs font-medium text-yellow-800 mb-2 flex items-center">
+													<Star className="w-3 h-3 mr-1" />
+													Yang Anda Dapatkan:
+												</h4>
+												<div className="space-y-1">
+													{selectedPackage.items
+														.slice(0, 3)
+														.map((item, index) => (
+															<div
+																key={index}
+																className="flex items-center text-xs text-yellow-700">
+																<div className="w-1 h-1 bg-yellow-500 rounded-full mr-2 flex-shrink-0"></div>
+																<span>{item.name}</span>
+															</div>
+														))}
+													{selectedPackage.items.length > 3 && (
+														<div className="text-xs text-yellow-600 ml-3">
+															+{selectedPackage.items.length - 3} item lainnya
+														</div>
+													)}
+												</div>
+											</div>
+										)}
+
+									{/* Package Pricing */}
+									<div className="border-t border-yellow-200 pt-3">
+										{packageDiscount > 0 && (
+											<div className="text-xs text-gray-500 line-through">
+												Harga Normal: Rp {packagePrice.toLocaleString()}
+											</div>
+										)}
+										<div className="flex items-center justify-between">
+											<div>
+												<span className="text-lg font-bold text-yellow-900">
+													Rp {finalPrice.toLocaleString()}
+												</span>
+												{packageDiscount > 0 && (
+													<div className="text-xs text-green-600 font-medium">
+														Hemat Rp {packageDiscount.toLocaleString()}
+													</div>
+												)}
+											</div>
+											<div className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded">
+												Paket Dipilih
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					)}
 
@@ -165,13 +259,13 @@ export function BookingModal({ mentor, selectedCourse, onClose, onSubmit }) {
 						<label
 							htmlFor="topic"
 							className="block text-sm font-medium text-gray-700 mb-1">
-							Topic to Discuss (Optional)
+							Kamu ingin membahas apa?
 						</label>
 						<textarea
 							id="topic"
 							value={topic}
 							onChange={(e) => setTopic(e.target.value)}
-							placeholder="Enter the topic you want to discuss in this session..."
+							placeholder="Tuliskan topik yang ingin kamu bahas bersama mentor dalam sesi ini... (Bisa nama materi, pertanyaan spesifik, atau hal lain yang ingin didiskusikan)"
 							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 							rows="3"
 						/>

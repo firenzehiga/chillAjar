@@ -22,12 +22,26 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 			setError(null);
 			const token = localStorage.getItem("token");
 
-			const response = await api.get("/paket", {
+			console.log("Fetching packages for course:", course);
+
+			// Ambil data kursus beserta paket yang visible
+			const response = await api.get(`/kursus/${course.id}`, {
 				headers: token ? { Authorization: `Bearer ${token}` } : {},
 			});
 
+			console.log("Response dari /kursus:", response.data);
+
+			// Ambil paket dari visibilitasPaket yang statusnya visible (visibilitas = 1)
+			const visiblePackages =
+				response.data.visibilitas_paket
+					?.filter((vp) => vp.visibilitas === 1)
+					?.map((vp) => vp.paket)
+					?.filter((pkg) => pkg) || [];
+
+			console.log("Visible packages from visibilitas_paket:", visiblePackages);
+
 			// Filter paket yang aktif dan sudah dimulai
-			const activePackages = response.data.filter((pkg) => {
+			const activePackages = visiblePackages.filter((pkg) => {
 				const now = new Date();
 
 				// Cek tanggal mulai - paket harus sudah dimulai
@@ -44,6 +58,8 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 
 				return true; // Paket aktif dan dapat dibeli
 			});
+
+			console.log("Active packages after filtering:", activePackages);
 
 			// Map data untuk konsistensi
 			const mappedPackages = activePackages.map((pkg) => ({
@@ -106,7 +122,8 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 								</span>
 							</h2>
 							<p className="text-yellow-100 text-xs mt-1 hidden sm:block">
-								Pilih paket yang sesuai dengan kebutuhan pembelajaran Anda
+								Setiap paket memiliki benefit yang berbeda. Pilih yang paling
+								cocok untuk pembelajaran Anda.
 							</p>
 						</div>
 						<button
@@ -151,12 +168,12 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 						</div>
 					) : (
 						<>
-							<div className="mb-3 sm:mb-4">
+							{/* <div className="mb-3 sm:mb-4">
 								<h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
 									Setiap paket memiliki benefit yang berbeda. Pilih yang paling
 									cocok untuk pembelajaran Anda.{" "}
 								</h3>
-							</div>
+							</div> */}
 
 							<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
 								{packages.map((pkg) => (

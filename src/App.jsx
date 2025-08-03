@@ -1229,6 +1229,7 @@ function App() {
 					<BookingModal
 						mentor={selectedMentor}
 						selectedCourse={bookingCourse}
+						selectedPackage={selectedPackage} // Buat modal menerima data selectedPackage
 						onClose={handleBookingModalClose}
 						onSubmit={handleBookingSubmit}
 						schedules={schedules || []}

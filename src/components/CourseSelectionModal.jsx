@@ -149,7 +149,7 @@ export function CourseSelectionModal({
 							type="button"
 							onClick={onClose}
 							className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-							Cancel
+							Batal
 						</button>
 						<button
 							type="button"
@@ -166,7 +166,7 @@ export function CourseSelectionModal({
 									: "bg-gray-200 text-gray-500 cursor-not-allowed"
 							}`}
 							disabled={!selectedCourse}>
-							{onCoursePackageSelect ? "Select Package" : "Confirm Selection"}
+							{onCoursePackageSelect ? "Pilih Paket" : "Konfirmasi Pilihan"}
 						</button>
 					</div>
 				</div>
