@@ -8,6 +8,7 @@ import {
 	BookOpen,
 	AlertCircle,
 	Gift,
+	Star,
 } from "lucide-react";
 
 export function BookingModal({
@@ -125,6 +126,13 @@ export function BookingModal({
 			return;
 		}
 		setErrorMsg("");
+		// Hitung jumlahSementara: harga paket (setelah diskon) + biaya mentor
+		const mentorFee = mentor?.mentorFee || mentor?.biayaPerSesi || mentor?.biaya_per_sesi || selectedCourse?.price_per_hour || 0;
+		const packagePrice = selectedPackage?.totalPrice || 0;
+		const packageDiscount = selectedPackage?.diskon || 0;
+		const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
+		// Jika ada paket, jumlahSementara = harga paket + biaya mentor, jika tidak hanya biaya mentor
+		const jumlahSementara = selectedPackage ? finalPackagePrice + mentorFee : mentorFee;
 		onSubmit(
 			selectedDate,
 			selectedTime,
@@ -132,7 +140,8 @@ export function BookingModal({
 			selectedCourse,
 			topic,
 			selectedLocation,
-			selectedPackage // Ngirim paket yang dipilih ke parent(App.jsx)
+			selectedPackage, // Ngirim paket yang dipilih ke parent(App.jsx)
+			jumlahSementara // Kirim jumlahSementara ke parent
 		);
 		onClose();
 	};

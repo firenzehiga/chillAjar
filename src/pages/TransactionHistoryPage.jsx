@@ -69,7 +69,12 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						? "rejected"
 						: "pending_payment"
 					: "pending_payment",
-				amount: sesi.mentor?.biayaPerSesi || 0,
+				// Untuk status 'pending_payment', gunakan jumlahSementara dari sesi (hasil perhitungan backend).
+				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
+				amount:
+					transaksi?.jumlah !== undefined
+						? transaksi.jumlah
+						: sesi.jumlahSementara ?? (sesi.mentor?.biayaPerSesi || 0),
 				paymentDate: transaksi?.tanggalPembayaran || null,
 				transaksiId: transaksi?.id,
 				statusSesi,

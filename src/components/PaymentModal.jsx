@@ -61,7 +61,12 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 		}
 	};
 
-	const totalAmount = booking.course.price_per_hour;
+// Prioritaskan jumlahSementara dari backend (hasil perhitungan backend, bisa gabungan paket dan biaya mentor)
+// Jika tidak ada, fallback ke harga paket, lalu ke harga per jam kursus
+const totalAmount =
+  booking.jumlahSementara !== undefined && booking.jumlahSementara !== null
+	? booking.jumlahSementara
+	: booking.paket?.harga ?? booking.course.price_per_hour;
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

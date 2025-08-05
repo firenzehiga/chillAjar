@@ -378,13 +378,15 @@ function App() {
 
 	// Fungsi untuk mengirimkan booking
 	const handleBookingSubmit = async (
-		date,
-		time,
-		mode,
-		course,
-		topic,
-		customLocation
-	) => {
+	date,
+	time,
+	mode,
+	course,
+	topic,
+	customLocation,
+	selectedPackage,
+	jumlahSementara
+) => {
 		if (!isAuthenticated) {
 			setShowAuthModal(true);
 			return;
@@ -412,6 +414,7 @@ function App() {
 					jadwal_kursus_id: selectedSchedule?.id,
 					detailKursus: topic || "No specific topic",
 					statusSesi: "pending",
+					paket_id: selectedPackage?.id || null,
 				});
 				// 🍞 Toast multi-line
 				toast.success(
@@ -446,16 +449,24 @@ function App() {
 
 				// Simpan data sesi ke state booking
 				const sesiBaru = response.data.sesi;
+				// Ambil paket_id dari selectedPackage jika ada
+				let paketId = "";
+				if (selectedPackage?.id) {
+					paketId = selectedPackage.id;
+				}
 				const booking = {
-					course,
-					mentor: selectedMentor,
-					sesi: sesiBaru,
-					date: date.toLocaleDateString(),
-					time,
-					mode,
-					location: mode === "offline" ? customLocation : null,
-					topic: topic || "No specific topic",
-				};
+				course,
+				mentor: selectedMentor,
+				sesi: sesiBaru,
+				date: date.toLocaleDateString(),
+				time,
+				mode,
+				location: mode === "offline" ? customLocation : null,
+				topic: topic || "No specific topic",
+				paket_id: paketId,
+				selectedPackage: selectedPackage || null,
+				jumlahSementara: jumlahSementara ?? null,
+			};
 				setCurrentBooking(booking);
 				setSelectedMentor(null);
 				setBookingCourse(null);
@@ -522,7 +533,9 @@ function App() {
 			formData.append("pelanggan_id", sesi.pelanggan_id);
 			formData.append("mentor_id", sesi.mentor_id);
 			formData.append("sesi_id", sesi.id);
-			formData.append("jumlah", course.price_per_hour);
+			// Gunakan jumlahSementara dari booking jika ada, fallback ke harga kursus
+			const jumlahBayar = booking?.jumlahSementara ?? course.price_per_hour;
+			formData.append("jumlah", jumlahBayar);
 			formData.append("statusPembayaran", "menunggu_verifikasi"); // Selalu menunggu verifikasi
 			formData.append("metodePembayaran", paymentMethod);
 			formData.append(
@@ -530,6 +543,16 @@ function App() {
 				new Date().toISOString().slice(0, 10)
 			);
 			formData.append("buktiPembayaran", proofImage);
+			// Ambil paket_id dari booking jika ada, jika tidak fallback ke selectedPackage
+			let paketId = "";
+			if (booking?.paket_id) {
+				paketId = booking.paket_id;
+			} else if (booking?.selectedPackage?.id) {
+				paketId = booking.selectedPackage.id;
+			} else if (selectedPackage?.id) {
+				paketId = selectedPackage.id;
+			}
+			formData.append("paket_id", paketId);
 
 			// // Log untuk debugging
 			// for (let [key, value] of formData.entries()) {
