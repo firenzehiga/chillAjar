@@ -14,13 +14,13 @@ export function CourseCarousel({ courses, onCourseClick }) {
 		.slice(0, maxCoursesToShow);
 	const settings = {
 		dots: true,
-		infinite: true,
+		infinite: carouselData.length > 1, // Hanya infinite jika ada > 1 course
 		speed: 500,
 		slidesToShow: 1,
 		slidesToScroll: 1,
-		autoplay: true,
+		autoplay: carouselData.length > 1, // Hanya autoplay jika ada > 1 course
 		autoplaySpeed: 5000,
-		arrows: true,
+		arrows: carouselData.length > 1, // Hanya show arrows jika ada > 1 course
 	};
 
 	return (
