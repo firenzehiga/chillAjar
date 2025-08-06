@@ -153,7 +153,7 @@ export function BookingModal({
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
-							Book a Session with {mentor.mentorName}
+							Pesan sesi dengan {mentor.mentorName}
 						</h2>
 						<button
 							type="button"
@@ -316,7 +316,7 @@ export function BookingModal({
 
 					{selectedMode === "offline" && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Select Location:</h3>
+							<h3 className="font-medium mb-2">Pilih Lokasi:</h3>
 							<div className="space-y-2 gap-3">
 								{availableLocations.length > 0 ? (
 									availableLocations.map((loc, index) => (
@@ -352,7 +352,7 @@ export function BookingModal({
 
 					{selectedMode && (selectedMode === "online" || selectedLocation) && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Select Date:</h3>
+							<h3 className="font-medium mb-2">Tanggal:</h3>
 							{availableDates.length === 0 ? (
 								<div className="text-red-500 text-sm p-2 bg-red-50 rounded">
 									Belum ada jadwal tersedia untuk{" "}
@@ -383,7 +383,7 @@ export function BookingModal({
 
 					{selectedDate && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Select Time:</h3>
+							<h3 className="font-medium mb-2">Waktu:</h3>
 							<div className="grid grid-cols-2 gap-2">
 								{availableTimes.map((time) => (
 									<button
@@ -433,7 +433,7 @@ export function BookingModal({
 									? "bg-black text-white hover:bg-yellow-600"
 									: "bg-gray-300 text-gray-500 cursor-not-allowed"
 							}`}>
-							Confirm Booking
+							Konfirmasi Pesanan
 						</button>
 					</div>
 				</div>

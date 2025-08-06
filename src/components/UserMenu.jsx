@@ -111,7 +111,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 						onClick={handleLogout}
 						className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:outline-none">
 						<LogOut className="w-4 h-4 mr-2" />
-						Sign out
+						Keluar
 					</button>
 				</div>
 			)}

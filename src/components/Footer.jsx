@@ -48,28 +48,28 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 					{/* Quick Links */}
 					<div>
 						<h3 className="text-lg font-semibold text-white mb-4">
-							Quick Links
+							Link Cepat
 						</h3>
 						<ul className="space-y-2">
 							<li>
 								<a
 									onClick={() => onNavigate("courses")}
 									className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
-									Courses
+									Kursus
 								</a>
 							</li>
 							<li>
 								<a
 									onClick={() => onNavigate("mentors")}
 									className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
-									Find Mentors
+									Cari Mentor
 								</a>
 							</li>
 							<li>
 								<a
 									onClick={() => onNavigate("about")}
 									className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
-									About Us
+									Tentang Kami
 								</a>
 							</li>
 						</ul>
@@ -77,14 +77,14 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 
 					{/* Support */}
 					<div>
-						<h3 className="text-lg font-semibold text-white mb-4">Support</h3>
+						<h3 className="text-lg font-semibold text-white mb-4">Bantuan</h3>
 						<ul className="space-y-2">
 							<li>
 								<button
 									className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300"
 									onClick={onShowGuideModal}
 									type="button">
-									Help Center
+									Pusat Bantuan
 								</button>
 							</li>
 							{/* <li>
@@ -103,12 +103,12 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 					{/* Contact */}
 					<div>
 						<h3 className="text-lg font-semibold text-white mb-4">
-							Contact Us
+							Hubungi Kami
 						</h3>
 						<ul className="space-y-2">
 							<li className="flex items-center">
 								<Mail className="h-5 w-5 mr-2 text-yellow-500" />
-								<span>support@chillajar.com</span>
+								<span>chillajar2025@gmail.com</span>
 							</li>
 							<a
 								href="https://wa.me/6283871417229"

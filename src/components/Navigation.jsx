@@ -385,7 +385,7 @@ export function Navigation({ onNavigate, onLogout }) {
         ${currentPage !== "about" ? "group-hover:scale-110" : ""}
       `}
 					/>
-					Tentang Kita
+					Tentang Kami
 				</button>
 			</>
 		);
@@ -637,7 +637,7 @@ export function Navigation({ onNavigate, onLogout }) {
 								onClick={() => setShowAuthModal(true)}
 								className="group flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-all duration-200">
 								<LogIn className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
-								Sign In
+								Masuk
 							</button>
 						)}
 						<button

@@ -99,9 +99,7 @@ export function Home({
 		<div className="space-y-8 ">
 			{userRole === "pelanggan" && (
 				<div className="container px-4 mx-auto mb-8 mt-8">
-					<h2 className="text-2xl font-bold text-gray-900 mb-6">
-						Your Sessions
-					</h2>
+					<h2 className="text-2xl font-bold text-gray-900 mb-6">Sesi Kamu</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						{isLoadingSessions ? (
 							<YourSessionSkeleton />
@@ -245,7 +243,9 @@ export function Home({
 				<EmptyMentorsState />
 			) : (
 				<div>
-					<h2 className="text-2xl font-bold text-gray-900 mb-6">All Courses</h2>
+					<h2 className="text-2xl font-bold text-gray-900 mb-6">
+						Semua Kursus
+					</h2>
 					{userRole !== "admin" && userRole !== "mentor" && (
 						<div className="relative py-4 w-1/2">
 							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
