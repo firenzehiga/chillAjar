@@ -25,6 +25,13 @@ export function BookingModal({
 	const [topic, setTopic] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 
+	// Price calculations - SINGLE DECLARATION
+	const packagePrice = selectedPackage?.totalPrice || 0;
+	const packageDiscount = selectedPackage?.packageDiscount || 0;
+	const mentorFee = mentor?.biayaPerSesi || 0;
+	const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
+	const totalFinalPrice = finalPackagePrice + mentorFee;
+
 	// Memastikan hanya menggunakan jadwal dengan gayaMengajar valid
 	const filteredSchedules = (
 		selectedCourse?.schedules ||
@@ -126,13 +133,7 @@ export function BookingModal({
 			return;
 		}
 		setErrorMsg("");
-		// Hitung jumlahSementara: harga paket (setelah diskon) + biaya mentor
-		const mentorFee = mentor?.mentorFee || mentor?.biayaPerSesi || mentor?.biaya_per_sesi || selectedCourse?.price_per_hour || 0;
-		const packagePrice = selectedPackage?.totalPrice || 0;
-		const packageDiscount = selectedPackage?.diskon || 0;
-		const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
-		// Jika ada paket, jumlahSementara = harga paket + biaya mentor, jika tidak hanya biaya mentor
-		const jumlahSementara = selectedPackage ? finalPackagePrice + mentorFee : mentorFee;
+
 		onSubmit(
 			selectedDate,
 			selectedTime,
@@ -141,15 +142,10 @@ export function BookingModal({
 			topic,
 			selectedLocation,
 			selectedPackage, // Ngirim paket yang dipilih ke parent(App.jsx)
-			jumlahSementara // Kirim jumlahSementara ke parent
+			totalFinalPrice // Gunakan yang sudah dihitung di bawah
 		);
 		onClose();
 	};
-
-	// Hitung Harga Paket
-	const packagePrice = selectedPackage?.totalPrice || 0;
-	const packageDiscount = selectedPackage?.diskon || 0;
-	const finalPrice = Math.max(packagePrice - packageDiscount, 0);
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -233,13 +229,14 @@ export function BookingModal({
 									<div className="border-t border-yellow-200 pt-3">
 										{packageDiscount > 0 && (
 											<div className="text-xs text-gray-500 line-through">
-												Harga Normal: Rp {packagePrice.toLocaleString()}
+												Harga Normal: Rp{" "}
+												{(packagePrice + mentorFee).toLocaleString()}
 											</div>
 										)}
 										<div className="flex items-center justify-between">
 											<div>
 												<span className="text-lg font-bold text-yellow-900">
-													Rp {finalPrice.toLocaleString()}
+													Rp {totalFinalPrice.toLocaleString()}
 												</span>
 												{packageDiscount > 0 && (
 													<div className="text-xs text-green-600 font-medium">
@@ -250,6 +247,11 @@ export function BookingModal({
 											<div className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded">
 												Paket Dipilih
 											</div>
+										</div>
+
+										{/* Keterangan include mentor */}
+										<div className="text-xs text-gray-500 italic mt-1">
+											*Sudah termasuk biaya mentoring
 										</div>
 									</div>
 								</div>

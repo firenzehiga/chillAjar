@@ -5,11 +5,13 @@ import defaultPhoto from "../../public/foto_kursus/default.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { MentorSkeletonCard } from "../components/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "../utils/getImageUrl";
+import { EmptyMentorsState } from "../components/EmptyState/EmptyMentorsState";
 export function MentorsPage({
 	courses,
 	onSchedule,
 	onCoursePackageSelect,
 	showPostLoginLoading,
+	onNavigate,
 }) {
 	const {
 		data: mentors = [],
@@ -103,19 +105,24 @@ export function MentorsPage({
 		});
 
 	return (
-		<div className="py-8">
-			<h2 className="text-2xl font-bold text-gray-900 mb-6">Our Mentors</h2>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{mentorsData.map((mentor) => (
-					<MentorCard
-						key={mentor.id}
-						mentor={mentor}
-						onSchedule={onSchedule}
-						onCoursePackageSelect={onCoursePackageSelect}
-						showCourseSelect={true}
-					/>
-				))}
-			</div>
-		</div>
+		<>
+			{mentorsData.length === 0 ? (
+				<EmptyMentorsState context="mentors" onNavigate={onNavigate} />
+			) : (
+				<div className="py-8">
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{mentorsData.map((mentor) => (
+							<MentorCard
+								key={mentor.id}
+								mentor={mentor}
+								onSchedule={onSchedule}
+								onCoursePackageSelect={onCoursePackageSelect}
+								showCourseSelect={true}
+							/>
+						))}
+					</div>
+				</div>
+			)}
+		</>
 	);
 }

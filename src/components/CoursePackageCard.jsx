@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Gift, Clock, Star, ArrowRight, Check } from "lucide-react";
-
+import useAppStore from "../stores/useAppStore";
 export function CoursePackageCard({
 	packageData,
 	onSelect,
@@ -11,16 +11,25 @@ export function CoursePackageCard({
 		name,
 		description,
 		totalPrice,
-		diskon,
+		packageDiscount,
 		items = [],
 		tanggal_mulai,
 		tanggal_berakhir,
 	} = packageData;
 
+	// Ambil data mentor yang dipilih menggunakan useAppStore agar tidak props drilling dari app > package selection modal > course package card
+	const selectedMentor = useAppStore((state) => state.selectedMentor);
+
 	const [timeRemaining, setTimeRemaining] = useState(null);
 
-	// Hitung harga akhir setelah diskon
-	const finalPrice = Math.max(totalPrice - (diskon || 0), 0);
+	// Biaya default mentor
+	const mentorFee = selectedMentor?.biayaPerSesi || 0;
+
+	// Hitung harga paket setelah diskon
+	const finalPackagePrice = Math.max(totalPrice - (packageDiscount || 0), 0);
+
+	// Total harga Jual (paket + sesi mentor)
+	const totalFinalPrice = finalPackagePrice + mentorFee;
 
 	// Cek status promo
 	const getPromoStatus = () => {
@@ -182,7 +191,7 @@ export function CoursePackageCard({
 					)}
 				</div>
 
-				{/* Status badge */}
+				{/* Status badge
 				{promoStatus && (
 					<div className="mt-1">
 						<span
@@ -191,7 +200,7 @@ export function CoursePackageCard({
 							{promoStatus.label}
 						</span>
 					</div>
-				)}
+				)} */}
 
 				{/* Countdown timer promo habis*/}
 				{timeRemaining && formatCountdown(timeRemaining)}
@@ -201,13 +210,13 @@ export function CoursePackageCard({
 			<div className="p-3 sm:p-4 flex flex-col flex-grow">
 				{/* Deskripsi - Limit to 2 lines */}
 				<p
-					className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 leading-relaxed overflow-hidden flex-shrink-0"
+					className="text-gray-600 text-xs sm:text-sm mb-1 sm:mb-2 leading-relaxed overflow-hidden flex-shrink-0"
 					style={{
 						display: "-webkit-box",
 						WebkitLineClamp: 2,
 						WebkitBoxOrient: "vertical",
 					}}>
-					{description || "Paket lengkap untuk pembelajaran yang optimal"}
+					{description || "Unknown description"}
 				</p>
 
 				{/* Items yang termasuk - Takes remaining space */}
@@ -240,26 +249,46 @@ export function CoursePackageCard({
 					</div>
 				</div>
 
-				{/* Pricing - Always at bottom */}
 				<div className="border-t pt-2 sm:pt-3 flex-shrink-0 mt-auto">
-					<div className="flex items-end justify-between">
-						<div className="min-w-0 flex-1">
-							{diskon > 0 && (
-								<div className="text-xs text-gray-500 line-through">
-									Rp {totalPrice.toLocaleString()}
+					<div className="space-y-2">
+						{/* Pricing - Simplified tanpa breakdown mentor fee */}
+						<div className="text-xs text-gray-600 space-y-1">
+							{/* Hanya tampilkan harga paket final */}
+							{packageDiscount > 0 && (
+								<div className="flex justify-between">
+									<span>Harga Normal:</span>
+									<div className="line-through text-gray-400">
+										Rp {(totalPrice + mentorFee).toLocaleString()}
+									</div>
 								</div>
 							)}
-							<div className="text-base sm:text-lg font-bold text-gray-800 truncate">
-								Rp {finalPrice.toLocaleString()}
+
+							{/* Total Price - yang sudah include mentor */}
+							<div className="flex justify-between items-center">
+								<span className="font-medium text-gray-800">Harga Paket:</span>
+								<div className="text-right">
+									<div className="text-base sm:text-lg font-bold text-gray-800">
+										Rp {totalFinalPrice.toLocaleString()}
+									</div>
+									{packageDiscount > 0 && (
+										<div className="text-xs text-green-600 font-medium">
+											Hemat Rp {packageDiscount.toLocaleString()}
+										</div>
+									)}
+								</div>
 							</div>
-							{diskon > 0 && (
-								<div className="text-xs text-green-600 font-medium">
-									Hemat Rp {diskon.toLocaleString()}
-								</div>
-							)}
+
+							{/* Keterangan include mentor */}
+							<div className="text-xs text-gray-500 italic">
+								*Sudah termasuk biaya mentoring
+							</div>
 						</div>
-						<div className="text-yellow-600 group-hover:translate-x-1 transition-transform duration-200 ml-2">
-							<ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+
+						{/* Arrow indicator */}
+						<div className="flex justify-end">
+							<div className="text-yellow-600 group-hover:translate-x-1 transition-transform duration-200">
+								<ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+							</div>
 						</div>
 					</div>
 				</div>

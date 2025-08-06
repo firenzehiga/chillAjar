@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { X, Gift, ArrowRight, AlertCircle } from "lucide-react";
 import api from "../api";
 import CoursePackageCard from "./CoursePackageCard";
-
 export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 	const [packages, setPackages] = useState([]);
 	const [selectedPackage, setSelectedPackage] = useState(null);
@@ -67,7 +66,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 				name: pkg.nama,
 				description: pkg.deskripsi,
 				totalPrice: pkg.harga_dasar || 0,
-				diskon: pkg.diskon || 0,
+				packageDiscount: pkg.diskon || 0,
 				items:
 					pkg.items?.map((item) => ({
 						id: item.id,

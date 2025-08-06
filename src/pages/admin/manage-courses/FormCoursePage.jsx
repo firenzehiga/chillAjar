@@ -320,7 +320,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 								headers: { Authorization: `Bearer ${token}` },
 							}
 						);
-						console.log("Fetch Course Response:", fetchCourseResponse.data);
+						// console.log("Fetch Course Response:", fetchCourseResponse.data);
 						const latestCourse = fetchCourseResponse.data
 							.filter((course) => course.namaKursus === formData.namaKursus)
 							.sort(
@@ -350,7 +350,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 						tempat: schedule.tempat || "",
 						gayaMengajar: schedule.gayaMengajar,
 					};
-					console.log("Jadwal Payload:", jadwalPayload);
+					// console.log("Jadwal Payload:", jadwalPayload);
 					const jadwalResponse = await api.post(
 						"/jadwal-kursus", // Sesuaikan endpoint untuk admin
 						jadwalPayload,
@@ -360,7 +360,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							},
 						}
 					);
-					console.log("Jadwal API Response:", jadwalResponse.data);
+					// console.log("Jadwal API Response:", jadwalResponse.data);
 				}
 
 				Swal.fire({
@@ -392,7 +392,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 				text: errorMessage,
 				confirmButtonColor: "#EF4444",
 			});
-			console.error("Error details:", err.response ? err.response.data : err);
+			// console.error("Error details:", err.response ? err.response.data : err);
 		} finally {
 			setLoading(false);
 		}

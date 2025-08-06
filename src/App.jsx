@@ -13,6 +13,7 @@ import { NotFoundPage } from "./components/Error/NotFound";
 
 import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
 import { HelpButton } from "./components/Button/HelpButton"; // Impor komponen HelpButton
+
 // Halaman utama
 import { CoursesPage } from "./pages/CoursesPage";
 import { MentorsPage } from "./pages/MentorsPage";
@@ -361,12 +362,14 @@ function App() {
 	// Handler untuk course package selection dari mentor flow
 	const handleCoursePackageSelect = (course) => {
 		setSelectedCourse(course);
-		// PENTING: Simpan mentor dari course yang dipilih
+
+		// PENTING: Pastikan mentor data tersimpan di store
 		if (course.mentor) {
 			setSelectedMentor(course.mentor);
 		} else {
 			console.warn("Course doesn't have mentor data:", course);
 		}
+
 		setShowCourseSelection(false); // Tutup course selection modal
 		setShowPackageSelection(true); // Buka package selection modal
 	};
@@ -378,15 +381,15 @@ function App() {
 
 	// Fungsi untuk mengirimkan booking
 	const handleBookingSubmit = async (
-	date,
-	time,
-	mode,
-	course,
-	topic,
-	customLocation,
-	selectedPackage,
-	jumlahSementara
-) => {
+		date,
+		time,
+		mode,
+		course,
+		topic,
+		customLocation,
+		selectedPackage,
+		jumlahSementara
+	) => {
 		if (!isAuthenticated) {
 			setShowAuthModal(true);
 			return;
@@ -455,18 +458,18 @@ function App() {
 					paketId = selectedPackage.id;
 				}
 				const booking = {
-				course,
-				mentor: selectedMentor,
-				sesi: sesiBaru,
-				date: date.toLocaleDateString(),
-				time,
-				mode,
-				location: mode === "offline" ? customLocation : null,
-				topic: topic || "No specific topic",
-				paket_id: paketId,
-				selectedPackage: selectedPackage || null,
-				jumlahSementara: jumlahSementara ?? null,
-			};
+					course,
+					mentor: selectedMentor,
+					sesi: sesiBaru,
+					date: date.toLocaleDateString(),
+					time,
+					mode,
+					location: mode === "offline" ? customLocation : null,
+					topic: topic || "No specific topic",
+					paket_id: paketId,
+					selectedPackage: selectedPackage || null,
+					jumlahSementara: jumlahSementara ?? null,
+				};
 				setCurrentBooking(booking);
 				setSelectedMentor(null);
 				setBookingCourse(null);
@@ -665,6 +668,14 @@ function App() {
 	// Fungsi untuk menangani klik kursus
 	const handleCourseClick = (course) => {
 		setSelectedCourse(course);
+
+		// PENTING: Set mentor dari course ke store agar CoursePackageCard bisa akses
+		if (course.mentor) {
+			setSelectedMentor(course.mentor);
+		} else if (course.mentors && course.mentors.length > 0) {
+			setSelectedMentor(course.mentors[0]); // Ambil mentor pertama jika mentor tidak ada
+		}
+
 		setShowPackageSelection(true);
 	};
 
@@ -673,8 +684,8 @@ function App() {
 		setSelectedPackage(packageData);
 		setShowPackageSelection(false);
 		// Setelah pilih paket, tampilkan mentor dari course yang dipilih
-		console.log("Package selected:", packageData);
-		console.log("Course selected:", selectedCourse);
+		// console.log("Package selected:", packageData);
+		// console.log("Course selected:", selectedCourse);
 	};
 
 	// Fungsi untuk menutup BookingModal
@@ -725,7 +736,7 @@ function App() {
 		// Menampilkan skeleton loading jika halaman yang diakses sedang loading dan termasuk dalam array skeletonPages
 		const skeletonPages = ["home", "courses"];
 		const showSkeleton =
-			isLoading && skeletonPages.includes(currentPage) && !isAuthenticated; // Hanya untuk pelanggan atau guest
+			isLoading && skeletonPages.includes(currentPage) && !isAuthenticated; // Hanya untuk pelanggan atau guest belum login
 
 		// Menampilkan skeleton loading untuk guest belum login
 		if (showSkeleton) {
@@ -1043,10 +1054,24 @@ function App() {
 									<div className="bg-white px-3 py-1 rounded-lg border">
 										<span className="text-sm font-medium text-green-600">
 											Rp{" "}
-											{(
-												selectedPackage.totalPrice -
-												(selectedPackage.diskon || 0)
-											).toLocaleString()}
+											{(() => {
+												// ambil biaya mentor per sesi dari course
+												const mentorFee =
+													selectedCourse?.mentor?.biayaPerSesi || 0;
+
+												// Menghitung harga paket
+												const packagePrice = selectedPackage.totalPrice || 0;
+												const packageDiscount = selectedPackage.diskon || 0;
+												const finalPackagePrice = Math.max(
+													packagePrice - packageDiscount,
+													0
+												);
+
+												// Total harga (paket + harga mentor)
+												const totalPrice = finalPackagePrice + mentorFee;
+
+												return totalPrice.toLocaleString();
+											})()}
 										</span>
 									</div>
 								</div>
@@ -1372,7 +1397,7 @@ function App() {
 							course={selectedCourse}
 							onClose={() => {
 								setShowPackageSelection(false);
-								// Reset if coming from mentor flow
+								// Reset jika tidak ada mentor yang dipilih
 								if (selectedMentor) {
 									setSelectedCourse(null);
 								}
@@ -1381,9 +1406,9 @@ function App() {
 								setSelectedPackage(selectedPackage);
 								setShowPackageSelection(false);
 
-								// If we have a mentor (mentor -> course -> package flow)
+								// Jika ada mentor (mentor -> course -> package flow)
 								if (selectedMentor) {
-									// Trigger booking modal with mentor, course, and package
+									// Trigger booking modal dengan mentor, course, beserta package
 									handleSchedule(
 										selectedMentor,
 										selectedCourse,
