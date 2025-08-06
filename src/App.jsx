@@ -361,6 +361,11 @@ function App() {
 
 	// Handler untuk course package selection dari mentor flow
 	const handleCoursePackageSelect = (course) => {
+		if (!isAuthenticated) {
+			setShowAuthModal(true);
+			return;
+		}
+		
 		setSelectedCourse(course);
 
 		// PENTING: Pastikan mentor data tersimpan di store
@@ -667,6 +672,11 @@ function App() {
 
 	// Fungsi untuk menangani klik kursus
 	const handleCourseClick = (course) => {
+		if (!isAuthenticated) {
+			setShowAuthModal(true);
+			return;
+		}
+
 		setSelectedCourse(course);
 
 		// PENTING: Set mentor dari course ke store agar CoursePackageCard bisa akses
