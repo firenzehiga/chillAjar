@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { X, Upload, CreditCard, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
 
-
 export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
 	const [proofImage, setProofImage] = useState(null);
@@ -61,12 +60,12 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 		}
 	};
 
-// Prioritaskan jumlahSementara dari backend (hasil perhitungan backend, bisa gabungan paket dan biaya mentor)
-// Jika tidak ada, fallback ke harga paket, lalu ke harga per jam kursus
-const totalAmount =
-  booking.jumlahSementara !== undefined && booking.jumlahSementara !== null
-	? booking.jumlahSementara
-	: booking.paket?.harga ?? booking.course.price_per_hour;
+	// Prioritaskan jumlahSementara dari backend (hasil perhitungan backend, bisa gabungan paket dan biaya mentor)
+	// Jika tidak ada, fallback ke harga paket, lalu ke harga per jam kursus
+	const totalAmount =
+		booking.jumlahSementara !== undefined && booking.jumlahSementara !== null
+			? booking.jumlahSementara
+			: booking.paket?.harga ?? booking.course.price_per_hour;
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -128,7 +127,7 @@ const totalAmount =
 
 							<div className="sm:col-span-2 border-t pt-4 mt-2">
 								<p className="text-lg font-bold text-gray-800">
-									Total: Rp{totalAmount}
+									Total: Rp{totalAmount.toLocaleString("id-ID")}
 								</p>
 							</div>
 						</div>

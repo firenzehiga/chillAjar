@@ -14,6 +14,7 @@ import api from "../api";
 import { useQuery } from "@tanstack/react-query";
 import { YourSessionSkeleton } from "../components/Skeleton/YourSessionSkeleton";
 import { CarouselSkeleton } from "../components/Skeleton/CarouselSkeleton";
+import { CourseSkeletonCard } from "../components/Skeleton/CourseSkeletonCard";
 import { getImageUrl } from "../utils/getImageUrl";
 import { EmptyMentorsState } from "../components/EmptyState/EmptyMentorsState";
 export function Home({
@@ -114,11 +115,9 @@ export function Home({
 						) : ongoingSessions.length === 0 ? (
 							<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 								<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-								<h3 className="text-lg font-semibold mb-2">
-									No Ongoing Sessions
-								</h3>
+								<h3 className="text-lg font-semibold mb-2">Belum Ada Sesi</h3>
 								<p className="text-gray-500 mb-4 text-center">
-									You have no ongoing sessions at the moment.
+									Anda belum memiliki sesi yang sedang berlangsung.
 								</p>
 							</div>
 						) : (
@@ -231,15 +230,15 @@ export function Home({
 			{/* Carousel Section - Di luar dari Your Sessions */}
 			{isLoadingSessions ? (
 				<CarouselSkeleton />
-			) : filteredCourses.length > 0 ? (
+			) : (
 				<CourseCarousel
 					courses={mappedCourses}
 					onCourseClick={handleCourseClick}
 				/>
-			) : null}
+			)}
 
 			{/* Cek Kondisi Jika Gaada Mentor yang aktif */}
-			{filteredCourses.length === 0 ? (
+			{filteredCourses === false ? (
 				<EmptyMentorsState />
 			) : (
 				<div>

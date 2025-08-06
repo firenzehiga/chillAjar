@@ -258,7 +258,7 @@ export function CoursePackageCard({
 								<div className="flex justify-between">
 									<span>Harga Normal:</span>
 									<div className="line-through text-gray-400">
-										Rp {(totalPrice + mentorFee).toLocaleString()}
+										Rp {(totalPrice + mentorFee).toLocaleString("id-ID")}
 									</div>
 								</div>
 							)}
@@ -268,11 +268,11 @@ export function CoursePackageCard({
 								<span className="font-medium text-gray-800">Harga Paket:</span>
 								<div className="text-right">
 									<div className="text-base sm:text-lg font-bold text-gray-800">
-										Rp {totalFinalPrice.toLocaleString()}
+										Rp {totalFinalPrice.toLocaleString("id-ID")}
 									</div>
 									{packageDiscount > 0 && (
 										<div className="text-xs text-green-600 font-medium">
-											Hemat Rp {packageDiscount.toLocaleString()}
+											Hemat Rp {packageDiscount.toLocaleString("id-ID")}
 										</div>
 									)}
 								</div>

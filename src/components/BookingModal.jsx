@@ -230,17 +230,17 @@ export function BookingModal({
 										{packageDiscount > 0 && (
 											<div className="text-xs text-gray-500 line-through">
 												Harga Normal: Rp{" "}
-												{(packagePrice + mentorFee).toLocaleString()}
+												{(packagePrice + mentorFee).toLocaleString("id-ID")}
 											</div>
 										)}
 										<div className="flex items-center justify-between">
 											<div>
 												<span className="text-lg font-bold text-yellow-900">
-													Rp {totalFinalPrice.toLocaleString()}
+													Rp {totalFinalPrice.toLocaleString("id-ID")}
 												</span>
 												{packageDiscount > 0 && (
 													<div className="text-xs text-green-600 font-medium">
-														Hemat Rp {packageDiscount.toLocaleString()}
+														Hemat Rp {packageDiscount.toLocaleString("id-ID")}
 													</div>
 												)}
 											</div>

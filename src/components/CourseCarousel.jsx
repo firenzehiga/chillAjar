@@ -112,7 +112,8 @@ export function CourseCarousel({ courses, onCourseClick }) {
 											)}
 										</div>
 										<span className="text-white">
-											Rp{course.price_per_hour}/sesi
+											Mulai dari Rp
+											{course.price_per_hour.toLocaleString("id-ID")}/sesi
 										</span>
 									</div>
 								</div>
