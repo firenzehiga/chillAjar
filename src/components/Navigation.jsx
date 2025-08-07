@@ -26,14 +26,11 @@ import {
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 import useAppStore from "../stores/useAppStore";
-import { SessionBadge } from "./SessionReminder";
-import { SessionsWidget } from "./SessionWidget";
 
 export function Navigation({ onNavigate, onLogout }) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isManagementDropdownOpen, setIsManagementDropdownOpen] =
 		useState(false);
-	const [showSessionsDropdown, setShowSessionsDropdown] = useState(false);
 
 	// Get state from Zustand store
 	const { currentPage, isAuthenticated, userRole, userData, setShowAuthModal } =
@@ -629,29 +626,6 @@ export function Navigation({ onNavigate, onLogout }) {
 
 					{/* Right Side */}
 					<div className="flex items-center space-x-4">
-						{/* Sessions Dropdown (only for pelanggan role) */}
-						{isAuthenticated && userRole === "pelanggan" && (
-							<div className="relative">
-								<button
-									onClick={() => setShowSessionsDropdown(!showSessionsDropdown)}
-									className="relative p-2 text-gray-600 hover:text-yellow-900 hover:bg-yellow-500  rounded-xl outline-none focus:outline-none transition-all duration-300 group">
-									{/* <SessionBadge sessionCount={2} /> */}
-									<Clock className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 outline-none focus:outline-none" />
-								</button>
-
-								{showSessionsDropdown && (
-									<SessionsWidget
-										variant="compact-dropdown"
-										maxSessions={3}
-										onNavigate={(page) => {
-											onNavigate(page);
-											setShowSessionsDropdown(false);
-										}}
-									/>
-								)}
-							</div>
-						)}
-
 						<div className="flex items-center">
 							{isAuthenticated ? (
 								<UserMenu

@@ -1,11 +1,21 @@
 import React, { useState } from "react";
-import { LogOut, User, Settings, History, BookCopy } from "lucide-react";
+import { LogOut, User, Settings, Clock, History, BookCopy } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
 import Swal from "sweetalert2";
+import { SessionsWidget } from "./SessionWidget";
+import useAppStore from "../stores/useAppStore";
+import { SessionBadge } from "./SessionReminder";
 
 export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 	const [isOpen, setIsOpen] = useState(false);
+	const [showSessionsDropdown, setShowSessionsDropdown] = useState(false);
+	const [showMobileSessionsDropdown, setShowMobileSessionsDropdown] =
+		useState(false);
 
+	// Get state from Zustand store
+	const { isAuthenticated } = useAppStore();
+
+	
 	const handleNavigate = (page) => {
 		onNavigate(page);
 		setIsOpen(false);
@@ -91,6 +101,43 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 						</button>
 					)}
 
+					{userRole === "pelanggan" && isAuthenticated && (
+						<div className="relative">
+							<button
+								onClick={() => {
+									// Desktop: toggle sessions dropdown
+									if (window.innerWidth >= 768) {
+										setShowSessionsDropdown(!showSessionsDropdown);
+									} else {
+										// Mobile: close user menu and show mobile sessions
+										setIsOpen(false);
+										setShowMobileSessionsDropdown(true);
+									}
+								}}
+								className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								<Clock className="w-4 h-4 mr-2" />
+								Sesi Saya
+							</button>
+
+							{/* Desktop Sessions Dropdown */}
+							{showSessionsDropdown && (
+								<div
+									className="
+									hidden md:block absolute z-50
+									top-0 right-full left-auto mr-2 mt-0 w-80
+								">
+									<SessionsWidget
+										variant="compact-dropdown"
+										maxSessions={3}
+										onNavigate={(page) => {
+											onNavigate(page);
+											setShowSessionsDropdown(false);
+										}}
+									/>
+								</div>
+							)}
+						</div>
+					)}
 					{userRole === "pelanggan" && (
 						<button
 							onClick={() => handleNavigate("session-history")}
@@ -115,6 +162,46 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 					</button>
 				</div>
 			)}
+
+			{/* Mobile Sessions Dropdown - Fixed overlay */}
+			{showMobileSessionsDropdown && (
+				<div
+					className="
+					md:hidden fixed inset-0 z-[70] bg-black bg-opacity-50
+					flex items-center justify-center p-4
+				">
+					<div className="w-full max-w-sm">
+						<div className="mb-2 flex justify-end">
+							<button
+								onClick={() => setShowMobileSessionsDropdown(false)}
+								className="text-white bg-black bg-opacity-50 rounded-full p-2 hover:bg-opacity-70">
+								<svg
+									className="w-6 h-6"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M6 18L18 6M6 6l12 12"
+									/>
+								</svg>
+							</button>
+						</div>
+						<SessionsWidget
+							variant="compact-dropdown"
+							maxSessions={3}
+							onNavigate={(page) => {
+								onNavigate(page);
+								setShowMobileSessionsDropdown(false);
+							}}
+						/>
+					</div>
+				</div>
+			)}
+
+			{/* Sessions Dropdown (only for pelanggan role) */}
 		</div>
 	);
 }

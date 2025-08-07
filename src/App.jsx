@@ -13,10 +13,10 @@ import { NotFoundPage } from "./components/Error/NotFound";
 
 import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
 import { HelpButton } from "./components/Button/HelpButton"; // Impor komponen HelpButton
-// import {
-// 	FloatingSessionReminder,
-// 	SessionBanner,
-// } from "./components/SessionReminder"; // Impor Session Reminder
+import {
+	FloatingSessionReminder,
+	SessionBanner,
+} from "./components/SessionReminder"; // Impor Session Reminder
 
 // Halaman utama
 import { CoursesPage } from "./pages/CoursesPage";
@@ -1441,7 +1441,7 @@ function App() {
 			{/* Tombol bantuan dan alur pemesanan */}
 
 			{/* Floating Session Reminder */}
-			{/* <FloatingSessionReminder /> */}
+			<FloatingSessionReminder />
 		</div>
 	);
 }

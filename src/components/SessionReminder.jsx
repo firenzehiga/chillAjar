@@ -149,10 +149,10 @@ export function FloatingSessionReminder() {
 										}`}></div>
 									<span className="text-white font-medium text-sm">
 										{currentSession.status === "live"
-											? "Session Live Now!"
+											? "Sesi Sedang Berlangsung"
 											: currentSession.status === "needReview"
-											? "Session Completed - Review Needed"
-											: "Session Starting Soon"}
+											? "Sesi Selesai - Beri Testimoni"
+											: "Sesi Segera Dimulai"}
 									</span>
 								</div>
 								<button
@@ -205,22 +205,6 @@ export function FloatingSessionReminder() {
 									</span>
 								)}
 							</div>
-
-							<button
-								onClick={handleJoin}
-								className={`w-full py-2 px-4 rounded-lg font-medium text-sm transition-all duration-300 ${
-									currentSession.status === "live"
-										? "bg-red-500 text-white hover:bg-red-600"
-										: currentSession.status === "needReview"
-										? "bg-green-500 text-white hover:bg-green-600"
-										: "bg-blue-500 text-white hover:bg-blue-600"
-								}`}>
-								{currentSession.status === "live"
-									? "Join Now"
-									: currentSession.status === "needReview"
-									? "Write Review"
-									: "View Details"}
-							</button>
 						</div>
 					</div>
 				</motion.div>
