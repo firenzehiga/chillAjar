@@ -13,6 +13,10 @@ import { NotFoundPage } from "./components/Error/NotFound";
 
 import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
 import { HelpButton } from "./components/Button/HelpButton"; // Impor komponen HelpButton
+// import {
+// 	FloatingSessionReminder,
+// 	SessionBanner,
+// } from "./components/SessionReminder"; // Impor Session Reminder
 
 // Halaman utama
 import { CoursesPage } from "./pages/CoursesPage";
@@ -365,7 +369,7 @@ function App() {
 			setShowAuthModal(true);
 			return;
 		}
-		
+
 		setSelectedCourse(course);
 
 		// PENTING: Pastikan mentor data tersimpan di store
@@ -745,8 +749,7 @@ function App() {
 
 		// Menampilkan skeleton loading jika halaman yang diakses sedang loading dan termasuk dalam array skeletonPages
 		const skeletonPages = ["home", "courses"];
-		const showSkeleton =
-			isLoading && skeletonPages.includes(currentPage) && !isAuthenticated; // Hanya untuk pelanggan atau guest belum login
+		const showSkeleton = isLoading && skeletonPages.includes(currentPage); // Hanya untuk pelanggan atau guest belum login
 
 		// Menampilkan skeleton loading untuk guest belum login
 		if (showSkeleton) {
@@ -1279,6 +1282,7 @@ function App() {
 					onLogout={handleLogoutWithHistory}
 				/>
 			)}
+
 			<main className="flex-grow">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<AnimatePresence mode="wait">{renderContent()}</AnimatePresence>{" "}
@@ -1435,6 +1439,9 @@ function App() {
 				</>
 			) : null}
 			{/* Tombol bantuan dan alur pemesanan */}
+
+			{/* Floating Session Reminder */}
+			{/* <FloatingSessionReminder /> */}
 		</div>
 	);
 }

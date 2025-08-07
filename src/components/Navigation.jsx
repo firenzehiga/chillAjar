@@ -26,11 +26,15 @@ import {
 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 import useAppStore from "../stores/useAppStore";
+import { SessionBadge } from "./SessionReminder";
+import { SessionsWidget } from "./SessionWidget";
 
 export function Navigation({ onNavigate, onLogout }) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isManagementDropdownOpen, setIsManagementDropdownOpen] =
 		useState(false);
+	const [showSessionsDropdown, setShowSessionsDropdown] = useState(false);
+
 	// Get state from Zustand store
 	const { currentPage, isAuthenticated, userRole, userData, setShowAuthModal } =
 		useAppStore();
@@ -623,33 +627,59 @@ export function Navigation({ onNavigate, onLogout }) {
 						</nav>
 					</div>
 
-					<div className="flex items-center">
-						{isAuthenticated ? (
-							<UserMenu
-								onNavigate={onNavigate}
-								onLogout={onLogout}
-								userRole={userRole}
-								userData={userData}
-							/>
-						) : (
+					{/* Right Side */}
+					<div className="flex items-center space-x-4">
+						{/* Sessions Dropdown (only for pelanggan role) */}
+						{isAuthenticated && userRole === "pelanggan" && (
+							<div className="relative">
+								<button
+									onClick={() => setShowSessionsDropdown(!showSessionsDropdown)}
+									className="relative p-2 text-gray-600 hover:text-yellow-900 hover:bg-yellow-500  rounded-xl outline-none focus:outline-none transition-all duration-300 group">
+									{/* <SessionBadge sessionCount={2} /> */}
+									<Clock className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 outline-none focus:outline-none" />
+								</button>
+
+								{showSessionsDropdown && (
+									<SessionsWidget
+										variant="compact-dropdown"
+										maxSessions={3}
+										onNavigate={(page) => {
+											onNavigate(page);
+											setShowSessionsDropdown(false);
+										}}
+									/>
+								)}
+							</div>
+						)}
+
+						<div className="flex items-center">
+							{isAuthenticated ? (
+								<UserMenu
+									onNavigate={onNavigate}
+									onLogout={onLogout}
+									userRole={userRole}
+									userData={userData}
+								/>
+							) : (
+								<button
+									type="button"
+									onClick={() => setShowAuthModal(true)}
+									className="group flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-all duration-200">
+									<LogIn className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
+									Masuk
+								</button>
+							)}
 							<button
 								type="button"
-								onClick={() => setShowAuthModal(true)}
-								className="group flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-all duration-200">
-								<LogIn className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
-								Masuk
+								onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+								className="ml-4 md:hidden">
+								{isMobileMenuOpen ? (
+									<X className="h-6 w-6 text-gray-600" />
+								) : (
+									<Menu className="h-6 w-6 text-gray-600" />
+								)}
 							</button>
-						)}
-						<button
-							type="button"
-							onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-							className="ml-4 md:hidden">
-							{isMobileMenuOpen ? (
-								<X className="h-6 w-6 text-gray-600" />
-							) : (
-								<Menu className="h-6 w-6 text-gray-600" />
-							)}
-						</button>
+						</div>
 					</div>
 				</div>
 
