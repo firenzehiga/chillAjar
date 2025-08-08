@@ -11,9 +11,12 @@ export function FloatingSessionReminder() {
 	const [currentSession, setCurrentSession] = useState(null);
 	const [isVisible, setIsVisible] = useState(false);
 	const [isDismissed, setIsDismissed] = useState(false);
+	const [timeLeft, setTimeLeft] = useState(5);
+	const [countdownTimer, setCountdownTimer] = useState(null);
 
 	// Get state from Zustand store
-	const { userRole, userData, isAuthenticated } = useAppStore();
+	const { userRole, userData, isAuthenticated, openTestimoniModal } =
+		useAppStore();
 	const userId = userData?.id;
 
 	// Fetch daftar sesi pelanggan berdasarkan userId
@@ -94,9 +97,39 @@ export function FloatingSessionReminder() {
 		if (urgentSession && !isDismissed) {
 			setCurrentSession(urgentSession);
 			setIsVisible(true);
+			setTimeLeft(5); // Reset countdown
+
+			// Clear existing timer jika ada
+			if (countdownTimer) {
+				clearInterval(countdownTimer);
+			}
+
+			// Set countdown timer
+			const timer = setInterval(() => {
+				setTimeLeft((prev) => {
+					const newTime = prev - 0.1; // Update setiap 100ms untuk smoothness
+
+					if (newTime <= 0) {
+						clearInterval(timer);
+						setIsVisible(false);
+						setIsDismissed(true);
+						return 0;
+					}
+					return newTime;
+				});
+			}, 100);
+
+			setCountdownTimer(timer);
 		} else {
 			setIsVisible(false);
 		}
+
+		// Cleanup timer saat dependency berubah
+		return () => {
+			if (countdownTimer) {
+				clearInterval(countdownTimer);
+			}
+		};
 	}, [isAuthenticated, sessions, isDismissed, userRole, userId]);
 
 	// Hanya tampilkan untuk role pelanggan - pindahkan conditional return ke akhir
@@ -107,17 +140,42 @@ export function FloatingSessionReminder() {
 	if (!isVisible || !currentSession) return null;
 
 	const handleDismiss = () => {
+		// Clear countdown timer jika user manual dismiss
+		if (countdownTimer) {
+			clearInterval(countdownTimer);
+			setCountdownTimer(null);
+		}
+
 		setIsVisible(false);
 		setIsDismissed(true);
 	};
 
 	const handleJoin = () => {
+		// Clear timer saat user interact
+		if (countdownTimer) {
+			clearInterval(countdownTimer);
+			setCountdownTimer(null);
+		}
+
 		if (currentSession.status === "live") {
 			// Handle join live session
+			null;
+			// window.open("https://meet.google.com/your-meeting-link", "_blank");
 		} else if (currentSession.status === "needReview") {
-			// TODO: Open review/testimonial modal
+			// Open testimoni modal
+			const testimoniData = {
+				id: currentSession.id,
+				sesi_id: currentSession.id,
+				pelanggan_id: userData?.pelanggan?.id,
+				mentor_id: currentSession.mentor?.id,
+			};
+			openTestimoniModal(testimoniData);
+			// Dismiss reminder setelah buka modal
+			setIsVisible(false);
+			setIsDismissed(true);
 		} else {
 			// Handle view details for upcoming sessions
+			console.log("View session details:", currentSession.id);
 		}
 	};
 
@@ -130,6 +188,23 @@ export function FloatingSessionReminder() {
 					exit={{ opacity: 0, y: 100, scale: 0.8 }}
 					className="fixed bottom-6 right-6 z-50 max-w-sm">
 					<div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+						{/* Progress bar untuk countdown */}
+						<div className="h-1 bg-gray-200">
+							<div
+								className={`h-full transition-all ease-linear ${
+									currentSession.status === "live"
+										? "bg-red-500"
+										: currentSession.status === "needReview"
+										? "bg-green-500"
+										: "bg-blue-500"
+								}`}
+								style={{
+									width: `${Math.max(0, (timeLeft / 5) * 100)}%`,
+									transitionDuration: "100ms",
+								}}
+							/>
+						</div>
+
 						{/* Header */}
 						<div
 							className={`p-4 ${
@@ -149,17 +224,23 @@ export function FloatingSessionReminder() {
 										}`}></div>
 									<span className="text-white font-medium text-sm">
 										{currentSession.status === "live"
-											? "Sesi Sedang Berlangsung"
+											? "Sesi Dimulai"
 											: currentSession.status === "needReview"
 											? "Sesi Selesai - Beri Testimoni"
 											: "Sesi Segera Dimulai"}
 									</span>
 								</div>
-								<button
-									onClick={handleDismiss}
-									className="text-white/80 hover:text-white transition-colors">
-									<X className="w-4 h-4" />
-								</button>
+								<div className="flex items-center space-x-2">
+									{/* Countdown indicator */}
+									<span className="text-white/80 text-xs font-medium">
+										{Math.ceil(timeLeft)}s
+									</span>
+									<button
+										onClick={handleDismiss}
+										className="outline-none focus:outline-none text-white/80 hover:text-white transition-colors">
+										<X className="w-4 h-4" />
+									</button>
+								</div>
 							</div>
 						</div>
 
@@ -205,6 +286,30 @@ export function FloatingSessionReminder() {
 									</span>
 								)}
 							</div>
+
+							{/* Action Buttons */}
+							<div className="flex gap-2 mt-3">
+								<button
+									onClick={handleJoin}
+									className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+										currentSession.status === "live"
+											? "bg-red-500 hover:bg-red-600 text-white"
+											: currentSession.status === "needReview"
+											? "bg-green-500 hover:bg-green-600 text-white"
+											: "bg-blue-500 hover:bg-blue-600 text-white"
+									}`}>
+									{currentSession.status === "live"
+										? "Segera Bergabung"
+										: currentSession.status === "needReview"
+										? "Tulis Ulasan"
+										: "Lihat Detail"}
+								</button>
+								<button
+									onClick={handleDismiss}
+									className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm font-medium transition-colors">
+									Later
+								</button>
+							</div>
 						</div>
 					</div>
 				</motion.div>
@@ -218,10 +323,9 @@ export function SessionBanner({ isAuthenticated }) {
 	const [isVisible, setIsVisible] = useState(false);
 	const [currentSession, setCurrentSession] = useState(null);
 
-	// Ambil userData dari localStorage
-	const userData = JSON.parse(localStorage.getItem("user") || "{}");
+	// Get state from Zustand store
+	const { userRole, userData, openTestimoniModal } = useAppStore();
 	const userId = userData?.id;
-	const userRole = userData?.role;
 
 	// Hanya tampilkan untuk role pelanggan
 	if (!isAuthenticated || userRole !== "pelanggan") {
@@ -264,6 +368,23 @@ export function SessionBanner({ isAuthenticated }) {
 
 	if (!isVisible || !currentSession) return null;
 
+	const handleBannerAction = () => {
+		if (currentSession.statusSesi === "started") {
+			// Handle join live session
+			null;
+			// window.open("https://meet.google.com/your-meeting-link", "_blank");
+		} else if (currentSession.statusSesi === "end") {
+			// Open testimoni modal
+			const testimoniData = {
+				id: currentSession.id,
+				sesi_id: currentSession.id,
+				pelanggan_id: userData?.pelanggan?.id,
+				mentor_id: currentSession.mentor?.id,
+			};
+			openTestimoniModal(testimoniData);
+		}
+	};
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: -50 }}
@@ -279,8 +400,8 @@ export function SessionBanner({ isAuthenticated }) {
 						<div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
 						<span className="font-medium">
 							{currentSession.statusSesi === "started"
-								? "Live Session"
-								: "Session Completed - Review Needed"}
+								? "Dimulai"
+								: "Sesi Selesai - Beri Testimoni"}
 						</span>
 					</div>
 					<div className="flex items-center space-x-4 text-sm">
@@ -290,10 +411,12 @@ export function SessionBanner({ isAuthenticated }) {
 					</div>
 				</div>
 				<div className="flex items-center space-x-3">
-					<button className="bg-white/20 hover:bg-white/30 px-4 py-1 rounded-full text-sm font-medium transition-colors">
+					<button
+						onClick={handleBannerAction}
+						className="bg-white/20 hover:bg-white/30 px-4 py-1 rounded-full text-sm font-medium transition-colors">
 						{currentSession.statusSesi === "started"
-							? "Join Now"
-							: "Write Review"}
+							? "Segera Bergabung"
+							: "Tulis Ulasan"}
 					</button>
 					<button
 						onClick={() => setIsVisible(false)}
