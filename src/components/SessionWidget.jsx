@@ -12,8 +12,10 @@ import {
 	Star,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
+import { MdRateReview } from "react-icons/md";
+
 import api from "../api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "../utils/getImageUrl";
 import useAppStore from "../stores/useAppStore";
 
@@ -25,9 +27,11 @@ export function SessionsWidget({
 	const [expandedSession, setExpandedSession] = useState(null);
 
 	// Get state from Zustand store
-	const { userRole, userData } = useAppStore();
+	const { userRole, userData, openTestimoniModal } = useAppStore();
 	const userId = userData?.id;
 	const pelangganId = userData?.pelanggan?.id;
+
+	const queryClient = useQueryClient();
 
 	const {
 		data: transactions = [],
@@ -96,9 +100,12 @@ export function SessionsWidget({
 			if (a.statusSesi === "started" && b.statusSesi !== "started") return -1;
 			if (b.statusSesi === "started" && a.statusSesi !== "started") return 1;
 
-			// Lalu sesi yang sudah selesai (perlu review)
-			if (a.statusSesi === "end" && b.statusSesi === "pending") return -1;
-			if (b.statusSesi === "end" && a.statusSesi === "pending") return 1;
+			// Lalu sesi yang sudah selesai dan belum ada testimoni (perlu review)
+			const aNeedReview = a.statusSesi === "end" && !a.testimoni;
+			const bNeedReview = b.statusSesi === "end" && !b.testimoni;
+
+			if (aNeedReview && !bNeedReview) return -1;
+			if (bNeedReview && !aNeedReview) return 1;
 
 			// Jika sama-sama pending, sort berdasarkan waktu
 			if (a.statusSesi === "pending" && b.statusSesi === "pending") {
@@ -132,6 +139,7 @@ export function SessionsWidget({
 	const needReviewSessions = sessions.filter((s) => {
 		return (
 			s.statusSesi === "end" &&
+			!s.testimoni && // belum ada testimoni
 			acceptedTransactions.some((trx) => trx.sesi_id === s.id)
 		);
 	}).length;
@@ -187,33 +195,16 @@ export function SessionsWidget({
 		}
 	};
 
-	// Variant compact-dropdown untuk navigation (include container)
-	if (variant === "user-menu-dropdown") {
-		return (
-			<div
-				className="absolute 
-            top-full left-0 mt-1 w-full min-w-[280px]
-            sm:top-0 sm:right-full sm:left-auto sm:mr-2 sm:mt-0 sm:w-80
-            z-50">
-				<div className="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden">
-					<SessionsWidget
-						variant="compact"
-						maxSessions={maxSessions}
-						onNavigate={onNavigate}
-					/>
-					<div className="p-3 bg-gray-50 border-t">
-						<button
-							onClick={() => {
-								onNavigate("session-history");
-							}}
-							className="outline-none focus:outline-none w-full text-center text-gray-600 hover:text-gray-900 text-sm font-medium">
-							Lihat Semua Sesi →
-						</button>
-					</div>
-				</div>
-			</div>
-		);
-	}
+	// Handle testimoni functions
+	const handleOpenTestimoni = (session) => {
+		const testimoniData = {
+			id: session.id,
+			sesi_id: session.id,
+			pelanggan_id: userData?.pelanggan?.id,
+			mentor_id: session.mentor?.id,
+		};
+		openTestimoniModal(testimoniData);
+	};
 
 	// Variant compact-dropdown untuk dropdown positioning (without absolute container)
 	if (variant === "compact-dropdown") {
@@ -223,8 +214,7 @@ export function SessionsWidget({
 					<div className="flex items-center justify-between gap-2">
 						<h3 className="font-semibold text-gray-900 flex items-center text-sm sm:text-base flex-shrink-0">
 							<Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-yellow-600 flex-shrink-0" />
-							<span className="hidden sm:inline">Your Sessions</span>
-							<span className="sm:hidden">Sessions</span>
+							<span className=" sm:inline">Sesi Saya</span>
 						</h3>
 						<div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
 							{activeSessions > 0 ? (
@@ -274,77 +264,88 @@ export function SessionsWidget({
 					</div>
 				) : (
 					<div className="p-2 sm:p-3 space-y-2 max-h-64 overflow-y-auto">
-						{sessionsToShow.map((session) => (
-							<div
-								key={session.id}
-								className="p-2 sm:p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-								<div className="flex items-start justify-between gap-2">
-									<div className="flex-1 min-w-0">
-										<h4 className="font-medium text-gray-900 text-sm truncate">
-											{session.kursus?.namaKursus || "Course Name"}
-										</h4>
-										<p className="text-xs text-gray-500 mt-0.5">
-											with {session.mentor?.user?.nama || "Mentor"}
-										</p>
-										<div className="flex items-center mt-1 text-xs text-gray-600">
-											<Calendar className="w-3 h-3 mr-1" />
-											<span className="truncate">
-												{formatDate(session.jadwal_kursus?.tanggal)} •{" "}
-												{session.jadwal_kursus?.waktu?.slice(0, 5)}
+						{sessionsToShow.map((session) => {
+							// Convert nomorTelepon to WhatsApp format (replace leading 0 with 62)
+							const rawPhone = session.mentor?.user?.nomorTelepon || "";
+							const waPhone = rawPhone.replace(/^0/, "62");
+
+							return (
+								<div
+									key={session.id}
+									className="p-2 sm:p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+									<div className="flex items-start justify-between gap-2">
+										<div className="flex-1 min-w-0">
+											<h4 className="font-medium text-gray-900 text-sm truncate">
+												{session.kursus?.namaKursus || "Course Name"}
+											</h4>
+											<p className="text-xs text-gray-500 mt-0.5">
+												with {session.mentor?.user?.nama || "Mentor"}
+											</p>
+											<div className="flex items-center mt-1 text-xs text-gray-600">
+												<Calendar className="w-3 h-3 mr-1" />
+												<span className="truncate">
+													{formatDate(session.jadwal_kursus?.tanggal)} •{" "}
+													{session.jadwal_kursus?.waktu?.slice(0, 5)}
+												</span>
+											</div>
+										</div>
+										<div className="flex items-center space-x-1 flex-shrink-0">
+											<div
+												className={`w-2 h-2 rounded-full ${getStatusColor(
+													session.statusSesi
+												)}`}></div>
+											<span
+												className={`text-xs px-1.5 py-0.5 rounded ${
+													session.statusSesi === "started"
+														? "text-red-600 bg-red-50"
+														: session.statusSesi === "end"
+														? "text-orange-600 bg-orange-50"
+														: "text-blue-600 bg-blue-50"
+												}`}>
+												{getStatusText(session.statusSesi)}
 											</span>
 										</div>
 									</div>
-									<div className="flex items-center space-x-1 flex-shrink-0">
-										<div
-											className={`w-2 h-2 rounded-full ${getStatusColor(
-												session.statusSesi
-											)}`}></div>
-										<span
-											className={`text-xs px-1.5 py-0.5 rounded ${
-												session.statusSesi === "started"
-													? "text-red-600 bg-red-50"
-													: session.statusSesi === "end"
-													? "text-orange-600 bg-orange-50"
-													: "text-blue-600 bg-blue-50"
-											}`}>
-											{getStatusText(session.statusSesi)}
-										</span>
+
+									{/* Action buttons untuk mobile/small screens */}
+									<div className="flex mt-2 space-x-1">
+										{session.statusSesi === "started" ? (
+											<span className="flex-1 bg-red-500 text-center text-white py-1.5 px-2 rounded text-xs font-medium transition-colors">
+												Segera Bergabung!
+											</span>
+										) : session.statusSesi === "end" && !session.testimoni ? (
+											<button
+												onClick={() => handleOpenTestimoni(session)}
+												className=" outline-none focus:outline-none flex-1 bg-yellow-500 text-white py-1.5 px-2 rounded text-xs font-medium hover:bg-yellow-600 transition-colors flex items-center justify-center gap-1">
+												Beri Rating
+												<MdRateReview className="w-4 h-4 text-white" />
+											</button>
+										) : (
+											<>
+												<button
+													onClick={() =>
+														onNavigate && onNavigate("session-history")
+													}
+													className="flex-1 bg-blue-500 text-white py-1.5 px-2 rounded text-xs font-medium hover:bg-blue-600 transition-colors">
+													Lihat Detail
+												</button>
+												<button
+													onClick={() =>
+														window.open(
+															`https://wa.me/${waPhone}?text=Halo, saya ingin menanyakan tentang sesi ${
+																session.kursus?.namaKursus || "Course Name"
+															}`
+														)
+													}
+													className="px-2 py-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-colors">
+													<FaWhatsapp className="w-3 h-3" />
+												</button>
+											</>
+										)}
 									</div>
 								</div>
-
-								{/* Action buttons untuk mobile/small screens */}
-								<div className="flex mt-2 space-x-1">
-									{session.statusSesi === "started" ? (
-										<button className="flex-1 bg-red-500 text-white py-1.5 px-2 rounded text-xs font-medium hover:bg-red-600 transition-colors">
-											Join Live
-										</button>
-									) : session.statusSesi === "end" ? (
-										<button className="flex-1 bg-orange-500 text-white py-1.5 px-2 rounded text-xs font-medium hover:bg-orange-600 transition-colors">
-											Write Review
-										</button>
-									) : (
-										<button
-											onClick={() =>
-												onNavigate && onNavigate("session-history")
-											}
-											className="flex-1 bg-blue-500 text-white py-1.5 px-2 rounded text-xs font-medium hover:bg-blue-600 transition-colors">
-											View Details
-										</button>
-									)}
-									<button
-										onClick={() =>
-											window.open(
-												`https://wa.me/6282139436043?text=Halo, saya ingin menanyakan tentang sesi ${
-													session.kursus?.namaKursus || "Course Name"
-												}`
-											)
-										}
-										className="px-2 py-1.5 bg-green-100 text-green-600 rounded hover:bg-green-200 transition-colors">
-										<FaWhatsapp className="w-3 h-3" />
-									</button>
-								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				)}
 
@@ -355,135 +356,6 @@ export function SessionsWidget({
 						className="w-full text-center text-gray-600 hover:text-gray-900 text-sm font-medium">
 						Lihat Semua Sesi →
 					</button>
-				</div>
-			</div>
-		);
-	}
-
-	if (variant === "compact") {
-		return (
-			<div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden w-full max-w-[95vw] sm:max-w-[420px] md:max-w-[480px]">
-				<div className="p-3 sm:p-4 bg-gradient-to-r from-yellow-50 to-gray-50 border-b">
-					<div className="flex items-center justify-between gap-2">
-						<h3 className="font-semibold text-gray-900 flex items-center text-sm sm:text-base flex-shrink-0">
-							<Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-yellow-600 flex-shrink-0" />
-							<span className="hidden sm:inline">Your Sessions</span>
-							<span className="sm:hidden">Sessions</span>
-						</h3>
-						<div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
-							{activeSessions > 0 ? (
-								<>
-									<span className="inline-flex items-center py-1 text-red-600 rounded-full text-sm font-medium">
-										<span className="relative flex h-2 w-2">
-											<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-											<span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-										</span>
-									</span>
-									<span className="text-xs font-medium text-red-600 whitespace-nowrap">
-										{activeSessions} Live
-									</span>
-								</>
-							) : needReviewSessions > 0 ? (
-								<>
-									<div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
-									<span className="text-xs font-medium text-blue-600 whitespace-nowrap">
-										{needReviewSessions} Review
-									</span>
-								</>
-							) : upcomingSessions > 0 ? (
-								<>
-									<div className="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></div>
-									<span className="text-xs font-medium text-yellow-600 whitespace-nowrap">
-										{upcomingSessions} Upcoming
-									</span>
-								</>
-							) : (
-								<span className="text-xs font-medium text-gray-500 whitespace-nowrap">
-									No sessions
-								</span>
-							)}
-						</div>
-					</div>
-				</div>
-
-				<div className="max-h-64 sm:max-h-80 overflow-y-auto">
-					{isLoading ? (
-						<div className="p-3 text-center text-gray-500">Loading...</div>
-					) : sessionsToShow.length === 0 ? (
-						<div className="p-3 text-center text-gray-500">
-							No active sessions
-						</div>
-					) : (
-						sessionsToShow.map((session) => {
-							// Convert nomorTelepon to WhatsApp format (replace leading 0 with 62)
-							const rawPhone = session.mentor?.user?.nomorTelepon || "";
-							const waPhone = rawPhone.replace(/^0/, "62");
-							return (
-								<div
-									key={session.id}
-									className="p-2 sm:p-3 border-b border-gray-50 hover:bg-gray-50 transition-colors">
-									<div className="flex items-center gap-2">
-										<div className="flex items-center flex-1 min-w-0 gap-2">
-											<img
-												src={getImageUrl(
-													session.mentor?.user?.foto_profil,
-													"/foto_mentor/default.png"
-												)}
-												alt={session.mentor?.user?.nama || "Mentor"}
-												className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-											/>
-											<div className="min-w-0 flex-1">
-												<p className="font-medium text-xs sm:text-sm text-gray-900 truncate">
-													{session.kursus?.namaKursus || "Course"}
-												</p>
-												<p className="text-xs text-gray-500 truncate">
-													{formatDate(session.jadwal_kursus?.tanggal)} at{" "}
-													{session.jadwal_kursus?.waktu?.slice(0, 5) ||
-														"No time"}
-												</p>
-											</div>
-										</div>
-										<div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-											<div
-												className={`w-2 h-2 rounded-full animate-pulse ${getStatusColor(
-													session.statusSesi
-												)}`}></div>
-											{session.statusSesi === "started" ? (
-												<button
-													disabled
-													className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium cursor-not-allowed whitespace-nowrap">
-													Live
-												</button>
-											) : session.statusSesi === "pending" ? (
-												<button
-													onClick={(e) => {
-														e.stopPropagation();
-														window.open(
-															`https://wa.me/${waPhone}?text=Halo, saya ingin menanyakan tentang sesi ${
-																session.kursus?.namaKursus || "Course"
-															} yang akan dimulai pada ${formatDate(
-																session.jadwal_kursus?.tanggal
-															)}`
-														);
-													}}
-													className="bg-green-500 text-white p-1 rounded-full text-xs font-medium hover:bg-green-600 transition-colors flex-shrink-0">
-													<FaWhatsapp className="w-5 h-5" />
-												</button>
-											) : session.statusSesi === "end" ? (
-												<button
-													onClick={() => {
-														onNavigate("session-history");
-													}}
-													className="bg-green-500 outline-none text-white px-2 py-1 rounded-full text-xs font-medium hover:bg-green-600 transition-colors whitespace-nowrap">
-													Beri Testimoni
-												</button>
-											) : null}
-										</div>
-									</div>
-								</div>
-							);
-						})
-					)}
 				</div>
 			</div>
 		);
@@ -652,12 +524,12 @@ export function SessionsWidget({
 												<MessageCircle className="w-5 h-5" />
 											</button>
 										</>
-									) : session.statusSesi === "end" ? (
+									) : session.statusSesi === "end" && !session.testimoni ? (
 										<>
 											<button
 												onClick={(e) => {
 													e.stopPropagation();
-													// TODO: Open review/testimonial modal
+													handleOpenTestimoni(session);
 												}}
 												className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
 												<div className="flex items-center justify-center space-x-2">
@@ -669,6 +541,13 @@ export function SessionsWidget({
 												<MessageCircle className="w-5 h-5" />
 											</button>
 										</>
+									) : session.statusSesi === "end" && session.testimoni ? (
+										<button className="flex-1 bg-gradient-to-r from-gray-400 to-gray-500 text-white py-3 px-4 rounded-xl font-medium cursor-not-allowed">
+											<div className="flex items-center justify-center space-x-2">
+												<Star className="w-5 h-5" />
+												<span>Reviewed</span>
+											</div>
+										</button>
 									) : (
 										<button className="flex-1 bg-gradient-to-r from-gray-400 to-gray-500 text-white py-3 px-4 rounded-xl font-medium cursor-not-allowed">
 											<div className="flex items-center justify-center space-x-2">

@@ -1,17 +1,17 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Calendar, Clock, Monitor, MapPin, DollarSign } from "lucide-react";
+import { Calendar, Clock, MapPin } from "lucide-react";
+import { MdRateReview } from "react-icons/md";
 import api from "../api";
-import { TestimoniModal } from "../components/TestimoniModal";
+import useAppStore from "../stores/useAppStore";
 
-export function SessionHistoryPage({ userData, onPaymentSubmit }) {
-	const [showPaymentModal, setShowPaymentModal] = useState(false);
-	const [selectedSession, setSelectedSession] = useState(null);
+export function SessionHistoryPage({ userData }) {
 	const [updatingSessionId, setUpdatingSessionId] = useState(null);
-	const [showTestimoniModal, setShowTestimoniModal] = useState(false);
-	const [testimoniSession, setTestimoniSession] = useState(null);
 
 	const [statusFilter, setStatusFilter] = useState(""); // Tambahkan state untuk filter status
+
+	// Get testimoni state from store
+	const { openTestimoniModal } = useAppStore();
 
 	const queryClient = useQueryClient();
 
@@ -139,26 +139,13 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 	};
 
 	const handleOpenTestimoni = (session) => {
-		setTestimoniSession({
+		const testimoniData = {
 			id: session.id,
 			sesi_id: session.id, // untuk jaga-jaga
 			pelanggan_id: userData?.pelanggan?.id,
 			mentor_id: session.mentor_id,
-		});
-		setShowTestimoniModal(true);
-	};
-
-	const handleSubmitTestimoni = async ({ rating, komentar }) => {
-		// Hanya kirim request, biar modal yang handle SweetAlert
-		await api.post(`/pelanggan/beri-testimoni/${testimoniSession.id}`, {
-			rating,
-			komentar,
-		});
-		// Refetch sessions & transactions agar tombol langsung hilang
-		queryClient.invalidateQueries(["pelangganSessions", pelangganId]);
-		queryClient.invalidateQueries(["pelangganTransactions", pelangganId]);
-		setShowTestimoniModal(false);
-		setTestimoniSession(null);
+		};
+		openTestimoniModal(testimoniData);
 	};
 
 	useEffect(() => {
@@ -318,9 +305,10 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 								<div className="flex items-center gap-2">
 									{!session.sudahTestimoni && session.statusSesi === "end" && (
 										<button
-											className="ml-4 px-4 py-2 bg-yellow-400 text-white rounded-lg hover:bg-yellow-500"
+											className="ml-4 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
 											onClick={() => handleOpenTestimoni(session)}>
 											Beri Testimoni
+											<MdRateReview className="inline-block ml-1 mb-1" />
 										</button>
 									)}
 								</div>
@@ -329,19 +317,6 @@ export function SessionHistoryPage({ userData, onPaymentSubmit }) {
 					</div>
 				))}
 			</div>
-
-			{/* Hapus PaymentModal dari halaman ini, hanya TestimoniModal yang tersisa */}
-			{showTestimoniModal && testimoniSession && (
-				<TestimoniModal
-					isOpen={showTestimoniModal}
-					onClose={() => {
-						setShowTestimoniModal(false);
-						setTestimoniSession(null);
-					}}
-					onSubmit={handleSubmitTestimoni}
-					session={testimoniSession}
-				/>
-			)}
 		</div>
 	);
 }

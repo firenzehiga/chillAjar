@@ -22,6 +22,7 @@ const useAppStore = create((set, get) => ({
 	showPostLoginLoading: false,
 	showHelpMenu: false,
 	showFlowModal: false,
+	showTestimoniModal: false,
 
 	// Course & Booking State
 	selectedCourse: null,
@@ -30,6 +31,9 @@ const useAppStore = create((set, get) => ({
 	bookingCourse: null,
 	currentBooking: null,
 	searchQuery: "",
+
+	// Testimoni State
+	testimoniSession: null,
 
 	// Actions - Authentication
 	setAuthenticated: (isAuth) => set({ isAuthenticated: isAuth }),
@@ -49,6 +53,7 @@ const useAppStore = create((set, get) => ({
 	setShowPostLoginLoading: (show) => set({ showPostLoginLoading: show }),
 	setShowHelpMenu: (show) => set({ showHelpMenu: show }),
 	setShowFlowModal: (show) => set({ showFlowModal: show }),
+	setShowTestimoniModal: (show) => set({ showTestimoniModal: show }),
 
 	// Actions - Course & Booking
 	setSelectedCourse: (course) => set({ selectedCourse: course }),
@@ -57,6 +62,19 @@ const useAppStore = create((set, get) => ({
 	setBookingCourse: (course) => set({ bookingCourse: course }),
 	setCurrentBooking: (booking) => set({ currentBooking: booking }),
 	setSearchQuery: (query) => set({ searchQuery: query }),
+
+	// Actions - Testimoni
+	setTestimoniSession: (session) => set({ testimoniSession: session }),
+	openTestimoniModal: (session) =>
+		set({
+			testimoniSession: session,
+			showTestimoniModal: true,
+		}),
+	closeTestimoniModal: () =>
+		set({
+			testimoniSession: null,
+			showTestimoniModal: false,
+		}),
 
 	// Session Management
 	checkSessionValid: () => {
@@ -102,6 +120,8 @@ const useAppStore = create((set, get) => ({
 			showPayment: false,
 			showBookingModal: false,
 			showCourseSelection: false,
+			showTestimoniModal: false,
+			testimoniSession: null,
 			searchQuery: "",
 		});
 	},

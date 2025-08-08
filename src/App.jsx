@@ -27,6 +27,7 @@ import { TransactionHistoryPage } from "./pages/TransactionHistoryPage";
 import { SessionHistoryPage } from "./pages/SessionHistoryPage";
 import { AboutPage } from "./pages/AboutPage";
 import { AuthModal } from "./components/AuthModal";
+import { TestimoniModal } from "./components/TestimoniModal";
 import { CourseSelectionModal } from "./components/CourseSelectionModal";
 import { CoursePackageSelectionModal } from "./components/CoursePackageSelectionModal";
 import { Home } from "./pages/Home";
@@ -137,6 +138,7 @@ function App() {
 		showPostLoginLoading,
 		showHelpMenu,
 		showFlowModal,
+		showTestimoniModal,
 		// Course & Booking State
 		selectedCourse,
 		selectedMentor,
@@ -144,6 +146,8 @@ function App() {
 		bookingCourse,
 		currentBooking,
 		searchQuery,
+		// Testimoni State
+		testimoniSession,
 		// Actions
 		setCurrentPage,
 		setSelectedCourse,
@@ -159,6 +163,7 @@ function App() {
 		setShowPackageSelection,
 		setShowHelpMenu,
 		setShowFlowModal,
+		closeTestimoniModal,
 		handleLogout,
 		initializeAuth,
 	} = useAppStore();
@@ -642,6 +647,19 @@ function App() {
 		updateUserData(updatedData);
 	};
 
+	// Global testimoni handler
+	const handleSubmitTestimoni = async ({ rating, komentar }) => {
+		await api.post(`/pelanggan/beri-testimoni/${testimoniSession.id}`, {
+			rating,
+			komentar,
+		});
+		// Refetch relevant queries
+		queryClient.invalidateQueries(["sessionsWidget"]);
+		queryClient.invalidateQueries(["pelangganSessions"]);
+		queryClient.invalidateQueries(["statusTransactions"]);
+		closeTestimoniModal();
+	};
+
 	// Fungsi untuk logout - menggunakan kombinasi store dan custom logic
 	const handleLogoutWithHistory = () => {
 		api
@@ -1007,10 +1025,7 @@ function App() {
 					) : null;
 				case "session-history":
 					return isAuthenticated ? (
-						<SessionHistoryPage
-							userData={userData}
-							onPaymentSubmit={handlePaymentSubmit}
-						/>
+						<SessionHistoryPage userData={userData} />
 					) : null;
 				case "mentors":
 					return (
@@ -1440,8 +1455,18 @@ function App() {
 			) : null}
 			{/* Tombol bantuan dan alur pemesanan */}
 
-			{/* Floating Session Reminder */}
+			{/* Floating Session Reminder Muncul Ketika Pelanggan baru saja login */}
 			<FloatingSessionReminder />
+
+			{/* Global TestimoniModal Untuk Session Widget dan Session History */}
+			{showTestimoniModal && testimoniSession && (
+				<TestimoniModal
+					isOpen={showTestimoniModal}
+					onClose={closeTestimoniModal}
+					onSubmit={handleSubmitTestimoni}
+					session={testimoniSession}
+				/>
+			)}
 		</div>
 	);
 }

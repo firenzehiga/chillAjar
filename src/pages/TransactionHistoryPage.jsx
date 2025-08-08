@@ -292,7 +292,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							<div className="flex items-center justify-between text-gray-600">
 								<div className="flex items-center">
 									<DollarSign className="w-4 h-4 mr-2 text-blue-600" />
-									Total Harga: Rp{session.amount}
+									Total Harga: Rp{(session.amount || 0).toLocaleString("id-ID")}
 								</div>
 								<div className="flex items-center gap-2">
 									<span className="text-sm">
@@ -314,7 +314,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 								<div className="mt-4 bg-yellow-50 p-4 rounded-lg">
 									<p className="text-yellow-800 text-sm">
 										Pembayaran Anda sedang diverifikasi. Proses ini biasanya
-										memakan waktu 1-2 hari kerja. Kami akan memberi notifikasi
+										memakan waktu 1-2 jam kerja. Kami akan memberi notifikasi
 										setelah verifikasi selesai.
 									</p>
 								</div>
