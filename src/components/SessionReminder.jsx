@@ -226,7 +226,7 @@ export function FloatingSessionReminder() {
 										{currentSession.status === "live"
 											? "Sesi Dimulai"
 											: currentSession.status === "needReview"
-											? "Sesi Selesai - Beri Testimoni"
+											? "Sesi Selesai"
 											: "Sesi Segera Dimulai"}
 									</span>
 								</div>
@@ -400,8 +400,8 @@ export function SessionBanner({ isAuthenticated }) {
 						<div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
 						<span className="font-medium">
 							{currentSession.statusSesi === "started"
-								? "Dimulai"
-								: "Sesi Selesai - Beri Testimoni"}
+								? "Sesi Dimulai"
+								: "Sesi Selesai"}
 						</span>
 					</div>
 					<div className="flex items-center space-x-4 text-sm">
