@@ -15,7 +15,6 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 	// Get state from Zustand store
 	const { isAuthenticated } = useAppStore();
 
-	
 	const handleNavigate = (page) => {
 		onNavigate(page);
 		setIsOpen(false);
@@ -48,13 +47,22 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 		});
 	};
 
+	const getDisplayName = (nama) => {
+		if (!nama) return "";
+		const parts = nama.trim().split(" ");
+		if (parts.length === 3) {
+			return `${parts[0]} ${parts[1]}`;
+		}
+		return nama;
+	};
+
 	return (
 		<div className="relative">
 			<button
 				onClick={() => setIsOpen(!isOpen)}
 				className="flex items-center space-x-3 focus:outline-none group">
 				<span className="text-sm font-medium text-gray-700 hidden sm:block group-hover:text-gray-600">
-					{currentUser.nama}
+					{getDisplayName(currentUser.nama)}
 				</span>
 				<img
 					src={currentUser.image}
@@ -71,7 +79,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 				<div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
 					<div className="px-4 py-2 border-b">
 						<p className="text-sm font-medium text-gray-900">
-							{currentUser.nama}
+							{getDisplayName(currentUser.nama)}
 						</p>
 						<p className="text-sm text-gray-500">{currentUser.email}</p>
 					</div>
@@ -79,7 +87,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 					{userRole === "admin" && (
 						<button
 							onClick={() => handleNavigate("admin-profile")}
-							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 							<User className="w-4 h-4 mr-2" />
 							Profil Saya
 						</button>
@@ -95,7 +103,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 					{userRole === "pelanggan" && (
 						<button
 							onClick={() => handleNavigate("profile")}
-							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 							<User className="w-4 h-4 mr-2" />
 							Profil Saya
 						</button>
@@ -114,7 +122,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 										setShowMobileSessionsDropdown(true);
 									}
 								}}
-								className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 								<Clock className="w-4 h-4 mr-2" />
 								Sesi Saya
 							</button>
@@ -141,7 +149,7 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 					{userRole === "pelanggan" && (
 						<button
 							onClick={() => handleNavigate("session-history")}
-							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 							<BookCopy className="w-4 h-4 mr-2" />
 							Riwayat Sesi
 						</button>
@@ -149,9 +157,9 @@ export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
 					{userRole === "pelanggan" && (
 						<button
 							onClick={() => handleNavigate("transaction-history")}
-							className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+							className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 							<History className="w-4 h-4 mr-2" />
-							Riwayat Pemesanan
+							Riwayat Transaksi
 						</button>
 					)}
 					<button

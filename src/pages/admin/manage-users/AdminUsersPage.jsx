@@ -108,7 +108,7 @@ export function AdminUsersPage() {
 				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600 bg-white rounded-lg">
 						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mr-3"></div>
-						<p>Loading course data...</p>
+						<p>Loading user data...</p>
 					</div>
 				) : users.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">

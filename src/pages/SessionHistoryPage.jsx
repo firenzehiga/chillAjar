@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, Loader2 } from "lucide-react";
 import { MdRateReview } from "react-icons/md";
 import api from "../api";
 import useAppStore from "../stores/useAppStore";
@@ -11,7 +11,7 @@ export function SessionHistoryPage({ userData }) {
 	const [statusFilter, setStatusFilter] = useState(""); // Tambahkan state untuk filter status
 
 	// Get testimoni state from store
-	const { openTestimoniModal } = useAppStore();
+	const { openTestimoniModal, isSubmittingTestimoni } = useAppStore();
 
 	const queryClient = useQueryClient();
 
@@ -302,13 +302,28 @@ export function SessionHistoryPage({ userData }) {
 						<div className="border-t pt-4 mt-4">
 							<div className="flex items-center justify-between text-gray-600">
 								<div className="flex items-center"></div>
+
 								<div className="flex items-center gap-2">
 									{!session.sudahTestimoni && session.statusSesi === "end" && (
 										<button
-											className="ml-4 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
-											onClick={() => handleOpenTestimoni(session)}>
-											Beri Testimoni
-											<MdRateReview className="inline-block ml-1 mb-1" />
+											className={`ml-4 px-4 py-2 rounded-lg text-white transition-colors ${
+												isSubmittingTestimoni
+													? "bg-yellow-200 cursor-not-allowed"
+													: "bg-yellow-500 hover:bg-yellow-600"
+											}`}
+											onClick={() => handleOpenTestimoni(session)}
+											disabled={isSubmittingTestimoni}>
+											{isSubmittingTestimoni ? (
+												<span className="flex items-center">
+													<Loader2 className="animate-spin h-4 w-4 mr-2" />
+													Sedang mengirim...
+												</span>
+											) : (
+												<span>
+													Beri Testimoni
+													<MdRateReview className="inline-block ml-1 mb-1" />
+												</span>
+											)}
 										</button>
 									)}
 								</div>

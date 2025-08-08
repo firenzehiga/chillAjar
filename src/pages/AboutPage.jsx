@@ -144,7 +144,7 @@ export function AboutPage() {
 			</div>
 
 			{/* Stats */}
-			<div className="bg-chill-yellow py-12 mb-16">
+			<div className="bg-chill-yellow py-12 mb-16 rounded-2xl shadow-lg">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 						{stats.map((stat, index) => (
@@ -237,7 +237,7 @@ export function AboutPage() {
 						</div>
 					)}
 					{anggotaTim.length > 0 && (
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 							{anggotaTim.map((member, index) => (
 								<div
 									key={index}

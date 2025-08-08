@@ -183,9 +183,9 @@ export function SessionsWidget({
 		tomorrow.setDate(tomorrow.getDate() + 1);
 
 		if (date.toDateString() === today.toDateString()) {
-			return "Today";
+			return "Hari Ini";
 		} else if (date.toDateString() === tomorrow.toDateString()) {
-			return "Tomorrow";
+			return "Besok";
 		} else {
 			return date.toLocaleDateString("id-ID", {
 				weekday: "short",

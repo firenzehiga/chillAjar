@@ -34,6 +34,7 @@ const useAppStore = create((set, get) => ({
 
 	// Testimoni State
 	testimoniSession: null,
+	isSubmittingTestimoni: false,
 
 	// Actions - Authentication
 	setAuthenticated: (isAuth) => set({ isAuthenticated: isAuth }),
@@ -65,6 +66,8 @@ const useAppStore = create((set, get) => ({
 
 	// Actions - Testimoni
 	setTestimoniSession: (session) => set({ testimoniSession: session }),
+	setIsSubmittingTestimoni: (loading) =>
+		set({ isSubmittingTestimoni: loading }),
 	openTestimoniModal: (session) =>
 		set({
 			testimoniSession: session,
@@ -74,6 +77,7 @@ const useAppStore = create((set, get) => ({
 		set({
 			testimoniSession: null,
 			showTestimoniModal: false,
+			isSubmittingTestimoni: false, // Reset loading saat close
 		}),
 
 	// Session Management
