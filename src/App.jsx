@@ -691,14 +691,18 @@ function App() {
 				history.push("/home");
 				queryClient.clear(); // <-- Hapus semua cache query!
 
-				Swal.fire({
-					icon: "success",
-					title: "Logged Out!",
-					text: "You have been successfully logged out.",
-					toast: true,
-					position: "bottom-end",
-					timer: 2000,
-					showConfirmButton: false,
+				toast.success("Berhasil Logout! Sampai jumpa👋", {
+					duration: 2000,
+					position: "top-center",
+					style: {
+						background: "#fffbe6",
+						color: "#333",
+						border: "1.5px solid #facc15",
+						borderRadius: "12px",
+						fontWeight: 500,
+						fontSize: "1rem",
+						boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+					},
 				});
 			})
 			.catch((error) => {
