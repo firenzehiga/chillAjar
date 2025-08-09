@@ -1242,6 +1242,7 @@ function App() {
 							handleCourseClick={handleCourseClick}
 							userRole={userRole}
 							onNavigate={handleNavigate}
+							isLoading={isLoading}
 						/>
 					);
 				default:

@@ -97,7 +97,7 @@ export function AuthModal({ defaultMode = "login" }) {
 
 				toast.success(`Selamat datang kembali di ChillAjar! ${user.nama}`, {
 					duration: 2000,
-					position: "top-center",
+					position: "top-right",
 					style: {
 						background: "#fffbe6",
 						color: "#333",
