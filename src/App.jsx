@@ -186,7 +186,7 @@ function App() {
 		queryFn: async () => {
 			const endpoint = isAuthenticated
 				? "/pelanggan/daftar-kursus"
-				: "/public/kursus";
+				: "/public/kursus"; // Endpoint publik
 			const response = await api.get(endpoint, {
 				headers: isAuthenticated
 					? {
@@ -269,8 +269,10 @@ function App() {
 			// console.log("Mapped Courses:", mappedCourses); // Debug: Periksa data setelah pemetaan
 			return mappedCourses;
 		},
-		staleTime: 0,
-		refetchOnWindowFocus: false,
+		staleTime: 60 * 1000, // 30 detik (sangat pendek)
+		cacheTime: 2 * 60 * 1000, // 2 menit cache
+		refetchOnWindowFocus: true, // Refetch saat focus (safety)
+		refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
 		retry: 1,
 	});
 	// Fetch data jadwal dengan React Query
@@ -298,8 +300,8 @@ function App() {
 			}));
 		},
 		enabled: !!selectedCourse?.id, // Hanya fetch jika kursus dipilih
-		staleTime: 0,
-		cacheTime: 0,
+		staleTime: 0, // Keep 0 for real-time schedule data
+		cacheTime: 0, // Keep 0 for real-time schedule data
 		refetchOnWindowFocus: false,
 		retry: 1,
 	});

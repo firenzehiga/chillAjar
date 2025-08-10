@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { X, Gift, ArrowRight, AlertCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import api from "../api";
 import CoursePackageCard from "./CoursePackageCard";
+
 export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
-	const [packages, setPackages] = useState([]);
 	const [selectedPackage, setSelectedPackage] = useState(null);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
 
-	// Fetch packages ketika modal dibuka
-	useEffect(() => {
-		if (course) {
-			fetchPackages();
-		}
-	}, [course]);
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 
-	const fetchPackages = async () => {
-		try {
-			setLoading(true);
-			setError(null);
-			const token = localStorage.getItem("token");
+	// Fetch packages menggunakan useQuery
+	const {
+		data: packages = [],
+		isLoading: loading,
+		error,
+		refetch,
+	} = useQuery({
+		queryKey: ["coursePackages", course?.id],
+		queryFn: async () => {
+			if (!course?.id) return [];
+			if (!isAuthenticated) return [];
 
-			console.log("Fetching packages for course:", course);
-
+			// console.log("Fetching packages for course:", course);
 			// Ambil data kursus beserta paket yang visible
 			const response = await api.get(`/kursus/${course.id}`, {
 				headers: token ? { Authorization: `Bearer ${token}` } : {},
 			});
 
-			console.log("Response dari /kursus:", response.data);
+			// console.log("Response dari /kursus:", response.data);
 
 			// Ambil paket dari visibilitasPaket yang statusnya visible (visibilitas = 1)
 			const visiblePackages =
@@ -37,7 +37,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 					?.map((vp) => vp.paket)
 					?.filter((pkg) => pkg) || [];
 
-			console.log("Visible packages from visibilitas_paket:", visiblePackages);
+			// console.log("Visible packages from visibilitas_paket:", visiblePackages);
 
 			// Filter paket yang aktif dan sudah dimulai
 			const activePackages = visiblePackages.filter((pkg) => {
@@ -58,10 +58,10 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 				return true; // Paket aktif dan dapat dibeli
 			});
 
-			console.log("Active packages after filtering:", activePackages);
+			// console.log("Active packages after filtering:", activePackages);
 
 			// Map data untuk konsistensi
-			const mappedPackages = activePackages.map((pkg) => ({
+			return activePackages.map((pkg) => ({
 				id: pkg.id,
 				name: pkg.nama,
 				description: pkg.deskripsi,
@@ -77,15 +77,13 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 				tanggal_mulai: pkg.tanggal_mulai,
 				tanggal_berakhir: pkg.tanggal_berakhir,
 			}));
-
-			setPackages(mappedPackages);
-		} catch (err) {
-			console.error("Error fetching packages:", err);
-			setError("Gagal memuat data paket");
-		} finally {
-			setLoading(false);
-		}
-	};
+		},
+		enabled: !!course?.id && isAuthenticated, // Hanya fetch jika course ID ada
+		staleTime: 5 * 60 * 1000, // Data fresh selama 5 menit
+		cacheTime: 10 * 60 * 1000, // Cache selama 10 menit
+		retry: 2,
+		refetchOnWindowFocus: false,
+	});
 
 	const handlePackageSelect = (packageData) => {
 		setSelectedPackage(packageData);
@@ -101,8 +99,11 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 
 	const handleClose = () => {
 		setSelectedPackage(null);
-		setError(null);
 		onClose();
+	};
+
+	const handleRetry = () => {
+		refetch();
 	};
 
 	if (!course) return null;
@@ -116,8 +117,8 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 						<div>
 							<h2 className="text-lg sm:text-xl font-bold flex items-center">
 								<Gift className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
-								<span className=" sm:inline">
-									Pilih Paket - {course?.courseName}{" "}
+								<span className="sm:inline">
+									Pilih Paket - {course?.courseName}
 								</span>
 							</h2>
 							<p className="text-yellow-100 text-xs mt-1 hidden sm:block">
@@ -148,9 +149,13 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 						<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 							<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 							<h3 className="text-lg font-semibold mb-2">Error</h3>
-							<p className="text-gray-500 mb-4 text-center text-sm">{error}</p>
+							<p className="text-gray-500 mb-4 text-center text-sm">
+								{error?.response?.data?.message ||
+									error?.message ||
+									"Gagal memuat data paket"}
+							</p>
 							<button
-								onClick={fetchPackages}
+								onClick={handleRetry}
 								className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 text-sm">
 								Coba Lagi
 							</button>
@@ -166,25 +171,16 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 							</p>
 						</div>
 					) : (
-						<>
-							{/* <div className="mb-3 sm:mb-4">
-								<h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
-									Setiap paket memiliki benefit yang berbeda. Pilih yang paling
-									cocok untuk pembelajaran Anda.{" "}
-								</h3>
-							</div> */}
-
-							<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
-								{packages.map((pkg) => (
-									<CoursePackageCard
-										key={pkg.id}
-										packageData={pkg}
-										onSelect={handlePackageSelect}
-										isSelected={selectedPackage?.id === pkg.id}
-									/>
-								))}
-							</div>
-						</>
+						<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+							{packages.map((pkg) => (
+								<CoursePackageCard
+									key={pkg.id}
+									packageData={pkg}
+									onSelect={handlePackageSelect}
+									isSelected={selectedPackage?.id === pkg.id}
+								/>
+							))}
+						</div>
 					)}
 				</div>
 

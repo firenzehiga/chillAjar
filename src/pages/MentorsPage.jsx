@@ -20,11 +20,14 @@ export function MentorsPage({
 	} = useQuery({
 		queryKey: ["publicMentorsPage"],
 		queryFn: async () => {
+			console.log("🔥 FETCHING MENTORS - ", new Date().toLocaleTimeString());
 			const mentorsResponse = await api.get("/public/mentor");
 			return mentorsResponse.data;
 		},
-		staleTime: 0,
-		refetchOnWindowFocus: false,
+		staleTime: 60 * 1000, // 30 detik (sangat pendek)
+		cacheTime: 2 * 60 * 1000, // 2 menit cache
+		refetchOnWindowFocus: true, // Refetch saat focus (safety)
+		refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
 		retry: 1,
 	});
 

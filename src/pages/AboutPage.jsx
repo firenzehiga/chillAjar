@@ -39,6 +39,11 @@ export function AboutPage() {
 			});
 			return response.data.length;
 		},
+		staleTime: 60 * 1000, // 30 detik (sangat pendek)
+		cacheTime: 2 * 60 * 1000, // 2 menit cache
+		refetchOnWindowFocus: true, // Refetch saat focus (safety)
+		refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
+		retry: 1,
 	});
 
 	const {
@@ -57,6 +62,11 @@ export function AboutPage() {
 			return response.data.filter((mentor) => mentor.status === "active")
 				.length;
 		},
+		staleTime: 60 * 1000, // 30 detik (sangat pendek)
+		cacheTime: 2 * 60 * 1000, // 2 menit cache
+		refetchOnWindowFocus: true, // Refetch saat focus (safety)
+		refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
+		retry: 1,
 	});
 
 	const stats = [

@@ -35,6 +35,7 @@ export function AdminMentorsPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
+		staleTime: 2 * 60 * 1000, // Fresh for 2 minutes
 		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching Mentors:", err);
@@ -56,10 +57,59 @@ export function AdminMentorsPage({ onNavigate }) {
 			queryClient.setQueryData(["adminMentors"], (oldData) =>
 				oldData.filter((mentor) => mentor.id !== id)
 			);
+			// Invalidate related queries for immediate refresh on public pages
+			queryClient.invalidateQueries(["publicMentorsPage"]);
+			queryClient.invalidateQueries(["courses"]);
 			Swal.fire("Deleted!", "Mentor berhasil dihapus.", "success"); // Tampilkan pesan sukses
 		},
 		onError: () => {
 			Swal.fire("Error!", "Gagal menghapus mentor.", "error"); // Tampilkan pesan error
+		},
+	});
+
+	// Update mutation untuk menggunakan endpoint edit yang sudah ada
+	const toggleStatusMutation = useMutation({
+		mutationFn: async ({ mentorId, newStatus }) => {
+			// Gunakan endpoint PUT/PATCH yang sudah ada untuk edit mentor
+			const response = await api.put(
+				`/admin/mentor/${mentorId}`,
+				{
+					status: newStatus,
+				},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			);
+			return response.data;
+		},
+		onSuccess: (_, { mentorId, newStatus }) => {
+			// Update cache optimistically
+			queryClient.setQueryData(["adminMentors"], (oldData) =>
+				oldData.map((mentor) =>
+					mentor.id === mentorId ? { ...mentor, status: newStatus } : mentor
+				)
+			);
+			// Invalidate related queries
+			queryClient.invalidateQueries(["publicMentorsPage"]);
+			queryClient.invalidateQueries(["courses"]);
+
+			const statusText =
+				newStatus === "active" ? "diaktifkan" : "dinonaktifkan";
+			Swal.fire({
+				icon: "success",
+				title: "Success!",
+				text: `Mentor berhasil ${statusText}.`,
+				timer: 1500,
+				showConfirmButton: false,
+			});
+		},
+		onError: (error) => {
+			console.error("Error toggling mentor status:", error);
+			Swal.fire({
+				icon: "error",
+				title: "Error!",
+				text: "Gagal mengubah status mentor.",
+			});
 		},
 	});
 
@@ -83,6 +133,31 @@ export function AdminMentorsPage({ onNavigate }) {
 	// Saat tombol edit diklik, navigasikan ke halaman edit course
 	const handleEdit = (id) => {
 		onNavigate(`admin-edit-mentor/${id}`);
+	};
+
+	// Function untuk toggle status mentor
+	const handleToggleStatus = (mentor) => {
+		const newStatus = mentor.status === "active" ? "inactive" : "active";
+		const actionText =
+			newStatus === "active" ? "mengaktifkan" : "menonaktifkan";
+
+		Swal.fire({
+			title: "Konfirmasi",
+			text: `Apakah Anda yakin ingin ${actionText} mentor ${mentor.user?.nama}?`,
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonColor: newStatus === "active" ? "#10B981" : "#EF4444",
+			cancelButtonColor: "#6B7280",
+			confirmButtonText: "Ya, ubah status!",
+			cancelButtonText: "Batal",
+		}).then((result) => {
+			if (result.isConfirmed) {
+				toggleStatusMutation.mutate({
+					mentorId: mentor.id,
+					newStatus: newStatus,
+				});
+			}
+		});
 	};
 
 	// Kolom untuk DataTable
@@ -131,23 +206,58 @@ export function AdminMentorsPage({ onNavigate }) {
 			selector: (row) => row.status || "N/A",
 			cell: (row) => {
 				const status = row.status || "N/A";
-				let color = "bg-gray-300 text-gray-700";
-				if (status === "pending") color = "bg-yellow-100 text-yellow-800";
-				else if (status === "active") color = "bg-green-100 text-green-800";
-				else if (status === "inactive") color = "bg-red-100 text-red-800";
-				else if (status === "rejected")
-					color = "bg-gray-200 text-gray-500 border border-gray-300";
+				const isActive = status === "active";
+				const isPending = status === "pending";
+				const isRejected = status === "rejected";
 
+				// Jika pending atau rejected, tampilkan badge biasa tanpa toggle
+				if (isPending || isRejected) {
+					let color = "bg-gray-300 text-gray-700";
+					if (isPending) color = "bg-yellow-100 text-yellow-800";
+					else if (isRejected)
+						color = "bg-gray-200 text-gray-500 border border-gray-300";
+
+					return (
+						<span
+							className={`px-3 py-1 rounded-full text-xs font-semibold ${color} border border-opacity-30`}
+							style={{
+								minWidth: 70,
+								display: "inline-block",
+								textAlign: "center",
+							}}>
+							{status.charAt(0).toUpperCase() + status.slice(1)}
+						</span>
+					);
+				}
+
+				// Untuk active/inactive, tampilkan toggle switch
 				return (
-					<span
-						className={`px-3 py-1 rounded-full text-xs font-semibold ${color} border border-opacity-30`}
-						style={{
-							minWidth: 70,
-							display: "inline-block",
-							textAlign: "center",
-						}}>
-						{status.charAt(0).toUpperCase() + status.slice(1)}
-					</span>
+					<div className="flex items-center space-x-2">
+						<button
+							onClick={() => handleToggleStatus(row)}
+							disabled={toggleStatusMutation.isLoading}
+							className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 ${
+								isActive
+									? "bg-green-500 hover:bg-green-600"
+									: "bg-gray-300 hover:bg-gray-400"
+							} ${
+								toggleStatusMutation.isLoading
+									? "cursor-not-allowed opacity-50"
+									: "cursor-pointer"
+							}`}>
+							<span
+								className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+									isActive ? "translate-x-6" : "translate-x-1"
+								}`}
+							/>
+						</button>
+						<span
+							className={`text-xs font-medium ${
+								isActive ? "text-green-700" : "text-gray-600"
+							}`}>
+							{isActive ? "Active" : "Inactive"}
+						</span>
+					</div>
 				);
 			},
 		},
