@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Upload, CreditCard, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
@@ -42,12 +43,31 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	};
 
 	const handleSubmit = async () => {
+		// Hapus toast sebelumnya
+		toast.dismiss();
+
 		if (paymentMethod === "Transfer Bank" && !proofImage) {
-			Swal.fire({
-				icon: "error",
-				title: "Payment Proof Required",
-				text: "Please upload your payment proof before proceeding.",
-			});
+			toast.error(
+				<div className="text-center">
+					<div className="font-semibold text-red-800 mb-2">
+						❌ Pembayaran Gagal
+					</div>
+					<div className="text-sm text-gray-700">
+						Bukti pembayaran tidak boleh kosong. Silakan unggah bukti transfer.
+					</div>
+				</div>,
+				{
+					duration: 5000,
+					position: "top-center",
+					style: {
+						background: "#fef2f2",
+						border: "1px solid #ef4444",
+						padding: "16px",
+						borderRadius: "8px",
+						minWidth: "300px",
+					},
+				}
+			);
 			return;
 		}
 		// console.log("Submitting with proofImage:", proofImage); // Debug
@@ -73,7 +93,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 				{/* Header - Fixed */}
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
-						<h2 className="text-xl font-semibold">Complete Payment</h2>
+						<h2 className="text-xl font-semibold">Selesaikan Pembayaran</h2>
 						<button
 							onClick={onClose}
 							className="text-gray-500 hover:text-gray-700">
@@ -86,7 +106,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 				<div className="p-6 overflow-y-auto flex-1 space-y-8">
 					{/* Booking Summary */}
 					<div>
-						<h3 className="font-semibold text-xl mb-4">Booking Summary</h3>
+						<h3 className="font-semibold text-xl mb-4">Ringkasan Pemesanan</h3>
 						<div className="bg-white border rounded-xl p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Course</p>
@@ -101,7 +121,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 								<p className="font-medium">{booking.date}</p>
 							</div>
 							<div>
-								<p className="text-sm text-gray-600 mb-1">Waktu</p>
+								<p className="text-sm text-gray-600 mb-1">Time</p>
 								<p className="font-medium">{booking.time.slice(0, 5)} WIB</p>
 							</div>
 							<div>
@@ -112,7 +132,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							</div>
 							{booking.mode === "offline" && (
 								<div>
-									<p className="text-sm text-gray-600 mb-1">Lokasi</p>
+									<p className="text-sm text-gray-600 mb-1">Location</p>
 									<p className="font-medium">{booking.location}</p>
 								</div>
 							)}
@@ -135,7 +155,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 
 					{/* Payment Method */}
 					<div>
-						<h3 className="font-semibold text-xl mb-4">Payment Method</h3>
+						<h3 className="font-semibold text-xl mb-4">Metode Pembayaran</h3>
 						<div className="space-y-3">
 							<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
 								<input
@@ -146,7 +166,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 									onChange={(e) => setPaymentMethod(e.target.value)}
 									className="mr-3"
 								/>
-								<span>Bank Transfer</span>
+								<span>Transfer Bank</span>
 							</label>
 						</div>
 					</div>
@@ -154,7 +174,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 					{/* Bank Details */}
 					{paymentMethod === "Transfer Bank" && (
 						<div>
-							<h3 className="font-semibold text-xl mb-4">Bank Details</h3>
+							<h3 className="font-semibold text-xl mb-4">Detail Bank</h3>
 							<div className="bg-blue-50 border border-blue-200 rounded-xl p-6 space-y-2">
 								<p>
 									<span className="font-medium">Bank:</span> BCA
@@ -171,7 +191,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							{/* Upload Proof */}
 							<div className="mt-6">
 								<label className="block font-medium mb-2">
-									Upload Payment Proof
+									Upload Bukti Pembayaran
 								</label>
 								<div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
 									{proofPreview ? (
@@ -187,14 +207,14 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 													setProofPreview(null);
 												}}
 												className="mt-3 text-red-600 hover:text-red-700 font-medium">
-												Remove
+												Hapus
 											</button>
 										</div>
 									) : (
 										<div>
 											<Upload className="w-8 h-8 mx-auto mb-3 text-gray-400" />
 											<label className="cursor-pointer text-blue-600 hover:text-blue-700 font-medium">
-												Click to upload
+												Klik untuk mengupload
 												<input
 													type="file"
 													accept="image/*"
@@ -218,19 +238,19 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 					<div className="flex justify-end space-x-3">
 						<button
 							onClick={onClose}
-							className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+							className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-yellow-500">
 							Nanti
 						</button>
 						<button
 							onClick={handleSubmit}
-							className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center disabled:opacity-60 disabled:cursor-not-allowed"
+							className="px-4 py-2 bg-black text-white rounded-lg focus:outline-none hover:bg-yellow-700 flex items-center disabled:opacity-60 disabled:cursor-not-allowed"
 							disabled={loading}>
 							{loading ? (
 								<Loader2 className="w-4 h-4 mr-2 animate-spin" />
 							) : (
 								<CreditCard className="w-4 h-4 mr-2" />
 							)}
-							{loading ? "Processing..." : "Complete Payment"}
+							{loading ? "Memproses..." : "Lanjut Bayar"}
 						</button>
 					</div>
 				</div>

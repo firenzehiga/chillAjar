@@ -1365,15 +1365,15 @@ function App() {
 						onClose={() => {
 							setShowPayment(false);
 							setCurrentBooking(null);
-							// [gayaMengajar JADWAL ONLY] Komentar: Menampilkan PaymentModal hanya jika pembayaran sedang berlangsung dan booking sudah ada. Semua data mode belajar (gayaMengajar) sudah diambil dari jadwal_kursus, bukan dari level kursus.
+							setCurrentPage("transaction-history"); // arahkan ke halaman tujuan
+							history.push("/transaction-history"); // update URL
 							// [gayaMengajar JADWAL ONLY] Komentar: Menampilkan PaymentModal hanya jika pembayaran sedang berlangsung dan booking sudah ada. Semua data mode belajar (gayaMengajar) sudah diambil dari jadwal_kursus, bukan dari level kursus.
 							Swal.fire({
 								icon: "warning",
 								title: "Pembayaran Belum Selesai",
 								html: `<span style="color:red;">Batas waktu pembayaran 1x24 jam.</span>`,
-								confirmButtonColor: "#3B82F6",
-								footer:
-									"Klik Ikon Profile &gt; Session History &gt; Cek Sesi &gt; Selesaikan Pembayaran.",
+								confirmButtonColor: "#f59e0b",
+								confirmButtonText: "Baik",
 							});
 						}}
 						onSubmit={handlePaymentSubmit}

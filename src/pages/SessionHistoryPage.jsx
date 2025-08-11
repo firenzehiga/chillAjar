@@ -291,7 +291,7 @@ export function SessionHistoryPage({ userData }) {
 			case "end":
 				return "Selesai";
 			case "reviewed":
-				return "Sudah Direview";
+				return "Reviewed";
 			default:
 				return status;
 		}

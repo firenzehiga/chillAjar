@@ -9,6 +9,7 @@ import {
 	AlertCircle,
 	Gift,
 	Star,
+	Loader2,
 } from "lucide-react";
 
 export function BookingModal({
@@ -24,6 +25,7 @@ export function BookingModal({
 	const [selectedTime, setSelectedTime] = useState(null);
 	const [topic, setTopic] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
+	const [isProcessing, setIsProcessing] = useState(false);
 
 	// Price calculations - SINGLE DECLARATION
 	const packagePrice = selectedPackage?.totalPrice || 0;
@@ -105,7 +107,7 @@ export function BookingModal({
 			: [];
 	// --- END Perubahan ---
 
-	const handleSubmit = () => {
+	const handleSubmit = async () => {
 		if (!selectedMode) {
 			setErrorMsg("Pilih mode pembelajaran terlebih dahulu.");
 			return;
@@ -118,7 +120,8 @@ export function BookingModal({
 			setErrorMsg("Pilih tanggal dan waktu terlebih dahulu.");
 			return;
 		}
-		// Find the selected schedule and check gayaMengajar
+		setIsProcessing(true);
+
 		const found = filteredSchedules.find(
 			(s) =>
 				s.gayaMengajar === selectedMode &&
@@ -130,21 +133,29 @@ export function BookingModal({
 		);
 		if (!found) {
 			setErrorMsg("Jadwal tidak ditemukan atau tidak valid.");
+			setIsProcessing(false);
 			return;
 		}
 		setErrorMsg("");
 
-		onSubmit(
-			selectedDate,
-			selectedTime,
-			selectedMode,
-			selectedCourse,
-			topic,
-			selectedLocation,
-			selectedPackage, // Ngirim paket yang dipilih ke parent(App.jsx)
-			totalFinalPrice // Gunakan yang sudah dihitung di bawah
-		);
-		onClose();
+		try {
+			// Tunggu proses submit selesai jika onSubmit async
+			await onSubmit(
+				selectedDate,
+				selectedTime,
+				selectedMode,
+				selectedCourse,
+				topic,
+				selectedLocation,
+				selectedPackage,
+				totalFinalPrice
+			);
+			onClose();
+		} catch (err) {
+			setErrorMsg("Gagal memproses pesanan.");
+		} finally {
+			setIsProcessing(false);
+		}
 	};
 
 	return (
@@ -153,7 +164,7 @@ export function BookingModal({
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
-							Pesan sesi dengan {mentor.mentorName}
+							Pesan sesi dengan {mentor.mentorName || mentor.user?.nama}
 						</h2>
 						<button
 							type="button"
@@ -277,7 +288,7 @@ export function BookingModal({
 							value={topic}
 							onChange={(e) => setTopic(e.target.value)}
 							placeholder="Tuliskan topik yang ingin kamu bahas bersama mentor dalam sesi ini... (Bisa nama materi, pertanyaan spesifik, atau hal lain yang ingin didiskusikan)"
-							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-yellow-500"
 							rows="3"
 						/>
 					</div>
@@ -298,7 +309,7 @@ export function BookingModal({
 									disabled={!availableModes.includes(mode)}
 									className={`flex items-center justify-center p-3 rounded-lg border ${
 										selectedMode === mode
-											? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+											? "bg-yellow-500 text-white border-yellow-500 focus:outline-none focus:ring-3 outline-none focus:border-yellow-300 transition-colors"
 											: availableModes.includes(mode)
 											? "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 											: "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -407,12 +418,24 @@ export function BookingModal({
 				</div>
 
 				<div className="p-6 border-t bg-gray-50">
+					{isProcessing && (
+						<div className="mb-4 flex items-center justify-center p-4 bg-yellow-200 border-yellow-700 rounded-lg">
+							<Loader2 className="w-5 h-5 text-yellow-600 animate-spin mr-3" />
+							<span className="text-yellow-700 font-medium">
+								Memproses pesanan Anda...
+							</span>
+						</div>
+					)}
 					<div className="flex justify-end space-x-3">
 						<button
-							type="button"
 							onClick={onClose}
-							className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none">
-							Cancel
+							disabled={isProcessing}
+							className={`px-4 py-2 border focus:outline-yellow-400 border-gray-300 rounded-lg transition-colors ${
+								isProcessing
+									? "opacity-50 cursor-not-allowed"
+									: "hover:bg-gray-100"
+							}`}>
+							Batal
 						</button>
 						<button
 							type="button"
@@ -422,6 +445,7 @@ export function BookingModal({
 								!selectedTime ||
 								!selectedMode ||
 								filteredSchedules.length === 0 ||
+								isProcessing ||
 								(selectedMode === "offline" && !selectedLocation)
 							}
 							className={`px-4 py-2 rounded-lg transition-colors ${
@@ -433,7 +457,14 @@ export function BookingModal({
 									? "bg-black text-white hover:bg-yellow-600"
 									: "bg-gray-300 text-gray-500 cursor-not-allowed"
 							}`}>
-							Konfirmasi Pesanan
+							{isProcessing ? (
+								<>
+									<Loader2 className="animate-spin w-3 h-3 mr-2 inline" />
+									Memproses...
+								</>
+							) : (
+								"Konfirmasi Pesanan"
+							)}
 						</button>
 					</div>
 				</div>
