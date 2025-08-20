@@ -11,12 +11,18 @@ import {
 import api from "../../../api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import { getImageUrl } from "../../../utils/getImageUrl";
+import toast from "react-hot-toast";
 
 export function AdminMentorsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const queryClient = useQueryClient();
+
+	// Refetch data ketika komponen di-mount kembali
+	useEffect(() => {
+		// Jika halaman di-mount kembali (misalnya dari form edit), refetch data
+		queryClient.invalidateQueries(["adminMentors"]);
+	}, [queryClient]);
 
 	// Fetch data transaksi yang mencakup detail sesi
 	const token = localStorage.getItem("token");
@@ -35,7 +41,8 @@ export function AdminMentorsPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		staleTime: 2 * 60 * 1000, // Fresh for 2 minutes
+		staleTime: 30 * 1000, // Reduced to 30 seconds for faster updates
+		cacheTime: 5 * 60 * 1000, // Keep cache for 5 minutes
 		retry: 1, // Hanya coba ulang sekali jika gagal
 		onError: (err) => {
 			console.error("Error fetching Mentors:", err);
@@ -371,28 +378,210 @@ export function AdminMentorsPage({ onNavigate }) {
 							noHeader
 							expandableRows
 							expandableRowsComponent={({ data }) => {
-								const dokumenUrl = data.dokumen_pendukung
-									? getImageUrl(data.dokumen_pendukung, "dokumen_pendukung")
-									: null;
+								// Handler untuk download dokumen mentor (ikuti teknik bukti pembayaran)
+								const handleDownloadDokumen = async (mentor) => {
+									// Validasi awal yang lebih ketat (sama seperti bukti pembayaran)
+									if (
+										!mentor.dokumen_pendukung ||
+										mentor.dokumen_pendukung.trim() === "" ||
+										mentor.dokumen_pendukung === "null" ||
+										mentor.dokumen_pendukung === "undefined"
+									) {
+										Swal.fire({
+											title: "File Tidak Tersedia",
+											text: "Tidak ada dokumen pendukung yang dapat diunduh.",
+											icon: "warning",
+											confirmButtonText: "OK",
+											confirmButtonColor: "#F59E0B",
+										});
+										return;
+									}
+
+									// Tampilkan loading indicator (sama seperti bukti pembayaran)
+									Swal.fire({
+										title: "Mengunduh File...",
+										text: "Mohon tunggu, sedang memproses download.",
+										allowOutsideClick: false,
+										allowEscapeKey: false,
+										showConfirmButton: false,
+										didOpen: () => {
+											Swal.showLoading();
+										},
+									});
+
+									try {
+										// Download melalui backend API (sama seperti bukti pembayaran)
+										const response = await api.get(
+											`/admin/download-dokumen-mentor/${mentor.id}`,
+											{
+												headers: {
+													Authorization: `Bearer ${token}`,
+												},
+												responseType: "blob", // Penting untuk file download
+											}
+										);
+
+										// Tutup loading
+										Swal.close();
+
+										// Ekstrak nama file dari header response atau buat sendiri (sama seperti bukti pembayaran)
+										let fileName = "dokumen_mentor.pdf";
+										const contentDisposition =
+											response.headers["content-disposition"];
+										if (contentDisposition) {
+											const fileNameMatch =
+												contentDisposition.match(/filename="(.+)"/);
+											if (fileNameMatch) {
+												fileName = fileNameMatch[1];
+											}
+										} else {
+											// Buat nama file yang deskriptif jika tidak ada dari server
+											const mentorNama = mentor.user?.nama || "Unknown";
+											const tanggal = mentor.created_at
+												? new Date(mentor.created_at)
+														.toLocaleDateString("id-ID")
+														.replace(/\//g, "-")
+												: new Date()
+														.toLocaleDateString("id-ID")
+														.replace(/\//g, "-");
+
+											const originalFileName = mentor.dokumen_pendukung
+												.split("/")
+												.pop();
+											const fileExtension = originalFileName.includes(".")
+												? "." + originalFileName.split(".").pop()
+												: ".pdf";
+
+											fileName = `DokumenMentor_${mentorNama.replace(
+												/\s+/g,
+												"_"
+											)}_${tanggal}${fileExtension}`;
+										}
+
+										// Buat URL object untuk blob (sama seperti bukti pembayaran)
+										const downloadUrl = window.URL.createObjectURL(
+											response.data
+										);
+
+										// Buat element anchor untuk download (sama seperti bukti pembayaran)
+										const link = document.createElement("a");
+										link.href = downloadUrl;
+										link.download = fileName;
+										link.style.display = "none";
+
+										// Tambahkan ke DOM, klik, lalu hapus
+										document.body.appendChild(link);
+										link.click();
+										document.body.removeChild(link);
+
+										// Bersihkan URL object
+										window.URL.revokeObjectURL(downloadUrl);
+
+										// Tampilkan notifikasi sukses
+										toast.success(`CV "${mentor.user?.nama}" berhasil diunduh`);
+									} catch (error) {
+										console.error("Error downloading dokumen:", error);
+
+										// Tutup loading jika masih terbuka
+										Swal.close();
+
+										// Handle berbagai jenis error dengan lebih spesifik (sama seperti bukti pembayaran)
+										if (
+											error.response?.status === 404 ||
+											error.response?.status === 403
+										) {
+											// File tidak ditemukan di server atau forbidden
+											Swal.fire({
+												title: "File Tidak Tersedia",
+												text: "File dokumen pendukung tidak ditemukan di server. Kemungkinan file telah dihapus atau belum terupload dengan benar.",
+												icon: "warning",
+												confirmButtonText: "Tutup",
+												confirmButtonColor: "#3085d6",
+											});
+										} else if (error.response?.status === 401) {
+											// Unauthorized - token expired
+											Swal.fire({
+												title: "Sesi Berakhir",
+												text: "Sesi login Anda telah berakhir. Silakan login kembali.",
+												icon: "warning",
+												confirmButtonText: "OK",
+												confirmButtonColor: "#F59E0B",
+											}).then(() => {
+												window.location.reload();
+											});
+										} else if (error.response?.status === 500) {
+											// Server error
+											Swal.fire({
+												title: "Kesalahan Server",
+												text: "Terjadi kesalahan pada server. Silakan coba lagi nanti atau hubungi admin.",
+												icon: "error",
+												confirmButtonText: "OK",
+												confirmButtonColor: "#EF4444",
+											});
+										} else if (
+											error.message &&
+											error.message.includes("Network Error")
+										) {
+											// Network issues
+											Swal.fire({
+												title: "Masalah Koneksi",
+												text: "Periksa koneksi internet Anda dan coba lagi.",
+												icon: "error",
+												showCancelButton: true,
+												confirmButtonText: "Coba Lagi",
+												cancelButtonText: "Batal",
+												confirmButtonColor: "#3085d6",
+												cancelButtonColor: "#6B7280",
+											}).then((result) => {
+												if (result.isConfirmed) {
+													handleDownloadDokumen(mentor);
+												}
+											});
+										} else {
+											// Generic error
+											const errorStatus = error.response?.status || "Unknown";
+											const errorMessage =
+												error.response?.data?.message ||
+												error.message ||
+												"Kesalahan tidak diketahui";
+
+											Swal.fire({
+												title: "Download Gagal",
+												text: `Error ${errorStatus}: ${errorMessage}`,
+												icon: "error",
+												confirmButtonText: "OK",
+												confirmButtonColor: "#EF4444",
+											});
+										}
+									}
+								};
+
+								// Cek apakah dokumen_pendukung ada tapi hanya berupa string kosong atau placeholder (sama seperti bukti pembayaran)
+								const hasDokumenPendukung =
+									data.dokumen_pendukung &&
+									data.dokumen_pendukung.trim() !== "" &&
+									data.dokumen_pendukung !== "null" &&
+									data.dokumen_pendukung !== "undefined";
 
 								return (
 									<div className="p-4 bg-gray-50 rounded-md">
 										<p className="text-gray-600 mb-1">Dokumen Pendukung:</p>
-										{dokumenUrl && (
+										{hasDokumenPendukung ? (
 											<div className="mt-2">
-												<a
-													href={dokumenUrl}
-													// Ambil ekstensi file asli
-													download={`dokumen_${
-														data.user?.nama?.replace(/\s+/g, "_") || "mentor"
-													}.${data.dokumen_pendukung.split(".").pop()}`}
-													target="_blank"
-													rel="noopener noreferrer"
-													className="inline-block no-underline px-3 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition ">
-													Download (dokumen_
+												<button
+													onClick={() => handleDownloadDokumen(data)}
+													className="inline-block no-underline px-3 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition cursor-pointer border border-yellow-300">
+													📄 Download (DokumenMentor_
 													{data.user?.nama?.replace(/\s+/g, "_") || "mentor"}.
 													{data.dokumen_pendukung.split(".").pop()})
-												</a>
+												</button>
+											</div>
+										) : (
+											<div className="flex items-center mt-2">
+												<AlertCircle className="w-4 h-4 text-orange-500 mr-1" />
+												<span className="text-orange-600 text-xs font-medium">
+													Tidak ada file
+												</span>
 											</div>
 										)}
 									</div>

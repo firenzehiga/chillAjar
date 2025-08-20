@@ -5,6 +5,7 @@ import { AlertCircle, CheckCircle, XCircle, Eye, Download } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import toast from "react-hot-toast";
 
 export function AdminPaymentsPage() {
 	const [previewImg, setPreviewImg] = useState(null);
@@ -126,6 +127,206 @@ export function AdminPaymentsPage() {
 		});
 	};
 
+	// Handler untuk download bukti pembayaran melalui backend
+	const handleDownload = async (row) => {
+		// Validasi awal yang lebih ketat
+		if (
+			!row.buktiPembayaran ||
+			row.buktiPembayaran.trim() === "" ||
+			row.buktiPembayaran === "null" ||
+			row.buktiPembayaran === "undefined"
+		) {
+			Swal.fire({
+				title: "File Tidak Tersedia",
+				text: "Tidak ada file bukti pembayaran yang dapat diunduh.",
+				icon: "warning",
+				confirmButtonText: "OK",
+				confirmButtonColor: "#F59E0B",
+			});
+			return;
+		}
+
+		// Tampilkan loading indicator
+		Swal.fire({
+			title: "Mengunduh File...",
+			text: "Mohon tunggu, sedang memproses download.",
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			showConfirmButton: false,
+			didOpen: () => {
+				Swal.showLoading();
+			},
+		});
+
+		try {
+			// Download melalui backend API
+			const token = localStorage.getItem("token");
+			const response = await api.get(
+				`/admin/download-bukti-pembayaran/${row.id}`, // Gunakan row.id bukan row.transaksiId
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+					responseType: "blob", // Penting untuk file download
+				}
+			);
+
+			// Tutup loading
+			Swal.close();
+
+			// Ekstrak nama file dari header response atau buat sendiri
+			let fileName = "bukti_pembayaran.jpg";
+			const contentDisposition = response.headers["content-disposition"];
+			if (contentDisposition) {
+				const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+				if (fileNameMatch) {
+					fileName = fileNameMatch[1];
+				}
+			} else {
+				// Buat nama file yang deskriptif jika tidak ada dari server
+				const pelangganNama = row.pelanggan?.user?.nama || "Unknown";
+				const kursusNama = row.sesi?.kursus?.namaKursus || "Course";
+				const tanggal = row.tanggalPembayaran
+					? new Date(row.tanggalPembayaran.replace(" ", "T"))
+							.toLocaleDateString("id-ID")
+							.replace(/\//g, "-")
+					: new Date().toLocaleDateString("id-ID").replace(/\//g, "-");
+
+				const originalFileName = row.buktiPembayaran.split("/").pop();
+				const fileExtension = originalFileName.includes(".")
+					? "." + originalFileName.split(".").pop()
+					: ".jpg";
+
+				fileName = `BuktiPembayaran_${pelangganNama.replace(
+					/\s+/g,
+					"_"
+				)}_${kursusNama.replace(/\s+/g, "_")}_${tanggal}${fileExtension}`;
+			}
+
+			// Buat URL object untuk blob
+			const downloadUrl = window.URL.createObjectURL(response.data);
+
+			// Buat element anchor untuk download
+			const link = document.createElement("a");
+			link.href = downloadUrl;
+			link.download = fileName;
+			link.style.display = "none";
+
+			// Tambahkan ke DOM, klik, lalu hapus
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+
+			// Bersihkan URL object
+			window.URL.revokeObjectURL(downloadUrl);
+
+			// Tampilkan notifikasi sukses
+			toast.success(`Bukti Pembayaran berhasil diunduh`);
+		} catch (error) {
+			console.error("Error downloading image:", error);
+
+			// Tutup loading jika masih terbuka
+			Swal.close();
+
+			// Handle berbagai jenis error dengan lebih spesifik
+			if (error.response?.status === 404 || error.response?.status === 403) {
+				// File tidak ditemukan di server atau forbidden (file tidak ada)
+				Swal.fire({
+					title: "File Tidak Tersedia",
+					text: "File bukti pembayaran tidak ditemukan di server. Kemungkinan file telah dihapus atau belum terupload dengan benar.",
+					icon: "warning",
+					showCancelButton: true,
+					confirmButtonText: "Buka Preview",
+					cancelButtonText: "Tutup",
+					confirmButtonColor: "#3085d6",
+					cancelButtonColor: "#6B7280",
+				}).then((result) => {
+					if (result.isConfirmed) {
+						// Coba buka preview gambar jika user mau
+						try {
+							const imageUrl = getImageUrl(
+								row.buktiPembayaran,
+								"bukti_pembayaran"
+							);
+							window.open(imageUrl, "_blank");
+						} catch (previewError) {
+							Swal.fire({
+								title: "Preview Gagal",
+								text: "File tidak dapat dibuka. Silakan hubungi admin sistem.",
+								icon: "error",
+								confirmButtonColor: "#EF4444",
+							});
+						}
+					}
+				});
+			} else if (error.response?.status === 401) {
+				// Unauthorized - token expired
+				Swal.fire({
+					title: "Sesi Berakhir",
+					text: "Sesi login Anda telah berakhir. Silakan login kembali.",
+					icon: "warning",
+					confirmButtonText: "OK",
+					confirmButtonColor: "#F59E0B",
+				}).then(() => {
+					// Redirect ke login atau refresh page
+					window.location.reload();
+				});
+			} else if (error.response?.status === 500) {
+				// Server error
+				Swal.fire({
+					title: "Kesalahan Server",
+					text: "Terjadi kesalahan pada server. Silakan coba lagi nanti atau hubungi admin.",
+					icon: "error",
+					confirmButtonText: "OK",
+					confirmButtonColor: "#EF4444",
+				});
+			} else if (error.message && error.message.includes("Network Error")) {
+				// Network issues
+				Swal.fire({
+					title: "Masalah Koneksi",
+					text: "Periksa koneksi internet Anda dan coba lagi.",
+					icon: "error",
+					showCancelButton: true,
+					confirmButtonText: "Coba Lagi",
+					cancelButtonText: "Batal",
+					confirmButtonColor: "#3085d6",
+					cancelButtonColor: "#6B7280",
+				}).then((result) => {
+					if (result.isConfirmed) {
+						// Retry download
+						handleDownload(row);
+					}
+				});
+			} else {
+				// Generic error
+				const errorStatus = error.response?.status || "Unknown";
+				const errorMessage =
+					error.response?.data?.message ||
+					error.message ||
+					"Kesalahan tidak diketahui";
+
+				Swal.fire({
+					title: "Download Gagal",
+					html: `
+						<div class="text-left">
+							<p class="mb-2">Gagal mengunduh file bukti pembayaran.</p>
+							<details class="text-sm text-gray-600">
+								<summary class="cursor-pointer font-medium">Detail Error</summary>
+								<div class="mt-2 p-2 bg-gray-100 rounded">
+									<p><strong>Status:</strong> ${errorStatus}</p>
+									<p><strong>Pesan:</strong> ${errorMessage}</p>
+								</div>
+							</details>
+						</div>
+					`,
+					icon: "error",
+					confirmButtonText: "Tutup",
+					confirmButtonColor: "#EF4444",
+				});
+			}
+		}
+	};
+
 	const statusCheck = {
 		verified: {
 			label: "Disetujui",
@@ -207,49 +408,37 @@ export function AdminPaymentsPage() {
 					? getImageUrl(row.buktiPembayaran, "bukti_pembayaran")
 					: null;
 
-				// const handleDownload = async (url) => {
-				// 	try {
-				// 		const response = await fetch(url);
-				// 		if (!response.ok) throw new Error("Gagal mengunduh gambar");
+				// Cek apakah buktiPembayaran ada tapi hanya berupa string kosong atau placeholder
+				const hasBuktiPembayaran =
+					row.buktiPembayaran &&
+					row.buktiPembayaran.trim() !== "" &&
+					row.buktiPembayaran !== "null" &&
+					row.buktiPembayaran !== "undefined";
 
-				// 		const blob = await response.blob();
-				// 		const downloadUrl = window.URL.createObjectURL(blob);
-				// 		const link = document.createElement("a");
-				// 		link.href = downloadUrl;
-				// 		const fileName = url.split("/").pop();
-				// 		link.download = fileName || "bukti_pembayaran.png";
-				// 		document.body.appendChild(link);
-				// 		link.click();
-				// 		document.body.removeChild(link);
-				// 		window.URL.revokeObjectURL(downloadUrl);
-				// 	} catch (error) {
-				// 		console.error("Error downloading image:", error);
-				// 		alert("Gagal mengunduh gambar. Pastikan file tersedia.");
-				// 	}
-				// };
-
-				return row.buktiPembayaran ? (
+				return hasBuktiPembayaran ? (
 					<div className="flex space-x-2">
 						<button
-							className="text-blue-600 hover:underline flex items-center mr-3 outline-none focus:outline-none"
-							onClick={() => setPreviewImg(imageUrl)}>
-							<Eye className="inline w-5 h-5 mr-1" />
+							className="text-blue-600 hover:text-blue-800 flex items-center mr-3 outline-none focus:outline-none transition-colors"
+							onClick={() => setPreviewImg(imageUrl)}
+							title="Lihat gambar">
+							<Eye className="inline w-4 h-4 mr-1" />
 							Lihat
 						</button>
-						<a
-							href={imageUrl}
-							download={
-								row.buktiPembayaran.split("/").pop() || "bukti_pembayaran.png"
-							}
-							className="text-green-600 hover:underline flex items-center outline-none focus:outline-none"
-							target="_blank"
-							rel="noopener noreferrer">
-							<Download className="inline w-5 h-5 mr-1" />
+						<button
+							onClick={() => handleDownload(row)}
+							className="text-green-600 hover:text-green-800 flex items-center outline-none focus:outline-none transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
+							title="Download bukti pembayaran">
+							<Download className="inline w-4 h-4 mr-1" />
 							Download
-						</a>
+						</button>
 					</div>
 				) : (
-					<span className="text-gray-400 text-xs">No Image</span>
+					<div className="flex items-center">
+						<AlertCircle className="w-4 h-4 text-orange-500 mr-1" />
+						<span className="text-orange-600 text-xs font-medium">
+							Tidak ada file
+						</span>
+					</div>
 				);
 			},
 			width: "190px",
@@ -446,10 +635,6 @@ export function AdminPaymentsPage() {
 							alt="Bukti Pembayaran"
 							className="max-w-[95vw] max-h-[90vh] rounded-lg shadow"
 							style={{ display: "block" }}
-							onError={(e) => {
-								e.target.onerror = null;
-								e.target.src = "/foto_mentor/default.png";
-							}}
 						/>
 					</div>
 				</div>

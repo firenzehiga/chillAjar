@@ -3,12 +3,14 @@ import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 	if (!mentorId) {
 		onNavigate("admin-manage-mentors");
 		return null;
 	}
+	const queryClient = useQueryClient();
 	const [dokumenPendukung, setDokumenPendukung] = useState(null);
 	const [dokumenName, setDokumenName] = useState("");
 	const [dokumenUrl, setDokumenUrl] = useState("");
@@ -101,6 +103,9 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 			});
 
 			if (response.status === 200 || response.status === 201) {
+				// Invalidate cache agar data di AdminMentorsPage langsung terupdate
+				queryClient.invalidateQueries(["adminMentors"]);
+
 				Swal.fire({
 					icon: "success",
 					title: "Success",
