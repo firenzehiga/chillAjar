@@ -102,13 +102,7 @@ export function AdminMentorsPage({ onNavigate }) {
 
 			const statusText =
 				newStatus === "active" ? "diaktifkan" : "dinonaktifkan";
-			Swal.fire({
-				icon: "success",
-				title: "Success!",
-				text: `Mentor berhasil ${statusText}.`,
-				timer: 1500,
-				showConfirmButton: false,
-			});
+			toast.success(`Mentor berhasil ${statusText}.`);
 		},
 		onError: (error) => {
 			console.error("Error toggling mentor status:", error);
@@ -468,7 +462,7 @@ export function AdminMentorsPage({ onNavigate }) {
 										window.URL.revokeObjectURL(downloadUrl);
 
 										// Tampilkan notifikasi sukses
-										toast.success(`CV ${mentorNama	} berhasil diunduh`);
+										toast.success(`CV ${mentorNama} berhasil diunduh`);
 									} catch (error) {
 										console.error("Error downloading dokumen:", error);
 

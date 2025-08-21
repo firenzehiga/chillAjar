@@ -110,7 +110,9 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 					icon: "success",
 					title: "Success",
 					text: "Mentor updated successfully!",
-					confirmButtonColor: "#3B82F6",
+					showConfirmButton: false,
+					timer: 1000,
+					timerProgressBar: true,
 				});
 				onNavigate("admin-manage-mentors");
 			} else {
