@@ -410,12 +410,15 @@ export function AdminMentorsPage({ onNavigate }) {
 									});
 
 									try {
-										// Download melalui backend API (sama seperti bukti pembayaran)
+										// Download melalui backend API dengan cache busting
+										const timestamp = new Date().getTime(); // Cache busting
 										const response = await api.get(
-											`/admin/download-dokumen-mentor/${mentor.id}`,
+											`/admin/download-dokumen-mentor/${mentor.id}?t=${timestamp}`, // Tambah timestamp
 											{
 												headers: {
 													Authorization: `Bearer ${token}`,
+													"Cache-Control": "no-cache", // Force no cache
+													Pragma: "no-cache", // Force no cache untuk HTTP/1.0
 												},
 												responseType: "blob", // Penting untuk file download
 											}
@@ -424,46 +427,33 @@ export function AdminMentorsPage({ onNavigate }) {
 										// Tutup loading
 										Swal.close();
 
-										// Ekstrak nama file dari header response atau buat sendiri (sama seperti bukti pembayaran)
-										let fileName = "dokumen_mentor.pdf";
-										const contentDisposition =
-											response.headers["content-disposition"];
-										if (contentDisposition) {
-											const fileNameMatch =
-												contentDisposition.match(/filename="(.+)"/);
-											if (fileNameMatch) {
-												fileName = fileNameMatch[1];
-											}
-										} else {
-											// Buat nama file yang deskriptif jika tidak ada dari server
-											const mentorNama = mentor.user?.nama || "Unknown";
-											const tanggal = mentor.created_at
-												? new Date(mentor.created_at)
-														.toLocaleDateString("id-ID")
-														.replace(/\//g, "-")
-												: new Date()
-														.toLocaleDateString("id-ID")
-														.replace(/\//g, "-");
+										// Buat nama file deskriptif di frontend
+										const mentorNama = mentor.user?.nama || "Unknown";
+										const tanggal = mentor.created_at
+											? new Date(mentor.created_at)
+													.toLocaleDateString("id-ID")
+													.replace(/\//g, "-")
+											: new Date()
+													.toLocaleDateString("id-ID")
+													.replace(/\//g, "-");
 
-											const originalFileName = mentor.dokumen_pendukung
-												.split("/")
-												.pop();
-											const fileExtension = originalFileName.includes(".")
-												? "." + originalFileName.split(".").pop()
-												: ".pdf";
+										// Deteksi ekstensi dari dokumen_pendukung path
+										const originalPath = mentor.dokumen_pendukung || "";
+										const extension = originalPath.includes(".")
+											? "." + originalPath.split(".").pop().toLowerCase()
+											: ".pdf";
 
-											fileName = `DokumenMentor_${mentorNama.replace(
-												/\s+/g,
-												"_"
-											)}_${tanggal}${fileExtension}`;
-										}
+										const fileName = `DokumenMentor_${mentorNama.replace(
+											/\s+/g,
+											"_"
+										)}_${tanggal}${extension}`;
 
-										// Buat URL object untuk blob (sama seperti bukti pembayaran)
+										// Buat URL object untuk blob
 										const downloadUrl = window.URL.createObjectURL(
 											response.data
 										);
 
-										// Buat element anchor untuk download (sama seperti bukti pembayaran)
+										// Buat element anchor untuk download
 										const link = document.createElement("a");
 										link.href = downloadUrl;
 										link.download = fileName;
@@ -478,7 +468,7 @@ export function AdminMentorsPage({ onNavigate }) {
 										window.URL.revokeObjectURL(downloadUrl);
 
 										// Tampilkan notifikasi sukses
-										toast.success(`CV "${mentor.user?.nama}" berhasil diunduh`);
+										toast.success(`CV ${mentorNama	} berhasil diunduh`);
 									} catch (error) {
 										console.error("Error downloading dokumen:", error);
 

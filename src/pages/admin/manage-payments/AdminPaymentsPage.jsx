@@ -159,13 +159,16 @@ export function AdminPaymentsPage() {
 		});
 
 		try {
-			// Download melalui backend API
+			// Download melalui backend API dengan cache busting
 			const token = localStorage.getItem("token");
+			const timestamp = new Date().getTime(); // Cache busting
 			const response = await api.get(
-				`/admin/download-bukti-pembayaran/${row.id}`, // Gunakan row.id bukan row.transaksiId
+				`/admin/download-bukti-pembayaran/${row.id}?t=${timestamp}`, // Tambah timestamp untuk cache busting
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
+						"Cache-Control": "no-cache", // Force no cache
+						Pragma: "no-cache", // Force no cache untuk HTTP/1.0
 					},
 					responseType: "blob", // Penting untuk file download
 				}
@@ -174,34 +177,25 @@ export function AdminPaymentsPage() {
 			// Tutup loading
 			Swal.close();
 
-			// Ekstrak nama file dari header response atau buat sendiri
-			let fileName = "bukti_pembayaran.jpg";
-			const contentDisposition = response.headers["content-disposition"];
-			if (contentDisposition) {
-				const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
-				if (fileNameMatch) {
-					fileName = fileNameMatch[1];
-				}
-			} else {
-				// Buat nama file yang deskriptif jika tidak ada dari server
-				const pelangganNama = row.pelanggan?.user?.nama || "Unknown";
-				const kursusNama = row.sesi?.kursus?.namaKursus || "Course";
-				const tanggal = row.tanggalPembayaran
-					? new Date(row.tanggalPembayaran.replace(" ", "T"))
-							.toLocaleDateString("id-ID")
-							.replace(/\//g, "-")
-					: new Date().toLocaleDateString("id-ID").replace(/\//g, "-");
+			// Buat nama file
+			const pelangganNama = row.pelanggan?.user?.nama || "Unknown";
+			const kursusNama = row.sesi?.kursus?.namaKursus || "Course";
+			const tanggal = row.tanggalPembayaran
+				? new Date(row.tanggalPembayaran.replace(" ", "T"))
+						.toLocaleDateString("id-ID")
+						.replace(/\//g, "-")
+				: new Date().toLocaleDateString("id-ID").replace(/\//g, "-");
 
-				const originalFileName = row.buktiPembayaran.split("/").pop();
-				const fileExtension = originalFileName.includes(".")
-					? "." + originalFileName.split(".").pop()
-					: ".jpg";
+			// Deteksi ekstensi dari buktiPembayaran path
+			const originalPath = row.buktiPembayaran || "";
+			const extension = originalPath.includes(".")
+				? "." + originalPath.split(".").pop().toLowerCase()
+				: ".jpg";
 
-				fileName = `BuktiPembayaran_${pelangganNama.replace(
-					/\s+/g,
-					"_"
-				)}_${kursusNama.replace(/\s+/g, "_")}_${tanggal}${fileExtension}`;
-			}
+			const fileName = `BuktiPembayaran_${pelangganNama.replace(
+				/\s+/g,
+				"_"
+			)}_${kursusNama.replace(/\s+/g, "_")}_${tanggal}${extension}`;
 
 			// Buat URL object untuk blob
 			const downloadUrl = window.URL.createObjectURL(response.data);
@@ -221,7 +215,7 @@ export function AdminPaymentsPage() {
 			window.URL.revokeObjectURL(downloadUrl);
 
 			// Tampilkan notifikasi sukses
-			toast.success(`Bukti Pembayaran berhasil diunduh`);
+			toast.success(`Bukti pembayaran berhasil diunduh`);
 		} catch (error) {
 			console.error("Error downloading image:", error);
 
