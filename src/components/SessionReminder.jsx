@@ -254,6 +254,10 @@ export function FloatingSessionReminder() {
 									)}
 									alt={currentSession.mentor?.user?.nama || "Mentor"}
 									className="w-10 h-10 rounded-full object-cover"
+									onError={(e) => {
+										e.target.onerror = null;
+										e.target.src = "/foto_mentor/default.png";
+									}}
 								/>
 								<div>
 									<h3 className="font-semibold text-gray-900 text-sm">
