@@ -3,9 +3,12 @@ import api from "../../../api.jsx";
 import { Package, ArrowLeft, AlertCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export function AdminFormItemsPage({ onNavigate, itemId }) {
 	const isEditMode = !!itemId;
+	const queryClient = useQueryClient();
 
 	const [formData, setFormData] = useState({
 		name: "",
@@ -103,13 +106,11 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 				throw new Error(response?.data?.message || "Gagal menyimpan data item");
 			}
 
-			Swal.fire({
-				icon: "success",
-				title: "Berhasil!",
-				text: `Item ${isEditMode ? "diperbarui" : "ditambahkan"} berhasil!`,
-				showConfirmButton: false,
-				timer: 1500,
-			});
+			// Invalidate queries to refresh data
+			queryClient.invalidateQueries(["adminItems"]);
+			toast.success(
+				`Item ${isEditMode ? "diperbarui" : "ditambahkan"} berhasil!`
+			);
 			onNavigate("admin-manage-items");
 		} catch (err) {
 			const errorMessage =
@@ -240,11 +241,16 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 									? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
 									: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
 							}`}>
-							{loading
-								? "Memproses..."
-								: isEditMode
-								? "Perbarui Item"
-								: "Tambah Item"}
+							{loading ? (
+								<>
+									Memproses...{" "}
+									<Loader2 className="w-4 h-4 mb-1 inline animate-spin text-yellow-500" />
+								</>
+							) : isEditMode ? (
+								"Perbarui Item"
+							) : (
+								"Buat Item"
+							)}
 						</button>
 					</div>
 				</form>

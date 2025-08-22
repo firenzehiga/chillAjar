@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, ArrowLeft, AlertCircle, Plus, X } from "lucide-react";
+import { BookOpen, Loader2, AlertCircle, Plus, X } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 	const isEditMode = !!courseId;
+	const queryClient = useQueryClient();
 
 	const [formData, setFormData] = useState({
 		namaKursus: "",
@@ -215,16 +218,10 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 					);
 					// console.log("Jadwal API Response:", jadwalResponse.data);
 				}
-
-				Swal.fire({
-					icon: "success",
-					title: "Success",
-					text: isEditMode
-						? "Course updated successfully!"
-						: "Course created successfully!",
-					showConfirmButton: false,
-					timer: 1500,
-				});
+				queryClient.invalidateQueries(["mentorCourses"]);
+				toast.success(
+					`Kursus ${isEditMode ? "diperbarui" : "dibuat"} berhasil!`
+				);
 				onNavigate("mentor-manage-courses");
 			} else {
 				Swal.fire({
@@ -252,7 +249,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 		}
 	};
 
-	if (loading) {
+	if (loading && isEditMode) {
 		return <FormSkeletonCard />;
 	}
 
@@ -514,11 +511,16 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 									? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
 									: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
 							}`}>
-							{loading
-								? "Processing..."
-								: isEditMode
-								? "Update Course"
-								: "Create Course"}
+							{loading ? (
+								<>
+									Memproses...{" "}
+									<Loader2 className="w-4 h-4 mb-1 inline animate-spin text-yellow-500" />
+								</>
+							) : isEditMode ? (
+								"Perbarui Kursus"
+							) : (
+								"Buat Kursus"
+							)}
 						</button>
 					</div>
 				</form>

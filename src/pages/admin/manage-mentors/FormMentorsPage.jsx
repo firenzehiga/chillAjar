@@ -4,12 +4,14 @@ import api from "../../../api";
 import Swal from "sweetalert2";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
 import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 	if (!mentorId) {
 		onNavigate("admin-manage-mentors");
 		return null;
 	}
+
 	const queryClient = useQueryClient();
 	const [dokumenPendukung, setDokumenPendukung] = useState(null);
 	const [dokumenName, setDokumenName] = useState("");
@@ -103,17 +105,10 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 			});
 
 			if (response.status === 200 || response.status === 201) {
-				// Invalidate cache agar data di AdminMentorsPage langsung terupdate
+				// Invalidate queries to refresh data
 				queryClient.invalidateQueries(["adminMentors"]);
 
-				Swal.fire({
-					icon: "success",
-					title: "Success",
-					text: "Mentor updated successfully!",
-					showConfirmButton: false,
-					timer: 1000,
-					timerProgressBar: true,
-				});
+				toast.success("Mentor berhasil diperbarui!");
 				onNavigate("admin-manage-mentors");
 			} else {
 				Swal.fire({

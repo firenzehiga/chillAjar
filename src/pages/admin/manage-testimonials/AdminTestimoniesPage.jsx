@@ -1,10 +1,12 @@
-import React from "react";
 import DataTable from "react-data-table-component";
 import { BookOpen, AlertCircle, Star, Pencil, Trash } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 
 export function AdminTestimoniesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -18,6 +20,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 		data: testimonies = [],
 		isLoading,
 		error,
+		isFetching,
 	} = useQuery({
 		queryKey: ["adminTestimonies"],
 		queryFn: async () => {
@@ -38,7 +41,10 @@ export function AdminTestimoniesPage({ onNavigate }) {
 			}));
 		},
 		enabled: isAuthenticated,
-		retry: 1, // Hanya coba ulang sekali jika gagal
+		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		retry: 1,
+		refetchOnWindowFocus: false, // Disable auto refresh
 		onError: (err) => {
 			console.error("Error fetching testimonies:", err);
 		},
@@ -234,10 +240,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 					<h2 className="text-xl font-semibold">Testimonial Management</h2>
 				</div>
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading course data...</p>
-					</div>
+					<LoadingSpinner message="Loading testimonies..." />
 				) : testimonies.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -250,6 +253,8 @@ export function AdminTestimoniesPage({ onNavigate }) {
 					</div>
 				) : (
 					<>
+						{/* Small loading indicator untuk saat update */}
+						{isFetching && <UpdateLoadingSpinner />}
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"

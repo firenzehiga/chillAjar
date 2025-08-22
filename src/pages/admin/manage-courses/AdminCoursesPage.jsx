@@ -10,7 +10,10 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../api";
 import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 
 export function AdminCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = React.useState("");
@@ -21,8 +24,8 @@ export function AdminCoursesPage({ onNavigate }) {
 	const {
 		data: courses = [],
 		isLoading,
-		isError,
 		error,
+		isFetching,
 	} = useQuery({
 		queryKey: ["adminCourses"],
 		queryFn: async () => {
@@ -33,7 +36,10 @@ export function AdminCoursesPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		retry: 1, // Hanya coba ulang sekali jika gagal
+		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		retry: 1,
+		refetchOnWindowFocus: false, // Disable auto refresh
 		onError: (err) => {
 			console.error("Error fetching courses:", err);
 		},
@@ -56,12 +62,12 @@ export function AdminCoursesPage({ onNavigate }) {
 			queryClient.setQueryData(["adminCourses"], (oldData) =>
 				oldData.filter((course) => course.id !== id)
 			);
-			Swal.fire("Dihapus!", "Kursus berhasil dihapus.", "success"); // Tampilkan pesan sukses
+			toast.success("Kursus berhasil dihapus.");
 		},
 
 		// Kode ini akan dijalankan jika proses delete gagal
 		onError: () => {
-			Swal.fire("Error!", "Gagal menghapus kursus.", "error"); // Tampilkan pesan error
+			toast.error("Gagal menghapus kursus.");
 		},
 	});
 
@@ -275,10 +281,7 @@ export function AdminCoursesPage({ onNavigate }) {
 
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading course data...</p>
-					</div>
+					<LoadingSpinner message="Loading courses data..." />
 				) : courses.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -290,6 +293,9 @@ export function AdminCoursesPage({ onNavigate }) {
 				) : (
 					// Jika data sudah ada, tampilkan DataTable
 					<>
+						{/* Small loading indicator untuk saat update */}
+						{isFetching && <UpdateLoadingSpinner />}
+
 						{/* Form pencarian */}
 						<div className="flex justify-end mb-4">
 							<input
@@ -346,27 +352,27 @@ export function AdminCoursesPage({ onNavigate }) {
 											);
 										})}
 									</span>
-									<p className="flex">
+									{/* <p className="flex">
 										<span className="w-20 font-medium text-gray-900 mb-2">
 											Paket Aktif:
 										</span>
 									</p>
 									<div>
-										{(data.packages && data.packages.length > 0
-											? data.packages
-											: [
-													{ id: 1, name: "NgeChill", price: 25000 },
-													{ id: 2, name: "NgeTask & Chill", price: 35000 },
-											  ]
-										).map((pkg) => (
-											<span
-												key={pkg.id}
-												className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2"
-												title={`Rp ${pkg.price.toLocaleString()}`}>
-												{pkg.name}
+										{data.packages && data.packages.length > 0 ? (
+											data.packages.map((pkg) => (
+												<span
+													key={pkg.id}
+													className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2"
+													title={`Rp ${pkg.price?.toLocaleString()}`}>
+													{pkg.name}
+												</span>
+											))
+										) : (
+											<span className="text-gray-500 text-xs">
+												Tidak ada paket aktif
 											</span>
-										))}
-									</div>
+										)}
+									</div> */}
 								</div>
 							)}
 							// Tambahkan penanganan jika data kosong

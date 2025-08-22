@@ -5,6 +5,8 @@ import DataTable from "react-data-table-component";
 import { Gift, Plus, Pencil, Trash, AlertCircle, Eye } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
+import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 
 export function AdminPackagesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -17,8 +19,8 @@ export function AdminPackagesPage({ onNavigate }) {
 	const {
 		data: packages = [],
 		isLoading,
-		isError,
 		error,
+		isFetching,
 	} = useQuery({
 		queryKey: ["adminPackages"],
 		queryFn: async () => {
@@ -48,7 +50,10 @@ export function AdminPackagesPage({ onNavigate }) {
 			return mapped;
 		},
 		enabled: isAuthenticated,
+		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
 		retry: 1,
+		refetchOnWindowFocus: false, // Disable auto refresh
 		onError: (err) => {
 			console.error("Error fetching packages:", err);
 		},
@@ -229,10 +234,7 @@ export function AdminPackagesPage({ onNavigate }) {
 
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading packages data...</p>
-					</div>
+					<LoadingSpinner message="Loading packages data..." />
 				) : packages.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -244,6 +246,9 @@ export function AdminPackagesPage({ onNavigate }) {
 					</div>
 				) : (
 					<>
+						{/* Small loading indicator untuk saat update */}
+						{isFetching && <UpdateLoadingSpinner />}
+
 						{/* Form pencarian */}
 						<div className="flex justify-end mb-4">
 							<input

@@ -4,6 +4,7 @@ import { Users, UserPlus, AlertCircle } from "lucide-react";
 import api from "../../../api";
 import { AddUserModal } from "../../../components/Admin/AddUserModal";
 import { useQuery } from "@tanstack/react-query";
+import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 
 export function AdminUsersPage() {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -106,10 +107,7 @@ export function AdminUsersPage() {
 					</button>
 				</div>
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600 bg-white rounded-lg">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mr-3"></div>
-						<p>Loading user data...</p>
-					</div>
+					<LoadingSpinner message="Loading user data..." />
 				) : users.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />

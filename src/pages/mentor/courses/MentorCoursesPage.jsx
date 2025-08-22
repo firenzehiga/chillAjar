@@ -12,26 +12,39 @@ import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import toast from "react-hot-toast";
 
 export function MentorCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = React.useState("");
 	const queryClient = useQueryClient();
+
+	const token = localStorage.getItem("token");
+	const isAuthenticated = !!token;
 
 	// Fetch data menggunakan useQuery
 	const {
 		data: courses,
 		isLoading,
 		error,
+		isFetching,
 	} = useQuery({
 		queryKey: ["mentorCourses"],
 		queryFn: async () => {
-			const token = localStorage.getItem("token");
+			if (!isAuthenticated) return [];
 			const response = await api.get("/mentor/daftar-kursus", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			console.log("Fetched courses:", response.data);
 			return response.data;
 		},
+		enabled: isAuthenticated, // Hanya jalankan query jika user sudah login
+		staleTime: 10 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		retry: 1,
+		refetchOnWindowFocus: false, // Disable auto refresh
+
 		onError: (err) => {
 			console.error("Error fetching courses:", err);
 		},
@@ -50,7 +63,7 @@ export function MentorCoursesPage({ onNavigate }) {
 			queryClient.setQueryData(["mentorCourses"], (oldData) =>
 				oldData.filter((course) => course.id !== id)
 			);
-			Swal.fire("Deleted!", "Kursus Berhasil Dihapus", "success");
+			toast.success("Kursus berhasil dihapus!");
 		},
 		onError: () => {
 			Swal.fire("Error!", "Gagal Menghapus Kursus!", "error");
@@ -259,10 +272,7 @@ export function MentorCoursesPage({ onNavigate }) {
 				</div>
 
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading course data...</p>
-					</div>
+					<LoadingSpinner message="Loading courses data..." />
 				) : courses?.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -274,6 +284,9 @@ export function MentorCoursesPage({ onNavigate }) {
 					</div>
 				) : (
 					<>
+						{/* Small loading indicator untuk saat update */}
+						{isFetching && <UpdateLoadingSpinner />}
+
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"

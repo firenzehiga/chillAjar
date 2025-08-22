@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import DataTable from "react-data-table-component";
 import {
 	UserCheck,
@@ -12,25 +12,22 @@ import api from "../../../api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-
+import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 export function AdminMentorsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const queryClient = useQueryClient();
 
-	// Refetch data ketika komponen di-mount kembali
-	useEffect(() => {
-		// Jika halaman di-mount kembali (misalnya dari form edit), refetch data
-		queryClient.invalidateQueries(["adminMentors"]);
-	}, [queryClient]);
-
 	// Fetch data transaksi yang mencakup detail sesi
 	const token = localStorage.getItem("token");
 	const isAuthenticated = !!token;
+
 	const {
 		data: mentors = [],
 		isLoading,
 		error,
+		isFetching,
 	} = useQuery({
 		queryKey: ["adminMentors"],
 		queryFn: async () => {
@@ -41,9 +38,11 @@ export function AdminMentorsPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		staleTime: 30 * 1000, // Reduced to 30 seconds for faster updates
-		cacheTime: 5 * 60 * 1000, // Keep cache for 5 minutes
-		retry: 1, // Hanya coba ulang sekali jika gagal
+		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		retry: 1,
+		refetchOnWindowFocus: false, // Disable auto refresh
+
 		onError: (err) => {
 			console.error("Error fetching Mentors:", err);
 		},
@@ -67,10 +66,10 @@ export function AdminMentorsPage({ onNavigate }) {
 			// Invalidate related queries for immediate refresh on public pages
 			queryClient.invalidateQueries(["publicMentorsPage"]);
 			queryClient.invalidateQueries(["courses"]);
-			Swal.fire("Deleted!", "Mentor berhasil dihapus.", "success"); // Tampilkan pesan sukses
+			toast.success("Mentor berhasil dihapus."); // Tampilkan pesan sukses
 		},
 		onError: () => {
-			Swal.fire("Error!", "Gagal menghapus mentor.", "error"); // Tampilkan pesan error
+			Swal.fire("Error!", "Gagal menghapus mentor.", "error");
 		},
 	});
 
@@ -96,9 +95,6 @@ export function AdminMentorsPage({ onNavigate }) {
 					mentor.id === mentorId ? { ...mentor, status: newStatus } : mentor
 				)
 			);
-			// Invalidate related queries
-			queryClient.invalidateQueries(["publicMentorsPage"]);
-			queryClient.invalidateQueries(["courses"]);
 
 			const statusText =
 				newStatus === "active" ? "diaktifkan" : "dinonaktifkan";
@@ -236,16 +232,11 @@ export function AdminMentorsPage({ onNavigate }) {
 					<div className="flex items-center space-x-2">
 						<button
 							onClick={() => handleToggleStatus(row)}
-							disabled={toggleStatusMutation.isLoading}
 							className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 ${
 								isActive
 									? "bg-green-500 hover:bg-green-600"
 									: "bg-gray-300 hover:bg-gray-400"
-							} ${
-								toggleStatusMutation.isLoading
-									? "cursor-not-allowed opacity-50"
-									: "cursor-pointer"
-							}`}>
+							} cursor-pointer`}>
 							<span
 								className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
 									isActive ? "translate-x-6" : "translate-x-1"
@@ -334,12 +325,9 @@ export function AdminMentorsPage({ onNavigate }) {
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Mentor Management</h2>
 				</div>
-				{/* Tampilan Loading jika data belum selesai diambil  */}
+				{/* Tampilan Loading hanya untuk initial load */}
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading mentors data...</p>
-					</div>
+					<LoadingSpinner message="Loading mentors data..." />
 				) : mentors.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -351,6 +339,7 @@ export function AdminMentorsPage({ onNavigate }) {
 				) : (
 					// Jika data sudah ada, tampilkan DataTable
 					<>
+						
 						{/* Form pencarian */}
 						<div className="flex justify-end mb-4">
 							<input

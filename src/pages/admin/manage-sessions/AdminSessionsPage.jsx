@@ -11,6 +11,9 @@ import {
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import LoadingSpinner from "../../../components/Admin/LoadingSpinner";
 
 export function AdminSessionsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -23,6 +26,7 @@ export function AdminSessionsPage({ onNavigate }) {
 		data: sessions = [],
 		isLoading: isLoadingSessions,
 		error: errorSessions,
+		isFetching: isFetchingSessions,
 	} = useQuery({
 		queryKey: ["adminSessions"],
 		queryFn: async () => {
@@ -34,7 +38,10 @@ export function AdminSessionsPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
+		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
 		retry: 1, // Hanya coba ulang sekali jika gagal
+		refetchOnWindowFocus: false, // Disable auto refresh
 		onError: (err) => {
 			console.error("Error fetching sessions:", err);
 		},
@@ -45,6 +52,7 @@ export function AdminSessionsPage({ onNavigate }) {
 		data: transactions = [],
 		isLoading: isLoadingTransactions,
 		error: errorTransactions,
+		isFetching: isFetchingTransactions,
 	} = useQuery({
 		queryKey: ["adminTransactions"],
 		queryFn: async () => {
@@ -55,7 +63,10 @@ export function AdminSessionsPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
+		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
 		retry: 1, // Hanya coba ulang sekali jika gagal
+		refetchOnWindowFocus: false, // Disable auto refresh
 		onError: (err) => {
 			console.error("Error fetching transactions:", err);
 		},
@@ -71,10 +82,10 @@ export function AdminSessionsPage({ onNavigate }) {
 			queryClient.setQueryData(["adminSessions"], (oldData) =>
 				oldData.filter((s) => s.id !== id)
 			);
-			Swal.fire("Deleted!", "Sesi berhasil dihapus.", "success");
+			toast.success("Sesi berhasil dihapus.");
 		},
 		onError: () => {
-			Swal.fire("Error!", "Gagal menghapus sesi.", "error");
+			toast.error("Gagal menghapus sesi.");
 		},
 	});
 
@@ -316,11 +327,9 @@ export function AdminSessionsPage({ onNavigate }) {
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Session Management</h2>
 				</div>
+				{/* Tampilan Loading hanya untuk initial load */}
 				{isLoadingSessions || isLoadingTransactions ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading session data...</p>
-					</div>
+					<LoadingSpinner message="Loading session data..." />
 				) : filteredSessions.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -333,6 +342,9 @@ export function AdminSessionsPage({ onNavigate }) {
 					</div>
 				) : (
 					<>
+						{/* Small loading indicator untuk saat update */}
+						{isFetchingSessions && <UpdateLoadingSpinner />}
+
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"

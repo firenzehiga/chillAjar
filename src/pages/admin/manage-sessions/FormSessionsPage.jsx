@@ -3,13 +3,15 @@ import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
-
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 	// Pastikan selalu dalam mode edit
 	if (!sessionId) {
 		onNavigate("admin-manage-sessions");
 		return null;
 	}
+	const queryClient = useQueryClient();
 
 	const [formData, setFormData] = useState({
 		mentorId: "",
@@ -133,12 +135,11 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 			});
 
 			if (response.status === 200) {
-				Swal.fire({
-					icon: "success",
-					title: "Success",
-					text: "Session updated successfully!",
-					confirmButtonColor: "#3B82F6",
-				});
+				// Invalidate queries to refresh data
+				queryClient.invalidateQueries(["adminSessions"]);
+				queryClient.invalidateQueries(["adminTransactions"]);
+
+				toast.success("Session berhasil diperbarui!");
 				onNavigate("admin-manage-sessions");
 			} else {
 				Swal.fire({

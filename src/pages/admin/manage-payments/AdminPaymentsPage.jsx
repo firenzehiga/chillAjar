@@ -6,6 +6,8 @@ import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import toast from "react-hot-toast";
+import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 
 export function AdminPaymentsPage() {
 	const [previewImg, setPreviewImg] = useState(null);
@@ -19,6 +21,7 @@ export function AdminPaymentsPage() {
 		data: payments = [],
 		isLoading,
 		error,
+		isFetching,
 	} = useQuery({
 		queryKey: ["adminPayments"],
 		queryFn: async () => {
@@ -29,6 +32,11 @@ export function AdminPaymentsPage() {
 			return response.data;
 		},
 		enabled: isAuthenticated,
+		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		retry: 1,
+		refetchOnWindowFocus: false, // Disable auto refresh
+
 		onError: () => {
 			setError("Gagal mengambil data pembayaran");
 		},
@@ -527,10 +535,7 @@ export function AdminPaymentsPage() {
 					<h2 className="text-xl font-semibold">Payment Management</h2>
 				</div>
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading payment data...</p>
-					</div>
+					<LoadingSpinner message="Loading payments data..." />
 				) : payments.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -541,6 +546,9 @@ export function AdminPaymentsPage() {
 					</div>
 				) : (
 					<>
+						{/* Small loading indicator untuk saat update */}
+						{isFetching && <UpdateLoadingSpinner />}
+
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"

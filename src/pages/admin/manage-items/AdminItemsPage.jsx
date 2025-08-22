@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import DataTable from "react-data-table-component";
 import { Package, Plus, Pencil, Trash, AlertCircle } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "../../../api.jsx";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import api from "../../../api.jsx";
+import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 
 export function AdminItemsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -17,8 +19,8 @@ export function AdminItemsPage({ onNavigate }) {
 	const {
 		data: items = [],
 		isLoading,
-		isError,
 		error,
+		isFetching,
 	} = useQuery({
 		queryKey: ["adminItems"],
 		queryFn: async () => {
@@ -38,7 +40,10 @@ export function AdminItemsPage({ onNavigate }) {
 				: [];
 		},
 		enabled: isAuthenticated,
+		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 10 * 60 * 1000, // 10 menit cache
 		retry: 1,
+		refetchOnWindowFocus: false, // Disable auto refresh
 		onError: (err) => {
 			console.error("Error fetching items:", err);
 		},
@@ -200,10 +205,7 @@ export function AdminItemsPage({ onNavigate }) {
 
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading items data...</p>
-					</div>
+					<LoadingSpinner message="Loading items data..." />
 				) : items.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -214,6 +216,9 @@ export function AdminItemsPage({ onNavigate }) {
 					</div>
 				) : (
 					<>
+						{/* Small loading indicator untuk saat update */}
+						{isFetching && <UpdateLoadingSpinner />}
+
 						{/* Form pencarian */}
 						<div className="flex justify-end mb-4">
 							<input

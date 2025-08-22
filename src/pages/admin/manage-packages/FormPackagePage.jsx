@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
 import api from "../../../api.jsx";
-import { Gift, ArrowLeft, AlertCircle, X, Calendar } from "lucide-react";
+import {
+	Gift,
+	ArrowLeft,
+	AlertCircle,
+	X,
+	Calendar,
+	Loader2,
+} from "lucide-react";
 import Swal from "sweetalert2";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
 import { is } from "date-fns/locale";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export function AdminFormPackagesPage({ onNavigate, packageId }) {
 	const isEditMode = !!packageId;
 
+	const queryClient = useQueryClient();
 	const [formData, setFormData] = useState({
 		name: "",
 		description: "",
@@ -211,13 +221,12 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 				);
 			}
 
-			Swal.fire({
-				icon: "success",
-				title: "Berhasil!",
-				text: `Paket ${isEditMode ? "diperbarui" : "ditambahkan"} berhasil!`,
-				showConfirmButton: false,
-				timer: 1500,
-			});
+			queryClient.invalidateQueries(["adminPackages"]);
+			queryClient.invalidateQueries(["adminItems"]);
+			toast.success(
+				`Paket ${isEditMode ? "diperbarui" : "ditambahkan"} berhasil!`
+			);
+
 			onNavigate("admin-manage-packages");
 		} catch (err) {
 			const errorMessage =
@@ -497,11 +506,16 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 											? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
 											: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
 									}`}>
-									{loading
-										? "Memproses..."
-										: isEditMode
-										? "Perbarui Paket"
-										: "Tambah Paket"}
+									{loading ? (
+										<>
+											Memproses...{" "}
+											<Loader2 className="w-4 h-4 mb-1 inline animate-spin text-yellow-500" />
+										</>
+									) : isEditMode ? (
+										"Perbarui Paket"
+									) : (
+										"Buat Paket"
+									)}
 								</button>
 							</div>
 						</div>

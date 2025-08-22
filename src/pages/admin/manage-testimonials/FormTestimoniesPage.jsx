@@ -3,8 +3,15 @@ import { BookOpen, ArrowLeft, AlertCircle, X } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
+	if (!testimonieId) {
+		onNavigate("admin-testimonial");
+		return null;
+	}
+	const queryClient = useQueryClient();
 	const [formData, setFormData] = useState({
 		rating: 0,
 		komentar: "",
@@ -20,19 +27,6 @@ export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 
 	const token = localStorage.getItem("token");
 	const isAuthenticated = !!token;
-
-	// Pastikan testimonieId ada, jika tidak redirect ke admin-testimonials
-	useEffect(() => {
-		if (!testimonieId) {
-			Swal.fire({
-				icon: "error",
-				title: "Invalid Testimony",
-				text: "No testimony ID provided.",
-				confirmButtonColor: "#EF4444",
-			});
-			onNavigate("admin-testimonial");
-		}
-	}, [testimonieId, onNavigate]);
 
 	// Fetch data testimoni
 	useEffect(() => {
@@ -83,12 +77,8 @@ export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 			});
 
 			if (response.status === 200) {
-				Swal.fire({
-					icon: "success",
-					title: "Success",
-					text: "Testimoni updated successfully!",
-					confirmButtonColor: "#3B82F6",
-				});
+				queryClient.invalidateQueries(["adminTestimonies"]);
+				toast.success("Testimoni berhasil diperbarui.");
 				onNavigate("admin-testimonial");
 			} else {
 				Swal.fire({
