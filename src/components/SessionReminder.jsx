@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Clock, Video, MapPin, Bell, Calendar, User } from "lucide-react";
+import { X, Clock, Video, MapPin, Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../api";
 import { useQuery } from "@tanstack/react-query";

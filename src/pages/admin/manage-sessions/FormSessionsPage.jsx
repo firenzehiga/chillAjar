@@ -138,6 +138,8 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 				// Invalidate queries to refresh data
 				queryClient.invalidateQueries(["adminSessions"]);
 				queryClient.invalidateQueries(["adminTransactions"]);
+				queryClient.invalidateQueries(["statusTransactions"]);
+				queryClient.invalidateQueries(["sessionsWidget"]);
 
 				toast.success("Session berhasil diperbarui!");
 				onNavigate("admin-manage-sessions");
@@ -318,10 +320,14 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 							onChange={handleChange}
 							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
 							required>
+							<option value="">Select status</option>
 							<option value="pending">Pending</option>
 							<option value="booked">Booked</option>
 							<option value="started">Started</option>
 							<option value="end">End</option>
+							<option value="review" disabled>
+								Reviewed
+							</option>
 						</select>
 					</div>
 

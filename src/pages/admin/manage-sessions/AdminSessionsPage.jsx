@@ -38,10 +38,11 @@ export function AdminSessionsPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 10 * 60 * 1000, // 10 menit cache
-		retry: 1, // Hanya coba ulang sekali jika gagal
-		refetchOnWindowFocus: false, // Disable auto refresh
+		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 5 * 60 * 1000, // 5 menit cache
+		refetchOnWindowFocus: true,
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
+		retry: 1,
 		onError: (err) => {
 			console.error("Error fetching sessions:", err);
 		},
@@ -63,10 +64,11 @@ export function AdminSessionsPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 10 * 60 * 1000, // 10 menit cache
-		retry: 1, // Hanya coba ulang sekali jika gagal
-		refetchOnWindowFocus: false, // Disable auto refresh
+		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 5 * 60 * 1000, // 5 menit cache
+		refetchOnWindowFocus: true,
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
+		retry: 1,
 		onError: (err) => {
 			console.error("Error fetching transactions:", err);
 		},
@@ -220,7 +222,7 @@ export function AdminSessionsPage({ onNavigate }) {
 					);
 				}
 			},
-			width: "180px",
+			width: "150px",
 		},
 		{
 			name: "Status",
@@ -330,16 +332,6 @@ export function AdminSessionsPage({ onNavigate }) {
 				{/* Tampilan Loading hanya untuk initial load */}
 				{isLoadingSessions || isLoadingTransactions ? (
 					<LoadingSpinner message="Loading session data..." />
-				) : filteredSessions.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">
-							No Schedules Available
-						</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							Tidak ada sesi dengan pembayaran yang diterima.
-						</p>
-					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}
@@ -397,6 +389,31 @@ export function AdminSessionsPage({ onNavigate }) {
 									</p>
 								</div>
 							)}
+							noDataComponent={
+								<>
+									{searchTerm ? (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Matching Schedules
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada Schedules yang sesuai dengan pencarian.
+											</p>
+										</div>
+									) : (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Schedules Available
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Belum ada data sesi
+											</p>
+										</div>
+									)}
+								</>
+							}
 						/>
 					</>
 				)}

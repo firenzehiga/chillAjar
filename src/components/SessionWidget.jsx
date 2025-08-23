@@ -5,17 +5,14 @@ import {
 	Monitor,
 	MapPin,
 	Video,
-	Phone,
 	MessageCircle,
-	ChevronRight,
 	Bell,
 	Star,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { MdRateReview } from "react-icons/md";
-
 import api from "../api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useIsFetching } from "@tanstack/react-query";
 import { getImageUrl } from "../utils/getImageUrl";
 import useAppStore from "../stores/useAppStore";
 
@@ -26,16 +23,18 @@ export function SessionsWidget({
 }) {
 	const [expandedSession, setExpandedSession] = useState(null);
 
-	// Get state from Zustand store
+	// Zustand / auth
 	const { userRole, userData, openTestimoniModal } = useAppStore();
 	const userId = userData?.id;
 	const pelangganId = userData?.pelanggan?.id;
 
 	const queryClient = useQueryClient();
 
+	// Transaksi (buat filter accepted & badge)
 	const {
 		data: transactions = [],
 		isLoading: loadingTransactions,
+		isFetching: fetchingTransactions,
 		error: errorTransactions,
 	} = useQuery({
 		queryKey: ["statusTransactions", pelangganId],
@@ -44,15 +43,12 @@ export function SessionsWidget({
 			return res.data.filter((t) => t.pelanggan_id === pelangganId);
 		},
 		enabled: !!pelangganId,
+		refetchOnWindowFocus: true,
+		staleTime: 30 * 1000, // 30 detik - balance antara fresh dan performance
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
 	});
 
-	// 1. Filter transaksi yang statusnya "accepted"
-	// Hanya ambil transaksi yang sudah pembayaran diterima
-	const acceptedTransactions = transactions.filter(
-		(trx) => trx.statusPembayaran === "accepted"
-	);
-
-	// Hanya tampilkan untuk role pelanggan
+	// Hanya untuk pelanggan
 	if (userRole !== "pelanggan") {
 		return (
 			<div className="p-4 text-center text-gray-500">
@@ -61,8 +57,13 @@ export function SessionsWidget({
 		);
 	}
 
-	// Fetch daftar sesi pelanggan berdasarkan userId
-	const { data: sessions = [], isLoading } = useQuery({
+	// Daftar sesi
+	const {
+		data: sessions = [],
+		isLoading,
+		isFetching: fetchingSessions,
+		error: errorSessions,
+	} = useQuery({
 		queryKey: ["sessionsWidget", userId],
 		queryFn: async () => {
 			const token = localStorage.getItem("token");
@@ -75,39 +76,36 @@ export function SessionsWidget({
 			return response.data;
 		},
 		enabled: !!userId && userRole === "pelanggan",
+		staleTime: 30 * 1000, // 30 detik - balance antara fresh dan performance
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
+		refetchOnWindowFocus: true,
+		retry: 1,
 	});
 
-	// Filter dan sort sesi berdasarkan prioritas DAN status transaksi
-	const sortedSessions = sessions
+	const acceptedTransactions = (transactions || []).filter(
+		(trx) => trx.statusPembayaran === "accepted"
+	);
+
+	const sortedSessions = (sessions || [])
 		.filter((session) => {
-			// Filter berdasarkan statusSesi
 			const validStatus =
 				session.statusSesi === "started" ||
 				session.statusSesi === "pending" ||
 				session.statusSesi === "end";
-
 			if (!validStatus) return false;
 
-			// Cek apakah ada transaksi accepted untuk session ini
 			const hasAcceptedTransaction = acceptedTransactions.some(
 				(trx) => trx.sesi_id === session.id
 			);
-
 			return hasAcceptedTransaction;
 		})
 		.sort((a, b) => {
-			// Prioritaskan sesi yang sedang live
 			if (a.statusSesi === "started" && b.statusSesi !== "started") return -1;
 			if (b.statusSesi === "started" && a.statusSesi !== "started") return 1;
-
-			// Lalu sesi yang sudah selesai dan belum ada testimoni (perlu review)
 			const aNeedReview = a.statusSesi === "end" && !a.testimoni;
 			const bNeedReview = b.statusSesi === "end" && !b.testimoni;
-
 			if (aNeedReview && !bNeedReview) return -1;
 			if (bNeedReview && !aNeedReview) return 1;
-
-			// Jika sama-sama pending, sort berdasarkan waktu
 			if (a.statusSesi === "pending" && b.statusSesi === "pending") {
 				const dateA = new Date(
 					a.jadwal_kursus?.tanggal + " " + a.jadwal_kursus?.waktu
@@ -117,32 +115,27 @@ export function SessionsWidget({
 				);
 				return dateA - dateB;
 			}
-
 			return 0;
 		});
 
-	// Update hitung jumlah untuk badge - dengan filter transaksi accepted (sama seperti SessionHistoryPage)
-	const activeSessions = sessions.filter((s) => {
-		return (
+	const activeSessions = sessions.filter(
+		(s) =>
 			s.statusSesi === "started" &&
 			acceptedTransactions.some((trx) => trx.sesi_id === s.id)
-		);
-	}).length;
+	).length;
 
-	const upcomingSessions = sessions.filter((s) => {
-		return (
+	const upcomingSessions = sessions.filter(
+		(s) =>
 			s.statusSesi === "pending" &&
 			acceptedTransactions.some((trx) => trx.sesi_id === s.id)
-		);
-	}).length;
+	).length;
 
-	const needReviewSessions = sessions.filter((s) => {
-		return (
+	const needReviewSessions = sessions.filter(
+		(s) =>
 			s.statusSesi === "end" &&
-			!s.testimoni && // belum ada testimoni
+			!s.testimoni &&
 			acceptedTransactions.some((trx) => trx.sesi_id === s.id)
-		);
-	}).length;
+	).length;
 
 	const sessionsToShow = maxSessions
 		? sortedSessions.slice(0, maxSessions)
@@ -176,37 +169,42 @@ export function SessionsWidget({
 
 	const formatDate = (dateString) => {
 		if (!dateString) return "No date";
-
 		const date = new Date(dateString);
 		const today = new Date();
 		const tomorrow = new Date(today);
 		tomorrow.setDate(tomorrow.getDate() + 1);
-
-		if (date.toDateString() === today.toDateString()) {
-			return "Hari Ini";
-		} else if (date.toDateString() === tomorrow.toDateString()) {
-			return "Besok";
-		} else {
-			return date.toLocaleDateString("id-ID", {
-				weekday: "short",
-				month: "short",
-				day: "numeric",
-			});
-		}
+		if (date.toDateString() === today.toDateString()) return "Hari Ini";
+		if (date.toDateString() === tomorrow.toDateString()) return "Besok";
+		return date.toLocaleDateString("id-ID", {
+			weekday: "short",
+			month: "short",
+			day: "numeric",
+		});
 	};
 
-	// Handle testimoni functions
 	const handleOpenTestimoni = (session) => {
 		const testimoniData = {
 			id: session.id,
 			sesi_id: session.id,
-			pelanggan_id: userData?.pelanggan?.id,
+			pelanggan_id: pelangganId,
 			mentor_id: session.mentor?.id,
+			user_id: userId,
+			// Callback untuk refetch setelah submit testimoni berhasil
+			onSuccess: () => {
+				// Refetch data sessions untuk update widget
+				queryClient.invalidateQueries(["sessionsWidget", userId]);
+				queryClient.invalidateQueries(["statusTransactions", pelangganId]);
+			},
 		};
 		openTestimoniModal(testimoniData);
 	};
 
-	// Variant compact-dropdown untuk dropdown positioning (without absolute container)
+	// Loading guard - show loading untuk initial load DAN background fetching
+	const isBusy = isLoading || loadingTransactions;
+	const isBackgroundFetching = fetchingSessions || fetchingTransactions;
+	const showLoading = isBusy || isBackgroundFetching;
+
+	// ------------- Variant compact-dropdown -------------
 	if (variant === "compact-dropdown") {
 		return (
 			<div className="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden">
@@ -254,18 +252,23 @@ export function SessionsWidget({
 					</div>
 				</div>
 
-				{isLoading ? (
-					<div className="p-4 text-center text-gray-500">
-						<p>Loading sessions...</p>
+				{showLoading ? (
+					<div className="p-4 text-center text-gray-600 font-semibold flex flex-col items-center">
+						{/* Animated loading dots */}
+						<span className="flex items-center space-x-1">
+							<p className="mr-1 animate-pulse">Loading sessions</p>
+							<span className="w-2 h-2 mt-1 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+							<span className="w-2 h-2 mt-1 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+							<span className="w-2 h-2 mt-1 bg-yellow-500 rounded-full animate-bounce"></span>
+						</span>
 					</div>
 				) : sessionsToShow.length === 0 ? (
 					<div className="p-4 text-center text-gray-500">
-						<p>No active sessions</p>
+						<p>Belum ada sesi</p>
 					</div>
 				) : (
 					<div className="p-2 sm:p-3 space-y-2 max-h-64 overflow-y-auto">
 						{sessionsToShow.map((session) => {
-							// Convert nomorTelepon to WhatsApp format (replace leading 0 with 62)
 							const rawPhone = session.mentor?.user?.nomorTelepon || "";
 							const waPhone = rawPhone.replace(/^0/, "62");
 
@@ -293,7 +296,8 @@ export function SessionsWidget({
 											<div
 												className={`w-2 h-2 rounded-full ${getStatusColor(
 													session.statusSesi
-												)}`}></div>
+												)}`}
+											/>
 											<span
 												className={`text-xs px-1.5 py-0.5 rounded ${
 													session.statusSesi === "started"
@@ -307,16 +311,22 @@ export function SessionsWidget({
 										</div>
 									</div>
 
-									{/* Action buttons untuk mobile/small screens */}
 									<div className="flex mt-2 space-x-1">
 										{session.statusSesi === "started" ? (
-											<span className="flex-1 bg-red-500 text-center text-white py-1.5 px-2 rounded text-xs font-medium transition-colors">
+											<span className="flex-1 bg-red-500 text-center text-white py-1.5 px-2 rounded text-xs font-medium">
 												Segera Bergabung!
 											</span>
 										) : session.statusSesi === "end" && !session.testimoni ? (
 											<button
-												onClick={() => handleOpenTestimoni(session)}
-												className=" outline-none focus:outline-none flex-1 bg-yellow-500 text-white py-1.5 px-2 rounded text-xs font-medium hover:bg-yellow-600 transition-colors flex items-center justify-center gap-1">
+												disabled={showLoading}
+												onClick={() =>
+													!showLoading && handleOpenTestimoni(session)
+												}
+												className={`outline-none focus:outline-none flex-1 bg-yellow-500 text-white py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+													showLoading
+														? "opacity-60 cursor-not-allowed"
+														: "hover:bg-yellow-600"
+												}`}>
 												Beri Rating
 												<MdRateReview className="w-4 h-4 text-white" />
 											</button>
@@ -349,7 +359,6 @@ export function SessionsWidget({
 					</div>
 				)}
 
-				{/* Footer dengan link ke semua sesi */}
 				<div className="p-3 bg-gray-50 border-t">
 					<button
 						onClick={() => onNavigate && onNavigate("session-history")}
@@ -361,6 +370,7 @@ export function SessionsWidget({
 		);
 	}
 
+	// ------------- Variant full -------------
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
@@ -381,9 +391,15 @@ export function SessionsWidget({
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-				{isLoading ? (
-					<div className="col-span-2 text-center py-8 text-gray-500">
-						Loading sessions...
+				{showLoading ? (
+					<div className="col-span-2 text-center py-8 text-gray-600 font-semibold flex flex-col items-center">
+						{/* Animated loading dots */}
+						<span className="flex items-center space-x-1">
+							<p className="mr-1 animate-pulse">Loading sessions</p>
+							<span className="w-2 h-2 mt-1 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+							<span className="w-2 h-2 mt-1 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+							<span className="w-2 h-2 mt-1 bg-blue-500 rounded-full animate-bounce"></span>
+						</span>
 					</div>
 				) : sessionsToShow.length === 0 ? (
 					<div className="col-span-2 text-center py-8 text-gray-500">
@@ -394,15 +410,12 @@ export function SessionsWidget({
 						<div
 							key={session.id}
 							className="group relative bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden border border-blue-100 hover:border-blue-200">
-							{/* Background Pattern */}
-							<div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-							{/* Status Indicator */}
 							<div className="absolute top-4 right-4 flex items-center space-x-2">
 								<div
 									className={`w-3 h-3 rounded-full ${getStatusColor(
 										session.statusSesi
-									)} animate-pulse`}></div>
+									)} animate-pulse`}
+								/>
 								<span
 									className={`text-xs font-medium px-2 py-1 rounded-full ${
 										session.statusSesi === "started"
@@ -414,12 +427,10 @@ export function SessionsWidget({
 							</div>
 
 							<div className="relative p-6">
-								{/* Course Title */}
 								<h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
 									{session.kursus?.namaKursus || "Course Name"}
 								</h3>
 
-								{/* Mentor Info */}
 								<div className="flex items-center mb-4">
 									<div className="relative">
 										<img
@@ -445,7 +456,6 @@ export function SessionsWidget({
 									</div>
 								</div>
 
-								{/* Session Details */}
 								<div className="space-y-3 mb-6">
 									<div className="flex items-center text-gray-600">
 										<div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-200 transition-colors duration-300">
@@ -492,7 +502,6 @@ export function SessionsWidget({
 									</div>
 								</div>
 
-								{/* Action Buttons */}
 								<div className="flex space-x-3">
 									{session.statusSesi === "started" ? (
 										<button className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-4 rounded-xl font-medium hover:from-red-600 hover:to-red-700 transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
@@ -520,27 +529,27 @@ export function SessionsWidget({
 														)}`
 													);
 												}}
-												className="px-4 py-3 bg-green-100 text-green-600 rounded-xl hover:bg-green-200 transition-colors duration-300">
+												className="px-4 py-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition-colors duration-300">
 												<MessageCircle className="w-5 h-5" />
 											</button>
 										</>
 									) : session.statusSesi === "end" && !session.testimoni ? (
-										<>
-											<button
-												onClick={(e) => {
-													e.stopPropagation();
-													handleOpenTestimoni(session);
-												}}
-												className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
-												<div className="flex items-center justify-center space-x-2">
-													<Star className="w-5 h-5" />
-													<span>Write Review</span>
-												</div>
-											</button>
-											<button className="px-4 py-3 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition-colors duration-300">
-												<MessageCircle className="w-5 h-5" />
-											</button>
-										</>
+										<button
+											disabled={showLoading}
+											onClick={(e) => {
+												e.stopPropagation();
+												!showLoading && handleOpenTestimoni(session);
+											}}
+											className={`flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+												showLoading
+													? "opacity-60 cursor-not-allowed"
+													: "hover:from-green-600 hover:to-green-700"
+											}`}>
+											<div className="flex items-center justify-center space-x-2">
+												<Star className="w-5 h-5" />
+												<span>Write Review</span>
+											</div>
+										</button>
 									) : session.statusSesi === "end" && session.testimoni ? (
 										<button className="flex-1 bg-gradient-to-r from-gray-400 to-gray-500 text-white py-3 px-4 rounded-xl font-medium cursor-not-allowed">
 											<div className="flex items-center justify-center space-x-2">
@@ -558,7 +567,6 @@ export function SessionsWidget({
 									)}
 								</div>
 
-								{/* Price Info */}
 								<div className="mt-4 pt-4 border-t border-gray-100">
 									<div className="flex items-center justify-between text-sm">
 										<span className="text-gray-500">Session Fee</span>
@@ -575,3 +583,5 @@ export function SessionsWidget({
 		</div>
 	);
 }
+
+export default SessionsWidget;

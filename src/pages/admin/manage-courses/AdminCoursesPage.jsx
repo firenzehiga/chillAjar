@@ -36,10 +36,12 @@ export function AdminCoursesPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 5 * 60 * 1000, // 5 menit cache
 		retry: 1,
-		refetchOnWindowFocus: false, // Disable auto refresh
+		refetchOnWindowFocus: true,
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
+
 		onError: (err) => {
 			console.error("Error fetching courses:", err);
 		},
@@ -282,14 +284,6 @@ export function AdminCoursesPage({ onNavigate }) {
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
 					<LoadingSpinner message="Loading courses data..." />
-				) : courses.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							No courses have been added yet. Start by adding a new course!
-						</p>
-					</div>
 				) : (
 					// Jika data sudah ada, tampilkan DataTable
 					<>
@@ -377,7 +371,30 @@ export function AdminCoursesPage({ onNavigate }) {
 							)}
 							// Tambahkan penanganan jika data kosong
 							noDataComponent={
-								<p className="p-4 text-gray-500">No courses available</p>
+								<>
+									{searchTerm ? (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Matching Course
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada kursus yang sesuai dengan pencarian.
+											</p>
+										</div>
+									) : (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Course Available
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Belum ada kursus yang tersedia. Mulai dengan menambahkan
+												kursus baru.
+											</p>
+										</div>
+									)}
+								</>
 							}
 						/>
 					</>

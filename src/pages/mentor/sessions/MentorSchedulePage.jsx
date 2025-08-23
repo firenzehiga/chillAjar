@@ -346,16 +346,6 @@ export function MentorSchedulePage({ onNavigate }) {
 						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
 						<p className="ml-3">Loading course data...</p>
 					</div>
-				) : filteredSessions.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">
-							No Schedules Available
-						</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							Tidak ada sesi dengan pembayaran yang diterima.
-						</p>
-					</div>
 				) : (
 					<>
 						<div className="flex justify-end mb-4">
@@ -410,6 +400,31 @@ export function MentorSchedulePage({ onNavigate }) {
 									</p>
 								</div>
 							)}
+							noDataComponent={
+								<>
+									{searchTerm ? (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Matching Schedules
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada Schedules yang sesuai dengan pencarian.
+											</p>
+										</div>
+									) : (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Schedules Available
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Belum ada data sesi
+											</p>
+										</div>
+									)}
+								</>
+							}
 						/>
 					</>
 				)}

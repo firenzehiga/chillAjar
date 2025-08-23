@@ -8,6 +8,7 @@ import { getImageUrl } from "../../../utils/getImageUrl";
 import toast from "react-hot-toast";
 import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import { ExportData } from "../../../components/Admin/ExportData";
 
 export function AdminPaymentsPage() {
 	const [previewImg, setPreviewImg] = useState(null);
@@ -32,10 +33,11 @@ export function AdminPaymentsPage() {
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 5 * 60 * 1000, // 5 menit cache
+		refetchOnWindowFocus: true,
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
 		retry: 1,
-		refetchOnWindowFocus: false, // Disable auto refresh
 
 		onError: () => {
 			setError("Gagal mengambil data pembayaran");
@@ -357,6 +359,72 @@ export function AdminPaymentsPage() {
 		},
 	};
 
+	// Define columns for CSV export
+	const csvColumns = [
+		{
+			key: "pelanggan",
+			header: "Pelanggan",
+			formatter: (row) => row.pelanggan?.user?.nama || "-",
+		},
+		{
+			key: "kursus",
+			header: "Kursus",
+			formatter: (row) => row.sesi?.kursus?.namaKursus || "-",
+		},
+		{
+			key: "tanggalPembayaran",
+			header: "Tanggal Bayar",
+			formatter: (row) => {
+				const tgl = row.tanggalPembayaran;
+				if (!tgl) return "-";
+				const isoDate = tgl.replace(" ", "T");
+				const date = new Date(isoDate);
+				return isNaN(date.getTime())
+					? "-"
+					: date.toLocaleDateString("id-ID", {
+							day: "numeric",
+							month: "long",
+							year: "numeric",
+					  });
+			},
+		},
+		{
+			key: "statusPembayaran",
+			header: "Status",
+			formatter: (row) => {
+				const status = statusCheck[row.statusPembayaran];
+				return status ? status.label : "-";
+			},
+		},
+		{
+			key: "buktiPembayaran",
+			header: "Bukti Pembayaran",
+			formatter: (row) =>
+				row.buktiPembayaran &&
+				row.buktiPembayaran.trim() !== "" &&
+				row.buktiPembayaran !== "null" &&
+				row.buktiPembayaran !== "undefined"
+					? "Ada"
+					: "Tidak Ada",
+		},
+		{
+			key: "jumlah",
+			header: "Jumlah",
+			formatter: (row) =>
+				row.jumlah ? `Rp${Number(row.jumlah).toLocaleString("id-ID")}` : "-",
+		},
+		{
+			key: "mentor",
+			header: "Mentor",
+			formatter: (row) => row.mentor?.user?.nama || "-",
+		},
+		{
+			key: "metodePembayaran",
+			header: "Metode Pembayaran",
+			formatter: (row) => row.metodePembayaran || "-",
+		},
+	];
+
 	const columns = [
 		{
 			name: "No",
@@ -423,7 +491,7 @@ export function AdminPaymentsPage() {
 							className="text-blue-600 hover:text-blue-800 flex items-center mr-3 outline-none focus:outline-none transition-colors"
 							onClick={() => setPreviewImg(imageUrl)}
 							title="Lihat gambar">
-							<Eye className="inline w-4 h-4 mr-1" />
+							<Eye className="inline w-4 h-4 mr-1 mt-1" />
 							Lihat
 						</button>
 						<button
@@ -533,17 +601,17 @@ export function AdminPaymentsPage() {
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Payment Management</h2>
+					<div className="flex gap-2">
+						<ExportData
+							data={filteredPayments}
+							filename="payments-data"
+							columns={csvColumns}
+							variant="success"
+						/>
+					</div>
 				</div>
 				{isLoading ? (
 					<LoadingSpinner message="Loading payments data..." />
-				) : payments.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">No Payments Found</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							Tidak ada pembayaran yang menunggu verifikasi saat ini.
-						</p>
-					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}
@@ -617,7 +685,29 @@ export function AdminPaymentsPage() {
 								</div>
 							)}
 							noDataComponent={
-								<p className="p-4 text-gray-500">No payments available</p>
+								<>
+									{searchTerm ? (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Matching Payments
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada Payments yang sesuai dengan pencarian.
+											</p>
+										</div>
+									) : (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Payments Available
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada pembayaran yang menunggu verifikasi saat ini.
+											</p>
+										</div>
+									)}
+								</>
 							}
 						/>
 					</>

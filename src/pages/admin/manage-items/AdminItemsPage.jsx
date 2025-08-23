@@ -40,10 +40,11 @@ export function AdminItemsPage({ onNavigate }) {
 				: [];
 		},
 		enabled: isAuthenticated,
-		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 5 * 60 * 1000, // 5 menit cache
+		refetchOnWindowFocus: true,
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
 		retry: 1,
-		refetchOnWindowFocus: false, // Disable auto refresh
 		onError: (err) => {
 			console.error("Error fetching items:", err);
 		},
@@ -206,14 +207,6 @@ export function AdminItemsPage({ onNavigate }) {
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
 					<LoadingSpinner message="Loading items data..." />
-				) : items.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">Belum Ada Items</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							Mulai dengan menambahkan item untuk paket pembelajaran.
-						</p>
-					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}
@@ -240,7 +233,29 @@ export function AdminItemsPage({ onNavigate }) {
 							responsive
 							noHeader
 							noDataComponent={
-								<p className="p-4 text-gray-500">Tidak ada item ditemukan</p>
+								<>
+									{searchTerm ? (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Matching Item
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada item yang sesuai dengan pencarian.
+											</p>
+										</div>
+									) : (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Item Available
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Mulai dengan menambahkan item untuk paket pembelajaran.
+											</p>
+										</div>
+									)}
+								</>
 							}
 						/>
 					</>

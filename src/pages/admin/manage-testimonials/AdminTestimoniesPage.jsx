@@ -41,10 +41,11 @@ export function AdminTestimoniesPage({ onNavigate }) {
 			}));
 		},
 		enabled: isAuthenticated,
-		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 5 * 60 * 1000, // 5 menit cache
+		refetchOnWindowFocus: true,
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
 		retry: 1,
-		refetchOnWindowFocus: false, // Disable auto refresh
 		onError: (err) => {
 			console.error("Error fetching testimonies:", err);
 		},
@@ -61,7 +62,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 			queryClient.setQueryData(["adminTestimonies"], (oldData) =>
 				oldData.filter((t) => t.id !== id)
 			);
-			Swal.fire("Deleted!", "Testimoni berhasil dihapus.", "success");
+			toast.success("Testimoni berhasil dihapus.");
 		},
 		onError: () => {
 			Swal.fire("Error!", "Gagal menghapus testimoni.", "error");
@@ -241,16 +242,6 @@ export function AdminTestimoniesPage({ onNavigate }) {
 				</div>
 				{isLoading ? (
 					<LoadingSpinner message="Loading testimonies..." />
-				) : testimonies.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">
-							No Testimonies Available
-						</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							No User has added any testimonies yet.
-						</p>
-					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}
@@ -290,7 +281,29 @@ export function AdminTestimoniesPage({ onNavigate }) {
 								</div>
 							)}
 							noDataComponent={
-								<p className="p-4 text-gray-500">No Testimonies available</p>
+								<>
+									{searchTerm ? (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Matching Testimonies
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada Testimonies yang sesuai dengan pencarian.
+											</p>
+										</div>
+									) : (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Testimonies Available
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Belum ada Pelanggan yang memberikan testimoni.
+											</p>
+										</div>
+									)}
+								</>
 							}
 						/>
 					</>

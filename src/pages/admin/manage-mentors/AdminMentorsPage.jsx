@@ -38,10 +38,11 @@ export function AdminMentorsPage({ onNavigate }) {
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		staleTime: 5 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 10 * 60 * 1000, // 10 menit cache
+		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
+		cacheTime: 5 * 60 * 1000, // 5 menit cache
+		refetchOnWindowFocus: true,
+		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
 		retry: 1,
-		refetchOnWindowFocus: false, // Disable auto refresh
 
 		onError: (err) => {
 			console.error("Error fetching Mentors:", err);
@@ -328,18 +329,9 @@ export function AdminMentorsPage({ onNavigate }) {
 				{/* Tampilan Loading hanya untuk initial load */}
 				{isLoading ? (
 					<LoadingSpinner message="Loading mentors data..." />
-				) : mentors.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">No Mentors Found</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							You haven't added any mentors yet. Start by adding a new mentor.
-						</p>
-					</div>
 				) : (
 					// Jika data sudah ada, tampilkan DataTable
 					<>
-						
 						{/* Form pencarian */}
 						<div className="flex justify-end mb-4">
 							<input
@@ -562,7 +554,29 @@ export function AdminMentorsPage({ onNavigate }) {
 							}}
 							// Tambahkan penanganan jika data kosong
 							noDataComponent={
-								<p className="p-4 text-gray-500">No mentors available</p>
+								<>
+									{searchTerm ? (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Matching Mentor
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada Mentor yang sesuai dengan pencarian.
+											</p>
+										</div>
+									) : (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Mentor Available
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Belum ada Mentor.
+											</p>
+										</div>
+									)}
+								</>
 							}
 						/>
 					</>
