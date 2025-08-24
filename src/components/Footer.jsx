@@ -26,20 +26,24 @@ export function Footer({ onNavigate, className = "", onShowGuideModal }) {
 							experiences.
 						</p>
 						<div className="flex space-x-4">
-							<a className="text-gray-400 hover:text-white transition-colors duration-300">
+							{/* <a className="text-gray-400 hover:text-white transition-colors duration-300">
 								<Facebook className="h-5 w-5" />
 							</a>
 							<a className="text-gray-400 hover:text-white transition-colors duration-300">
 								<Twitter className="h-5 w-5" />
+							</a> */}
+							<a
+								className="text-gray-400 hover:text-white transition-colors duration-300"
+								target="_blank"
+								rel="noopener noreferrer"
+								href="https://www.instagram.com/chill_ajar/">
+								<Instagram className="h-5 w-5" />
 							</a>
 							<a
 								className="text-gray-400 hover:text-white transition-colors duration-300"
 								target="_blank"
 								rel="noopener noreferrer"
-								href="https://www.instagram.com/sizzling_chili/">
-								<Instagram className="h-5 w-5" />
-							</a>
-							<a className="text-gray-400 hover:text-white transition-colors duration-300">
+								href="https://www.linkedin.com/company/chill-ajar/">
 								<Linkedin className="h-5 w-5" />
 							</a>
 						</div>

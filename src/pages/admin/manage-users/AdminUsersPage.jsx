@@ -14,6 +14,7 @@ import { AddUserModal } from "../../../components/Admin/AddUserModal";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 import { ExportData } from "../../../components/Admin/ExportData";
+import { formatDate } from "../../../utils/dateFormatter";
 
 export function AdminUsersPage() {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -76,10 +77,7 @@ export function AdminUsersPage() {
 		{
 			key: "created_at",
 			header: "Bergabung",
-			formatter: (row) =>
-				row.created_at
-					? new Date(row.created_at).toLocaleDateString("id-ID")
-					: "",
+			formatter: (row) => (row.created_at ? formatDate(row.created_at) : ""),
 		},
 	];
 
@@ -202,12 +200,7 @@ export function AdminUsersPage() {
 		},
 		{
 			name: "Bergabung",
-			selector: (row) =>
-				new Date(row.created_at).toLocaleDateString("id-ID", {
-					day: "numeric",
-					month: "long",
-					year: "numeric",
-				}),
+			selector: (row) => (row.created_at ? formatDate(row.created_at) : ""),
 			sortable: true,
 		},
 	];

@@ -9,6 +9,8 @@ import toast from "react-hot-toast";
 import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 import { ExportData } from "../../../components/Admin/ExportData";
+import { formatDate } from "../../../utils/dateFormatter";
+import { form } from "framer-motion/client";
 
 export function AdminPaymentsPage() {
 	const [previewImg, setPreviewImg] = useState(null);
@@ -170,7 +172,6 @@ export function AdminPaymentsPage() {
 
 		try {
 			// Download melalui backend API dengan cache busting
-			const token = localStorage.getItem("token");
 			const timestamp = new Date().getTime(); // Cache busting
 			const response = await api.get(
 				`/admin/download-bukti-pembayaran/${row.id}?t=${timestamp}`, // Tambah timestamp untuk cache busting
@@ -375,17 +376,7 @@ export function AdminPaymentsPage() {
 			key: "tanggalPembayaran",
 			header: "Tanggal Bayar",
 			formatter: (row) => {
-				const tgl = row.tanggalPembayaran;
-				if (!tgl) return "-";
-				const isoDate = tgl.replace(" ", "T");
-				const date = new Date(isoDate);
-				return isNaN(date.getTime())
-					? "-"
-					: date.toLocaleDateString("id-ID", {
-							day: "numeric",
-							month: "long",
-							year: "numeric",
-					  });
+				return formatDate(row.tanggalPembayaran);
 			},
 		},
 		{
@@ -444,17 +435,7 @@ export function AdminPaymentsPage() {
 		{
 			name: "Tanggal Bayar",
 			selector: (row) => {
-				const tgl = row.tanggalPembayaran;
-				if (!tgl) return "-";
-				const isoDate = tgl.replace(" ", "T");
-				const date = new Date(isoDate);
-				return isNaN(date.getTime())
-					? "-"
-					: date.toLocaleDateString("id-ID", {
-							day: "numeric",
-							month: "long",
-							year: "numeric",
-					  });
+				return formatDate(row.tanggalPembayaran);
 			},
 			sortable: true,
 		},
@@ -557,6 +538,7 @@ export function AdminPaymentsPage() {
 		);
 	}
 
+	// Filter data mulai dari yang terbaru
 	const sortedPayments = [...payments].sort((a, b) => {
 		const dateA = new Date(a.created_at);
 		const dateB = new Date(b.created_at);
@@ -657,7 +639,7 @@ export function AdminPaymentsPage() {
 											Jadwal:
 										</span>
 										<span className="capitalize">
-											{data.sesi?.jadwal_kursus?.tanggal || "-"}
+											{formatDate(data.sesi?.jadwal_kursus?.tanggal) || "-"}
 										</span>
 									</p>
 									<p className="flex">

@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { formatDate } from "../../../utils/dateFormatter";
 
 export function AdminCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = React.useState("");
@@ -325,19 +326,11 @@ export function AdminCoursesPage({ onNavigate }) {
 									</p>
 									<span>
 										{data.jadwal_kursus?.map((jadwal, index) => {
-											const tanggalFormatted = jadwal.tanggal
-												? new Date(
-														jadwal.tanggal.replace(" ", "T")
-												  ).toLocaleDateString("id-ID", {
-														day: "numeric",
-														month: "long",
-														year: "numeric",
-												  })
-												: "";
 											return (
 												<div key={index} className="mb-3">
 													<p>
-														{tanggalFormatted} {jadwal.waktu.slice(0, 5)} WIB |
+														{formatDate(jadwal.tanggal)}{" "}
+														{jadwal.waktu.slice(0, 5)} WIB |
 														<span className="text-gray-500 ml-2">
 															{jadwal.tempat}
 														</span>

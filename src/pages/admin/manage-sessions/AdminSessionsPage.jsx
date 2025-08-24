@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 import LoadingSpinner from "../../../components/Admin/LoadingSpinner";
+import { formatDate } from "../../../utils/dateFormatter";
 
 export function AdminSessionsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -370,7 +371,7 @@ export function AdminSessionsPage({ onNavigate }) {
 											Jadwal:
 										</span>
 										<span className="capitalize">
-											{data.jadwal_kursus?.tanggal || "-"}
+											{formatDate(data.jadwal_kursus?.tanggal) || "-"}
 										</span>
 									</p>
 									<p className="flex">

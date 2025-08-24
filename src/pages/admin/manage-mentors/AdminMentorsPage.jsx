@@ -14,6 +14,8 @@ import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { formatDate } from "../../../utils/dateFormatter";
+
 export function AdminMentorsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 
@@ -258,12 +260,7 @@ export function AdminMentorsPage({ onNavigate }) {
 			name: "Tanggal Bergabung",
 			selector: (row) => row.created_at || "N/A",
 			cell: (row) => {
-				const date = new Date(row.created_at);
-				return date.toLocaleDateString("id-ID", {
-					day: "numeric",
-					month: "long",
-					year: "numeric",
-				});
+				return formatDate(row.created_at) || "-";
 			},
 		},
 		{
@@ -332,6 +329,9 @@ export function AdminMentorsPage({ onNavigate }) {
 				) : (
 					// Jika data sudah ada, tampilkan DataTable
 					<>
+						{/* Small loading indicator untuk saat update */}
+						{isFetching && <UpdateLoadingSpinner />}
+
 						{/* Form pencarian */}
 						<div className="flex justify-end mb-4">
 							<input

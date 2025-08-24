@@ -10,9 +10,9 @@ import {
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
-import { is } from "date-fns/locale";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { formatDate } from "../../../utils/dateFormatter";
 
 export function AdminFormPackagesPage({ onNavigate, packageId }) {
 	const isEditMode = !!packageId;
@@ -474,13 +474,8 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 													{formData.tanggal_mulai &&
 														formData.tanggal_berakhir && (
 															<div className="text-xs text-gray-500 mt-1">
-																{new Date(
-																	formData.tanggal_mulai
-																).toLocaleDateString("id-ID")}{" "}
-																-{" "}
-																{new Date(
-																	formData.tanggal_berakhir
-																).toLocaleDateString("id-ID")}
+																{formatDate(formData.tanggal_mulai)} -{" "}
+																{formatDate(formData.tanggal_berakhir)}
 															</div>
 														)}
 												</div>

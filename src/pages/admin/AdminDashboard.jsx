@@ -1,13 +1,8 @@
 import { useQuery } from "@tanstack/react-query"; // Impor React Query
-import {
-	Users,
-	BookOpen,
-	Clock,
-	DollarSign,
-	ShieldQuestion,
-} from "lucide-react";
+import { Users, BookOpen, Clock } from "lucide-react";
 import api from "../../api";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/id";
@@ -60,6 +55,10 @@ export function AdminDashboard() {
 			);
 		} finally {
 			setLoadingPentest(false);
+			toast.success(pentestMsg, {
+				duration: 2000,
+				position: "bottom-left",
+			});
 		}
 	};
 	// Handler untuk API pentest: update rating mentor
@@ -76,8 +75,11 @@ export function AdminDashboard() {
 			);
 		} finally {
 			setLoadingPentest(false);
+			toast.success(pentestMsg, { duration: 2000, position: "bottom-left" });
 		}
 	};
+
+	const [loadingAction, setLoadingAction] = useState(""); // "" | "hapusSesi" | "updateRating"
 
 	return (
 		<div className="py-8">
@@ -154,23 +156,32 @@ export function AdminDashboard() {
 					<h2 className="text-lg font-semibold mb-2">Admin Utility Actions</h2>
 					<div className="flex flex-wrap gap-4 mb-2">
 						<button
-							disabled={loadingPentest}
-							onClick={handleHapusSesiExpired}
+							disabled={loadingAction === "hapusSesi"}
+							onClick={async () => {
+								setLoadingAction("hapusSesi");
+								await handleHapusSesiExpired();
+								setLoadingAction("");
+							}}
 							className="px-4 py-2 bg-red-700 text-white rounded shadow hover:bg-red-800 disabled:opacity-60 transition-all">
 							Hapus Semua Sesi Expired
+							{loadingAction === "hapusSesi" && (
+								<div className="w-3 h-3 border-4 border-white border-t-transparent rounded-full animate-spin inline-block ml-2"></div>
+							)}
 						</button>
 						<button
-							disabled={loadingPentest}
-							onClick={handleUpdateRatingMentor}
+							disabled={loadingAction === "updateRating"}
+							onClick={async () => {
+								setLoadingAction("updateRating");
+								await handleUpdateRatingMentor();
+								setLoadingAction("");
+							}}
 							className="px-4 py-2 bg-emerald-700 text-white rounded shadow hover:bg-emerald-800 disabled:opacity-60 transition-all">
 							Update Seluruh Rating Mentor
+							{loadingAction === "updateRating" && (
+								<div className="w-3 h-3 border-4 border-white border-t-transparent rounded-full animate-spin inline-block ml-2"></div>
+							)}
 						</button>
 					</div>
-					{pentestMsg && (
-						<div className="text-sm text-blue-800 bg-blue-100 rounded px-3 py-2 mt-2 max-w-lg border border-blue-200">
-							{pentestMsg}
-						</div>
-					)}
 				</div>
 				{/* Card User Terbaru */}
 				<div className="bg-white rounded-xl shadow-lg p-6">

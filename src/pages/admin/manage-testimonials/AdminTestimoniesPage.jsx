@@ -7,7 +7,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
-
+import { ExportData } from "../../../components/Admin/ExportData";
+import { formatDate } from "../../../utils/dateFormatter";
 export function AdminTestimoniesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 
@@ -88,6 +89,56 @@ export function AdminTestimoniesPage({ onNavigate }) {
 	const handleEdit = (id) => {
 		onNavigate(`admin-edit-testimonial/${id}`);
 	};
+
+	// Define columns for CSV export (disesuaikan dengan kolom pada tabel)
+	const csvColumns = [
+		{
+			key: "pelanggan",
+			header: "Nama Pelanggan",
+			formatter: (row) => row.pelanggan?.user?.nama || "-",
+		},
+		{
+			key: "mentor",
+			header: "Nama Mentor",
+			formatter: (row) => row.mentor?.user?.nama || "-",
+		},
+		{
+			key: "kursus",
+			header: "Nama Kursus",
+			formatter: (row) => row.sesi?.kursus?.namaKursus || "-",
+		},
+		{
+			key: "rating",
+			header: "Rating",
+			formatter: (row) =>
+				row.rating !== undefined && row.rating !== null
+					? String(row.rating)
+					: "-",
+		},
+		{
+			key: "gayaPembelajaran",
+			header: "Gaya Pembelajaran",
+			formatter: (row) => {
+				const mode = row.sesi?.jadwal_kursus?.gayaMengajar;
+				if (mode === "online") return "Online";
+				if (mode === "offline") return "Offline";
+				if (mode === undefined || mode === null) return "Belum diisi";
+				return "Data mode tidak valid";
+			},
+		},
+		{
+			key: "komentar",
+			header: "Komentar",
+			formatter: (row) => row.komentar || "-",
+		},
+		{
+			key: "tanggal",
+			header: "Tanggal Review",
+			formatter: (row) => {
+				return formatDate(row.created_at || row.tanggal);
+			},
+		},
+	];
 
 	const columns = [
 		{
@@ -210,13 +261,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 	// Filter data berdasarkan searchTerm
 	const filteredTestimonies = sortedTestimonies.filter((p) => {
 		const lower = searchTerm.toLowerCase();
-		const tanggalFormatted = p.tanggal
-			? new Date(p.tanggal.replace(" ", "T")).toLocaleDateString("id-ID", {
-					day: "numeric",
-					month: "long",
-					year: "numeric",
-			  })
-			: "";
+		const tanggalFormatted = formatDate(p.tanggal || p.created_at);
 		return (
 			p.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
 			p.mentor?.user?.nama?.toLowerCase().includes(lower) ||
@@ -239,6 +284,14 @@ export function AdminTestimoniesPage({ onNavigate }) {
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Testimonial Management</h2>
+					<div className="flex gap-2">
+						<ExportData
+							data={filteredTestimonies}
+							filename="testimonies-data"
+							columns={csvColumns}
+							variant="success"
+						/>
+					</div>
 				</div>
 				{isLoading ? (
 					<LoadingSpinner message="Loading testimonies..." />
@@ -276,7 +329,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 										<span className="w-48 font-medium text-gray-900">
 											Tanggal Review:
 										</span>
-										<span className="capitalize">{data.tanggal || "-"}</span>
+										<span>{formatDate(data.tanggal || data.created_at)}</span>
 									</p>
 								</div>
 							)}
