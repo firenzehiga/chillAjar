@@ -9,6 +9,11 @@ import {
 	Phone,
 	MapPin,
 	Loader2,
+	Upload,
+	FileText,
+	CheckCircle,
+	UserCheck,
+	GraduationCap,
 } from "lucide-react";
 import api from "../api";
 import Swal from "sweetalert2";
@@ -21,6 +26,7 @@ export function AuthModal({ defaultMode = "login" }) {
 	// Get state and actions from store
 	const { showAuthModal, setShowAuthModal, handleAuthSuccess } = useAppStore();
 	const [isLoading, setIsLoading] = useState(false);
+	const [isUploadingDoc, setIsUploadingDoc] = useState(false);
 	const [mode, setMode] = useState(defaultMode);
 	const [showPassword, setShowPassword] = useState(false);
 	const [supportingDoc, setSupportingDoc] = useState(null);
@@ -46,9 +52,27 @@ export function AuthModal({ defaultMode = "login" }) {
 	};
 
 	const handleFileChange = (e) => {
-		setSupportingDoc(e.target.files[0]);
+		const file = e.target.files[0];
+		if (!file) return;
+
+		setIsUploadingDoc(true);
+
+		// Simulate upload delay for better UX
+		setTimeout(() => {
+			setSupportingDoc(file);
+			setIsUploadingDoc(false);
+		}, 1000);
 	};
 
+	const handleRemoveFile = () => {
+		setSupportingDoc(null);
+		setIsUploadingDoc(false);
+		// Reset the file input
+		const fileInput = document.querySelector('input[type="file"]');
+		if (fileInput) {
+			fileInput.value = "";
+		}
+	};
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
@@ -357,34 +381,196 @@ export function AuthModal({ defaultMode = "login" }) {
 									</div>
 
 									<div className="mb-4">
-										<label className="block text-sm font-medium text-gray-700 mb-1">
+										<label className="block text-sm font-medium text-gray-700 mb-3">
 											Daftar sebagai
 										</label>
-										<select
-											name="role"
-											value={formData.role}
-											onChange={handleInputChange}
-											className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent">
-											<option value="pelanggan">Pelanggan</option>
-											<option value="mentor">Mentor</option>
-										</select>
+										<div className="grid grid-cols-2 gap-2">
+											{/* Pelanggan Option */}
+											<label
+												className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+													formData.role === "pelanggan"
+														? "border-yellow-500 bg-yellow-50"
+														: "border-gray-200 hover:border-gray-300"
+												}`}>
+												<input
+													type="radio"
+													name="role"
+													value="pelanggan"
+													checked={formData.role === "pelanggan"}
+													onChange={handleInputChange}
+													className="sr-only"
+												/>
+												<UserCheck
+													className={`w-6 h-6 mb-1 ${
+														formData.role === "pelanggan"
+															? "text-yellow-600"
+															: "text-gray-400"
+													}`}
+												/>
+												<span
+													className={`font-medium text-xs ${
+														formData.role === "pelanggan"
+															? "text-yellow-700"
+															: "text-gray-600"
+													}`}>
+													Pelanggan
+												</span>
+												<span className="text-xs text-gray-500 text-center">
+													Belajar dari mentor
+												</span>
+												{formData.role === "pelanggan" && (
+													<div className="absolute top-1 right-1">
+														<CheckCircle className="w-4 h-4 text-yellow-600" />
+													</div>
+												)}
+											</label>
+
+											{/* Mentor Option */}
+											<label
+												className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+													formData.role === "mentor"
+														? "border-yellow-500 bg-yellow-50"
+														: "border-gray-200 hover:border-gray-300"
+												}`}>
+												<input
+													type="radio"
+													name="role"
+													value="mentor"
+													checked={formData.role === "mentor"}
+													onChange={handleInputChange}
+													className="sr-only"
+												/>
+												<GraduationCap
+													className={`w-6 h-6 mb-1 ${
+														formData.role === "mentor"
+															? "text-yellow-600"
+															: "text-gray-400"
+													}`}
+												/>
+												<span
+													className={`font-medium text-xs ${
+														formData.role === "mentor"
+															? "text-yellow-700"
+															: "text-gray-600"
+													}`}>
+													Mentor
+												</span>
+												<span className="text-xs text-gray-500 text-center">
+													Mengajar siswa
+												</span>
+												{formData.role === "mentor" && (
+													<div className="absolute top-1 right-1">
+														<CheckCircle className="w-4 h-4 text-yellow-600" />
+													</div>
+												)}
+											</label>
+										</div>
 									</div>
 
 									{formData.role === "mentor" && (
 										<div className="mb-4">
-											<label className="block text-sm font-medium text-gray-700 mb-1">
-												Dokumen Pendukung (PDF/JPG/PNG)
+											<label className="block text-sm font-medium text-gray-700 mb-3">
+												Dokumen Pendukung
 											</label>
-											<input
-												type="file"
-												accept=".pdf,.jpg,.jpeg,.png"
-												onChange={handleFileChange}
-												className="w-full border border-gray-300 rounded-lg px-3 py-2"
-												required
-											/>
-											{error && (
-												<p className="text-red-500 text-sm mt-2">{error}</p>
-											)}
+											<div className="space-y-2">
+												<div className="text-xs text-gray-500 mb-2">
+													Upload sertifikat, ijazah, atau portofolio
+													(PDF/JPG/PNG, max 5MB)
+												</div>
+
+												{/* Upload Area */}
+												<div
+													className={`relative border-2 border-dashed rounded-lg p-4 transition-all ${
+														isUploadingDoc
+															? "border-yellow-400 bg-yellow-50"
+															: supportingDoc
+															? "border-green-400 bg-green-50"
+															: "border-gray-300 hover:border-gray-400"
+													}`}>
+													<input
+														type="file"
+														accept=".pdf,.jpg,.jpeg,.png"
+														onChange={handleFileChange}
+														disabled={isUploadingDoc}
+														className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+														id="document-upload"
+														required
+													/>
+
+													<div className="text-center">
+														{isUploadingDoc ? (
+															<div className="flex flex-col items-center">
+																<Loader2 className="w-6 h-6 text-yellow-500 animate-spin mb-1" />
+																<p className="text-xs font-medium text-yellow-600">
+																	Mengunggah dokumen...
+																</p>
+																<p className="text-xs text-gray-500">
+																	Mohon tunggu sebentar
+																</p>
+															</div>
+														) : supportingDoc ? (
+															<div className="flex flex-col items-center">
+																<div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mb-2">
+																	<FileText className="w-4 h-4 text-green-600" />
+																</div>
+																<p className="text-xs font-medium text-green-700">
+																	Dokumen berhasil diunggah
+																</p>
+																<p className="text-xs text-gray-600 truncate max-w-full">
+																	{supportingDoc.name}
+																</p>
+																<p className="text-xs text-gray-500">
+																	{(supportingDoc.size / 1024 / 1024).toFixed(
+																		2
+																	)}{" "}
+																	MB
+																</p>
+																<button
+																	type="button"
+																	onClick={handleRemoveFile}
+																	className="text-xs text-red-500 hover:text-red-700 mt-1 underline">
+																	klik untuk mengganti
+																</button>
+															</div>
+														) : (
+															<div className="flex flex-col items-center">
+																<div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full mb-2">
+																	<Upload className="w-4 h-4 text-gray-400" />
+																</div>
+																<p className="text-xs font-medium text-gray-700">
+																	Klik untuk mengunggah dokumen
+																</p>
+																<p className="text-xs text-gray-500">
+																	atau seret file ke sini
+																</p>
+															</div>
+														)}
+													</div>
+												</div>
+
+												{/* Format Info */}
+												<div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+													<div className="flex items-start space-x-2">
+														<div className="flex-shrink-0">
+															<div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
+																<span className="text-blue-600 text-xs">
+																	💡
+																</span>
+															</div>
+														</div>
+														<div className="text-xs text-blue-700">
+															<p className="font-medium mb-1">
+																Tips dokumen yang baik:
+															</p>
+															<ul className="space-y-1 text-blue-600">
+																<li>• Sertifikat keahlian atau pendidikan</li>
+																<li>• Portofolio hasil karya</li>
+																<li>• CV atau resume terbaru</li>
+															</ul>
+														</div>
+													</div>
+												</div>
+											</div>
 										</div>
 									)}
 								</>
@@ -442,7 +628,7 @@ export function AuthModal({ defaultMode = "login" }) {
 							<button
 								type="submit"
 								disabled={isLoading}
-								className={`w-full outline-none focus:outline-none transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
+								className={`w-full outline-none focus:outline-none transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
 									isLoading ? "opacity-50 cursor-not-allowed" : ""
 								}`}>
 								{isLoading ? (
