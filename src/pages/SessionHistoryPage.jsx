@@ -17,6 +17,7 @@ import {
 import { MdRateReview } from "react-icons/md";
 import api from "../api";
 import useAppStore from "../stores/useAppStore";
+import { BookLoader } from "../components/Button/BookLoader";
 
 // Custom Select Component
 const CustomSelect = ({
@@ -323,11 +324,8 @@ export function SessionHistoryPage({ userData }) {
 
 	if (isLoading) {
 		return (
-			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
-				<Calendar className="w-12 h-12 text-gray-400 mb-4 animate-pulse" />
-				<h3 className="text-lg font-semibold mb-2 animate-pulse">
-					Memuat riwayat...
-				</h3>
+			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600 mb-10">
+				<BookLoader message="Memuat sesi" />
 			</div>
 		);
 	}
