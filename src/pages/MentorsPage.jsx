@@ -34,7 +34,7 @@ export function MentorsPage({
 	if (isLoading | showPostLoginLoading) {
 		return (
 			<div className="py-8">
-				<h2 className="text-2xl font-bold text-gray-900 mb-6">Our Mentors</h2>
+				<h2 className="text-2xl font-bold text-gray-900 mb-6">Mentor Kami</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{Array.from({ length: 6 }).map((_, idx) => (
 						<MentorSkeletonCard key={idx} />
@@ -113,6 +113,7 @@ export function MentorsPage({
 				<EmptyMentorsState context="mentors" onNavigate={onNavigate} />
 			) : (
 				<div className="py-8">
+					<h2 className="text-2xl font-bold text-gray-900 mb-6">Mentor Kami</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 						{mentorsData.map((mentor) => (
 							<MentorCard
