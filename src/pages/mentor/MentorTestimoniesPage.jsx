@@ -171,10 +171,15 @@ export function MentorTestimoniesPage() {
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
 					Students Testimonials
 				</h1>
-				<p className="text-gray-600">Overview of your students' testimonials</p>
+				<p className="text-gray-600">
+					Ringkasan testimoni yang diberikan oleh siswa
+				</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
+				<div className="flex justify-between items-center mb-6">
+					<h2 className="text-xl font-semibold">Data Testimoni</h2>
+				</div>
 				{isLoading ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">
 						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>

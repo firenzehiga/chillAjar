@@ -1,7 +1,7 @@
 import React from "react";
 import { CourseCard } from "../components/CourseCard";
 import { CourseSkeletonCard } from "../components/Skeleton/CourseSkeletonCard";
-import { EmptyMentorsState } from "../components/EmptyState/EmptyMentorsState";
+import { EmptyMentorsState } from "../components/Fallback/EmptyMentorsState";
 import { Search } from "lucide-react";
 export function CoursesPage({
 	onCourseClick,
@@ -18,14 +18,14 @@ export function CoursesPage({
 			return course.mentor && course.mentor.status === "active";
 		}) || [];
 
-	// Debug logging
-	console.log("CoursesPage - Debug info:", {
-		isLoading,
-		coursesLength: courses?.length || 0,
-		activeCoursesLength: activeCourses.length,
-		filteredCoursesLength: filteredCourses.length,
-		searchQuery: searchQuery.trim(),
-	});
+	// // Debug logging
+	// console.log("CoursesPage - Debug info:", {
+	// 	isLoading,
+	// 	coursesLength: courses?.length || 0,
+	// 	activeCoursesLength: activeCourses.length,
+	// 	filteredCoursesLength: filteredCourses.length,
+	// 	searchQuery: searchQuery.trim(),
+	// });
 
 	// Prioritaskan loading, lalu cek filteredCourses
 	if (isLoading) {

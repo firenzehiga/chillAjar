@@ -276,14 +276,16 @@ export function AdminTestimoniesPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					Mentor Testimonials
+					Manage Testimonials
 				</h1>
-				<p className="text-gray-600">Overview of your mentors' testimonials</p>
+				<p className="text-gray-600">
+					Daftar testimoni mentor yang diberikan oleh pengguna
+				</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Testimonial Management</h2>
+					<h2 className="text-xl font-semibold">Data Testimoni</h2>
 					<div className="flex gap-2">
 						<ExportData
 							data={filteredTestimonies}

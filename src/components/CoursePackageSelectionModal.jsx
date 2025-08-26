@@ -3,7 +3,7 @@ import { X, Gift, ArrowRight, AlertCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../api";
 import CoursePackageCard from "./CoursePackageCard";
-import { BookLoader } from "./Button/BookLoader";
+import { BookLoader } from "./User/BookLoader";
 
 export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 	const [selectedPackage, setSelectedPackage] = useState(null);
@@ -138,7 +138,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 				{/* Content */}
 				<div className="p-3 sm:p-6 overflow-y-auto max-h-[calc(95vh-200px)]">
 					{loading ? (
-						<div className="flex items-center justify-center h-72 ">
+						<div className="flex items-center justify-center h-72 mb-6">
 							<BookLoader message="Memuat paket" />
 						</div>
 					) : error ? (

@@ -77,7 +77,7 @@ export function MentorDashboard() {
 						</div>
 					)}
 				</div>
-				<p className="text-gray-600">Overview of your teaching activities</p>
+				<p className="text-gray-600">Ringkasan aktivitas mengajar saya</p>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 				{/* <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">

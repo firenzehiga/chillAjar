@@ -266,14 +266,16 @@ export function AdminCoursesPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					Semua Kursus
+					Manage Courses
 				</h1>
-				<p className="text-gray-600">Manage all courses as an admin</p>
+				<p className="text-gray-600">
+					Daftar kursus milik mentor yang tersedia
+				</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Kursus</h2>
+					<h2 className="text-xl font-semibold">Data Kursus</h2>
 					<button
 						onClick={() => onNavigate("admin-add-course")}
 						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 outline-none focus:outline-none">

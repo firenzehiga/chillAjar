@@ -5,7 +5,7 @@ import { CourseCarousel } from "../components/CourseCarousel";
 import { CarouselSkeleton } from "../components/Skeleton/CarouselSkeleton";
 import { CourseSkeletonCard } from "../components/Skeleton/CourseSkeletonCard";
 import { getImageUrl } from "../utils/getImageUrl";
-import { EmptyMentorsState } from "../components/EmptyState/EmptyMentorsState";
+import { EmptyMentorsState } from "../components/Fallback/EmptyMentorsState";
 export function Home({
 	courses,
 	filteredCourses,

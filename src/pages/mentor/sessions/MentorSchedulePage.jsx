@@ -332,14 +332,14 @@ export function MentorSchedulePage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					My Schedules
+					My Sessions Schedules
 				</h1>
-				<p className="text-gray-600">Manage your teaching courses</p>
+				<p className="text-gray-600">Daftar Jadwal Sesi Saya</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Session Management</h2>
+					<h2 className="text-xl font-semibold">Data Sesi</h2>
 				</div>
 				{isLoadingSessions || isLoadingTransactions ? (
 					<div className="flex items-center justify-center h-64 text-gray-600">

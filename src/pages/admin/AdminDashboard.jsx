@@ -85,7 +85,7 @@ export function AdminDashboard() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-				<p className="text-gray-600">Overview of your platform's resources</p>
+				<p className="text-gray-600">Ringkasan data platform ChillAjar</p>
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

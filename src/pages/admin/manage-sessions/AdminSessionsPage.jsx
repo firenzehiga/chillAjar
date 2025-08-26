@@ -321,14 +321,14 @@ export function AdminSessionsPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
-					My Schedules
+					Manage Sessions
 				</h1>
-				<p className="text-gray-600">Manage your teaching courses</p>
+				<p className="text-gray-600">Daftar jadwal sesi pembelajaran</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Session Management</h2>
+					<h2 className="text-xl font-semibold">Data Sesi</h2>
 				</div>
 				{/* Tampilan Loading hanya untuk initial load */}
 				{isLoadingSessions || isLoadingTransactions ? (

@@ -215,16 +215,16 @@ export function AdminPackagesPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<Gift className="w-6 h-6 mr-2 text-yellow-600" />
-					Kelola Paket
+					Manage Packages
 				</h1>
 				<p className="text-gray-600">
-					Kelola paket pembelajaran yang terdiri dari kombinasi items
+					Kelola paket pembelajaran yang terdiri dari kombinasi item-item
 				</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Daftar Paket</h2>
+					<h2 className="text-xl font-semibold">Data Paket</h2>
 					<button
 						onClick={() => onNavigate("admin-add-package")}
 						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 outline-none focus:outline-none">

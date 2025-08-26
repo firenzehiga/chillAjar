@@ -5,7 +5,7 @@ import defaultPhoto from "../../public/foto_kursus/default.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { MentorSkeletonCard } from "../components/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "../utils/getImageUrl";
-import { EmptyMentorsState } from "../components/EmptyState/EmptyMentorsState";
+import { EmptyMentorsState } from "../components/Fallback/EmptyMentorsState";
 export function MentorsPage({
 	courses,
 	onSchedule,

@@ -1,6 +1,6 @@
 import React from "react";
 
-export function MentorEditProfileSkeleton() {
+export function EditProfileSkeleton() {
 	return (
 		<div className="max-w-3xl mx-auto px-4 py-10">
 			<div className="flex items-center space-x-4 mb-6">

@@ -257,17 +257,17 @@ export function MentorCoursesPage({ onNavigate }) {
 					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
 					My Courses
 				</h1>
-				<p className="text-gray-600">Manage your teaching courses</p>
+				<p className="text-gray-600">Daftar kursus yang saya ajar</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Courses You Teach</h2>
+					<h2 className="text-xl font-semibold">Data Kursus</h2>
 					<button
 						onClick={() => onNavigate("mentor-add-course")}
 						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
 						<Plus className="w-4 h-4 mr-2" />
-						Add Course
+						Tambah Kursus
 					</button>
 				</div>
 

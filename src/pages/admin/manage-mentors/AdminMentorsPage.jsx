@@ -316,12 +316,12 @@ export function AdminMentorsPage({ onNavigate }) {
 					<UserCheck className="w-6 h-6 mr-2 text-yellow-600" />
 					Manage Mentors
 				</h1>
-				<p className="text-gray-600">Manage platform mentors</p>
+				<p className="text-gray-600">Daftar mentor yang terdaftar</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Mentor Management</h2>
+					<h2 className="text-xl font-semibold">Data Mentor</h2>
 				</div>
 				{/* Tampilan Loading hanya untuk initial load */}
 				{isLoading ? (

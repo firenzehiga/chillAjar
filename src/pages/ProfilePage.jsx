@@ -13,6 +13,7 @@ import {
 	Loader2,
 } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
+import { ProfileSkeletonUser } from "../components/Skeleton/ProfileSkeleton";
 
 // Fungsi untuk menentukan tier badge
 function getTier(jumlahSesi) {
@@ -80,6 +81,9 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 	// Tentukan tier badge
 	const tier = getTier(statistik?.jumlah_sesi || 0);
 
+	if (isLoading) {
+		return <ProfileSkeletonUser />;
+	}
 	return (
 		<div className="py-8 px-4">
 			<div className="max-w-md sm:max-w-lg md:max-w-2xl mx-auto">

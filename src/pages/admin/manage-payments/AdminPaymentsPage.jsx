@@ -573,16 +573,14 @@ export function AdminPaymentsPage() {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<CheckCircle className="w-6 h-6 mr-2 text-green-600" />
-					Verifikasi Pembayaran
+					Manage Transactions
 				</h1>
-				<p className="text-gray-600">
-					Daftar pembayaran yang menunggu verifikasi admin
-				</p>
+				<p className="text-gray-600">Daftar transaksi yang dilakukan user</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Payment Management</h2>
+					<h2 className="text-xl font-semibold">Data Transaksi</h2>
 					<div className="flex gap-2">
 						<ExportData
 							data={filteredPayments}

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import api from "../api";
 import { PaymentModal } from "../components/PaymentModal";
-import { BookLoader } from "../components/Button/BookLoader";
+import { BookLoader } from "../components/User/BookLoader";
 
 // Custom Select Component
 const CustomSelect = ({

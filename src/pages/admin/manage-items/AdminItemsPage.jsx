@@ -186,7 +186,7 @@ export function AdminItemsPage({ onNavigate }) {
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
 					<Package className="w-6 h-6 mr-2 text-yellow-600" />
-					Master Items Paket
+					Manage Items
 				</h1>
 				<p className="text-gray-600">
 					Kelola item-item yang bisa digunakan dalam paket
@@ -195,7 +195,7 @@ export function AdminItemsPage({ onNavigate }) {
 
 			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">Daftar Items</h2>
+					<h2 className="text-xl font-semibold">Data Item</h2>
 					<button
 						onClick={() => onNavigate("admin-add-item")}
 						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 outline-none focus:outline-none">

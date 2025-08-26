@@ -17,7 +17,7 @@ import {
 import { MdRateReview } from "react-icons/md";
 import api from "../api";
 import useAppStore from "../stores/useAppStore";
-import { BookLoader } from "../components/Button/BookLoader";
+import { BookLoader } from "../components/User/BookLoader";
 
 // Custom Select Component
 const CustomSelect = ({

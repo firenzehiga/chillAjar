@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import api from "../../../api";
 import Swal from "sweetalert2";
-import { MentorEditProfileSkeleton } from "../../../components/Skeleton/Mentor/MentorEditProfileSkeleton";
+import { EditProfileSkeleton } from "../../../components/Skeleton/EditProfileSkeleton";
 
 const defaultFoto = "/foto_mentor/default.png";
 
@@ -177,7 +177,7 @@ export function MentorEditProfile({
 	};
 
 	if (isLoadingProfile) {
-		return <MentorEditProfileSkeleton />;
+		return <EditProfileSkeleton />;
 	}
 	return (
 		<div className="max-w-3xl mx-auto px-4 py-10">

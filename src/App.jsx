@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { ListChecks } from "lucide-react";
-import { CourseCard } from "./components/CourseCard";
 import { MentorCard } from "./components/MentorCard";
 import { BookingModal } from "./components/BookingModal";
 import { PaymentModal } from "./components/PaymentModal";
@@ -9,10 +8,10 @@ import { Navigation } from "./components/Navigation";
 import { Footer } from "./components/Footer";
 import { CourseSkeletonCard } from "./components/Skeleton/CourseSkeletonCard";
 import { CarouselSkeleton } from "./components/Skeleton/CarouselSkeleton";
-import { NotFoundPage } from "./components/Error/NotFound";
+import { NotFoundPage } from "./components/Fallback/NotFound";
 
 import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
-import { HelpButton } from "./components/Button/HelpButton"; // Impor komponen HelpButton
+import { HelpButton } from "./components/User/HelpButton"; // Impor komponen HelpButton
 import {
 	FloatingSessionReminder,
 	SessionBanner,
@@ -70,7 +69,7 @@ import api from "./api";
 import { useQuery } from "@tanstack/react-query";
 import { createBrowserHistory } from "history";
 import { useQueryClient } from "@tanstack/react-query";
-import ApiError from "./components/Error/ApiError";
+import ApiError from "./components/Fallback/ApiError";
 
 const history = createBrowserHistory();
 
@@ -1161,7 +1160,7 @@ function App() {
 						/>
 					);
 				case "about":
-					return <AboutPage />;
+					return <AboutPage onNavigate={handleNavigate} />;
 				case "home":
 					return selectedCourse && selectedPackage ? (
 						<div className="py-4">

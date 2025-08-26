@@ -3,7 +3,7 @@ import { Mail, MapPin, Phone, Calendar, BookOpen, Star } from "lucide-react";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import api from "../../../api";
 import { useQuery } from "@tanstack/react-query";
-import { MentorProfileSkeleton } from "../../../components/Skeleton/Mentor/MentorProfileSkeleton";
+import { ProfileSkeletonMentor } from "../../../components/Skeleton/ProfileSkeleton";
 
 export function MentorProfilePage({ userData, userRole, onNavigate }) {
 	const { data: mentorProfile, isLoading } = useQuery({
@@ -43,7 +43,7 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 	};
 
 	if (isLoading) {
-		return <MentorProfileSkeleton />;
+		return <ProfileSkeletonMentor />;
 	}
 
 	return (
