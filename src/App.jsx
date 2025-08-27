@@ -477,7 +477,9 @@ function App() {
 
 				// Calculate price based on mode
 				const mentorPrice =
-					mode === "offline" ? selectedMentor.biayaPerSesiOffline || 0 : 0;
+					mode === "offline"
+						? selectedMentor.biayaPerSesiOffline || selectedMentor.biayaPerSesi
+						: 0;
 
 				// Calculate total price including package if any
 				let totalCalculatedPrice = mentorPrice;
