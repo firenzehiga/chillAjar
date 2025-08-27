@@ -25,8 +25,18 @@ export function CoursePackageCard({
 	// Biaya default mentor
 	const mentorFee = selectedMentor?.biayaPerSesi || 0;
 
-	// Hitung harga paket setelah diskon
-	const finalPackagePrice = Math.max(totalPrice - (packageDiscount || 0), 0);
+	// Hitung harga paket berdasarkan harga aktual items (setelah diskon item diterapkan)
+	const actualPackagePrice = items.reduce(
+		(sum, item) =>
+			sum + Math.max((item.harga || item.price || 0) - (item.diskon || 0), 0),
+		0
+	);
+
+	// Harga paket final setelah diskon paket
+	const finalPackagePrice = Math.max(
+		actualPackagePrice - (packageDiscount || 0),
+		0
+	);
 
 	// Total harga Jual (paket + sesi mentor)
 	const totalFinalPrice = finalPackagePrice + mentorFee;
@@ -258,7 +268,8 @@ export function CoursePackageCard({
 								<div className="flex justify-between">
 									<span>Harga Normal:</span>
 									<div className="line-through text-gray-400">
-										Rp {(totalPrice + mentorFee).toLocaleString("id-ID")}
+										Rp{" "}
+										{(actualPackagePrice + mentorFee).toLocaleString("id-ID")}
 									</div>
 								</div>
 							)}

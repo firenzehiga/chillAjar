@@ -191,10 +191,15 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 			const token = localStorage.getItem("token");
 
 			// Kirim data ke backend
+			const totalItemsAfterDiscount = formData.selectedItems.reduce(
+				(sum, item) => sum + calculateDiscountedPrice(item.price, item.diskon),
+				0
+			);
+
 			const payload = {
 				nama: formData.name,
 				deskripsi: formData.description,
-				harga_dasar: calculateTotalPrice(),
+				harga_dasar: totalItemsAfterDiscount, // Harga items setelah diskon item (sebelum diskon paket)
 				diskon: Number(formData.diskon) || 0,
 				tanggal_mulai: formData.tanggal_mulai || null,
 				tanggal_berakhir: formData.tanggal_berakhir || null,
@@ -389,7 +394,26 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 																{item.name}
 															</div>
 															<div className="text-sm text-gray-600">
-																Rp {item.price.toLocaleString()}
+																{item.diskon > 0 ? (
+																	<div className="space-y-1">
+																		<div className="line-through text-gray-400">
+																			Rp {item.price.toLocaleString()}
+																		</div>
+																		<div className="text-green-600 font-medium">
+																			Rp{" "}
+																			{calculateDiscountedPrice(
+																				item.price,
+																				item.diskon
+																			).toLocaleString()}
+																			<span className="text-xs ml-1">
+																				(Hemat Rp {item.diskon.toLocaleString()}
+																				)
+																			</span>
+																		</div>
+																	</div>
+																) : (
+																	<div>Rp {item.price.toLocaleString()}</div>
+																)}
 															</div>
 															<div className="text-xs text-gray-500 mt-1">
 																{item.description}
@@ -412,19 +436,59 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 													Rp {calculateTotalPrice().toLocaleString()}
 												</span>
 											</div>
-											{formData.diskon > 0 && (
-												<div className="flex justify-between items-center text-sm text-gray-500 mt-1">
-													<span>Rincian: </span>
+											{/* Rincian yang lebih detail */}
+											<div className="mt-2 text-sm text-gray-500 space-y-1">
+												<div className="flex justify-between">
+													<span>Total harga asli items:</span>
 													<span>
-														(Total item Rp{" "}
+														Rp{" "}
 														{formData.selectedItems
 															.reduce((sum, item) => sum + item.price, 0)
 															.toLocaleString()}
-														) - Diskon Rp{" "}
-														{Number(formData.diskon).toLocaleString()}
 													</span>
 												</div>
-											)}
+												{formData.selectedItems.some(
+													(item) => item.diskon > 0
+												) && (
+													<div className="flex justify-between text-green-600">
+														<span>Diskon items:</span>
+														<span>
+															- Rp{" "}
+															{formData.selectedItems
+																.reduce(
+																	(sum, item) => sum + (item.diskon || 0),
+																	0
+																)
+																.toLocaleString()}
+														</span>
+													</div>
+												)}
+												<div className="flex justify-between">
+													<span>Subtotal setelah diskon items:</span>
+													<span>
+														Rp{" "}
+														{formData.selectedItems
+															.reduce(
+																(sum, item) =>
+																	sum +
+																	calculateDiscountedPrice(
+																		item.price,
+																		item.diskon
+																	),
+																0
+															)
+															.toLocaleString()}
+													</span>
+												</div>
+												{formData.diskon > 0 && (
+													<div className="flex justify-between text-orange-600">
+														<span>Diskon paket:</span>
+														<span>
+															- Rp {Number(formData.diskon).toLocaleString()}
+														</span>
+													</div>
+												)}
+											</div>
 
 											{/* Preview Status Promo */}
 											{(formData.tanggal_mulai ||
@@ -548,7 +612,25 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 															{item.name}
 														</div>
 														<div className="text-sm text-gray-600 mt-1">
-															Rp {item.price.toLocaleString()}
+															{item.diskon > 0 ? (
+																<div className="space-y-1">
+																	<div className="line-through text-gray-400">
+																		Rp {item.price.toLocaleString()}
+																	</div>
+																	<div className="text-green-600 font-medium">
+																		Rp{" "}
+																		{calculateDiscountedPrice(
+																			item.price,
+																			item.diskon
+																		).toLocaleString()}
+																		<span className="text-xs ml-1">
+																			(Hemat Rp {item.diskon.toLocaleString()})
+																		</span>
+																	</div>
+																</div>
+															) : (
+																<div>Rp {item.price.toLocaleString()}</div>
+															)}
 														</div>
 														{item.description && (
 															<div className="text-xs text-gray-500 mt-1">

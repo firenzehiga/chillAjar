@@ -40,6 +40,7 @@ export function AdminPackagesPage({ onNavigate }) {
 						id: item.id,
 						name: item.nama,
 						price: item.harga,
+						diskon: item.diskon || 0,
 						jumlah_item: item.pivot?.jumlah_item || 1,
 					})) || [],
 				created_at: pkg.created_at,
@@ -116,7 +117,16 @@ export function AdminPackagesPage({ onNavigate }) {
 		{
 			name: "Total Harga",
 			selector: (row) => {
-				const hargaAkhir = Math.max(row.totalPrice || 0, 0);
+				// Hitung ulang berdasarkan harga aktual items (setelah diskon item diterapkan)
+				const subtotalSetelahDiskonItems = row.items.reduce(
+					(sum, item) => sum + Math.max(item.price - (item.diskon || 0), 0),
+					0
+				);
+				// Kurangi dengan diskon paket
+				const hargaAkhir = Math.max(
+					subtotalSetelahDiskonItems - (row.diskon || 0),
+					0
+				);
 				return `Rp ${hargaAkhir.toLocaleString()}`;
 			},
 			sortable: true,
@@ -280,32 +290,91 @@ export function AdminPackagesPage({ onNavigate }) {
 													key={index}
 													className="flex justify-between items-center bg-white p-2 rounded border">
 													<span className="text-gray-700">{item.name}</span>
-													<span className="font-medium text-yellow-600">
-														Rp {item.price.toLocaleString()}
-													</span>
+													<div className="text-right">
+														{item.diskon > 0 ? (
+															<div>
+																<div className="line-through text-gray-400 text-xs">
+																	Rp {item.price.toLocaleString()}
+																</div>
+																<div className="font-medium text-green-600">
+																	Rp{" "}
+																	{Math.max(
+																		item.price - (item.diskon || 0),
+																		0
+																	).toLocaleString()}
+																</div>
+															</div>
+														) : (
+															<span className="font-medium text-yellow-600">
+																Rp {item.price.toLocaleString()}
+															</span>
+														)}
+													</div>
 												</div>
 											))}
 										</div>
 										<div className="mt-3 pt-2 border-t border-gray-200">
-											<div className="flex justify-between items-center font-semibold">
-												<span>Total Harga:</span>
+											{/* Rincian yang detail seperti di FormPackagePage */}
+											<div className="text-sm text-gray-500 space-y-1 mb-2">
+												<div className="flex justify-between">
+													<span>Total harga asli items:</span>
+													<span>
+														Rp{" "}
+														{data.items
+															.reduce((sum, item) => sum + item.price, 0)
+															.toLocaleString()}
+													</span>
+												</div>
+												{data.items.some((item) => item.diskon > 0) && (
+													<div className="flex justify-between text-green-600">
+														<span>Diskon items:</span>
+														<span>
+															- Rp{" "}
+															{data.items
+																.reduce(
+																	(sum, item) => sum + (item.diskon || 0),
+																	0
+																)
+																.toLocaleString()}
+														</span>
+													</div>
+												)}
+												<div className="flex justify-between">
+													<span>Subtotal setelah diskon items:</span>
+													<span>
+														Rp{" "}
+														{data.items
+															.reduce(
+																(sum, item) =>
+																	sum +
+																	Math.max(item.price - (item.diskon || 0), 0),
+																0
+															)
+															.toLocaleString()}
+													</span>
+												</div>
+												{data.diskon > 0 && (
+													<div className="flex justify-between text-orange-600">
+														<span>Diskon paket:</span>
+														<span>- Rp {data.diskon.toLocaleString()}</span>
+													</div>
+												)}
+											</div>
+											<div className="flex justify-between items-center font-semibold text-lg border-t pt-2">
+												<span>Total Harga Akhir:</span>
 												<span className="text-yellow-600">
 													Rp{" "}
 													{Math.max(
-														(data.totalPrice || 0) - (data.diskon || 0),
+														data.items.reduce(
+															(sum, item) =>
+																sum +
+																Math.max(item.price - (item.diskon || 0), 0),
+															0
+														) - (data.diskon || 0),
 														0
 													).toLocaleString()}
 												</span>
 											</div>
-											{data.diskon > 0 && (
-												<div className="flex justify-between items-center text-sm text-gray-500 mt-1">
-													<span>Rincian: </span>
-													<span>
-														(Harga dasar Rp {data.totalPrice.toLocaleString()})
-														- Diskon Rp {data.diskon.toLocaleString()}
-													</span>
-												</div>
-											)}
 										</div>
 									</div>
 								</div>

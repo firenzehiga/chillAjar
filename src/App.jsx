@@ -469,10 +469,20 @@ function App() {
 
 				// Simpan data sesi ke state booking
 				const sesiBaru = response.data.sesi;
-				// Ambil paket_id dari selectedPackage jika ada
-				let paketId = "";
+				// Pastikan sesiBaru menyertakan paket_id (fallback ke selectedPackage jika backend belum mengembalikan)
+				sesiBaru.paket_id = sesiBaru.paket_id ?? selectedPackage?.id ?? null;
+				let paketId = sesiBaru.paket_id ?? "";
+
+				// Calculate price based on mode
+				const mentorPrice = selectedMentor.biayaPerSesi || 0;
+
+				// Calculate total price including package if any
+				let totalCalculatedPrice = mentorPrice;
 				if (selectedPackage?.id) {
-					paketId = selectedPackage.id;
+					const packagePrice = selectedPackage.totalPrice || 0;
+					const packageDiscount = selectedPackage.packageDiscount || 0;
+					const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
+					totalCalculatedPrice = finalPackagePrice + mentorPrice;
 				}
 				const booking = {
 					course,
@@ -485,7 +495,7 @@ function App() {
 					topic: topic || "No specific topic",
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
-					jumlahSementara: jumlahSementara ?? null,
+					jumlahSementara: jumlahSementara ?? totalCalculatedPrice,
 				};
 				setCurrentBooking(booking);
 				setSelectedMentor(null);
@@ -553,9 +563,17 @@ function App() {
 			formData.append("pelanggan_id", sesi.pelanggan_id);
 			formData.append("mentor_id", sesi.mentor_id);
 			formData.append("sesi_id", sesi.id);
-			// Gunakan jumlahSementara dari booking jika ada, fallback ke harga kursus
-			const jumlahBayar = booking?.jumlahSementara ?? course.price_per_hour;
-			formData.append("jumlah", jumlahBayar);
+			// Kirim jumlah yang tepat berdasarkan booking
+			let jumlahTransaksi = course.price_per_hour; // fallback
+			if (
+				booking.jumlahSementara !== undefined &&
+				booking.jumlahSementara !== null
+			) {
+				jumlahTransaksi = booking.jumlahSementara;
+			} else if (booking.amount !== undefined && booking.amount !== null) {
+				jumlahTransaksi = booking.amount;
+			}
+			formData.append("jumlah", jumlahTransaksi);
 			formData.append("statusPembayaran", "menunggu_verifikasi"); // Selalu menunggu verifikasi
 			formData.append("metodePembayaran", paymentMethod);
 			formData.append(
@@ -1111,11 +1129,23 @@ function App() {
 												const mentorFee =
 													selectedCourse?.mentor?.biayaPerSesi || 0;
 
-												// Menghitung harga paket
-												const packagePrice = selectedPackage.totalPrice || 0;
-												const packageDiscount = selectedPackage.diskon || 0;
+												// Menghitung harga paket berdasarkan harga aktual items
+												const actualPackagePrice =
+													selectedPackage.items?.reduce(
+														(sum, item) =>
+															sum +
+															Math.max(
+																(item.harga || item.price || 0) -
+																	(item.diskon || 0),
+																0
+															),
+														0
+													) || 0;
+
+												const packageDiscount =
+													selectedPackage.packageDiscount || 0;
 												const finalPackagePrice = Math.max(
-													packagePrice - packageDiscount,
+													actualPackagePrice - packageDiscount,
 													0
 												);
 

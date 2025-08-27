@@ -184,10 +184,45 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					: "pending_payment",
 				// Untuk status 'pending_payment', gunakan jumlahSementara dari sesi (hasil perhitungan backend).
 				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
-				amount:
-					transaksi?.jumlah !== undefined
-						? transaksi.jumlah
-						: sesi.jumlahSementara ?? (sesi.mentor?.biayaPerSesi || 0),
+				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
+				amount: (() => {
+					// Prioritas 1: Gunakan jumlah dari transaksi jika ada
+					if (transaksi?.jumlah !== undefined) {
+						return transaksi.jumlah;
+					}
+
+					// Prioritas 2: Gunakan jumlahSementara jika ada dan valid
+					if (sesi.jumlahSementara && sesi.jumlahSementara > 0) {
+						return sesi.jumlahSementara;
+					}
+
+					// Prioritas 3: Gunakan langsung biayaPerSesi mentor (fallback 0)
+					const mentorFee = sesi.mentor?.biayaPerSesi ?? 0;
+
+					// Jika ada paket, tambahkan biaya paket
+					if (sesi.paket_id && sesi.paket) {
+						// Hitung harga paket berdasarkan harga aktual items
+						const actualPackagePrice =
+							sesi.paket.items?.reduce(
+								(sum, item) =>
+									sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
+								0
+							) || 0;
+
+						const paketFee = Math.max(
+							actualPackagePrice - (sesi.paket.diskon || 0),
+							0
+						);
+						return paketFee + mentorFee;
+					}
+
+					return mentorFee;
+				})(),
+				// preserve backend temporary amount if present on sesi
+				jumlahSementara: sesi.jumlahSementara ?? null,
+				// preserve paket id if available so payment flow can send paket_id
+				paket_id:
+					sesi.paket_id ?? transaksi?.paket_id ?? sesi.paket?.id ?? null,
 				paymentDate: transaksi?.tanggalPembayaran || null,
 				transaksiId: transaksi?.id,
 				statusSesi,
@@ -685,12 +720,27 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						time: selectedSession.time,
 						mode: selectedSession.mode,
 						location: selectedSession.location,
-						topic: selectedSession.topic, // atau isi sesuai kebutuhan
+						topic: selectedSession.topic,
+						paket: selectedSession.paket
+							? {
+									...selectedSession.paket,
+									// Pastikan data paket lengkap dari session
+									id: selectedSession.paket.id,
+									nama: selectedSession.paket.nama,
+									diskon: selectedSession.paket.diskon,
+									items: selectedSession.paket.items,
+							  }
+							: null,
+						// prefer explicit paket_id from session (history mapping) if available
+						paket_id:
+							(selectedSession.paket_id ?? selectedSession.paket?.id) || null,
+						// Gunakan jumlahSementara dari sesi jika ada, jika tidak fallback ke amount
+						jumlahSementara:
+							selectedSession.jumlahSementara ?? selectedSession.amount,
 						sesi: {
-							// tambahkan sesi jika perlu id untuk transaksi
 							id: selectedSession.id,
 							pelanggan_id: userData?.pelanggan?.id,
-							mentor_id: selectedSession.mentor_id, // pastikan ada
+							mentor_id: selectedSession.mentor_id,
 						},
 					}}
 					course={{ courseName: selectedSession.course }}

@@ -28,10 +28,25 @@ export function BookingModal({
 	const [isProcessing, setIsProcessing] = useState(false);
 
 	// Price calculations - SINGLE DECLARATION
+	const mentorFee = mentor?.biayaPerSesi || 0;
+	// Perhitungan harga - SATU DEKLARASI
 	const packagePrice = selectedPackage?.totalPrice || 0;
 	const packageDiscount = selectedPackage?.packageDiscount || 0;
-	const mentorFee = mentor?.biayaPerSesi || 0;
-	const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
+
+	// Hitung harga paket dari item jika tersedia untuk menghormati diskon per item
+	const itemsComputedPrice = (selectedPackage?.items || []).reduce(
+		(sum, item) => {
+			const itemPrice = item?.price ?? item?.harga ?? 0;
+			const itemDiscount = item?.diskon ?? 0;
+			return sum + Math.max(itemPrice - itemDiscount, 0);
+		},
+		0
+	);
+	// Gunakan harga hasil perhitungan item jika bernilai; jika tidak, gunakan packagePrice yang tersimpan (kompatibilitas mundur)
+	const basePackagePrice =
+		itemsComputedPrice > 0 ? itemsComputedPrice : packagePrice;
+
+	const finalPackagePrice = Math.max(basePackagePrice - packageDiscount, 0);
 	const totalFinalPrice = finalPackagePrice + mentorFee;
 
 	// Memastikan hanya menggunakan jadwal dengan gayaMengajar valid
@@ -241,7 +256,7 @@ export function BookingModal({
 										{packageDiscount > 0 && (
 											<div className="text-xs text-gray-500 line-through">
 												Harga Normal: Rp{" "}
-												{(packagePrice + mentorFee).toLocaleString("id-ID")}
+												{(basePackagePrice + mentorFee).toLocaleString("id-ID")}
 											</div>
 										)}
 										<div className="flex items-center justify-between">

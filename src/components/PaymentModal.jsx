@@ -80,13 +80,48 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 		}
 	};
 
-	// Prioritaskan jumlahSementara dari backend (hasil perhitungan backend, bisa gabungan paket dan biaya mentor)
-	// Jika tidak ada, fallback ke harga paket, lalu ke harga per jam kursus
-	const totalAmount =
-		booking.jumlahSementara !== undefined && booking.jumlahSementara !== null
-			? booking.jumlahSementara
-			: booking.paket?.harga ?? booking.course.price_per_hour;
+	// Calculate pricing dengan mode-aware logic untuk display saja
+	const calculateMentorFee = () => {
+		// Fallback ke biaya online atau biayaPerSesi
+		return mentor.biayaPerSesi || booking.course?.price_per_hour || 0;
+	};
 
+	const calculatePackageFee = () => {
+		if (!booking.paket) return 0;
+
+		// Prioritas 1: Hitung berdasarkan items jika ada
+		if (booking.paket.items && booking.paket.items.length > 0) {
+			const actualPackagePrice = booking.paket.items.reduce(
+				(sum, item) =>
+					sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
+				0
+			);
+			const paketDiskon = booking.paket.diskon || 0;
+			return Math.max(actualPackagePrice - paketDiskon, 0);
+		}
+
+		// Prioritas 2: Fallback ke harga_dasar atau harga
+		const basePrice = booking.paket.harga_dasar || booking.paket.harga || 0;
+		const discount = booking.paket.diskon || 0;
+		return Math.max(basePrice - discount, 0);
+	};
+
+	// Update totalAmount calculation dengan prioritas
+	const totalAmount = (() => {
+		// Prioritas 1: jumlahSementara dari backend (sudah dihitung dengan benar)
+		if (
+			booking.jumlahSementara !== undefined &&
+			booking.jumlahSementara !== null
+		) {
+			return booking.jumlahSementara;
+		}
+
+		// Prioritas 2: Hitung manual dengan mentor fee + package fee
+		const mentorFee = calculateMentorFee();
+		const packageFee = calculatePackageFee();
+
+		return mentorFee + packageFee;
+	})();
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
 			<div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] flex flex-col">
@@ -114,7 +149,9 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							</div>
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Mentor</p>
-								<p className="font-medium">{mentor?.mentorName}</p>
+								<p className="font-medium">
+									{mentor?.mentorName || mentor?.user?.nama}
+								</p>
 							</div>
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Date</p>
