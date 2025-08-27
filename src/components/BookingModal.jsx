@@ -30,7 +30,13 @@ export function BookingModal({
 	// Price calculations - SINGLE DECLARATION
 	const packagePrice = selectedPackage?.totalPrice || 0;
 	const packageDiscount = selectedPackage?.packageDiscount || 0;
-	const mentorFee = mentor?.biayaPerSesi || 0;
+
+	// Calculate mentor fee based on selected mode
+	const mentorFee =
+		selectedMode === "offline"
+			? mentor?.biayaPerSesiOffline || 0
+			: mentor?.biayaPerSesi || 0;
+
 	const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
 	const totalFinalPrice = finalPackagePrice + mentorFee;
 
@@ -152,7 +158,18 @@ export function BookingModal({
 			);
 			onClose();
 		} catch (err) {
-			setErrorMsg("Gagal memproses pesanan.");
+			console.error("Booking error:", err);
+			// Berikan pesan error yang lebih spesifik
+			if (err.response?.data?.message?.includes("gayaMengajar")) {
+				setErrorMsg(
+					"Terjadi kesalahan dengan data jadwal. Silakan hubungi admin atau coba lagi nanti."
+				);
+			} else {
+				setErrorMsg(
+					err.response?.data?.message ||
+						"Gagal memproses pesanan. Silakan coba lagi."
+				);
+			}
 		} finally {
 			setIsProcessing(false);
 		}
@@ -238,20 +255,56 @@ export function BookingModal({
 
 									{/* Package Pricing */}
 									<div className="border-t border-yellow-200 pt-3">
+										{/* Breakdown pricing */}
+										<div className="space-y-2 mb-3">
+											<div className="flex justify-between text-sm">
+												<span>Paket:</span>
+												<span>
+													Rp {finalPackagePrice.toLocaleString("id-ID")}
+												</span>
+											</div>
+											<div className="flex justify-between text-sm">
+												<span>
+													Mentor (
+													{selectedMode
+														? selectedMode.charAt(0).toUpperCase() +
+														  selectedMode.slice(1)
+														: "Online"}
+													):
+												</span>
+												<span>Rp {mentorFee.toLocaleString("id-ID")}</span>
+											</div>
+											{packageDiscount > 0 && (
+												<div className="flex justify-between text-sm text-green-600">
+													<span>Diskon Paket:</span>
+													<span>
+														-Rp {packageDiscount.toLocaleString("id-ID")}
+													</span>
+												</div>
+											)}
+										</div>
+
 										{packageDiscount > 0 && (
 											<div className="text-xs text-gray-500 line-through">
 												Harga Normal: Rp{" "}
-												{(packagePrice + mentorFee).toLocaleString("id-ID")}
+												{(
+													packagePrice +
+													(selectedMode === "offline"
+														? mentor?.biayaPerSesi || 0
+														: mentor?.biayaPerSesi || 0)
+												).toLocaleString("id-ID")}
 											</div>
 										)}
-										<div className="flex items-center justify-between">
+
+										<div className="flex items-center justify-between border-t pt-2">
 											<div>
 												<span className="text-lg font-bold text-yellow-900">
-													Rp {totalFinalPrice.toLocaleString("id-ID")}
+													Total: Rp {totalFinalPrice.toLocaleString("id-ID")}
 												</span>
-												{packageDiscount > 0 && (
-													<div className="text-xs text-green-600 font-medium">
-														Hemat Rp {packageDiscount.toLocaleString("id-ID")}
+												{selectedMode && (
+													<div className="text-xs text-blue-600 font-medium">
+														Mode:{" "}
+														{selectedMode === "offline" ? "Offline" : "Online"}
 													</div>
 												)}
 											</div>
@@ -260,9 +313,16 @@ export function BookingModal({
 											</div>
 										</div>
 
-										{/* Keterangan include mentor */}
-										<div className="text-xs text-gray-500 italic mt-1">
-											*Sudah termasuk biaya mentoring
+										{/* Keterangan harga dinamis */}
+										<div className="text-xs text-gray-500 italic mt-2">
+											*Harga akan update otomatis berdasarkan mode yang dipilih
+											{mentor?.biayaPerSesiOffline &&
+												mentor?.biayaPerSesiOffline !==
+													mentor?.biayaPerSesi && (
+													<div className="mt-1 text-orange-600">
+														Catatan: Biaya mentor offline berbeda dari online
+													</div>
+												)}
 										</div>
 									</div>
 								</div>

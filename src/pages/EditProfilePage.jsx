@@ -120,7 +120,7 @@ export function EditProfilePage({
 
 				localStorage.setItem("user", JSON.stringify(updatedUserData));
 				if (onUpdateUserData) {
-					console.log("Calling onUpdateUserData with:", updatedUserData);
+					// Update user data
 					onUpdateUserData(updatedUserData);
 				}
 

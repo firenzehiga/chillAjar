@@ -650,13 +650,21 @@ export function AdminPaymentsPage() {
 										<span className="w-48 font-medium text-gray-900">
 											Lokasi:
 										</span>
-										<span className="capitalize">
+										<span className="capitalize mb-5">
 											{data.sesi?.jadwal_kursus?.tempat || "-"}
 										</span>
 									</p>
 									<p className="flex">
 										<span className="w-48 font-medium text-gray-900">
-											Jumlah:
+											Paket Belajar:
+										</span>
+										<span className="capitalize">
+											{data.paket?.nama || "-"}
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Total Harga:
 										</span>
 										<span>
 											Rp{Number(data.jumlah || 0).toLocaleString("id-ID")}

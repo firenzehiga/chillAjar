@@ -163,11 +163,13 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 			const statusSesi = sesi.status || sesi.statusSesi || "-";
 			// Gunakan gayaMengajar dari jadwal_kursus
 			const mode = jadwal?.gayaMengajar || "-";
+
 			return {
 				id: sesi.id,
 				course: sesi.kursus?.namaKursus || "-",
 				mentor: sesi.mentor?.user?.nama || "-",
 				mentor_id: sesi.mentor?.id || null,
+				paket: transaksi?.paket?.nama || "-",
 				date: jadwal?.tanggal || "-",
 				time: jadwal?.waktu.slice(0, 5) || "-",
 				mode: mode,
@@ -184,14 +186,66 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					: "pending_payment",
 				// Untuk status 'pending_payment', gunakan jumlahSementara dari sesi (hasil perhitungan backend).
 				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
-				amount:
-					transaksi?.jumlah !== undefined
-						? transaksi.jumlah
-						: sesi.jumlahSementara ?? (sesi.mentor?.biayaPerSesi || 0),
+				amount: (() => {
+					// Prioritas 1: Gunakan jumlah dari transaksi jika ada
+					if (transaksi?.jumlah !== undefined) {
+						return transaksi.jumlah;
+					}
+
+					// Prioritas 2: Gunakan jumlahSementara jika ada dan valid
+					if (sesi.jumlahSementara && sesi.jumlahSementara > 0) {
+						return sesi.jumlahSementara;
+					}
+
+					// Prioritas 3: Hitung manual berdasarkan mode
+					let mentorFee = 0;
+					if (mode === "offline") {
+						// Untuk offline: prioritas biayaPerSesiOffline > biayaPerSesi > default 30000
+						if (
+							sesi.mentor?.biayaPerSesiOffline &&
+							sesi.mentor.biayaPerSesiOffline > 0
+						) {
+							mentorFee = sesi.mentor.biayaPerSesiOffline;
+						} else if (
+							sesi.mentor?.biayaPerSesi &&
+							sesi.mentor.biayaPerSesi > 0
+						) {
+							mentorFee = sesi.mentor.biayaPerSesi;
+						} else {
+							mentorFee = 30000; // Default untuk offline
+						}
+					} else {
+						// Untuk online: prioritas biayaPerSesi > default 25000
+						if (sesi.mentor?.biayaPerSesi && sesi.mentor.biayaPerSesi > 0) {
+							mentorFee = sesi.mentor.biayaPerSesi;
+						} else {
+							mentorFee = 25000; // Default untuk online
+						}
+					}
+
+					// Jika ada paket, tambahkan biaya paket
+					if (sesi.paket_id && sesi.paket) {
+						// Hitung harga paket berdasarkan harga aktual items
+						const actualPackagePrice =
+							sesi.paket.items?.reduce(
+								(sum, item) =>
+									sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
+								0
+							) || 0;
+
+						const paketFee = Math.max(
+							actualPackagePrice - (sesi.paket.diskon || 0),
+							0
+						);
+						return paketFee + mentorFee;
+					}
+
+					return mentorFee;
+				})(),
 				paymentDate: transaksi?.tanggalPembayaran || null,
 				transaksiId: transaksi?.id,
 				statusSesi,
-				created_at: transaksi?.created_at || sesi.created_at || "-", // <-- tambahkan ini!
+				created_at: transaksi?.created_at || sesi.created_at || "-",
 			};
 		});
 	}, [sessions, transactions]);
@@ -608,7 +662,8 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 									<div className="flex items-center">
 										<DollarSign className="w-4 h-4 mr-2 text-blue-600" />
 										Total Harga: Rp
-										{(session.amount || 0).toLocaleString("id-ID")}
+										{(session.amount || 0).toLocaleString("id-ID")} |{" "}
+										{session.paket || "-"}
 									</div>
 									<div className="flex items-center gap-2">
 										<span className="text-sm">

@@ -22,14 +22,39 @@ export function CoursePackageCard({
 
 	const [timeRemaining, setTimeRemaining] = useState(null);
 
-	// Biaya default mentor
-	const mentorFee = selectedMentor?.biayaPerSesi || 0;
+	// Biaya mentor berdasarkan mode (akan diupdate saat user pilih mode)
+	const getMentorFeeForMode = (mode = "online") => {
+		if (!selectedMentor) return 0;
 
-	// Hitung harga paket setelah diskon
-	const finalPackagePrice = Math.max(totalPrice - (packageDiscount || 0), 0);
+		if (mode === "offline" && selectedMentor.biayaPerSesiOffline) {
+			return selectedMentor.biayaPerSesiOffline;
+		}
 
-	// Total harga Jual (paket + sesi mentor)
-	const totalFinalPrice = finalPackagePrice + mentorFee;
+		return selectedMentor.biayaPerSesi || 0;
+	};
+
+	// Biaya default mentor (online)
+	const mentorFeeOnline = getMentorFeeForMode("online");
+	const mentorFeeOffline = getMentorFeeForMode("offline");
+
+	// Hitung harga paket berdasarkan harga aktual items (setelah diskon item diterapkan)
+	const actualPackagePrice = items.reduce(
+		(sum, item) => sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
+		0
+	);
+
+	// Harga paket final setelah diskon paket
+	const finalPackagePrice = Math.max(
+		actualPackagePrice - (packageDiscount || 0),
+		0
+	);
+
+	// Harga asli untuk tampilan strikethrough (harga sebelum diskon paket)
+	const originalPackagePrice = actualPackagePrice;
+
+	// Total harga untuk tampilan (default online)
+	const totalOnlinePrice = finalPackagePrice + mentorFeeOnline;
+	const totalOfflinePrice = finalPackagePrice + mentorFeeOffline;
 
 	// Cek status promo
 	const getPromoStatus = () => {
@@ -253,34 +278,72 @@ export function CoursePackageCard({
 					<div className="space-y-2">
 						{/* Pricing - Simplified tanpa breakdown mentor fee */}
 						<div className="text-xs text-gray-600 space-y-1">
-							{/* Hanya tampilkan harga paket final */}
+							{/* Tampilkan harga normal sebelum diskon jika ada diskon */}
 							{packageDiscount > 0 && (
 								<div className="flex justify-between">
 									<span>Harga Normal:</span>
 									<div className="line-through text-gray-400">
-										Rp {(totalPrice + mentorFee).toLocaleString("id-ID")}
+										Rp{" "}
+										{(originalPackagePrice + mentorFeeOnline).toLocaleString(
+											"id-ID"
+										)}
 									</div>
 								</div>
 							)}
 
-							{/* Total Price - yang sudah include mentor */}
-							<div className="flex justify-between items-center">
-								<span className="font-medium text-gray-800">Harga Paket:</span>
-								<div className="text-right">
-									<div className="text-base sm:text-lg font-bold text-gray-800">
-										Rp {totalFinalPrice.toLocaleString("id-ID")}
-									</div>
-									{packageDiscount > 0 && (
-										<div className="text-xs text-green-600 font-medium">
-											Hemat Rp {packageDiscount.toLocaleString("id-ID")}
-										</div>
-									)}
+							{/* Pricing breakdown */}
+							<div className="space-y-2">
+								<div className="flex justify-between text-sm">
+									<span>Paket:</span>
+									<span>Rp {finalPackagePrice.toLocaleString("id-ID")}</span>
 								</div>
+								<div className="flex justify-between text-sm">
+									<span>Mentor (Online):</span>
+									<span>Rp {mentorFeeOnline.toLocaleString("id-ID")}</span>
+								</div>
+								{mentorFeeOffline !== mentorFeeOnline && (
+									<div className="flex justify-between text-sm text-orange-600">
+										<span>Mentor (Offline):</span>
+										<span>Rp {mentorFeeOffline.toLocaleString("id-ID")}</span>
+									</div>
+								)}
 							</div>
 
-							{/* Keterangan include mentor */}
+							{/* Total Price */}
+							<div className="border-t pt-2">
+								<div className="flex justify-between items-center">
+									<span className="font-medium text-gray-800">
+										Total (Online):
+									</span>
+									<div className="text-right">
+										<div className="text-base sm:text-lg font-bold text-gray-800">
+											Rp {totalOnlinePrice.toLocaleString("id-ID")}
+										</div>
+									</div>
+								</div>
+								{mentorFeeOffline !== mentorFeeOnline && (
+									<div className="flex justify-between items-center mt-1">
+										<span className="font-medium text-orange-600">
+											Total (Offline):
+										</span>
+										<div className="text-right">
+											<div className="text-base sm:text-lg font-bold text-orange-600">
+												Rp {totalOfflinePrice.toLocaleString("id-ID")}
+											</div>
+										</div>
+									</div>
+								)}
+
+								{packageDiscount > 0 && (
+									<div className="text-xs text-green-600 font-medium mt-1">
+										Hemat Rp {packageDiscount.toLocaleString("id-ID")}
+									</div>
+								)}
+							</div>
+
+							{/* Keterangan */}
 							<div className="text-xs text-gray-500 italic">
-								*Sudah termasuk biaya mentoring
+								*Harga final tergantung mode yang dipilih saat booking
 							</div>
 						</div>
 

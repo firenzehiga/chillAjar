@@ -193,7 +193,10 @@ export function SessionHistoryPage({ userData }) {
 				topic: sesi.detailKursus || "No Topic Specified",
 				location: jadwal?.tempat || "-",
 				status: statusSesi,
-				amount: sesi.mentor?.biayaPerSesi || 0,
+				amount:
+					sesi.mode === "offline"
+						? sesi.mentor?.biayaPerSesiOffline || sesi.mentor?.biayaPerSesi || 0
+						: sesi.mentor?.biayaPerSesi || 0,
 				paymentDate: transaksi?.tanggalPembayaran || null,
 				transaksiId: transaksi?.id,
 				sudahTestimoni,

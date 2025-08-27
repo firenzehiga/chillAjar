@@ -64,12 +64,23 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 							id: p.id,
 							name: p.nama,
 							price: p.harga_dasar,
-							totalPrice: p.harga_dasar - (p.diskon || 0),
+							// Hitung totalPrice berdasarkan harga aktual items setelah diskon
+							totalPrice: Array.isArray(p.items)
+								? Math.max(
+										p.items.reduce(
+											(sum, item) =>
+												sum +
+												Math.max((item.harga || 0) - (item.diskon || 0), 0),
+											0
+										) - (p.diskon || 0),
+										0
+								  )
+								: Math.max((p.harga_dasar || 0) - (p.diskon || 0), 0),
 							description: p.deskripsi,
 							items: Array.isArray(p.items)
 								? p.items.map((item) => ({
 										name: item.nama,
-										price: item.harga_dasar - (item.diskon || 0),
+										price: Math.max((item.harga || 0) - (item.diskon || 0), 0),
 										description: item.deskripsi,
 								  }))
 								: [],

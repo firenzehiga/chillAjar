@@ -571,7 +571,13 @@ export function SessionsWidget({
 									<div className="flex items-center justify-between text-sm">
 										<span className="text-gray-500">Session Fee</span>
 										<span className="font-semibold text-gray-900">
-											Rp {session.mentor?.biayaPerSesi?.toLocaleString() || "0"}
+											Rp{" "}
+											{(session.mode === "offline"
+												? session.mentor?.biayaPerSesiOffline ||
+												  session.mentor?.biayaPerSesi ||
+												  0
+												: session.mentor?.biayaPerSesi || 0
+											).toLocaleString()}
 										</span>
 									</div>
 								</div>

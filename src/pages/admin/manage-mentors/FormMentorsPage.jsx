@@ -23,6 +23,7 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 		rating: "",
 		deskripsi: "",
 		biayaPerSesi: "",
+		biayaPerSesiOffline: "",
 		status: "pending",
 	});
 	const [loading, setLoading] = useState(false);
@@ -46,6 +47,7 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 					rating: mentorData.rating || 0,
 					deskripsi: mentorData.deskripsi || "",
 					biayaPerSesi: mentorData.biayaPerSesi || "",
+					biayaPerSesiOffline: mentorData.biayaPerSesiOffline || "",
 					status: mentorData.status || "pending",
 				});
 				setDokumenName(
@@ -92,6 +94,7 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 			payload.append("rating", formData.rating);
 			payload.append("deskripsi", formData.deskripsi);
 			payload.append("biayaPerSesi", formData.biayaPerSesi);
+			payload.append("biayaPerSesiOffline", formData.biayaPerSesiOffline);
 			payload.append("status", formData.status);
 			if (dokumenPendukung) {
 				payload.append("dokumen_pendukung", dokumenPendukung);
@@ -262,7 +265,7 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 						<label
 							htmlFor="biayaPerSesi"
 							className="block text-sm font-medium text-gray-700 mb-1">
-							Fee per Session
+							Fee per Session (Online)
 						</label>
 						<input
 							type="number"
@@ -271,7 +274,24 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 							value={formData.biayaPerSesi}
 							onChange={handleChange}
 							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
-							placeholder="Enter fee per session (optional)"
+							placeholder="Enter fee per online session"
+						/>
+					</div>
+
+					<div className="mb-4">
+						<label
+							htmlFor="biayaPerSesiOffline"
+							className="block text-sm font-medium text-gray-700 mb-1">
+							Fee per Session (Offline)
+						</label>
+						<input
+							type="number"
+							id="biayaPerSesiOffline"
+							name="biayaPerSesiOffline"
+							value={formData.biayaPerSesiOffline}
+							onChange={handleChange}
+							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+							placeholder="Enter fee per offline session (optional)"
 						/>
 					</div>
 

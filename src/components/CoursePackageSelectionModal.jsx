@@ -66,13 +66,15 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 				id: pkg.id,
 				name: pkg.nama,
 				description: pkg.deskripsi,
-				totalPrice: pkg.harga_dasar || 0,
+				totalPrice: pkg.harga_dasar || 0, // Tetap gunakan harga_dasar untuk backward compatibility
 				packageDiscount: pkg.diskon || 0,
 				items:
 					pkg.items?.map((item) => ({
 						id: item.id,
 						name: item.nama,
 						price: item.harga,
+						harga: item.harga, // Duplikat untuk kompatibilitas
+						diskon: item.diskon || 0, // Tambahkan diskon item
 						description: item.deskripsi,
 					})) || [],
 				tanggal_mulai: pkg.tanggal_mulai,

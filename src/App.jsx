@@ -207,6 +207,7 @@ function App() {
 						? "Offline Learning"
 						: "Belum diatur",
 				price_per_hour: course.mentor?.biayaPerSesi || 0,
+				price_offline: course.mentor?.biayaPerSesiOffline || 0,
 				mentor: course.mentor, // <-- tambahkan property mentor agar bisa diakses di CourseCard
 				mentors: [
 					{
@@ -426,7 +427,8 @@ function App() {
 					Swal.fire("Gagal booking", "Jadwal tidak ditemukan!", "error");
 					return;
 				}
-				// console.log("userData", userData); // Kirim data sesi ke backend
+
+				// Kirim data sesi ke backend
 				const response = await api.post("/pelanggan/pesan-sesi", {
 					mentor_id: selectedMentor.id,
 					pelanggan_id: userData.pelanggan?.id,
@@ -474,6 +476,24 @@ function App() {
 				if (selectedPackage?.id) {
 					paketId = selectedPackage.id;
 				}
+
+				// Calculate price based on mode
+				const mentorPrice =
+					mode === "offline"
+						? selectedMentor.biayaPerSesiOffline ||
+						  selectedMentor.biayaPerSesi ||
+						  0
+						: selectedMentor.biayaPerSesi || 0;
+
+				// Calculate total price including package if any
+				let totalCalculatedPrice = mentorPrice;
+				if (selectedPackage?.id) {
+					const packagePrice = selectedPackage.totalPrice || 0;
+					const packageDiscount = selectedPackage.packageDiscount || 0;
+					const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
+					totalCalculatedPrice = finalPackagePrice + mentorPrice;
+				}
+
 				const booking = {
 					course,
 					mentor: selectedMentor,
@@ -485,7 +505,8 @@ function App() {
 					topic: topic || "No specific topic",
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
-					jumlahSementara: jumlahSementara ?? null,
+					// Gunakan jumlahSementara dari BookingModal jika ada, jika tidak gunakan perhitungan sendiri
+					jumlahSementara: jumlahSementara ?? totalCalculatedPrice,
 				};
 				setCurrentBooking(booking);
 				setSelectedMentor(null);
@@ -493,16 +514,26 @@ function App() {
 				setShowPayment(true);
 				setShowBookingModal(false);
 			} catch (err) {
+				console.error("Booking error:", err);
+
+				// Pesan error yang lebih spesifik
+				let errorMessage = "Terjadi kesalahan saat booking sesi";
+				if (err.response?.data?.message) {
+					if (err.response.data.message.includes("gayaMengajar")) {
+						errorMessage =
+							"Terjadi kesalahan dengan data jadwal. Silakan hubungi admin atau refresh halaman dan coba lagi.";
+					} else {
+						errorMessage = err.response.data.message;
+					}
+				}
+
 				// 🍞 Toast error untuk booking gagal
 				toast.error(
 					<div className="text-center">
 						<div className="font-semibold text-red-800 mb-2">
 							❌ Booking Gagal
 						</div>
-						<div className="text-sm text-gray-700">
-							{err.response?.data?.message ||
-								"Terjadi kesalahan saat booking sesi"}
-						</div>
+						<div className="text-sm text-gray-700">{errorMessage}</div>
 					</div>,
 					{
 						duration: 5000,
@@ -550,12 +581,12 @@ function App() {
 			if (transaksiId) {
 				formData.append("id", transaksiId); // Sertakan id untuk update
 			}
+			formData.append("mode", booking.mode);
 			formData.append("pelanggan_id", sesi.pelanggan_id);
 			formData.append("mentor_id", sesi.mentor_id);
 			formData.append("sesi_id", sesi.id);
-			// Gunakan jumlahSementara dari booking jika ada, fallback ke harga kursus
-			const jumlahBayar = booking?.jumlahSementara ?? course.price_per_hour;
-			formData.append("jumlah", jumlahBayar);
+			// JANGAN kirim jumlah, biarkan backend hitung berdasarkan mode dari jadwalKursus
+			// Backend sudah ada logika untuk menghitung jumlah berdasarkan gayaMengajar
 			formData.append("statusPembayaran", "menunggu_verifikasi"); // Selalu menunggu verifikasi
 			formData.append("metodePembayaran", paymentMethod);
 			formData.append(

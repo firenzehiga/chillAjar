@@ -197,8 +197,13 @@ export function AdminMentorsPage({ onNavigate }) {
 			sortFunction: (a, b) => (Number(a.rating) || 0) - (Number(b.rating) || 0), // Handle undefined rating
 		},
 		{
-			name: "Biaya Per Sesi",
+			name: "Biaya Per Sesi (Online)",
 			selector: (row) => `Rp ${row.biayaPerSesi?.toLocaleString() || "N/A"}`,
+		},
+		{
+			name: "Biaya Per Sesi (Offline)",
+			selector: (row) =>
+				`Rp ${row.biayaPerSesiOffline?.toLocaleString() || "N/A"}`,
 		},
 		{ name: "Deskripsi", selector: (row) => row.deskripsi || "N/A" },
 		{

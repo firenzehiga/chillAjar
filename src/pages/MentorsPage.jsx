@@ -20,7 +20,7 @@ export function MentorsPage({
 	} = useQuery({
 		queryKey: ["publicMentorsPage"],
 		queryFn: async () => {
-			console.log("🔥 FETCHING MENTORS - ", new Date().toLocaleTimeString());
+			// Fetch mentors data
 			const mentorsResponse = await api.get("/public/mentor");
 			return mentorsResponse.data;
 		},

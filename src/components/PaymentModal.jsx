@@ -74,18 +74,56 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 		setLoading(true);
 		try {
 			// Pastikan onSubmit mengembalikan promise!
-			await onSubmit({ paymentMethod, proofImage, booking });
+			await onSubmit({
+				paymentMethod,
+				proofImage,
+				booking: {
+					...booking,
+					mode: booking.mode, // ✅ Pastikan mode dikirim
+				},
+			});
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	// Prioritaskan jumlahSementara dari backend (hasil perhitungan backend, bisa gabungan paket dan biaya mentor)
-	// Jika tidak ada, fallback ke harga paket, lalu ke harga per jam kursus
-	const totalAmount =
-		booking.jumlahSementara !== undefined && booking.jumlahSementara !== null
-			? booking.jumlahSementara
-			: booking.paket?.harga ?? booking.course.price_per_hour;
+	// Calculate pricing dengan mode-aware logic untuk display saja
+	const calculateMentorFee = () => {
+		if (!mentor) return 0;
+
+		// Gunakan mode dari booking untuk menentukan biaya mentor
+		if (booking.mode === "offline" && mentor.biayaPerSesiOffline) {
+			return mentor.biayaPerSesiOffline;
+		}
+
+		// Fallback ke biaya online atau biayaPerSesi
+		return mentor.biayaPerSesi || booking.course?.price_per_hour || 0;
+	};
+
+	const calculatePackageFee = () => {
+		if (!booking.paket) return 0;
+
+		const basePrice = booking.paket.harga_dasar || booking.paket.harga || 0;
+		const discount = booking.paket.diskon || 0;
+		return Math.max(basePrice - discount, 0);
+	};
+
+	// Update totalAmount calculation dengan prioritas
+	const totalAmount = (() => {
+		// Prioritas 1: jumlahSementara dari backend (sudah dihitung dengan benar)
+		if (
+			booking.jumlahSementara !== undefined &&
+			booking.jumlahSementara !== null
+		) {
+			return booking.jumlahSementara;
+		}
+
+		// Prioritas 2: Hitung manual dengan mentor fee + package fee
+		const mentorFee = calculateMentorFee();
+		const packageFee = calculatePackageFee();
+
+		return mentorFee + packageFee;
+	})();
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -146,9 +184,50 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							</div>
 
 							<div className="sm:col-span-2 border-t pt-4 mt-2">
-								<p className="text-lg font-bold text-gray-800">
-									Total: Rp{totalAmount.toLocaleString("id-ID")}
-								</p>
+								{/* Breakdown pricing jika ada paket */}
+								{booking.paket && (
+									<div className="space-y-2 mb-4">
+										<p className="text-sm font-semibold text-gray-700 mb-2">
+											Rincian Biaya:
+										</p>
+										<div className="space-y-1 text-sm">
+											<div className="flex justify-between">
+												<span>Paket {booking.paket.name}:</span>
+												<span>
+													Rp {calculatePackageFee().toLocaleString("id-ID")}
+												</span>
+											</div>
+											<div className="flex justify-between">
+												<span>
+													Mentor (
+													{booking.mode === "offline" ? "Offline" : "Online"}):
+												</span>
+												<span>
+													Rp {calculateMentorFee().toLocaleString("id-ID")}
+												</span>
+											</div>
+											{booking.paket.diskon > 0 && (
+												<div className="flex justify-between text-green-600">
+													<span>Diskon Paket:</span>
+													<span>
+														-Rp {booking.paket.diskon.toLocaleString("id-ID")}
+													</span>
+												</div>
+											)}
+										</div>
+									</div>
+								)}
+
+								<div className="border-t pt-2">
+									<p className="text-lg font-bold text-gray-800">
+										Total Pembayaran: Rp{totalAmount.toLocaleString("id-ID")}
+									</p>
+									<p className="text-xs text-gray-500 mt-1">
+										{booking.mode === "offline"
+											? "Biaya offline sudah termasuk"
+											: "Sesi online"}
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>
