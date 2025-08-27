@@ -80,6 +80,8 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 				booking: {
 					...booking,
 					mode: booking.mode, // ✅ Pastikan mode dikirim
+					// Pastikan amount juga dikirim dengan benar
+					amount: totalAmount,
 				},
 			});
 		} finally {
@@ -103,6 +105,18 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 	const calculatePackageFee = () => {
 		if (!booking.paket) return 0;
 
+		// Prioritas 1: Hitung berdasarkan items jika ada
+		if (booking.paket.items && booking.paket.items.length > 0) {
+			const actualPackagePrice = booking.paket.items.reduce(
+				(sum, item) =>
+					sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
+				0
+			);
+			const paketDiskon = booking.paket.diskon || 0;
+			return Math.max(actualPackagePrice - paketDiskon, 0);
+		}
+
+		// Prioritas 2: Fallback ke harga_dasar atau harga
 		const basePrice = booking.paket.harga_dasar || booking.paket.harga || 0;
 		const discount = booking.paket.diskon || 0;
 		return Math.max(basePrice - discount, 0);
@@ -152,7 +166,9 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							</div>
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Mentor</p>
-								<p className="font-medium">{mentor?.mentorName}</p>
+								<p className="font-medium">
+									{mentor?.mentorName || mentor?.user?.nama}
+								</p>
 							</div>
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Date</p>

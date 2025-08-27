@@ -163,18 +163,21 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 			const statusSesi = sesi.status || sesi.statusSesi || "-";
 			// Gunakan gayaMengajar dari jadwal_kursus
 			const mode = jadwal?.gayaMengajar || "-";
-
+			//Paket
 			return {
 				id: sesi.id,
 				course: sesi.kursus?.namaKursus || "-",
 				mentor: sesi.mentor?.user?.nama || "-",
 				mentor_id: sesi.mentor?.id || null,
-				paket: transaksi?.paket?.nama || "-",
+				paketNama: transaksi?.paket?.nama || sesi.paket?.nama || "-", // Ambil paket lengkap
 				date: jadwal?.tanggal || "-",
 				time: jadwal?.waktu.slice(0, 5) || "-",
 				mode: mode,
 				topic: sesi.detailKursus || "No Topic Specified",
 				location: jadwal?.tempat || "-",
+				// Data mentor untuk perhitungan harga
+				biayaPerSesi: sesi.mentor?.biayaPerSesi || 0,
+				biayaPerSesiOffline: sesi.mentor?.biayaPerSesiOffline || 0,
 				status: transaksi
 					? transaksi.statusPembayaran === "menunggu_verifikasi"
 						? "waiting_verification"
@@ -242,6 +245,11 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 
 					return mentorFee;
 				})(),
+				// preserve backend temporary amount if present on sesi
+				jumlahSementara: sesi.jumlahSementara ?? null,
+				// preserve paket id if available so payment flow can send paket_id
+				paket_id:
+					sesi.paket_id ?? transaksi?.paket_id ?? sesi.paket?.id ?? null,
 				paymentDate: transaksi?.tanggalPembayaran || null,
 				transaksiId: transaksi?.id,
 				statusSesi,
@@ -663,7 +671,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 										<DollarSign className="w-4 h-4 mr-2 text-blue-600" />
 										Total Harga: Rp
 										{(session.amount || 0).toLocaleString("id-ID")} |{" "}
-										{session.paket || "-"}
+										{session.paketNama}
 									</div>
 									<div className="flex items-center gap-2">
 										<span className="text-sm">
@@ -741,6 +749,22 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						mode: selectedSession.mode,
 						location: selectedSession.location,
 						topic: selectedSession.topic, // atau isi sesuai kebutuhan
+						paket: selectedSession.paket
+							? {
+									...selectedSession.paket,
+									// Pastikan data paket lengkap dari session
+									id: selectedSession.paket.id,
+									nama: selectedSession.paket.nama,
+									diskon: selectedSession.paket.diskon,
+									items: selectedSession.paket.items,
+							  }
+							: null,
+						// prefer explicit paket_id from session (history mapping) if available
+						paket_id:
+							(selectedSession.paket_id ?? selectedSession.paket?.id) || null,
+						// Gunakan jumlahSementara dari sesi jika ada, jika tidak fallback ke amount
+						jumlahSementara:
+							selectedSession.jumlahSementara ?? selectedSession.amount,
 						sesi: {
 							// tambahkan sesi jika perlu id untuk transaksi
 							id: selectedSession.id,
@@ -749,7 +773,11 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						},
 					}}
 					course={{ courseName: selectedSession.course }}
-					mentor={{ mentorName: selectedSession.mentor }}
+					mentor={{
+						mentorName: selectedSession.mentor,
+						biayaPerSesi: selectedSession.biayaPerSesi,
+						biayaPerSesiOffline: selectedSession.biayaPerSesiOffline,
+					}}
 					onClose={() => setShowPaymentModal(false)}
 					onSubmit={handlePaymentFromHistory}
 				/>

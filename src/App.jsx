@@ -471,19 +471,13 @@ function App() {
 
 				// Simpan data sesi ke state booking
 				const sesiBaru = response.data.sesi;
-				// Ambil paket_id dari selectedPackage jika ada
-				let paketId = "";
-				if (selectedPackage?.id) {
-					paketId = selectedPackage.id;
-				}
+				// Pastikan sesiBaru menyertakan paket_id (fallback ke selectedPackage jika backend belum mengembalikan)
+				sesiBaru.paket_id = sesiBaru.paket_id ?? selectedPackage?.id ?? null;
+				let paketId = sesiBaru.paket_id ?? "";
 
 				// Calculate price based on mode
 				const mentorPrice =
-					mode === "offline"
-						? selectedMentor.biayaPerSesiOffline ||
-						  selectedMentor.biayaPerSesi ||
-						  0
-						: selectedMentor.biayaPerSesi || 0;
+					mode === "offline" ? selectedMentor.biayaPerSesiOffline || 0 : 0;
 
 				// Calculate total price including package if any
 				let totalCalculatedPrice = mentorPrice;
@@ -585,8 +579,19 @@ function App() {
 			formData.append("pelanggan_id", sesi.pelanggan_id);
 			formData.append("mentor_id", sesi.mentor_id);
 			formData.append("sesi_id", sesi.id);
-			// JANGAN kirim jumlah, biarkan backend hitung berdasarkan mode dari jadwalKursus
-			// Backend sudah ada logika untuk menghitung jumlah berdasarkan gayaMengajar
+
+			// Kirim jumlah yang tepat berdasarkan booking
+			let jumlahTransaksi = course.price_per_hour; // fallback
+			if (
+				booking.jumlahSementara !== undefined &&
+				booking.jumlahSementara !== null
+			) {
+				jumlahTransaksi = booking.jumlahSementara;
+			} else if (booking.amount !== undefined && booking.amount !== null) {
+				jumlahTransaksi = booking.amount;
+			}
+			formData.append("jumlah", jumlahTransaksi);
+
 			formData.append("statusPembayaran", "menunggu_verifikasi"); // Selalu menunggu verifikasi
 			formData.append("metodePembayaran", paymentMethod);
 			formData.append(
