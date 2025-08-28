@@ -490,6 +490,17 @@ function App() {
 					mode,
 					location: mode === "offline" ? customLocation : null,
 					topic: topic || "No specific topic",
+					paket: selectedPackage
+						? {
+								...selectedPackage,
+								items: Array.isArray(selectedPackage.items)
+									? selectedPackage.items.map((item) => ({
+											...item,
+											diskon: item.diskon ?? 0,
+									  }))
+									: [],
+						  }
+						: null,
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
 					// Gunakan jumlahSementara dari BookingModal jika ada, jika tidak gunakan perhitungan sendiri
@@ -1132,6 +1143,7 @@ function App() {
 										<span className="text-sm font-medium text-green-600">
 											Rp{" "}
 											{(() => {
+												// iNI DIPAKE BUAT PAYMENT MODAL FLOW SETELAH BOOKING
 												// ambil biaya mentor per sesi dari course
 												const mentorFee =
 													selectedCourse?.mentor?.biayaPerSesi || 0;
@@ -1384,6 +1396,7 @@ function App() {
 				{showPayment && currentBooking && (
 					<PaymentModal
 						booking={currentBooking}
+						mentor={currentBooking?.mentor}
 						onClose={() => {
 							setShowPayment(false);
 							setCurrentBooking(null);

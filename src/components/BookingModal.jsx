@@ -290,10 +290,9 @@ export function BookingModal({
 											</div>
 											{packageDiscount > 0 && (
 												<div className="flex justify-between text-sm text-green-600">
-													<span>Diskon Paket:</span>
-													<span>
-														-Rp {packageDiscount.toLocaleString("id-ID")}
-													</span>
+													<div className="text-xs text-green-600 font-medium">
+														Hemat Rp {packageDiscount.toLocaleString("id-ID")}
+													</div>
 												</div>
 											)}
 										</div>
@@ -304,7 +303,7 @@ export function BookingModal({
 												{(
 													basePackagePrice +
 													(selectedMode === "offline"
-														? mentor?.biayaPerSesi || 0
+														? mentor?.biayaPerSesiOffline || 0
 														: mentor?.biayaPerSesi || 0)
 												).toLocaleString("id-ID")}
 											</div>

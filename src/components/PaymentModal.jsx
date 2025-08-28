@@ -3,7 +3,7 @@ import { X, Upload, CreditCard, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 
-export function PaymentModal({ booking, onClose, onSubmit }) {
+export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
 	const [proofImage, setProofImage] = useState(null);
 	const [proofPreview, setProofPreview] = useState(null); // Untuk pratinjau
@@ -13,12 +13,12 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 		const file = e.target.files[0];
 		// console.log("Uploaded File:", file); // Debug
 		if (file) {
-			if (file.size > 2 * 1024 * 1024) {
-				// Maksimal 2MB
+			if (file.size > 5 * 1024 * 1024) {
+				// Maksimal 5MB
 				Swal.fire({
 					icon: "error",
 					title: "File Too Large",
-					text: "Ukuran file maksimal 2MB.",
+					text: "Ukuran file maksimal 5MB.",
 				});
 				setProofImage(null);
 				setProofPreview(null);
@@ -79,8 +79,7 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 				proofImage,
 				booking: {
 					...booking,
-					mode: booking.mode, // ✅ Pastikan mode dikirim
-					// Pastikan amount juga dikirim dengan benar
+					mode: booking.mode,
 					amount: totalAmount,
 				},
 			});
@@ -89,42 +88,44 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 		}
 	};
 
-	// // Calculate pricing dengan mode-aware logic untuk display saja
-	// const calculateMentorFee = () => {
-	// 	if (!mentor) return 0;
+	// Calculate pricing dengan mode-aware logic untuk display saja
+	const calculateMentorFee = () => {
+		// Gunakan mode dari booking untuk menentukan biaya mentor
+		if (booking.mode === "offline" && mentor.biayaPerSesiOffline) {
+			return mentor.biayaPerSesiOffline;
+		}
 
-	// 	// Gunakan mode dari booking untuk menentukan biaya mentor
-	// 	if (booking.mode === "offline" && mentor.biayaPerSesiOffline) {
-	// 		return mentor.biayaPerSesiOffline;
-	// 	}
+		// Fallback ke biaya online atau biayaPerSesi
+		return mentor.biayaPerSesi || 0;
+	};
 
-	// 	// Fallback ke biaya online atau biayaPerSesi
-	// 	return mentor.biayaPerSesi || booking.course?.price_per_hour || 0;
-	// };
+	// Untuk rincian: harga asli paket (tanpa diskon paket)
+	const getPackageOriginalPrice = () => {
+		if (!booking.paket) return 0;
+		if (booking.paket.items && booking.paket.items.length > 0) {
+			return booking.paket.items.reduce(
+				(sum, item) =>
+					sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
+				0
+			);
+		}
+		return booking.paket.harga_dasar || booking.paket.harga || 0;
+	};
 
-	// const calculatePackageFee = () => {
-	// 	if (!booking.paket) return 0;
-
-	// 	// Prioritas 1: Hitung berdasarkan items jika ada
-	// 	if (booking.paket.items && booking.paket.items.length > 0) {
-	// 		const actualPackagePrice = booking.paket.items.reduce(
-	// 			(sum, item) =>
-	// 				sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
-	// 			0
-	// 		);
-	// 		const paketDiskon = booking.paket.diskon || 0;
-	// 		return Math.max(actualPackagePrice - paketDiskon, 0);
-	// 	}
-
-	// 	// Prioritas 2: Fallback ke harga_dasar atau harga
-	// 	const basePrice = booking.paket.harga_dasar || booking.paket.harga || 0;
-	// 	const discount = booking.paket.diskon || 0;
-	// 	return Math.max(basePrice - discount, 0);
-	// };
-
-	// Update totalAmount calculation dengan prioritas
+	// Untuk diskon paket
+	const getPackageDiscount = () =>
+		booking.paket?.diskon && booking.paket.diskon > 0
+			? booking.paket.diskon
+			: booking.paket?.packageDiscount || 0;
+	// Untuk total setelah diskon (untuk total pembayaran)
+	const calculatePackageFee = () => {
+		const original = getPackageOriginalPrice();
+		const discount = getPackageDiscount();
+		return Math.max(original - discount, 0);
+	};
+	// Update totalAmount untuk tampilan
 	const totalAmount = (() => {
-		// Prioritas 1: jumlahSementara dari backend (sudah dihitung dengan benar)
+		// Total Harga: jumlahSementara dari backend (sudah dihitung dengan benar)
 		if (
 			booking.jumlahSementara !== undefined &&
 			booking.jumlahSementara !== null
@@ -132,11 +133,11 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 			return booking.jumlahSementara;
 		}
 
-		// // Prioritas 2: Hitung manual dengan mentor fee + package fee
-		// const mentorFee = calculateMentorFee();
-		// const packageFee = calculatePackageFee();
+		// Rincian Harga: Hitung manual dengan mentor fee + package fee
+		const mentorFee = calculateMentorFee();
+		const packageFee = calculatePackageFee();
 
-		// return mentorFee + packageFee;
+		return mentorFee + packageFee;
 	})();
 
 	return (
@@ -156,7 +157,7 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 
 				{/* Content - Scrollable */}
 				<div className="p-6 overflow-y-auto flex-1 space-y-8">
-					{/* Booking Summary */}
+					{/* Booking Summary - Kalo Bayar Langsung data booking diambil dari handleBooking di app.jsx, kalau bayar di history transaksi data dari props booking kiriman */}
 					<div>
 						<h3 className="font-semibold text-xl mb-4">Ringkasan Pemesanan</h3>
 						<div className="bg-white border rounded-xl p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -210,7 +211,7 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 											<div className="flex justify-between">
 												<span>Paket {booking.paket.name}:</span>
 												<span>
-													Rp {calculatePackageFee().toLocaleString("id-ID")}
+													Rp {getPackageOriginalPrice().toLocaleString("id-ID")}
 												</span>
 											</div>
 											<div className="flex justify-between">
@@ -222,11 +223,11 @@ export function PaymentModal({ booking, onClose, onSubmit }) {
 													Rp {calculateMentorFee().toLocaleString("id-ID")}
 												</span>
 											</div>
-											{booking.paket.diskon > 0 && (
+											{getPackageDiscount() > 0 && (
 												<div className="flex justify-between text-green-600">
 													<span>Diskon Paket:</span>
 													<span>
-														-Rp {booking.paket.diskon.toLocaleString("id-ID")}
+														-Rp {getPackageDiscount().toLocaleString("id-ID")}
 													</span>
 												</div>
 											)}

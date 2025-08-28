@@ -169,13 +169,14 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				course: sesi.kursus?.namaKursus || "-",
 				mentor: sesi.mentor?.user?.nama || "-",
 				mentor_id: sesi.mentor?.id || null,
-				paketNama: transaksi?.paket?.nama || sesi.paket?.nama || "-", // Ambil paket lengkap
+				paketNama: transaksi?.paket?.nama || sesi.paket?.nama || "-",
+				paket: transaksi?.paket || sesi.paket || null,
 				date: jadwal?.tanggal || "-",
 				time: jadwal?.waktu.slice(0, 5) || "-",
 				mode: mode,
 				topic: sesi.detailKursus || "No Topic Specified",
 				location: jadwal?.tempat || "-",
-				// Data mentor untuk perhitungan harga
+				// Data mentor untuk dikirim ke props
 				biayaPerSesi: sesi.mentor?.biayaPerSesi || 0,
 				biayaPerSesiOffline: sesi.mentor?.biayaPerSesiOffline || 0,
 				status: transaksi
@@ -754,9 +755,14 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 									...selectedSession.paket,
 									// Pastikan data paket lengkap dari session
 									id: selectedSession.paket.id,
-									nama: selectedSession.paket.nama,
+									name: selectedSession.paket.nama,
 									diskon: selectedSession.paket.diskon,
-									items: selectedSession.paket.items,
+									items: Array.isArray(selectedSession.paket.items)
+										? selectedSession.paket.items.map((item) => ({
+												...item,
+												diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
+										  }))
+										: [],
 							  }
 							: null,
 						// prefer explicit paket_id from session (history mapping) if available
@@ -773,9 +779,9 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						},
 					}}
 					mentor={{
-						mentorName: selectedSession.mentor,
-						biayaPerSesi: selectedSession.biayaPerSesi,
-						biayaPerSesiOffline: selectedSession.biayaPerSesiOffline,
+						mentorName: selectedSession?.mentor || "-",
+						biayaPerSesi: selectedSession?.biayaPerSesi || 0,
+						biayaPerSesiOffline: selectedSession?.biayaPerSesiOffline || 0,
 					}}
 					onClose={() => setShowPaymentModal(false)}
 					onSubmit={handlePaymentFromHistory}
