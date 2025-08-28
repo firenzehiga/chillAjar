@@ -3,7 +3,7 @@ import { X, Upload, CreditCard, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 
-export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
+export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
 	const [proofImage, setProofImage] = useState(null);
 	const [proofPreview, setProofPreview] = useState(null); // Untuk pratinjau
@@ -13,12 +13,12 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 		const file = e.target.files[0];
 		// console.log("Uploaded File:", file); // Debug
 		if (file) {
-			if (file.size > 2 * 1024 * 1024) {
-				// Maksimal 2MB
+			if (file.size > 5 * 1024 * 1024) {
+				// Maksimal 5MB
 				Swal.fire({
 					icon: "error",
 					title: "File Too Large",
-					text: "Ukuran file maksimal 2MB.",
+					text: "Ukuran file maksimal 5MB.",
 				});
 				setProofImage(null);
 				setProofPreview(null);
@@ -82,33 +82,38 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 
 	// Calculate pricing dengan mode-aware logic untuk display saja
 	const calculateMentorFee = () => {
-		// Fallback ke biaya online atau biayaPerSesi
-		return mentor.biayaPerSesi || booking.course?.price_per_hour || 0;
+		//Dari props mentor yang dikirim dari App.jsx dan HistoryTransactions
+		return mentor.biayaPerSesi || 0;
 	};
 
-	const calculatePackageFee = () => {
+	// Untuk rincian: harga asli paket (tanpa diskon paket)
+	const getPackageOriginalPrice = () => {
 		if (!booking.paket) return 0;
-
-		// Prioritas 1: Hitung berdasarkan items jika ada
 		if (booking.paket.items && booking.paket.items.length > 0) {
-			const actualPackagePrice = booking.paket.items.reduce(
+			return booking.paket.items.reduce(
 				(sum, item) =>
 					sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
 				0
 			);
-			const paketDiskon = booking.paket.diskon || 0;
-			return Math.max(actualPackagePrice - paketDiskon, 0);
 		}
-
-		// Prioritas 2: Fallback ke harga_dasar atau harga
-		const basePrice = booking.paket.harga_dasar || booking.paket.harga || 0;
-		const discount = booking.paket.diskon || 0;
-		return Math.max(basePrice - discount, 0);
+		return booking.paket.harga_dasar || booking.paket.harga || 0;
 	};
 
-	// Update totalAmount calculation dengan prioritas
+	// Untuk diskon paket
+	const getPackageDiscount = () =>
+		booking.paket?.diskon && booking.paket.diskon > 0
+			? booking.paket.diskon
+			: booking.paket?.packageDiscount || 0;
+	// Untuk total setelah diskon (untuk total pembayaran)
+	const calculatePackageFee = () => {
+		const original = getPackageOriginalPrice();
+		const discount = getPackageDiscount();
+		return Math.max(original - discount, 0);
+	};
+
+	// Update totalAmount untuk tampilan
 	const totalAmount = (() => {
-		// Prioritas 1: jumlahSementara dari backend (sudah dihitung dengan benar)
+		// Total Harga: jumlahSementara dari backend (sudah dihitung dengan benar)
 		if (
 			booking.jumlahSementara !== undefined &&
 			booking.jumlahSementara !== null
@@ -116,10 +121,9 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 			return booking.jumlahSementara;
 		}
 
-		// Prioritas 2: Hitung manual dengan mentor fee + package fee
+		// Rincian Harga: Hitung manual dengan mentor fee + package fee
 		const mentorFee = calculateMentorFee();
 		const packageFee = calculatePackageFee();
-
 		return mentorFee + packageFee;
 	})();
 	return (
@@ -139,18 +143,18 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 
 				{/* Content - Scrollable */}
 				<div className="p-6 overflow-y-auto flex-1 space-y-8">
-					{/* Booking Summary */}
+					{/* Booking Summary - Kalo Bayar Langsung data booking diambil dari handleBooking di app.jsx, kalau bayar di history transaksi data dari props booking kiriman */}
 					<div>
 						<h3 className="font-semibold text-xl mb-4">Ringkasan Pemesanan</h3>
 						<div className="bg-white border rounded-xl p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Course</p>
-								<p className="font-medium">{course?.courseName}</p>
+								<p className="font-medium">{booking.course?.courseName}</p>
 							</div>
 							<div>
 								<p className="text-sm text-gray-600 mb-1">Mentor</p>
 								<p className="font-medium">
-									{mentor?.mentorName || mentor?.user?.nama}
+									{booking.mentor?.mentorName || booking.mentor?.user?.nama}
 								</p>
 							</div>
 							<div>
@@ -183,9 +187,50 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor, course }) {
 							</div>
 
 							<div className="sm:col-span-2 border-t pt-4 mt-2">
-								<p className="text-lg font-bold text-gray-800">
-									Total: Rp{totalAmount.toLocaleString("id-ID")}
-								</p>
+								{/* Breakdown pricing jika ada paket */}
+								{booking.paket && (
+									<div className="space-y-2 mb-4">
+										<p className="text-sm font-semibold text-gray-700 mb-2">
+											Rincian Biaya:
+										</p>
+										<div className="space-y-1 text-sm">
+											<div className="flex justify-between">
+												<span>Paket: {booking.paket.name}</span>
+												<span>
+													Rp {getPackageOriginalPrice().toLocaleString("id-ID")}
+												</span>
+											</div>
+											<div className="flex justify-between">
+												<span>
+													Mentor (
+													{booking.mode === "offline" ? "Offline" : "Online"}):
+												</span>
+												<span>
+													Rp {calculateMentorFee().toLocaleString("id-ID")}
+												</span>
+											</div>
+											{getPackageDiscount() > 0 && (
+												<div className="flex justify-between text-green-600">
+													<span>Diskon Paket:</span>
+													<span>
+														-Rp {getPackageDiscount().toLocaleString("id-ID")}
+													</span>
+												</div>
+											)}
+										</div>
+									</div>
+								)}
+
+								<div className="border-t pt-2">
+									<p className="text-lg font-bold text-gray-800">
+										Total Pembayaran: Rp{totalAmount.toLocaleString("id-ID")}
+									</p>
+									<p className="text-xs text-gray-500 mt-1">
+										{booking.mode === "offline"
+											? "Biaya offline sudah termasuk"
+											: "Sesi online"}
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>

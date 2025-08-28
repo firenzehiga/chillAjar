@@ -434,7 +434,7 @@ function App() {
 					jadwal_kursus_id: selectedSchedule?.id,
 					detailKursus: topic || "No specific topic",
 					statusSesi: "pending",
-					paket_id: selectedPackage?.id || null,
+					paket_id: selectedPackage?.id || null, // harus dikirim untuk cek logika di backend
 				});
 				// 🍞 Toast multi-line
 				toast.success(
@@ -476,14 +476,6 @@ function App() {
 				// Calculate price based on mode
 				const mentorPrice = selectedMentor.biayaPerSesi || 0;
 
-				// Calculate total price including package if any
-				let totalCalculatedPrice = mentorPrice;
-				if (selectedPackage?.id) {
-					const packagePrice = selectedPackage.totalPrice || 0;
-					const packageDiscount = selectedPackage.packageDiscount || 0;
-					const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
-					totalCalculatedPrice = finalPackagePrice + mentorPrice;
-				}
 				const booking = {
 					course,
 					mentor: selectedMentor,
@@ -493,10 +485,25 @@ function App() {
 					mode,
 					location: mode === "offline" ? customLocation : null,
 					topic: topic || "No specific topic",
+					paket: selectedPackage
+						? {
+								...selectedPackage,
+								id: selectedPackage.id || null,
+								diskon: selectedPackage.diskon ?? 0,
+								items: Array.isArray(selectedPackage.items)
+									? selectedPackage.items.map((item) => ({
+											...item,
+											diskon: item.diskon ?? 0,
+									  }))
+									: [],
+						  }
+						: null,
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
-					jumlahSementara: jumlahSementara ?? totalCalculatedPrice,
+					jumlahSementara: jumlahSementara ?? 0,
 				};
+
+				console.log("booking.paket", booking.paket);
 				setCurrentBooking(booking);
 				setSelectedMentor(null);
 				setBookingCourse(null);
@@ -563,17 +570,20 @@ function App() {
 			formData.append("pelanggan_id", sesi.pelanggan_id);
 			formData.append("mentor_id", sesi.mentor_id);
 			formData.append("sesi_id", sesi.id);
-			// Kirim jumlah yang tepat berdasarkan booking
-			let jumlahTransaksi = course.price_per_hour; // fallback
-			if (
-				booking.jumlahSementara !== undefined &&
-				booking.jumlahSementara !== null
-			) {
-				jumlahTransaksi = booking.jumlahSementara;
-			} else if (booking.amount !== undefined && booking.amount !== null) {
-				jumlahTransaksi = booking.amount;
-			}
-			formData.append("jumlah", jumlahTransaksi);
+
+			//=======Jumlah Di Handle di Backend Jadi cuma perlu kirim paket id untuk pengecekan=====
+			// // Kirim jumlah yang tepat berdasarkan booking
+			// let jumlahTransaksi = course.price_per_hour; // fallback
+			// if (
+			// 	booking.jumlahSementara !== undefined &&
+			// 	booking.jumlahSementara !== null
+			// ) {
+			// 	jumlahTransaksi = booking.jumlahSementara;
+			// } else if (booking.amount !== undefined && booking.amount !== null) {
+			// 	jumlahTransaksi = booking.amount;
+			// }
+			// formData.append("jumlah", jumlahTransaksi);
+
 			formData.append("statusPembayaran", "menunggu_verifikasi"); // Selalu menunggu verifikasi
 			formData.append("metodePembayaran", paymentMethod);
 			formData.append(
@@ -591,11 +601,6 @@ function App() {
 				paketId = selectedPackage.id;
 			}
 			formData.append("paket_id", paketId);
-
-			// // Log untuk debugging
-			// for (let [key, value] of formData.entries()) {
-			// 	console.log(`${key}:`, value);
-			// }
 
 			// Kirim permintaan dengan header multipart/form-data
 			const res = await api.post("/transaksi", formData, {
@@ -1389,7 +1394,6 @@ function App() {
 				{showPayment && currentBooking && (
 					<PaymentModal
 						booking={currentBooking}
-						course={currentBooking?.course}
 						mentor={currentBooking?.mentor}
 						onClose={() => {
 							setShowPayment(false);

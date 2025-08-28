@@ -168,6 +168,9 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				course: sesi.kursus?.namaKursus || "-",
 				mentor: sesi.mentor?.user?.nama || "-",
 				mentor_id: sesi.mentor?.id || null,
+				paketNama: transaksi?.paket?.nama || sesi.paket?.nama || "-",
+				paket: transaksi?.paket || sesi.paket || null,
+				biayaPerSesi: sesi.mentor?.biayaPerSesi || 0,
 				date: jadwal?.tanggal || "-",
 				time: jadwal?.waktu.slice(0, 5) || "-",
 				mode: mode,
@@ -186,37 +189,15 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
 				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
 				amount: (() => {
-					// Prioritas 1: Gunakan jumlah dari transaksi jika ada
+					// Prioritas 1: Gunakan jumlah dari transaksi jika ada (Kepake kalau transaksi udah dilakukan)
 					if (transaksi?.jumlah !== undefined) {
 						return transaksi.jumlah;
 					}
 
-					// Prioritas 2: Gunakan jumlahSementara jika ada dan valid
+					// Prioritas 2: Gunakan jumlahSementara jika ada dan valid (kepake kalau bayarnya nanti)
 					if (sesi.jumlahSementara && sesi.jumlahSementara > 0) {
 						return sesi.jumlahSementara;
 					}
-
-					// Prioritas 3: Gunakan langsung biayaPerSesi mentor (fallback 0)
-					const mentorFee = sesi.mentor?.biayaPerSesi ?? 0;
-
-					// Jika ada paket, tambahkan biaya paket
-					if (sesi.paket_id && sesi.paket) {
-						// Hitung harga paket berdasarkan harga aktual items
-						const actualPackagePrice =
-							sesi.paket.items?.reduce(
-								(sum, item) =>
-									sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
-								0
-							) || 0;
-
-						const paketFee = Math.max(
-							actualPackagePrice - (sesi.paket.diskon || 0),
-							0
-						);
-						return paketFee + mentorFee;
-					}
-
-					return mentorFee;
 				})(),
 				// preserve backend temporary amount if present on sesi
 				jumlahSementara: sesi.jumlahSementara ?? null,
@@ -643,7 +624,8 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 									<div className="flex items-center">
 										<DollarSign className="w-4 h-4 mr-2 text-blue-600" />
 										Total Harga: Rp
-										{(session.amount || 0).toLocaleString("id-ID")}
+										{(session.amount || 0).toLocaleString("id-ID")} |{" "}
+										{session.paketNama}{" "}
 									</div>
 									<div className="flex items-center gap-2">
 										<span className="text-sm">
@@ -724,11 +706,15 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						paket: selectedSession.paket
 							? {
 									...selectedSession.paket,
-									// Pastikan data paket lengkap dari session
 									id: selectedSession.paket.id,
-									nama: selectedSession.paket.nama,
-									diskon: selectedSession.paket.diskon,
-									items: selectedSession.paket.items,
+									name: selectedSession.paket.nama,
+									diskon: selectedSession.paket.diskon ?? 0,
+									items: Array.isArray(selectedSession.paket.items)
+										? selectedSession.paket.items.map((item) => ({
+												...item,
+												diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
+										  }))
+										: [],
 							  }
 							: null,
 						// prefer explicit paket_id from session (history mapping) if available
@@ -743,8 +729,10 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							mentor_id: selectedSession.mentor_id,
 						},
 					}}
-					course={{ courseName: selectedSession.course }}
-					mentor={{ mentorName: selectedSession.mentor }}
+					mentor={{
+						mentorName: selectedSession?.mentor || "-",
+						biayaPerSesi: selectedSession?.biayaPerSesi || 0,
+					}}
 					onClose={() => setShowPaymentModal(false)}
 					onSubmit={handlePaymentFromHistory}
 				/>
