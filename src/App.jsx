@@ -436,7 +436,7 @@ function App() {
 					jadwal_kursus_id: selectedSchedule?.id,
 					detailKursus: topic || "No specific topic",
 					statusSesi: "pending",
-					paket_id: selectedPackage?.id || null,
+					paket_id: selectedPackage?.id || null, // harus dikirim untuk cek logika di backend
 				});
 				// 🍞 Toast multi-line
 				toast.success(
@@ -481,15 +481,6 @@ function App() {
 						? selectedMentor.biayaPerSesiOffline || selectedMentor.biayaPerSesi
 						: 0;
 
-				// Calculate total price including package if any
-				let totalCalculatedPrice = mentorPrice;
-				if (selectedPackage?.id) {
-					const packagePrice = selectedPackage.totalPrice || 0;
-					const packageDiscount = selectedPackage.packageDiscount || 0;
-					const finalPackagePrice = Math.max(packagePrice - packageDiscount, 0);
-					totalCalculatedPrice = finalPackagePrice + mentorPrice;
-				}
-
 				const booking = {
 					course,
 					mentor: selectedMentor,
@@ -502,7 +493,7 @@ function App() {
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
 					// Gunakan jumlahSementara dari BookingModal jika ada, jika tidak gunakan perhitungan sendiri
-					jumlahSementara: jumlahSementara ?? totalCalculatedPrice,
+					jumlahSementara: jumlahSementara ?? 0,
 				};
 				setCurrentBooking(booking);
 				setSelectedMentor(null);
@@ -582,17 +573,18 @@ function App() {
 			formData.append("mentor_id", sesi.mentor_id);
 			formData.append("sesi_id", sesi.id);
 
-			// Kirim jumlah yang tepat berdasarkan booking
-			let jumlahTransaksi = course.price_per_hour; // fallback
-			if (
-				booking.jumlahSementara !== undefined &&
-				booking.jumlahSementara !== null
-			) {
-				jumlahTransaksi = booking.jumlahSementara;
-			} else if (booking.amount !== undefined && booking.amount !== null) {
-				jumlahTransaksi = booking.amount;
-			}
-			formData.append("jumlah", jumlahTransaksi);
+			//=======Jumlah Di Handle di Backend Jadi cuma perlu kirim paket id untuk pengecekan=====
+			// // Kirim jumlah yang tepat berdasarkan booking
+			// let jumlahTransaksi = course.price_per_hour; // fallback
+			// if (
+			// 	booking.jumlahSementara !== undefined &&
+			// 	booking.jumlahSementara !== null
+			// ) {
+			// 	jumlahTransaksi = booking.jumlahSementara;
+			// } else if (booking.amount !== undefined && booking.amount !== null) {
+			// 	jumlahTransaksi = booking.amount;
+			// }
+			// formData.append("jumlah", jumlahTransaksi);
 
 			formData.append("statusPembayaran", "menunggu_verifikasi"); // Selalu menunggu verifikasi
 			formData.append("metodePembayaran", paymentMethod);
@@ -611,11 +603,6 @@ function App() {
 				paketId = selectedPackage.id;
 			}
 			formData.append("paket_id", paketId);
-
-			// // Log untuk debugging
-			// for (let [key, value] of formData.entries()) {
-			// 	console.log(`${key}:`, value);
-			// }
 
 			// Kirim permintaan dengan header multipart/form-data
 			const res = await api.post("/transaksi", formData, {
@@ -1397,8 +1384,6 @@ function App() {
 				{showPayment && currentBooking && (
 					<PaymentModal
 						booking={currentBooking}
-						course={currentBooking?.course}
-						mentor={currentBooking?.mentor}
 						onClose={() => {
 							setShowPayment(false);
 							setCurrentBooking(null);

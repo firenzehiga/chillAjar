@@ -772,7 +772,6 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							mentor_id: selectedSession.mentor_id, // pastikan ada
 						},
 					}}
-					course={{ courseName: selectedSession.course }}
 					mentor={{
 						mentorName: selectedSession.mentor,
 						biayaPerSesi: selectedSession.biayaPerSesi,
