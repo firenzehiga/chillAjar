@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import toast from "react-hot-toast";
 import {
@@ -13,7 +13,7 @@ import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function MentorSchedulePage({ onNavigate }) {
+export function MentorSchedulePage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
@@ -166,6 +166,22 @@ export function MentorSchedulePage({ onNavigate }) {
 		},
 	};
 
+	const [startingSessionId, setStartingSessionId] = useState(null);
+	const [endingSessionId, setEndingSessionId] = useState(null);
+
+	// ini untuk mengatur loading state per sesi
+	useEffect(() => {
+		if (!startSessionMutation.isPending) {
+			setStartingSessionId(null);
+		}
+	}, [startSessionMutation.isPending]);
+
+	useEffect(() => {
+		if (!endSessionMutation.isPending) {
+			setEndingSessionId(null);
+		}
+	}, [endSessionMutation.isPending]);
+
 	const columns = [
 		{
 			name: "No",
@@ -209,6 +225,7 @@ export function MentorSchedulePage({ onNavigate }) {
 					);
 				}
 			},
+
 			width: "200px",
 		},
 		{
@@ -231,17 +248,26 @@ export function MentorSchedulePage({ onNavigate }) {
 						<button
 							type="button"
 							className={`mt-2 mb-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none ${
-								startSessionMutation.isPending
+								startSessionMutation.isPending && startingSessionId === row.id
 									? "cursor-not-allowed opacity-50"
+									: (startSessionMutation.isPending &&
+											startingSessionId !== row.id) ||
+									  !!endingSessionId
+									? "cursor-not-allowed opacity-60"
 									: ""
 							}`}
 							disabled={
 								isLoadingSessions ||
 								isLoadingTransactions ||
-								startSessionMutation.isPending
+								!!endingSessionId ||
+								(!!startingSessionId && startingSessionId !== row.id)
 							}
-							onClick={() => handleStartSession(row.id)}>
-							{startSessionMutation.isPending ? ( // 👈 Cek loading state
+							onClick={() => {
+								setStartingSessionId(row.id);
+								handleStartSession(row.id);
+							}}>
+							{startSessionMutation.isPending &&
+							startingSessionId === row.id ? (
 								<>
 									<Loader2 className="animate-spin w-4 h-4 inline mb-1" />{" "}
 									Memulai...
@@ -257,17 +283,25 @@ export function MentorSchedulePage({ onNavigate }) {
 						<button
 							type="button"
 							className={`mt-2 mb-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 outline-none focus:outline-none ${
-								endSessionMutation.isPending
+								endSessionMutation.isPending && endingSessionId === row.id
 									? "cursor-not-allowed opacity-50"
+									: (endSessionMutation.isPending &&
+											endingSessionId !== row.id) ||
+									  !!startingSessionId
+									? "cursor-not-allowed opacity-60"
 									: ""
 							}`}
 							disabled={
 								isLoadingSessions ||
 								isLoadingTransactions ||
-								endSessionMutation.isPending
+								!!startingSessionId ||
+								(!!endingSessionId && endingSessionId !== row.id)
 							}
-							onClick={() => handleEndSession(row.id)}>
-							{endSessionMutation.isPending ? ( // 👈 Cek loading state
+							onClick={() => {
+								setEndingSessionId(row.id);
+								handleEndSession(row.id);
+							}}>
+							{endSessionMutation.isPending && endingSessionId === row.id ? (
 								<>
 									<Loader2 className="animate-spin w-4 h-4 inline mb-1" />{" "}
 									Mengakhiri...
@@ -367,7 +401,7 @@ export function MentorSchedulePage({ onNavigate }) {
 							noHeader
 							expandableRows
 							expandableRowsComponent={({ data }) => (
-								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
+								<div className="p-5 text-sm text-gray-700 space-y-3 bg-gray-50 rounded-md">
 									<p className="flex">
 										<span className="w-10 font-medium text-gray-900 mb-2">
 											Topik:
@@ -390,14 +424,56 @@ export function MentorSchedulePage({ onNavigate }) {
 											{data.jadwal_kursus?.waktu?.slice(0, 5) || "-"} WIB
 										</span>
 									</p>
+									{data.jadwal_kursus?.gayaMengajar === "offline" && (
+										<p className="flex">
+											<span className="w-48 font-medium text-gray-900">
+												Lokasi:
+											</span>
+											<span className="capitalize mb-5">
+												{data.jadwal_kursus?.tempat || "-"}
+											</span>
+										</p>
+									)}
+
 									<p className="flex">
 										<span className="w-48 font-medium text-gray-900">
-											Lokasi:
+											Paket Belajar:
 										</span>
-										<span className="capitalize">
-											{data.jadwal_kursus?.tempat || "-"}
+										<span className="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset">
+											{data.paket?.nama || "-"}
 										</span>
 									</p>
+
+									{/* Tampilkan item-item dari paket jika ada (paket.items) */}
+									{data.paket?.items && data.paket.items.length > 0 ? (
+										<div className="mt-2">
+											<span className="w-48 font-medium text-gray-900 block mb-2">
+												Layanan yang termasuk:
+											</span>
+											<ul className="list-disc list-inside text-gray-600 space-y-1">
+												{data.paket.items.map((item, idx) => {
+													const label = item.nama || "-";
+													const desc = item.deskripsi || null;
+													return (
+														<li key={idx} className="text-sm">
+															<span className="font-medium text-gray-800">
+																{label}
+															</span>
+															{desc ? (
+																<span className="ml-2 text-gray-500">
+																	— {desc}
+																</span>
+															) : null}
+														</li>
+													);
+												})}
+											</ul>
+										</div>
+									) : (
+										<div className="mt-2 text-gray-500 text-sm">
+											Tidak ada item di paket ini
+										</div>
+									)}
 								</div>
 							)}
 							noDataComponent={
