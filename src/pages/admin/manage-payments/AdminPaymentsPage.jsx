@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import DataTable from "react-data-table-component";
-import { AlertCircle, CheckCircle, XCircle, Eye, Download } from "lucide-react";
+import {
+	Loader2,
+	AlertCircle,
+	CheckCircle,
+	XCircle,
+	Eye,
+	Download,
+} from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
@@ -13,6 +20,8 @@ import { formatDate } from "../../../utils/dateFormatter";
 import { form } from "framer-motion/client";
 
 export function AdminPaymentsPage() {
+	const [verifikasiTransaksiId, setVerifikasiTransaksiId] = useState(null);
+	const [tolakTransaksiId, setTolakTransaksiId] = useState(null);
 	const [previewImg, setPreviewImg] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
@@ -58,22 +67,46 @@ export function AdminPaymentsPage() {
 				}
 			);
 		},
-		onSuccess: () => {
-			Swal.fire({
-				title: "Berhasil!",
-				text: "Pembayaran telah diverifikasi.",
-				icon: "success",
-				timerProgressBar: true,
-				showConfirmButton: false,
-				timer: 1500,
-			});
-			// Invalidate query untuk memaksa refetch data
-			queryClient.invalidateQueries(["adminPayments"]);
-		},
-		onError: () => {
-			Swal.fire("Gagal", "Terjadi kesalahan saat verifikasi.", "error");
-		},
 	});
+
+	// Handler untuk tombol Setujui
+	const handleVerifikasi = (transaksiId) => {
+		// set temporary state so only the clicked row shows loading; will be cleared on cancel or when mutation finishes
+		setVerifikasiTransaksiId(transaksiId);
+
+		Swal.fire({
+			title: "Verifikasi Pembayaran?",
+			text: "Pastikan pembayaran sudah benar sebelum menyetujui.",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Ya, setujui!",
+			cancelButtonText: "Batal",
+		}).then(async (result) => {
+			if (!result.isConfirmed) {
+				setVerifikasiTransaksiId(null);
+				return;
+			}
+
+			// gunakan mutateAsync sehingga kita dapat memberi toast.promise dengan Promise yang valid
+			const promise = verifikasiMutation.mutateAsync(transaksiId);
+
+			try {
+				await toast.promise(promise, {
+					loading: "Memproses verifikasi...",
+					success: "Pembayaran berhasil diverifikasi",
+					error: "Gagal memverifikasi pembayaran",
+				});
+				// invalidate data setelah sukses (refresh table)
+				queryClient.invalidateQueries(["adminPayments"]);
+			} catch (err) {
+				// error ditangani di toast + onError mutation jika ada
+			} finally {
+				setVerifikasiTransaksiId(null);
+			}
+		});
+	};
 
 	// Mutasi untuk menolak pembayaran
 	const tolakMutation = useMutation({
@@ -87,57 +120,54 @@ export function AdminPaymentsPage() {
 				}
 			);
 		},
-		onSuccess: () => {
-			Swal.fire({
-				title: "Ditolak!",
-				text: "Pembayaran telah ditolak.",
-				icon: "info",
-				timerProgressBar: true,
-				showConfirmButton: false,
-				timer: 1500,
-			});
-			// Invalidate query untuk memaksa refetch data
-			queryClient.invalidateQueries(["adminPayments"]);
-		},
-		onError: () => {
-			Swal.fire("Gagal", "Terjadi kesalahan saat menolak pembayaran.", "error");
-		},
 	});
-
-	// Handler untuk tombol Setujui
-	const handleVerifikasi = (transaksiId) => {
-		Swal.fire({
-			title: "Verifikasi Pembayaran?",
-			text: "Pastikan pembayaran sudah benar sebelum menyetujui.",
-			icon: "question",
-			showCancelButton: true,
-			confirmButtonColor: "#3085d6",
-			cancelButtonColor: "#d33",
-			confirmButtonText: "Ya, setujui!",
-			cancelButtonText: "Batal",
-		}).then((result) => {
-			if (result.isConfirmed) {
-				verifikasiMutation.mutate(transaksiId);
-			}
-		});
-	};
 
 	// Handler untuk tombol Tolak
 	const handleTolak = (transaksiId) => {
+		// set temporary state so only the clicked row shows loading; will be cleared on cancel or when mutation finishes
+		setTolakTransaksiId(transaksiId);
 		Swal.fire({
 			title: "Yakin ingin menolak?",
-			text: "Pembayaran akan dihapus!",
+			text: "Pembayaran akan ditolak!",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#3085d6",
 			cancelButtonColor: "#d33",
-			confirmButtonText: "Ya, hapus!",
-		}).then((result) => {
-			if (result.isConfirmed) {
-				tolakMutation.mutate(transaksiId);
+			confirmButtonText: "Ya, tolak!",
+		}).then(async (result) => {
+			if (!result.isConfirmed) {
+				setTolakTransaksiId(null);
+				return;
+			}
+
+			const promise = tolakMutation.mutateAsync(transaksiId);
+			try {
+				await toast.promise(promise, {
+					loading: "Memproses penolakan...",
+					success: "Pembayaran berhasil ditolak",
+					error: "Gagal menolak pembayaran",
+				});
+				queryClient.invalidateQueries(["adminPayments"]);
+			} catch (err) {
+				// handled by toast
+			} finally {
+				setTolakTransaksiId(null);
 			}
 		});
 	};
+
+	// ini untuk mengatur loading state per transaksi
+	useEffect(() => {
+		if (!verifikasiMutation.isPending) {
+			setVerifikasiTransaksiId(null);
+		}
+	}, [verifikasiMutation.isPending]);
+
+	useEffect(() => {
+		if (!tolakMutation.isPending) {
+			setTolakTransaksiId(null);
+		}
+	}, [tolakMutation.isPending]);
 
 	// Handler untuk download bukti pembayaran melalui backend
 	const handleDownload = async (row) => {
@@ -160,7 +190,7 @@ export function AdminPaymentsPage() {
 
 		// Tampilkan loading indicator
 		Swal.fire({
-			title: "Mengunduh File...",
+			title: "Mengunduh Bukti Pembayaran...",
 			text: "Mohon tunggu, sedang memproses download.",
 			allowOutsideClick: false,
 			allowEscapeKey: false,
@@ -426,11 +456,7 @@ export function AdminPaymentsPage() {
 			name: "Pelanggan",
 			selector: (row) => row.pelanggan?.user?.nama || "-",
 			sortable: true,
-		},
-		{
-			name: "Kursus",
-			selector: (row) => row.sesi?.kursus?.namaKursus || "-",
-			sortable: true,
+			width: "200px",
 		},
 		{
 			name: "Tanggal Bayar",
@@ -438,6 +464,7 @@ export function AdminPaymentsPage() {
 				return formatDate(row.tanggalPembayaran);
 			},
 			sortable: true,
+			width: "200px",
 		},
 		{
 			name: "Status",
@@ -450,7 +477,7 @@ export function AdminPaymentsPage() {
 				);
 			},
 			sortable: true,
-			width: "190px",
+			width: "180px",
 		},
 		{
 			name: "Bukti",
@@ -459,7 +486,6 @@ export function AdminPaymentsPage() {
 					? getImageUrl(row.buktiPembayaran, "bukti_pembayaran")
 					: null;
 
-				// Cek apakah buktiPembayaran ada tapi hanya berupa string kosong atau placeholder
 				const hasBuktiPembayaran =
 					row.buktiPembayaran &&
 					row.buktiPembayaran.trim() !== "" &&
@@ -467,20 +493,20 @@ export function AdminPaymentsPage() {
 					row.buktiPembayaran !== "undefined";
 
 				return hasBuktiPembayaran ? (
-					<div className="flex space-x-2">
+					<div className="flex space-x-4">
 						<button
-							className="text-blue-600 hover:text-blue-800 flex items-center mr-3 outline-none focus:outline-none transition-colors"
+							className="text-blue-600 hover:text-blue-800 flex items-center gap-1 outline-none focus:outline-none transition-colors text-sm"
 							onClick={() => setPreviewImg(imageUrl)}
 							title="Lihat gambar">
-							<Eye className="inline w-4 h-4 mr-1 mt-1" />
-							Lihat
+							<Eye className="w-4 h-4" />
+							<span>Lihat</span>
 						</button>
 						<button
 							onClick={() => handleDownload(row)}
-							className="text-green-600 hover:text-green-800 flex items-center outline-none focus:outline-none transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
+							className="text-green-600 hover:text-green-800 flex items-center gap-1 outline-none focus:outline-none transition-colors text-sm"
 							title="Download bukti pembayaran">
-							<Download className="inline w-4 h-4 mr-1" />
-							Download
+							<Download className="w-4 h-4" />
+							<span>Download</span>
 						</button>
 					</div>
 				) : (
@@ -492,37 +518,91 @@ export function AdminPaymentsPage() {
 					</div>
 				);
 			},
-			width: "190px",
+			width: "210px",
 		},
 		{
 			name: "Aksi",
-			cell: (row) => (
-				<div className="flex gap-2">
-					{row.statusPembayaran === "menunggu_verifikasi" && (
-						<>
-							<button
-								onClick={() => handleVerifikasi(row.id)}
-								className="text-green-600 hover:text-green-800 outline-none focus:outline-none"
-								title="Setujui Pembayaran"
-								disabled={
-									verifikasiMutation.isLoading || tolakMutation.isLoading
-								}>
-								<CheckCircle className="w-5 h-5" />
-							</button>
-							<button
-								onClick={() => handleTolak(row.id)}
-								className="text-red-600 hover:text-red-800 outline-none focus:outline-none"
-								title="Tolak Pembayaran"
-								disabled={
-									verifikasiMutation.isLoading || tolakMutation.isLoading
-								}>
-								<XCircle className="w-5 h-5" />
-							</button>
-						</>
-					)}
-				</div>
-			),
-			width: "100px",
+			cell: (row) => {
+				// KONDISI BUTTON AKSI
+				// Saat verifikasi atau tolak yang dilakukan
+				const isApproving =
+					verifikasiMutation.isPending && verifikasiTransaksiId === row.id;
+				const isRejecting =
+					tolakMutation.isPending && tolakTransaksiId === row.id;
+
+				// Apakah salah satu tombol ditekan
+				const disableApprove =
+					!!tolakTransaksiId ||
+					(verifikasiTransaksiId && verifikasiTransaksiId !== row.id);
+				const disableReject =
+					!!verifikasiTransaksiId ||
+					(tolakTransaksiId && tolakTransaksiId !== row.id);
+
+				// styles untuk tombol
+				const btnBase =
+					"flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-all min-w-[110px]";
+				const approveClasses = `${btnBase} bg-green-600 hover:bg-green-700 text-white`;
+				const rejectClasses = `${btnBase} bg-red-600 hover:bg-red-700 text-white`;
+				const disabledClass = "opacity-50 cursor-not-allowed";
+
+				return (
+					<div className="flex items-center gap-3">
+						{row.statusPembayaran === "menunggu_verifikasi" && (
+							<>
+								<button
+									onClick={() => {
+										handleVerifikasi(row.id);
+										setVerifikasiTransaksiId(row.id);
+									}}
+									className={`${approveClasses} ${
+										disableApprove || isFetching ? disabledClass : ""
+									}`}
+									title="Setujui Pembayaran"
+									disabled={disableApprove || isApproving || isFetching}>
+									{isApproving ? (
+										<>
+											<Loader2 className="animate-spin w-4 h-4" />
+											<span>Setujui...</span>
+										</>
+									) : (
+										<>
+											<CheckCircle className="w-4 h-4" />
+											<span>Setujui</span>
+										</>
+									)}
+								</button>
+
+								<button
+									onClick={() => {
+										setTolakTransaksiId(row.id);
+										handleTolak(row.id);
+									}}
+									className={`${rejectClasses} ${
+										disableReject || isFetching ? disabledClass : ""
+									}`}
+									title="Tolak Pembayaran"
+									disabled={disableReject || isRejecting || isFetching}>
+									{isRejecting ? (
+										<>
+											<Loader2 className="animate-spin w-4 h-4" />
+											<span>Tolak...</span>
+										</>
+									) : (
+										<>
+											<XCircle className="w-4 h-4" />
+											<span>Tolak</span>
+										</>
+									)}
+								</button>
+							</>
+						)}
+						{row.statusPembayaran !== "menunggu_verifikasi" && (
+							<span className="text-sm text-gray-500">Tidak ada aksi</span>
+						)}
+					</div>
+				);
+			},
+			width: "280px",
 		},
 	];
 
@@ -620,17 +700,15 @@ export function AdminPaymentsPage() {
 								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
 									<p className="flex">
 										<span className="w-48 font-medium text-gray-900">
-											Mentor:
+											Kursus:
 										</span>
-										<span>{data.mentor?.user?.nama || "Tidak ada"}</span>
+										<span>{data.sesi?.kursus?.namaKursus || "Tidak ada"}</span>
 									</p>
 									<p className="flex">
 										<span className="w-48 font-medium text-gray-900">
-											Metode Pembayaran:
+											Mentor:
 										</span>
-										<span className="capitalize">
-											{data.metodePembayaran || "-"}
-										</span>
+										<span>{data.mentor?.user?.nama || "Tidak ada"}</span>
 									</p>
 									<p className="flex">
 										<span className="w-48 font-medium text-gray-900">
@@ -650,9 +728,13 @@ export function AdminPaymentsPage() {
 										<span className="w-48 font-medium text-gray-900">
 											Lokasi:
 										</span>
-										<span className="capitalize mb-5">
-											{data.sesi?.jadwal_kursus?.tempat || "-"}
-										</span>
+										{data.sesi?.jadwal_kursus?.gayaMengajar === "offline" ? (
+											<span className="capitalize mb-5">
+												{data.sesi?.jadwal_kursus?.tempat || "-"}
+											</span>
+										) : (
+											<span className="capitalize mb-5">Online</span>
+										)}
 									</p>
 									<p className="flex">
 										<span className="w-48 font-medium text-gray-900">
@@ -668,6 +750,14 @@ export function AdminPaymentsPage() {
 										</span>
 										<span>
 											Rp{Number(data.jumlah || 0).toLocaleString("id-ID")}
+										</span>
+									</p>
+									<p className="flex">
+										<span className="w-48 font-medium text-gray-900">
+											Metode Pembayaran:
+										</span>
+										<span className="capitalize">
+											{data.metodePembayaran || "-"}
 										</span>
 									</p>
 								</div>
