@@ -14,6 +14,9 @@ import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function MentorSchedulePage() {
+	const [startingSessionId, setStartingSessionId] = useState(null);
+	const [endingSessionId, setEndingSessionId] = useState(null);
+
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
@@ -88,6 +91,7 @@ export function MentorSchedulePage() {
 		},
 	});
 	const handleStartSession = (sessionId) => {
+		setStartingSessionId(sessionId);
 		Swal.fire({
 			title: "Mulai Sesi",
 			text: "Apakah Anda yakin ingin memulai sesi ini?",
@@ -99,6 +103,8 @@ export function MentorSchedulePage() {
 		}).then((result) => {
 			if (result.isConfirmed) {
 				startSessionMutation.mutate(sessionId);
+			} else {
+				setStartingSessionId(null);
 			}
 		});
 	};
@@ -129,6 +135,7 @@ export function MentorSchedulePage() {
 		},
 	});
 	const handleEndSession = (sessionId) => {
+		setEndingSessionId(sessionId);
 		Swal.fire({
 			title: "Apakah Anda yakin ingin mengakhiri sesi ini?",
 			icon: "warning",
@@ -139,9 +146,24 @@ export function MentorSchedulePage() {
 		}).then((result) => {
 			if (result.isConfirmed) {
 				endSessionMutation.mutate(sessionId);
+			} else {
+				setEndingSessionId(null);
 			}
 		});
 	};
+
+	// ini untuk mengatur loading state per sesi
+	useEffect(() => {
+		if (!startSessionMutation.isPending) {
+			setStartingSessionId(null);
+		}
+	}, [startSessionMutation.isPending]);
+
+	useEffect(() => {
+		if (!endSessionMutation.isPending) {
+			setEndingSessionId(null);
+		}
+	}, [endSessionMutation.isPending]);
 
 	const statusCheck = {
 		reviewed: {
@@ -165,22 +187,6 @@ export function MentorSchedulePage() {
 				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
 	};
-
-	const [startingSessionId, setStartingSessionId] = useState(null);
-	const [endingSessionId, setEndingSessionId] = useState(null);
-
-	// ini untuk mengatur loading state per sesi
-	useEffect(() => {
-		if (!startSessionMutation.isPending) {
-			setStartingSessionId(null);
-		}
-	}, [startSessionMutation.isPending]);
-
-	useEffect(() => {
-		if (!endSessionMutation.isPending) {
-			setEndingSessionId(null);
-		}
-	}, [endSessionMutation.isPending]);
 
 	const columns = [
 		{
@@ -242,79 +248,82 @@ export function MentorSchedulePage() {
 		},
 		{
 			name: "Aksi",
-			cell: (row) => (
-				<div className="gap-2">
-					{(row.statusSesi === "booked" || row.statusSesi === "pending") && (
-						<button
-							type="button"
-							className={`mt-2 mb-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none ${
-								startSessionMutation.isPending && startingSessionId === row.id
-									? "cursor-not-allowed opacity-50"
-									: (startSessionMutation.isPending &&
-											startingSessionId !== row.id) ||
-									  !!endingSessionId
-									? "cursor-not-allowed opacity-60"
-									: ""
-							}`}
-							disabled={
-								isLoadingSessions ||
-								isLoadingTransactions ||
-								!!endingSessionId ||
-								(!!startingSessionId && startingSessionId !== row.id)
-							}
-							onClick={() => {
-								setStartingSessionId(row.id);
-								handleStartSession(row.id);
-							}}>
-							{startSessionMutation.isPending &&
-							startingSessionId === row.id ? (
-								<>
-									<Loader2 className="animate-spin w-4 h-4 inline mb-1" />{" "}
-									Memulai...
-								</>
-							) : (
-								<>
-									<PlayCircle className="w-4 h-4 inline mb-1" /> Mulai Sesi
-								</>
-							)}{" "}
-						</button>
-					)}
-					{row.statusSesi === "started" && (
-						<button
-							type="button"
-							className={`mt-2 mb-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 outline-none focus:outline-none ${
-								endSessionMutation.isPending && endingSessionId === row.id
-									? "cursor-not-allowed opacity-50"
-									: (endSessionMutation.isPending &&
-											endingSessionId !== row.id) ||
-									  !!startingSessionId
-									? "cursor-not-allowed opacity-60"
-									: ""
-							}`}
-							disabled={
-								isLoadingSessions ||
-								isLoadingTransactions ||
-								!!startingSessionId ||
-								(!!endingSessionId && endingSessionId !== row.id)
-							}
-							onClick={() => {
-								setEndingSessionId(row.id);
-								handleEndSession(row.id);
-							}}>
-							{endSessionMutation.isPending && endingSessionId === row.id ? (
-								<>
-									<Loader2 className="animate-spin w-4 h-4 inline mb-1" />{" "}
-									Mengakhiri...
-								</>
-							) : (
-								<>
-									<StopCircle className="w-4 h-4 inline mb-1" /> Akhiri Sesi
-								</>
-							)}{" "}
-						</button>
-					)}
-				</div>
-			),
+			cell: (row) => {
+				// KONDISI BUTTON AKSI
+				// Saat verifikasi atau tolak yang dilakukan
+				const isSessionStarting =
+					startSessionMutation.isPending && startingSessionId === row.id;
+				const isSessionEnding =
+					endSessionMutation.isPending && endingSessionId === row.id;
+
+				// Apakah salah satu tombol ditekan
+				const disableStart =
+					isLoadingSessions ||
+					isLoadingTransactions ||
+					!!endingSessionId ||
+					(!!startingSessionId && startingSessionId !== row.id);
+				const disableEnd =
+					isLoadingSessions ||
+					isLoadingTransactions ||
+					!!startingSessionId ||
+					(!!endingSessionId && endingSessionId !== row.id);
+
+				// styles untuk tombol
+				const btnBase =
+					"flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-all min-w-[110px]";
+				const startClasses = `${btnBase} bg-green-600 hover:bg-green-700 text-white`;
+				const endClasses = `${btnBase} bg-red-600 hover:bg-red-700 text-white`;
+				const disabledClass = "opacity-50 cursor-not-allowed";
+
+				return (
+					<div className="gap-2">
+						{(row.statusSesi === "booked" || row.statusSesi === "pending") && (
+							<button
+								type="button"
+								className={`${startClasses} ${
+									disableStart ? disabledClass : ""
+								}`}
+								disabled={disableStart || isSessionStarting}
+								onClick={() => {
+									setStartingSessionId(row.id);
+									handleStartSession(row.id);
+								}}>
+								{isSessionStarting ? (
+									<>
+										<Loader2 className="animate-spin w-4 h-4 inline mb-1" />{" "}
+										Memulai...
+									</>
+								) : (
+									<>
+										<PlayCircle className="w-4 h-4 inline mb-1" /> Mulai Sesi
+									</>
+								)}{" "}
+							</button>
+						)}
+						{row.statusSesi === "started" && (
+							<button
+								type="button"
+								className={`${endClasses} ${disableEnd ? disabledClass : ""}`}
+								disabled={disableEnd || isSessionEnding}
+								onClick={() => {
+									setEndingSessionId(row.id);
+									handleEndSession(row.id);
+								}}>
+								{isSessionEnding ? (
+									<>
+										<Loader2 className="animate-spin w-4 h-4 inline mb-1" />{" "}
+										Mengakhiri...
+									</>
+								) : (
+									<>
+										<StopCircle className="w-4 h-4 inline mb-1" /> Akhiri Sesi
+									</>
+								)}{" "}
+							</button>
+						)}
+					</div>
+				);
+			},
 			width: "180px",
 		},
 	];
