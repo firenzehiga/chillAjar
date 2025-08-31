@@ -107,7 +107,8 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 			if (response.status === 200 || response.status === 201) {
 				// Invalidate queries to refresh data
 				queryClient.invalidateQueries(["adminMentors"]);
-
+				queryClient.invalidateQueries(["publicMentorsPage"]);
+				queryClient.invalidateQueries(["courses"]);
 				toast.success("Mentor berhasil diperbarui!");
 				onNavigate("admin-manage-mentors");
 			} else {
