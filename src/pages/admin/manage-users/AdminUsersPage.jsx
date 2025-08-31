@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import DataTable from "react-data-table-component";
 import {
 	Users,
@@ -8,21 +8,28 @@ import {
 	Calendar,
 	CheckCircle,
 	Clock,
+	Trash,
 } from "lucide-react";
 import api from "../../../api";
 import { AddUserModal } from "../../../components/Admin/AddUserModal";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 import { ExportData } from "../../../components/Admin/ExportData";
 import { formatDate } from "../../../utils/dateFormatter";
+import useAppStore from "../../../stores/useAppStore";
 
 export function AdminUsersPage() {
+	const { isAuthenticated, userData } = useAppStore();
+
 	const [searchTerm, setSearchTerm] = useState("");
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [roleFilter, setRoleFilter] = useState("all");
 
+	const queryClient = useQueryClient();
+
 	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
 
 	// Fetch users dengan useQuery
 	const {
@@ -47,6 +54,85 @@ export function AdminUsersPage() {
 	// Tambahkan user baru ke cache query
 	const handleUserAdded = (newUser) => {
 		refetch();
+	};
+
+	const deleteUserMutation = useMutation({
+		mutationFn: async (userId) => {
+			return api.delete(`/admin/users/${userId}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+		},
+		onSuccess: (_, userId) => {
+			queryClient.setQueryData(["adminUsers"], (oldData) =>
+				oldData.filter((user) => user.id !== userId)
+			);
+			queryClient.invalidateQueries(["adminMentors"]);
+			queryClient.invalidateQueries(["publicMentorsPage"]); // jaga-jaga
+			queryClient.invalidateQueries(["courses"]);
+			toast.success("User berhasil dihapus.");
+		},
+		onError: () => {
+			Swal.fire("Error!", "Gagal menghapus user.", "error");
+		},
+	});
+
+	// Fungsi untuk menangani penghapusan user dengan konfirmasi ketik kata kunci
+	const handleDelete = (id) => {
+		// Gunakan userData dari app store jika tersedia, fallback ke localStorage/token seperti sebelumnya
+		let currentUser = null;
+		if (userData && Object.keys(userData).length) {
+			currentUser = userData;
+		} else {
+			try {
+				const u = localStorage.getItem("user");
+				if (u) currentUser = JSON.parse(u);
+				else {
+					const t = localStorage.getItem("token");
+					if (t) {
+						const payload = JSON.parse(atob(t.split(".")[1] || "{}"));
+						currentUser = payload;
+					}
+				}
+			} catch (e) {
+				currentUser = null;
+			}
+		}
+
+		// Hanya izinkan admin dengan id 2
+		if (!currentUser || currentUser.id !== 2 || currentUser.peran !== "admin") {
+			Swal.fire(
+				"Akses ditolak",
+				"Hanya admin tertentu yang dapat menghapus user.",
+				"error"
+			);
+			return;
+		}
+
+		const confirmText = "HAPUS PERMANEN";
+		Swal.fire({
+			title: "Hapus User?",
+			html: `<span style="color: #dc2626; font-weight:600">⚠️ Aksi ini tidak bisa dibatalkan!</span>`,
+			icon: "warning",
+			input: "text",
+			inputPlaceholder: `Ketik "${confirmText}" untuk konfirmasi`,
+			showCancelButton: true,
+			confirmButtonColor: "#d33",
+			confirmButtonText: "Ya, Hapus!",
+			cancelButtonColor: "#3085d6",
+			cancelButtonText: "Batal",
+			preConfirm: (value) => {
+				if (value !== confirmText) {
+					Swal.showValidationMessage(
+						`Anda harus mengetik "${confirmText}" untuk melanjutkan.`
+					);
+				}
+				return value;
+			},
+		}).then((result) => {
+			if (result.isConfirmed && result.value === confirmText) {
+				deleteUserMutation.mutate(id);
+			}
+		});
 	};
 
 	// Define columns for CSV export
@@ -88,7 +174,18 @@ export function AdminUsersPage() {
 			width: "80px",
 			sortable: true,
 		},
-		{ name: "Nama", selector: (row) => row.nama, sortable: true },
+		{
+			name: "Nama",
+			selector: (row) => row.nama,
+			sortable: true,
+			width: "300px",
+		},
+		{
+			name: "Email",
+			selector: (row) => row.email,
+			sortable: true,
+			width: "250px",
+		},
 		{
 			name: "Role",
 			selector: (row) => row.peran,
@@ -107,101 +204,21 @@ export function AdminUsersPage() {
 			),
 		},
 		{
-			name: "Di-Review",
-			selector: (row) => row.jumlah_sesi || 0,
-			sortable: true,
-			cell: (row) => {
-				return (
-					<div className="flex items-center justify-center">
-						{row.peran !== "admin" ? (
-							<span
-								className={`px-2 py-1 rounded-full text-xs font-medium ${
-									(row.jumlah_sesi || 0) > 0
-										? "bg-green-100 text-green-800"
-										: "bg-gray-100 text-gray-600"
-								}`}>
-								<CheckCircle className="w-3 h-3 inline mr-1" />
-								{row.jumlah_sesi || 0}
-							</span>
-						) : null}
-					</div>
-				);
-			},
-			width: "120px",
-		},
-		{
-			name: "Mendatang",
-			selector: (row) => row.sesi_mendatang || 0,
-			sortable: true,
-			cell: (row) => {
-				return (
-					<div className="flex items-center justify-center">
-						{row.peran !== "admin" ? (
-							<span
-								className={`px-2 py-1 rounded-full text-xs font-medium ${
-									(row.sesi_mendatang || 0) > 0
-										? "bg-blue-100 text-blue-800"
-										: "bg-gray-100 text-gray-600"
-								}`}>
-								<Calendar className="w-3 h-3 inline mr-1" />
-								{row.sesi_mendatang || 0}
-							</span>
-						) : null}
-					</div>
-				);
-			},
-			width: "120px",
-		},
-		{
-			name: "Berlangsung",
-			selector: (row) => row.sesi_dimulai || 0,
-			sortable: true,
-			cell: (row) => {
-				return (
-					<div className="flex items-center justify-center">
-						{row.peran !== "admin" ? (
-							<span
-								className={`px-2 py-1 rounded-full text-xs font-medium ${
-									(row.sesi_dimulai || 0) > 0
-										? "bg-orange-100 text-orange-800"
-										: "bg-gray-100 text-gray-600"
-								}`}>
-								<Clock className="w-3 h-3 inline mr-1" />
-								{row.sesi_dimulai || 0}
-							</span>
-						) : null}
-					</div>
-				);
-			},
-			width: "120px",
-		},
-		{
-			name: "Selesai",
-			selector: (row) => row.sesi_selesai || 0,
-			sortable: true,
-			cell: (row) => {
-				return (
-					<div className="flex items-center justify-center">
-						{row.peran !== "admin" ? (
-							<span
-								className={`px-2 py-1 rounded-full text-xs font-medium ${
-									(row.sesi_selesai || 0) > 0
-										? "bg-yellow-100 text-yellow-800"
-										: "bg-gray-100 text-gray-600"
-								}`}>
-								<CheckCircle className="w-3 h-3 inline mr-1" />
-								{row.sesi_selesai || 0}
-							</span>
-						) : null}
-					</div>
-				);
-			},
-			width: "120px",
-		},
-		{
 			name: "Bergabung",
 			selector: (row) => (row.created_at ? formatDate(row.created_at) : ""),
 			sortable: true,
+		},
+		{
+			name: "Aksi",
+			cell: (row) => (
+				<div className="flex gap-2">
+					<button
+						onClick={() => handleDelete(row.id)}
+						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
+						<Trash className="w-4 h-4" />
+					</button>
+				</div>
+			),
 		},
 	];
 
@@ -386,13 +403,75 @@ export function AdminUsersPage() {
 							noHeader
 							expandableRows
 							expandableRowsComponent={({ data }) => (
-								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-									<p className="flex">
-										<span className="w-20 font-medium text-gray-900">
-											Email:
-										</span>
-										<span>{data.email || "Tidak ada"}</span>
-									</p>
+								<div className="p-5 text-sm text-gray-700 bg-gray-50 rounded-md space-y-3">
+									{/* Jika user adalah admin, tampilkan pesan singkat */}
+									{data.peran === "admin" ? (
+										<div className="text-xs text-gray-500">
+											Admin — tidak ada data sesi.
+										</div>
+									) : (
+										<div className="space-y-2">
+											<div className="flex items-center">
+												<span className="w-36 font-medium text-gray-900">
+													Di-Review:
+												</span>
+												<span
+													className={`px-2 py-1 rounded-full text-xs font-medium ${
+														(data.jumlah_sesi || 0) > 0
+															? "bg-green-100 text-green-800"
+															: "bg-gray-100 text-gray-600"
+													}`}>
+													<CheckCircle className="w-3 h-3 inline mr-1" />
+													{data.jumlah_sesi || 0}
+												</span>
+											</div>
+
+											<div className="flex items-center">
+												<span className="w-36 font-medium text-gray-900">
+													Mendatang:
+												</span>
+												<span
+													className={`px-2 py-1 rounded-full text-xs font-medium ${
+														(data.sesi_mendatang || 0) > 0
+															? "bg-blue-100 text-blue-800"
+															: "bg-gray-100 text-gray-600"
+													}`}>
+													<Calendar className="w-3 h-3 inline mr-1" />
+													{data.sesi_mendatang || 0}
+												</span>
+											</div>
+
+											<div className="flex items-center">
+												<span className="w-36 font-medium text-gray-900">
+													Berlangsung:
+												</span>
+												<span
+													className={`px-2 py-1 rounded-full text-xs font-medium ${
+														(data.sesi_dimulai || 0) > 0
+															? "bg-orange-100 text-orange-800"
+															: "bg-gray-100 text-gray-600"
+													}`}>
+													<Clock className="w-3 h-3 inline mr-1" />
+													{data.sesi_dimulai || 0}
+												</span>
+											</div>
+
+											<div className="flex items-center">
+												<span className="w-36 font-medium text-gray-900">
+													Selesai:
+												</span>
+												<span
+													className={`px-2 py-1 rounded-full text-xs font-medium ${
+														(data.sesi_selesai || 0) > 0
+															? "bg-yellow-100 text-yellow-800"
+															: "bg-gray-100 text-gray-600"
+													}`}>
+													<CheckCircle className="w-3 h-3 inline mr-1" />
+													{data.sesi_selesai || 0}
+												</span>
+											</div>
+										</div>
+									)}
 								</div>
 							)}
 							noDataComponent={

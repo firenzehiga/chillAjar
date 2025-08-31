@@ -1,19 +1,17 @@
-import React, { useState } from "react";
-import { LogOut, User, Settings, Clock, History, BookCopy } from "lucide-react";
+import { useState } from "react";
+import { LogOut, User, Clock, History, BookCopy } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
 import Swal from "sweetalert2";
 import { SessionsWidget } from "./SessionWidget";
 import useAppStore from "../stores/useAppStore";
-import { SessionBadge } from "./SessionReminder";
 
-export function UserMenu({ onNavigate, onLogout, userData, userRole }) {
+export function UserMenu({ onNavigate, onLogout, userRole }) {
+	const { isAuthenticated, userData } = useAppStore();
+
 	const [isOpen, setIsOpen] = useState(false);
 	const [showSessionsDropdown, setShowSessionsDropdown] = useState(false);
 	const [showMobileSessionsDropdown, setShowMobileSessionsDropdown] =
 		useState(false);
-
-	// Get state from Zustand store
-	const { isAuthenticated } = useAppStore();
 
 	const handleNavigate = (page) => {
 		onNavigate(page);
