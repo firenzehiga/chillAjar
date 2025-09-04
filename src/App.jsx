@@ -8,6 +8,7 @@ import { Navigation } from "./components/Navigation";
 import { Footer } from "./components/Footer";
 import { CourseSkeletonCard } from "./components/Skeleton/CourseSkeletonCard";
 import { CarouselSkeleton } from "./components/Skeleton/CarouselSkeleton";
+import { BookLoader } from "./components/User/BookLoader";
 import { NotFoundPage } from "./components/Fallback/NotFound";
 
 import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
@@ -175,6 +176,27 @@ function App() {
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 	}, [currentPage]);
+
+	// Memastikan scroll ke atas saat komponen pertama kali dimount (refresh page)
+	useEffect(() => {
+		// Reset scroll position immediately on mount/refresh
+		window.scrollTo(0, 0);
+
+		// Also handle the case where the page is still loading
+		const handleLoad = () => {
+			window.scrollTo(0, 0);
+		};
+
+		if (document.readyState === "loading") {
+			window.addEventListener("load", handleLoad);
+		} else {
+			window.scrollTo(0, 0);
+		}
+
+		return () => {
+			window.removeEventListener("load", handleLoad);
+		};
+	}, []);
 
 	const {
 		data: courses = [],
@@ -829,17 +851,50 @@ function App() {
 		const skeletonPages = ["home", "courses"];
 		const showSkeleton = isLoading && skeletonPages.includes(currentPage); // Hanya untuk pelanggan atau guest belum login
 
-		// Menampilkan skeleton loading untuk guest belum login
+		// Menampilkan skeleton loading untuk guest belum login dengan unsur pendidikan
 		if (showSkeleton) {
 			return (
 				<div className="py-8">
-					{currentPage === "home" && <CarouselSkeleton />}
-					<h2 className="text-2xl font-bold text-gray-900 mb-6">
-						{currentPage === "home" ? "Semua Kursus" : "Kursus Yang Tersedia"}
-					</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{/* Carousel Loading untuk home page */}
+					{currentPage === "home" && (
+						<>
+							{/* Hero Loading Section */}
+							<div className="text-center mb-12">
+								<div className="flex justify-center mb-6">
+									<BookLoader />
+								</div>
+							</div>
+							<div className="mb-12">
+								<div className="flex items-center justify-center gap-4 mb-6">
+									<div className="w-8 h-8 bg-yellow-200 rounded-full animate-pulse" />
+									<div className="h-6 bg-yellow-200 rounded-lg w-48 animate-pulse" />
+									<div className="w-8 h-8 bg-yellow-200 rounded-full animate-pulse" />
+								</div>
+								<CarouselSkeleton />
+							</div>
+						</>
+					)}
+
+					{/* Course Section Header */}
+					<div className="text-center mb-8">
+						<div className="flex gap-3 mb-4">
+							<div className="w-6 h-6 bg-yellow-300 rounded animate-pulse" />
+							<h2 className="text-2xl font-bold text-gray-900">
+								{currentPage === "home"
+									? "Semua Kursus"
+									: "Kursus Yang Tersedia"}
+							</h2>
+							<div className="w-6 h-6 bg-yellow-300 rounded animate-pulse" />
+						</div>
+						<div className="h-8 bg-gray-200 rounded w-2/5 ml-0 animate-pulse" />
+					</div>
+
+					{/* Educational Loading untuk course card */}
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 						{Array.from({ length: 6 }).map((_, idx) => (
-							<CourseSkeletonCard key={idx} />
+							<div key={idx} className="relative">
+								<CourseSkeletonCard />
+							</div>
 						))}
 					</div>
 				</div>
