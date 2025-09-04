@@ -1,4 +1,4 @@
-export function BookLoader({ message = "Loading" }) {
+export function BookLoader({ message = "" }) {
 	return (
 		<div
 			className="relative w-[200px] h-[140px]"

@@ -8,6 +8,14 @@ import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
 
+// Prevent browser from restoring scroll position on page reload
+if ("scrollRestoration" in history) {
+	history.scrollRestoration = "manual";
+}
+
+// Reset scroll position immediately when the app starts
+window.scrollTo(0, 0);
+
 createRoot(document.getElementById("root")).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>

@@ -71,21 +71,7 @@ export function Home({
 		<div className="space-y-8 ">
 			{/* Section "Your Sessions" dihapus */}
 			{/* Carousel Section - Di luar dari Your Sessions */}
-			{isLoading ? (
-				<>
-					<CarouselSkeleton />
-					<div>
-						<h2 className="text-2xl font-bold text-gray-900 mb-6">
-							Semua Kursus
-						</h2>
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-							{Array.from({ length: 6 }).map((_, idx) => (
-								<CourseSkeletonCard key={idx} />
-							))}
-						</div>
-					</div>
-				</>
-			) : !activeCourses || activeCourses.length === 0 ? (
+			{!activeCourses || activeCourses.length === 0 ? (
 				// Kondisi: tidak ada kursus dengan mentor aktif (bukan karena search)
 				<EmptyMentorsState context="courses" />
 			) : filteredCourses.length === 0 && searchQuery.trim() ? (
