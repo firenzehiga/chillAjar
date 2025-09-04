@@ -12,6 +12,7 @@ import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { BookLoader } from "../../../components/User/BookLoader";
 import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 import toast from "react-hot-toast";
@@ -272,7 +273,9 @@ export function MentorCoursesPage({ onNavigate }) {
 				</div>
 
 				{isLoading ? (
-					<LoadingSpinner message="Loading courses data..." />
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading courses" />
+					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}

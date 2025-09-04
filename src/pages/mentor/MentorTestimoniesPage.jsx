@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import DataTable from "react-data-table-component";
 import { BookOpen, AlertCircle, Star } from "lucide-react";
 import api from "../../api";
-import Swal from "sweetalert2";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { BookLoader } from "../../components/User/BookLoader";
 
 export function MentorTestimoniesPage() {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -181,9 +181,8 @@ export function MentorTestimoniesPage() {
 					<h2 className="text-xl font-semibold">Data Testimoni</h2>
 				</div>
 				{isLoading ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading course data...</p>
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading Testimonies" />
 					</div>
 				) : testimonies.length === 0 ? (
 					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
