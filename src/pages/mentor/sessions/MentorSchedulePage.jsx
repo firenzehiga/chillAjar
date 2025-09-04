@@ -12,7 +12,7 @@ import {
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { BookLoader } from "../../../components/User/BookLoader";
 export function MentorSchedulePage() {
 	const [startingSessionId, setStartingSessionId] = useState(null);
 	const [endingSessionId, setEndingSessionId] = useState(null);
@@ -385,9 +385,8 @@ export function MentorSchedulePage() {
 					<h2 className="text-xl font-semibold">Data Sesi</h2>
 				</div>
 				{isLoadingSessions || isLoadingTransactions ? (
-					<div className="flex items-center justify-center h-64 text-gray-600">
-						<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-						<p className="ml-3">Loading course data...</p>
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading sessions" />
 					</div>
 				) : (
 					<>

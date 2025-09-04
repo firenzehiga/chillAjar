@@ -848,7 +848,7 @@ function App() {
 							{/* Hero Loading Section */}
 							<div className="text-center mb-12">
 								<div className="flex justify-center mb-6">
-									<BookLoader />
+									<BookLoader 	size="medium" />
 								</div>
 							</div>
 							<div className="mb-12">
