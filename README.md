@@ -1,7 +1,7 @@
 # 📚 ChillAjar
 
 <div align="center">
-  <img src="./public/logo.png" alt="ChillAjar Logo" width="200" height="200">
+  <img src="./public/logo.png" alt="ChillAjar Logo" width="150" height="150">
   
   **Platform pembelajaran online yang menghubungkan siswa dengan mentor  berkualitas**
   
@@ -33,14 +33,12 @@
 ### 👨‍🏫 **Untuk Mentor**
 - **Manajemen Jadwal** - Atur ketersediaan waktu mengajar dengan mudah
 - **Student Management** - Kelola siswa dan riwayat pembelajaran
-- **Earnings Tracking** - Pantau penghasilan dan statistik mengajar
 - **Course Creation** - Buat dan kelola kursus sesuai keahlian
 
 ### 🛡️ **Untuk Admin**
 - **User Management** - Kelola semua pengguna platform
 - **Course Oversight** - Moderasi dan approve kursus baru
 - **Payment Processing** - Monitoring transaksi dan pembayaran
-- **Analytics Dashboard** - Insight mendalam tentang platform
 
 ---
 
@@ -61,97 +59,6 @@
 - **Loading Animations** - Interactive loading states
 - **Modern Components** - Reusable dan maintainable
 - **Accessible** - Memenuhi standar accessibility
-
----
-
-## 📱 Screenshots & Demo
-
-<div align="center">
-  
-  ### 🏠 Homepage
-  *Landing page yang menarik dengan hero section dan course preview*
-  
-  ### 📋 Dashboard
-  *Dashboard yang clean dan informatif untuk semua user roles*
-  
-  ### 💰 Booking System
-  *Sistem booking yang intuitif dengan real-time availability*
-  
-  ### 📊 Analytics
-  *Data visualization yang comprehensive untuk admin*
-  
-</div>
-
----
-
-## 🛠️ **Instalasi & Setup**
-
-### Prerequisites
-- Node.js 18+ 
-- npm atau yarn
-- Git
-
-### Quick Start
-```bash
-# Clone repository
-git clone https://github.com/firenzehiga/chillAjar.git
-
-# Masuk ke directory
-cd chillAjar
-
-# Install dependencies
-npm install
-
-# Jalankan development server
-npm run dev
-
-# Build untuk production
-npm run build
-```
-
-### Environment Variables
-```env
-VITE_API_URL=your_backend_api_url
-VITE_APP_NAME=ChillAjar
-```
-
----
-
-## 📂 **Struktur Project**
-
-```
-chillAjar/
-├── public/
-│   ├── logo.png
-│   ├── favicon.ico
-│   └── foto_kursus/
-├── src/
-│   ├── components/     # Reusable components
-│   ├── pages/         # Page components
-│   ├── stores/        # Zustand stores
-│   ├── utils/         # Helper functions
-│   └── assets/        # Static assets
-├── README.md
-├── LICENSE
-└── package.json
-```
-
----
-
-## 🤝 **Kontribusi & Development**
-
-### Development Guidelines
-- Gunakan conventional commits
-- Follow React best practices
-- Maintain component reusability
-- Write clean, documented code
-- Test pada multiple browsers
-
-### Branching Strategy
-- `main` - Production ready code
-- `develop` - Development branch
-- `feature/*` - New features
-- `bugfix/*` - Bug fixes
 
 ---
 
