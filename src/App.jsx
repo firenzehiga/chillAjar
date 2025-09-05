@@ -848,7 +848,7 @@ function App() {
 							{/* Hero Loading Section */}
 							<div className="text-center mb-12">
 								<div className="flex justify-center mb-6">
-									<BookLoader 	size="medium" />
+									<BookLoader size="medium" />
 								</div>
 							</div>
 							<div className="mb-12">
@@ -873,7 +873,7 @@ function App() {
 							</h2>
 							<div className="w-6 h-6 bg-yellow-300 rounded animate-pulse" />
 						</div>
-						<div className="h-8 bg-gray-200 rounded w-2/5 ml-0 animate-pulse" />
+						<div className="h-10 bg-gray-200 rounded w-2/5 ml-0 mt-7 animate-pulse" />
 					</div>
 
 					{/* Educational Loading untuk course card */}

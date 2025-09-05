@@ -1,7 +1,5 @@
-import React from "react";
 import { MentorCard } from "../components/MentorCard";
 import api from "../api";
-import defaultPhoto from "../../public/foto_kursus/default.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { MentorSkeletonCard } from "../components/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "../utils/getImageUrl";
@@ -20,7 +18,6 @@ export function MentorsPage({
 	} = useQuery({
 		queryKey: ["publicMentorsPage"],
 		queryFn: async () => {
-			console.log("🔥 FETCHING MENTORS - ", new Date().toLocaleTimeString());
 			const mentorsResponse = await api.get("/public/mentor");
 			return mentorsResponse.data;
 		},
