@@ -1,6 +1,4 @@
-import React from "react";
 import { CourseCard } from "../components/CourseCard";
-import { CourseSkeletonCard } from "../components/Skeleton/CourseSkeletonCard";
 import { EmptyMentorsState } from "../components/Fallback/EmptyMentorsState";
 import { Search } from "lucide-react";
 export function CoursesPage({
@@ -8,8 +6,7 @@ export function CoursesPage({
 	searchQuery,
 	setSearchQuery,
 	filteredCourses,
-	courses, // Tambahkan courses sebagai prop
-	isLoading,
+	courses,
 	userRole,
 }) {
 	// Filter hanya kursus dengan mentor aktif
@@ -28,20 +25,6 @@ export function CoursesPage({
 	// });
 
 	// Prioritaskan loading, lalu cek filteredCourses
-	if (isLoading) {
-		return (
-			<div className="py-8">
-				<h2 className="text-2xl font-bold text-gray-900 mb-3">
-					Kursus Tersedia
-				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-					{Array.from({ length: 6 }).map((_, idx) => (
-						<CourseSkeletonCard key={idx} />
-					))}
-				</div>
-			</div>
-		);
-	}
 
 	// Tidak ada kursus sama sekali atau tidak ada kursus dengan mentor aktif
 	if (!activeCourses || activeCourses.length === 0) {
@@ -53,7 +36,7 @@ export function CoursesPage({
 		return (
 			<div className="py-8">
 				<h2 className="text-2xl font-bold text-gray-900 mb-3">
-					Kursus Tersedia
+					Kursus Yang Tersedia
 				</h2>
 				{userRole !== "admin" && userRole !== "mentor" && (
 					<div className="relative py-4 w-1/2 mb-4">
@@ -90,7 +73,9 @@ export function CoursesPage({
 
 	return (
 		<div className="py-8">
-			<h2 className="text-2xl font-bold text-gray-900 mb-3">Kursus Tersedia</h2>
+			<h2 className="text-2xl font-bold text-gray-900 mb-3">
+				Kursus Yang Tersedia
+			</h2>
 			{userRole !== "admin" && userRole !== "mentor" && (
 				<div className="relative py-4 w-1/2 mb-4">
 					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />

@@ -886,7 +886,7 @@ function App() {
 							</h2>
 							<div className="w-6 h-6 bg-yellow-300 rounded animate-pulse" />
 						</div>
-						<div className="h-8 bg-gray-200 rounded w-2/5 ml-0 animate-pulse" />
+						<div className="h-10 bg-gray-200 rounded w-2/5 ml-0 animate-pulse" />
 					</div>
 
 					{/* Educational Loading untuk course card */}

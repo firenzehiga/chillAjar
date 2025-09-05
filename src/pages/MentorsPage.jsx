@@ -1,7 +1,5 @@
-import React from "react";
 import { MentorCard } from "../components/MentorCard";
 import api from "../api";
-import defaultPhoto from "../../public/foto_kursus/default.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { MentorSkeletonCard } from "../components/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "../utils/getImageUrl";
