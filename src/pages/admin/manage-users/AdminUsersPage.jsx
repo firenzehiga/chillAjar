@@ -15,7 +15,7 @@ import { AddUserModal } from "../../../components/Admin/AddUserModal";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { BookLoader } from "../../../components/User/BookLoader";
 import { ExportData } from "../../../components/Admin/ExportData";
 import { formatDate } from "../../../utils/dateFormatter";
 import useAppStore from "../../../stores/useAppStore";
@@ -365,7 +365,9 @@ export function AdminUsersPage() {
 				</div>
 
 				{isLoading ? (
-					<LoadingSpinner message="Loading user data..." />
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading Users" />
+					</div>
 				) : (
 					<>
 						{/* Filters */}

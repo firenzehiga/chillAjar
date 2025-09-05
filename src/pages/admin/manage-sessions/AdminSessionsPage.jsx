@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import LoadingSpinner from "../../../components/Admin/LoadingSpinner";
+import BookLoader from "../../../components/User/BookLoader";
 import { formatDate } from "../../../utils/dateFormatter";
 
 export function AdminSessionsPage({ onNavigate }) {
@@ -332,7 +332,9 @@ export function AdminSessionsPage({ onNavigate }) {
 				</div>
 				{/* Tampilan Loading hanya untuk initial load */}
 				{isLoadingSessions || isLoadingTransactions ? (
-					<LoadingSpinner message="Loading session data..." />
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading Sessions" />
+					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}

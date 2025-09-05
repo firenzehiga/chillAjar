@@ -6,7 +6,7 @@ import { Gift, Plus, Pencil, Trash, AlertCircle, Eye } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { BookLoader } from "../../../components/User/BookLoader";
 
 export function AdminPackagesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -245,7 +245,9 @@ export function AdminPackagesPage({ onNavigate }) {
 
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
-					<LoadingSpinner message="Loading packages data..." />
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading Packages" />
+					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}
