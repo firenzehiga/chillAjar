@@ -13,7 +13,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { BookLoader } from "../../../components/User/BookLoader";
 import { formatDate } from "../../../utils/dateFormatter";
 
 export function AdminMentorsPage({ onNavigate }) {
@@ -330,7 +330,9 @@ export function AdminMentorsPage({ onNavigate }) {
 				</div>
 				{/* Tampilan Loading hanya untuk initial load */}
 				{isLoading ? (
-					<LoadingSpinner message="Loading mentors data..." />
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading Mentors" />
+					</div>
 				) : (
 					// Jika data sudah ada, tampilkan DataTable
 					<>

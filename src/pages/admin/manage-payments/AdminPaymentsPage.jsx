@@ -13,11 +13,10 @@ import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import toast from "react-hot-toast";
-import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { BookLoader } from "../../../components/User/BookLoader";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 import { ExportData } from "../../../components/Admin/ExportData";
 import { formatDate } from "../../../utils/dateFormatter";
-import { form } from "framer-motion/client";
 
 export function AdminPaymentsPage() {
 	const [verifikasiTransaksiId, setVerifikasiTransaksiId] = useState(null);
@@ -671,7 +670,9 @@ export function AdminPaymentsPage() {
 					</div>
 				</div>
 				{isLoading ? (
-					<LoadingSpinner message="Loading payments data..." />
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading Payments" />
+					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}

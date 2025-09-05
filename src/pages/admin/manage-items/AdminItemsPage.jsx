@@ -6,7 +6,7 @@ import api from "../../../api.jsx";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { BookLoader } from "../../../components/User/BookLoader";
 
 export function AdminItemsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -206,7 +206,9 @@ export function AdminItemsPage({ onNavigate }) {
 
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
-					<LoadingSpinner message="Loading items data..." />
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading Items" />
+					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}

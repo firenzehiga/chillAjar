@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { LoadingSpinner } from "../../../components/Admin/LoadingSpinner";
+import { BookLoader } from "../../../components/User/BookLoader";
 import { ExportData } from "../../../components/Admin/ExportData";
 import { formatDate } from "../../../utils/dateFormatter";
 export function AdminTestimoniesPage({ onNavigate }) {
@@ -296,7 +296,9 @@ export function AdminTestimoniesPage({ onNavigate }) {
 					</div>
 				</div>
 				{isLoading ? (
-					<LoadingSpinner message="Loading testimonies..." />
+					<div className="flex justify-center py-20">
+						<BookLoader size="small" message="Loading Testimonies" />
+					</div>
 				) : (
 					<>
 						{/* Small loading indicator untuk saat update */}
