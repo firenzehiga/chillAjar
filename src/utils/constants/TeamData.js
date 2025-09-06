@@ -1,9 +1,5 @@
 import higa from "../../assets/higa.png";
-import fatiya from "../../assets/fatiya.png";
 import eko from "../../assets/eko.png";
-import faiz from "../../assets/faiz.png";
-import wildan from "../../assets/wildan.png";
-import arby from "../../assets/arby.png";
 import farrel from "../../assets/farrel.png";
 const teamsData = [
 	{

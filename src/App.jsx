@@ -198,6 +198,13 @@ function App() {
 		};
 	}, []);
 
+	// Halaman yang membutuhkan data courses
+	const pagesThatNeedCourses = ["home", "courses", "mentors"];
+	const shouldFetchCourses =
+		authChecked &&
+		pagesThatNeedCourses.includes(currentPage) &&
+		(!isAuthenticated || userRole === "pelanggan");
+
 	const {
 		data: courses = [],
 		isLoading,
@@ -290,6 +297,7 @@ function App() {
 			// console.log("Mapped Courses:", mappedCourses); // Debug: Periksa data setelah pemetaan
 			return mappedCourses;
 		},
+		enabled: shouldFetchCourses, // Hanya fetch jika halaman membutuhkan data courses
 		staleTime: 60 * 1000, // 30 detik (sangat pendek)
 		cacheTime: 2 * 60 * 1000, // 2 menit cache
 		refetchOnWindowFocus: true, // Refetch saat focus (safety)

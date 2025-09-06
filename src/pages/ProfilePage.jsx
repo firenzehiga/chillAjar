@@ -92,7 +92,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 						<div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-8 md:translate-x-0">
 							<img
 								src={getImageUrl(
-									userData?.foto_profil || "foto_profil/default.png",
+									userData?.foto_profil,
 									"/foto_mentor/default.png"
 								)}
 								alt={currentUser.name}

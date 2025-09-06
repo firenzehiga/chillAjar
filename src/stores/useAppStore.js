@@ -11,7 +11,10 @@ const useAppStore = create((set, get) => ({
 	authChecked: false,
 
 	// Navigation State
-	currentPage: "home",
+	currentPage:
+		typeof window !== "undefined"
+			? window.location.pathname.slice(1) || "home"
+			: "home",
 
 	// UI State
 	showAuthModal: false,
