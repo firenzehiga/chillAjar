@@ -7,10 +7,10 @@
   
   Solusi digital modern untuk belajar berbagai keterampilan dengan mentor terpercaya, belajar dengan santai, dan sistem pembayaran yang mudah!
 
-  ![React](https://img.shields.io/badge/React-18-blue.svg)
-  ![Vite](https://img.shields.io/badge/Vite-5-purple.svg)
-  ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-teal.svg)
-  ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)
+[![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=white&style=flat-square)](https://react.dev) 
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38B2AC?logo=tailwindcss&logoColor=white&style=flat-square)](https://tailwindcss.com) 
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=Vite&logoColor=white)](https://vite.dev/)
+[![JavaScript](https://shields.io/badge/JavaScript-F7DF1E?logo=JavaScript&logoColor=000&style=flat-square)](http://javascript.com/)
 </div>
 
 ---
