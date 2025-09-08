@@ -434,8 +434,7 @@ function App() {
 		course,
 		topic,
 		customLocation,
-		selectedPackage,
-		jumlahSementara
+		selectedPackage
 	) => {
 		if (!isAuthenticated) {
 			setShowAuthModal(true);
@@ -495,17 +494,13 @@ function App() {
 					}
 				);
 
-				// console.log("Sesi response:", response.data); // mau tau apakah data sesi sudah kekirim
-
 				// Simpan data sesi ke state booking
 				const sesiBaru = response.data.sesi;
 				// Pastikan sesiBaru menyertakan paket_id (fallback ke selectedPackage jika backend belum mengembalikan)
 				sesiBaru.paket_id = sesiBaru.paket_id ?? selectedPackage?.id ?? null;
 				let paketId = sesiBaru.paket_id ?? "";
 
-				// Calculate price based on mode
-				const mentorPrice = selectedMentor.biayaPerSesi || 0;
-
+				// 🎯 DATA BOOKING UNTUK PaymentModal
 				const booking = {
 					course,
 					mentor: selectedMentor,
@@ -530,10 +525,9 @@ function App() {
 						: null,
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
-					jumlahSementara: jumlahSementara ?? 0,
+					jumlahSementara: sesiBaru.jumlahSementara ?? 0,
 				};
 
-				console.log("booking.paket", booking.paket);
 				setCurrentBooking(booking);
 				setSelectedMentor(null);
 				setBookingCourse(null);

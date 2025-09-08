@@ -162,8 +162,7 @@ export function BookingModal({
 				selectedCourse,
 				topic,
 				selectedLocation,
-				selectedPackage,
-				totalFinalPrice
+				selectedPackage
 			);
 			onClose();
 		} catch (err) {
