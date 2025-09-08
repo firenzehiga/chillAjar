@@ -435,8 +435,7 @@ function App() {
 		course,
 		topic,
 		customLocation,
-		selectedPackage,
-		jumlahSementara
+		selectedPackage
 	) => {
 		if (!isAuthenticated) {
 			setShowAuthModal(true);
@@ -497,8 +496,6 @@ function App() {
 					}
 				);
 
-				// console.log("Sesi response:", response.data); // mau tau apakah data sesi sudah kekirim
-
 				// Simpan data sesi ke state booking
 				const sesiBaru = response.data.sesi;
 				// Pastikan sesiBaru menyertakan paket_id (fallback ke selectedPackage jika backend belum mengembalikan)
@@ -511,6 +508,7 @@ function App() {
 						? selectedMentor.biayaPerSesiOffline || selectedMentor.biayaPerSesi
 						: 0;
 
+				// 🎯 DATA BOOKING UNTUK PaymentModal
 				const booking = {
 					course,
 					mentor: selectedMentor,
