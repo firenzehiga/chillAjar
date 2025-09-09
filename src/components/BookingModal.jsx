@@ -54,13 +54,10 @@ export function BookingModal({
 	const finalPackagePrice = Math.max(basePackagePrice - packageDiscount, 0);
 	const totalFinalPrice = finalPackagePrice + mentorFee;
 
-	// Memastikan hanya menggunakan jadwal dengan gayaMengajar valid
-	const filteredSchedules = (
-		selectedCourse?.schedules ||
-		selectedCourse?.mentors?.[0]?.schedules ||
-		[]
-	).filter((s) => s.gayaMengajar === "online" || s.gayaMengajar === "offline");
-
+	// Ambil jadwal dari selectedCourse yang sudah difilter agar hanya jadwal yang belum memiliki data sesi dan transaksi
+	const filteredSchedules = (selectedCourse?.jadwal_kursus || []).filter(
+		(s) => s.gayaMengajar === "online" || s.gayaMengajar === "offline"
+	);
 	// Buat available modes dari jadwal
 	const availableModes = Array.from(
 		new Set(filteredSchedules.map((s) => s.gayaMengajar))
@@ -69,7 +66,7 @@ export function BookingModal({
 	useEffect(() => {
 		if (filteredSchedules.length === 0) {
 			setErrorMsg(
-				"Tidak ada jadwal dengan gayaMengajar valid (online/offline). Silakan hubungi admin atau mentor."
+				"Mohon maaf, tidak ada jadwal tersedia untuk kursus ini. Silakan pilih kursus lain."
 			);
 		} else {
 			setErrorMsg("");
