@@ -209,6 +209,7 @@ function App() {
 		data: courses = [],
 		isLoading,
 		error,
+		refetch,
 	} = useQuery({
 		queryKey: ["courses", isAuthenticated],
 		queryFn: async () => {
@@ -288,61 +289,29 @@ function App() {
 					},
 				],
 				// PENTING: mapping jadwalKursus ke jadwal_kursus agar konsisten di seluruh frontend
-				jadwal_kursus: Array.isArray(course.jadwal_kursus)
-					? course.jadwal_kursus
-					: Array.isArray(course.jadwalKursus)
-					? course.jadwalKursus
-					: [],
+				jadwal_kursus: course.jadwal_kursus || [],
 			}));
+
 			// console.log("Mapped Courses:", mappedCourses); // Debug: Periksa data setelah pemetaan
 			return mappedCourses;
 		},
 		enabled: shouldFetchCourses, // Hanya fetch jika halaman membutuhkan data courses
-		staleTime: 60 * 1000, // 30 detik (sangat pendek)
-		cacheTime: 2 * 60 * 1000, // 2 menit cache
-		refetchOnWindowFocus: true, // Refetch saat focus (safety)
-		refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
-		retry: 1,
-	});
-	// Fetch data jadwal dengan React Query
-	const {
-		data: schedules = [],
-		refetch: refetchSchedules,
-		// isLoading: isLoadingSchedules,
-		// error: scheduleError,
-	} = useQuery({
-		queryKey: ["schedules", selectedCourse?.id],
-		queryFn: async () => {
-			if (!selectedCourse?.id) return [];
-			// Hanya fetch jadwal jika user login
-			if (!isAuthenticated) return []; // Jika tidak login, tidak perlu fetch jadwal
-
-			const response = await api.get(
-				`/jadwal-kursus?kursus_id=${selectedCourse.id}`
-			);
-			return response.data.map((schedule) => ({
-				id: schedule.id,
-				kursus_id: schedule.kursus_id,
-				tanggal: schedule.tanggal, // Pastikan format: YYYY-MM-DD
-				waktu: schedule.waktu, // Pastikan format: HH:MM
-				keterangan: schedule.keterangan || "Available",
-			}));
-		},
-		enabled: !!selectedCourse?.id, // Hanya fetch jika kursus dipilih
-		staleTime: 0, // Keep 0 for real-time schedule data
-		cacheTime: 0, // Keep 0 for real-time schedule data
-		refetchOnWindowFocus: false,
-		retry: 1,
+		// staleTime: 60 * 1000, // 30 detik (sangat pendek)
+		// cacheTime: 2 * 60 * 1000, // 2 menit cache
+		// refetchOnWindowFocus: true, // Refetch saat focus (safety)
+		// refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
+		// retry: 1,
 	});
 
-	// Refetch schedules setiap kali BookingModal dibuka
-	// Setiap kali BookingModal dibuka (yaitu saat selectedMentor dan bookingCourse berubah),
-	// jadwal akan di-refetch dari server, sehingga data selalu fresh dan sesuai database terbaru.
+	// Get schedules dari course data yang sudah terfilter di backend
+	const schedules = bookingCourse?.jadwal_kursus || [];
+
+	// Refetch courses setiap kali BookingModal dibuka untuk data terbaru
 	useEffect(() => {
-		if (selectedMentor && bookingCourse && refetchSchedules) {
-			refetchSchedules();
+		if (selectedMentor && bookingCourse) {
+			refetch(); // Refetch courses untuk update jadwal terbaru
 		}
-	}, [selectedMentor, bookingCourse, refetchSchedules]);
+	}, [selectedMentor, bookingCourse, refetch]);
 
 	// Fungsi untuk memeriksa apakah pengguna sudah terautentikasi
 	useEffect(() => {
@@ -443,8 +412,11 @@ function App() {
 
 		if (selectedMentor) {
 			try {
+				// Ambil schedules dari bookingCourse yang sudah terfilter
+				const courseSchedules = bookingCourse?.jadwal_kursus || [];
+
 				// Temukan jadwal_kursus_id yang sesuai dengan tanggal & waktu yang dipilih
-				const selectedSchedule = schedules.find(
+				const selectedSchedule = courseSchedules.find(
 					(s) =>
 						s.kursus_id === course.id &&
 						s.tanggal === date.toISOString().split("T")[0] &&
@@ -1426,7 +1398,6 @@ function App() {
 						selectedPackage={selectedPackage} // Buat modal menerima data selectedPackage
 						onClose={handleBookingModalClose}
 						onSubmit={handleBookingSubmit}
-						schedules={schedules || []}
 						location={location}
 					/>
 				)}

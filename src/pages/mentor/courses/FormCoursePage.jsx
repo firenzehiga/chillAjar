@@ -218,6 +218,7 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 					);
 					// console.log("Jadwal API Response:", jadwalResponse.data);
 				}
+				queryClient.invalidateQueries(["courses"]);
 				queryClient.invalidateQueries(["mentorCourses"]);
 				toast.success(
 					`Kursus ${isEditMode ? "diperbarui" : "dibuat"} berhasil!`

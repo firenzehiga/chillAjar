@@ -371,6 +371,7 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 					// console.log("Jadwal API Response:", jadwalResponse.data);
 				}
 				queryClient.invalidateQueries(["adminMentors"]);
+				queryClient.invalidateQueries(["courses"]);
 
 				toast.success(
 					isEditMode ? "Kursus berhasil diperbarui." : "Kursus berhasil dibuat."

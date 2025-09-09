@@ -99,6 +99,7 @@ export function AdminPaymentsPage() {
 				});
 				// invalidate data setelah sukses (refresh table)
 				queryClient.invalidateQueries(["adminPayments"]);
+				queryClient.invalidateQueries(["courses"]);
 			} catch (err) {
 				// error ditangani di toast + onError mutation jika ada
 			} finally {
@@ -147,6 +148,7 @@ export function AdminPaymentsPage() {
 					error: "Gagal menolak pembayaran",
 				});
 				queryClient.invalidateQueries(["adminPayments"]);
+				queryClient.invalidateQueries(["courses"]);
 			} catch (err) {
 				// handled by toast
 			} finally {
