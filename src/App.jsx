@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import showToast from "./components/User/customToast";
 import { ListChecks, LucideShieldQuestion } from "lucide-react";
-import { ListChecks } from "lucide-react";
 import { MentorCard } from "./components/MentorCard";
 import { BookingModal } from "./components/BookingModal";
 import { PaymentModal } from "./components/PaymentModal";
