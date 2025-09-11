@@ -9,9 +9,11 @@ import {
 	CheckCircle,
 	Clock,
 	Trash,
+	GraduationCap,
 } from "lucide-react";
 import api from "../../../api";
 import { AddUserModal } from "../../../components/Admin/AddUserModal";
+import { AddMentorModal } from "../../../components/Admin/AddMentorModal";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
@@ -25,6 +27,7 @@ export function AdminUsersPage() {
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [showAddModal, setShowAddModal] = useState(false);
+	const [showAddMentorModal, setShowAddMentorModal] = useState(false);
 	const [roleFilter, setRoleFilter] = useState("all");
 
 	const queryClient = useQueryClient();
@@ -53,6 +56,11 @@ export function AdminUsersPage() {
 
 	// Tambahkan user baru ke cache query
 	const handleUserAdded = (newUser) => {
+		refetch();
+	};
+
+	// Tambahkan mentor baru ke cache query
+	const handleMentorAdded = (newMentor) => {
 		refetch();
 	};
 
@@ -356,6 +364,12 @@ export function AdminUsersPage() {
 							variant="success"
 						/>
 						<button
+							onClick={() => setShowAddMentorModal(true)}
+							className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+							<GraduationCap className="w-4 h-4 mr-2" />
+							Add Mentor
+						</button>
+						<button
 							onClick={() => setShowAddModal(true)}
 							className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
 							<UserPlus className="w-4 h-4 mr-2" />
@@ -511,6 +525,12 @@ export function AdminUsersPage() {
 				isOpen={showAddModal}
 				onClose={() => setShowAddModal(false)}
 				onUserAdded={handleUserAdded}
+			/>
+
+			<AddMentorModal
+				isOpen={showAddMentorModal}
+				onClose={() => setShowAddMentorModal(false)}
+				onMentorAdded={handleMentorAdded}
 			/>
 		</div>
 	);
