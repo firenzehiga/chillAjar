@@ -48,7 +48,7 @@ export function CourseSelectionModal({
 										{course.mentor && course.mentor.user && (
 											<img
 												src={getImageUrl(
-													course.courseImage,
+													course.mentor.user.foto_profil,
 													"/foto_kursus/default.jpg"
 												)}
 												alt={course.mentor.user.nama || "Nama Mentor"}
@@ -67,7 +67,7 @@ export function CourseSelectionModal({
 												</span>
 											</div>
 											<span className="block text-xs text-gray-500 mt-0.5 truncate">
-												{course.mentor?.user?.nama}
+												{course.mentor.user.nama}
 											</span>
 										</div>
 									</div>
@@ -110,9 +110,8 @@ export function CourseSelectionModal({
 												);
 											})()} */}
 										{/* Yang Sekarang Dipakai: Menampilkan gaya mengajar */}
-										{course.schedules &&
-											course.schedules.length > 0 &&
-											(() => {
+										{(() => {
+											if (course.schedules && course.schedules.length > 0) {
 												const hasOnline = course.schedules.some(
 													(sch) => sch.gayaMengajar?.toLowerCase() === "online"
 												);
@@ -135,7 +134,16 @@ export function CourseSelectionModal({
 														</span>
 													</div>
 												);
-											})()}
+											} else {
+												return (
+													<div className="text-xs text-gray-400 mt-1">
+														<span className="text-red-600 font-medium">
+															Belum ada jadwal
+														</span>{" "}
+													</div>
+												);
+											}
+										})()}
 									</div>
 								</button>
 							))

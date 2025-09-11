@@ -99,10 +99,10 @@ export function CourseCard({ course, onClick }) {
 							const schedules = course.jadwal_kursus || [];
 							if (!schedules.length) {
 								return (
-									<>
-										<FileQuestion className="w-4 h-4 mr-1 text-blue-800" />
-										Tidak ada jadwal
-									</>
+									<div className="flex items-center text-gray-600">
+										<FileQuestion className="w-4 h-4 mr-1" />
+										Jadwal belum tersedia
+									</div>
 								);
 							}
 							// Ambil semua mode valid (online/offline) dari jadwal_kursus
