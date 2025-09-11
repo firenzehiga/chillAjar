@@ -11,6 +11,7 @@ import { CarouselSkeleton } from "./components/Skeleton/CarouselSkeleton";
 import { BookLoader } from "./components/User/BookLoader";
 import { NotFoundPage } from "./components/Fallback/NotFound";
 
+import { FaQWidget } from "./components/FaQWidget"; // Impor komponen FaQWidget
 import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
 import { HelpButton } from "./components/User/HelpButton"; // Impor komponen HelpButton
 import {
@@ -329,13 +330,9 @@ function App() {
 		return () => unlisten();
 	}, []);
 
+	// Filtered course gunanaya untuk tampilan card course di coursepage dan home
 	const filteredCourses = courses.filter(
-		(course) =>
-			course.mentor &&
-			course.mentor.status === "active" && // hanya kursus dengan mentor aktif
-			(course.courseName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				(course.category &&
-					course.category.toLowerCase().includes(searchQuery.toLowerCase())))
+		(course) => course.mentor && course.mentor.status === "active" // hanya kursus dengan mentor aktif
 	);
 
 	// Import store actions yang diperlukan untuk event handlers
@@ -374,6 +371,23 @@ function App() {
 	const handleCoursePackageSelect = (course) => {
 		if (!isAuthenticated) {
 			setShowAuthModal(true);
+			return;
+		}
+
+		// Kalok kursus tidak ada jadwal, tampilkan toast error
+		toast.dismiss(); // Hapus semua toast sebelumnya
+		if (course.schedules.length === 0) {
+			toast.error("Maaf, belum ada jadwal yang bisa pesan", {
+				duration: 1000,
+				position: "top-center",
+				style: {
+					background: "#fef2f2",
+					border: "1px solid #ef4444",
+					padding: "16px",
+					borderRadius: "8px",
+					minWidth: "400px",
+				},
+			});
 			return;
 		}
 
@@ -739,6 +753,23 @@ function App() {
 	const handleCourseClick = (course) => {
 		if (!isAuthenticated) {
 			setShowAuthModal(true);
+			return;
+		}
+
+		// Kalok kursus tidak ada jadwal, tampilkan toast error
+		toast.dismiss(); // Hapus semua toast sebelumnya
+		if (!course?.jadwal_kursus || course.jadwal_kursus.length === 0) {
+			toast.error("Maaf, belum ada jadwal yang bisa pesan", {
+				duration: 1000,
+				position: "top-center",
+				style: {
+					background: "#fef2f2",
+					border: "1px solid #ef4444",
+					padding: "16px",
+					borderRadius: "8px",
+					minWidth: "400px",
+				},
+			});
 			return;
 		}
 
@@ -1193,7 +1224,7 @@ function App() {
 								</div>
 							</div>
 
-							<h2 className="text-2xl font-bold text-gray-900 mb-6">
+							{/* <h2 className="text-2xl font-bold text-gray-900 mb-6">
 								Pilih Mentor untuk {selectedCourse.courseName}
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -1210,7 +1241,7 @@ function App() {
 											schedules={schedules}
 										/>
 									))}
-							</div>
+							</div> */}
 						</div>
 					) : (
 						<CoursesPage
@@ -1498,9 +1529,14 @@ function App() {
 								</motion.div>
 							)}
 						</AnimatePresence>
-						{/* Tombol utama tanda tanya */}
+
+						{/* Help Button: Menu untuk bantuan */}
 						<HelpButton onClick={() => setShowHelpMenu((v) => !v)} />
+
+						{/* FaQ Widget: Menu untuk FAQ */}
+						<FaQWidget />
 					</div>
+
 					{/* Modal Alur/Langkah Pemesanan */}
 					<GuideModal
 						show={showFlowModal}

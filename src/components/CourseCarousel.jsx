@@ -66,8 +66,8 @@ export function CourseCarousel({ courses, onCourseClick }) {
                                                 - Jika ada jadwal tapi tidak ada mode valid, tampilkan badge abu-abu "Tidak ada jadwal dengan mode valid"
                                             */}
 											{schedules.length === 0 ? (
-												<span className="bg-gray-400 text-white px-4 py-1 rounded-full text-sm">
-													Tidak ada jadwal
+												<span className="bg-red-500 text-white px-4 py-1 rounded-full text-sm">
+													Jadwal belum tersedia
 												</span>
 											) : (
 												(() => {
@@ -111,7 +111,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 												})()
 											)}
 										</div>
-										<span className="text-white">
+										<span className="bg-yellow-600 text-white px-4 py-1 rounded-full text-sm">
 											Mulai dari Rp
 											{course.price_per_hour.toLocaleString("id-ID")}/sesi
 										</span>

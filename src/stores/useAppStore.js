@@ -35,6 +35,14 @@ const useAppStore = create((set, get) => ({
 	currentBooking: null,
 	searchQuery: "",
 
+	// Filter State
+	courseFilters: {
+		priceRange: [0, 100000],
+		mentorRating: 0,
+		availability: "",
+		mode: "",
+	},
+
 	// Testimoni State
 	testimoniSession: null,
 	isSubmittingTestimoni: false,
@@ -66,6 +74,126 @@ const useAppStore = create((set, get) => ({
 	setBookingCourse: (course) => set({ bookingCourse: course }),
 	setCurrentBooking: (booking) => set({ currentBooking: booking }),
 	setSearchQuery: (query) => set({ searchQuery: query }),
+
+	// Actions - Course Filters
+	setCourseFilters: (filters) => set({ courseFilters: filters }),
+	updateCourseFilter: (key, value) =>
+		set((state) => ({
+			courseFilters: { ...state.courseFilters, [key]: value },
+		})),
+	resetCourseFilters: () =>
+		set({
+			courseFilters: {
+				priceRange: [0, 100000],
+				mentorRating: 0,
+				availability: "",
+				mode: "",
+			},
+			searchQuery: "",
+		}),
+
+	// Course Filtering Logic
+	applyFilters: (courses, searchQuery, filters) => {
+		return courses.filter((course) => {
+			// Filter berdasarkan search query
+			if (searchQuery?.trim()) {
+				const query = searchQuery.toLowerCase();
+				const courseName = course.courseName?.toLowerCase() || "";
+				const courseDescription = course.courseDescription?.toLowerCase() || "";
+				if (!courseName.includes(query) && !courseDescription.includes(query)) {
+					return false;
+				}
+			}
+
+			// Filter berdasarkan mode pembelajaran
+			if (filters.mode) {
+				const schedules = course.jadwal_kursus || [];
+				const hasMode = schedules.some(
+					(schedule) =>
+						schedule.gayaMengajar?.toLowerCase() === filters.mode.toLowerCase()
+				);
+				if (!hasMode) return false;
+			}
+
+			// Filter berdasarkan ketersediaan jadwal
+			if (filters.availability) {
+				const now = new Date();
+				const today = new Date(
+					now.getFullYear(),
+					now.getMonth(),
+					now.getDate()
+				);
+				const schedules = course.jadwal_kursus || [];
+
+				const hasAvailability = schedules.some((schedule) => {
+					if (!schedule.tanggal) return false;
+					const scheduleDate = new Date(schedule.tanggal);
+
+					if (filters.availability === "today") {
+						return scheduleDate.toDateString() === today.toDateString();
+					} else if (filters.availability === "week") {
+						const weekFromNow = new Date(today);
+						weekFromNow.setDate(today.getDate() + 7);
+						return scheduleDate >= today && scheduleDate <= weekFromNow;
+					}
+					return false;
+				});
+				if (!hasAvailability) return false;
+			}
+
+			// Filter berdasarkan rentang harga
+			if (filters.priceRange && filters.priceRange[1] < 100000) {
+				let coursePrice = 0;
+
+				// Cek packages terlebih dahulu
+				if (course.packages && course.packages.length > 0) {
+					const packagePrices = course.packages.map((pkg) => {
+						let finalPrice = 0;
+
+						// Jika package memiliki items, hitung total dari items
+						if (pkg.items && pkg.items.length > 0) {
+							const itemsTotal = pkg.items.reduce((total, item) => {
+								const itemPrice = item.harga || item.price || 0;
+								const itemDiscount = item.diskon || item.discount || 0;
+								const discountedPrice =
+									itemPrice - (itemPrice * itemDiscount) / 100;
+								return total + discountedPrice;
+							}, 0);
+
+							// Apply package-level discount jika ada
+							const packageDiscount = pkg.diskon || pkg.discount || 0;
+							finalPrice = itemsTotal - (itemsTotal * packageDiscount) / 100;
+						}
+						// Jika tidak ada items, gunakan harga package langsung
+						else {
+							const basePrice =
+								pkg.totalPrice || pkg.harga_dasar || pkg.price || 0;
+							const packageDiscount = pkg.diskon || pkg.discount || 0;
+							finalPrice = basePrice - (basePrice * packageDiscount) / 100;
+						}
+
+						return finalPrice;
+					});
+
+					coursePrice = Math.min(...packagePrices);
+				}
+				// Jika tidak ada package, cek biaya mentor
+				else if (course.mentor && course.mentor.biayaPerSesi) {
+					coursePrice = course.mentor.biayaPerSesi;
+				}
+
+				if (coursePrice > filters.priceRange[1]) return false;
+			}
+
+			// Filter berdasarkan rating mentor
+			if (filters.mentorRating > 0) {
+				const mentorRating = course.mentor?.rating || 0;
+				if (mentorRating < filters.mentorRating) return false;
+			}
+
+			return true;
+		});
+	},
 
 	// Actions - Testimoni
 	setTestimoniSession: (session) => set({ testimoniSession: session }),
@@ -130,6 +258,12 @@ const useAppStore = create((set, get) => ({
 			showTestimoniModal: false,
 			testimoniSession: null,
 			searchQuery: "",
+			courseFilters: {
+				priceRange: [0, 100000],
+				mentorRating: 0,
+				availability: "",
+				mode: "",
+			},
 		});
 	},
 

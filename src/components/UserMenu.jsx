@@ -134,7 +134,7 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 								">
 									<SessionsWidget
 										variant="compact-dropdown"
-										maxSessions={3}
+										maxSessions={10}
 										onNavigate={(page) => {
 											onNavigate(page);
 											setShowSessionsDropdown(false);
