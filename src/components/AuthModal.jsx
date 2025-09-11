@@ -98,10 +98,11 @@ export function AuthModal({ defaultMode = "login" }) {
 				setError("Silakan isi semua kolom yang diperlukan");
 				return;
 			}
-			if (formData.role === "mentor" && !supportingDoc) {
-				setError("Silakan upload dokumen pendukung.");
-				return;
-			}
+			// Remove mentor document validation since mentor option is hidden
+			// if (formData.role === "mentor" && !supportingDoc) {
+			// 	setError("Silakan upload dokumen pendukung.");
+			// 	return;
+			// }
 		}
 
 		setIsLoading(true);
@@ -127,7 +128,7 @@ export function AuthModal({ defaultMode = "login" }) {
 				});
 				handleAuthSuccess(user.peran.toLowerCase(), user);
 			} else {
-				// Gunakan FormData agar bisa upload file
+				// Gunakan FormData agar bisa upload file (jika diperlukan di masa depan)
 				const formPayload = new FormData();
 				formPayload.append("nama", formData.name);
 				formPayload.append("email", formData.email);
@@ -135,9 +136,10 @@ export function AuthModal({ defaultMode = "login" }) {
 				formPayload.append("nomorTelepon", formData.phone);
 				formPayload.append("alamat", formData.address);
 				formPayload.append("peran", formData.role);
-				if (formData.role === "mentor" && supportingDoc) {
-					formPayload.append("dokumen_pendukung", supportingDoc);
-				}
+				// Document upload disabled since mentor registration is hidden
+				// if (formData.role === "mentor" && supportingDoc) {
+				// 	formPayload.append("dokumen_pendukung", supportingDoc);
+				// }
 
 				const response = await api.post("/register", formPayload, {
 					headers: { "Content-Type": "multipart/form-data" },
@@ -330,8 +332,8 @@ export function AuthModal({ defaultMode = "login" }) {
 										<label className="block text-sm font-medium text-gray-700 mb-3">
 											Daftar sebagai
 										</label>
-										<div className="grid grid-cols-2 gap-2">
-											{/* Pelanggan Option */}
+										<div className="grid grid-cols-1 gap-2">
+											{/* Pelanggan Option - Full width karena mentor di-hide */}
 											<label
 												className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
 													formData.role === "pelanggan"
@@ -371,7 +373,8 @@ export function AuthModal({ defaultMode = "login" }) {
 												)}
 											</label>
 
-											{/* Mentor Option */}
+											{/* Mentor Option - HIDDEN/COMMENTED */}
+											{/* 
 											<label
 												className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
 													formData.role === "mentor"
@@ -410,9 +413,12 @@ export function AuthModal({ defaultMode = "login" }) {
 													</div>
 												)}
 											</label>
+											*/}
 										</div>
 									</div>
 
+									{/* Document Upload Section - HIDDEN/COMMENTED */}
+									{/* 
 									{formData.role === "mentor" && (
 										<div className="mb-4">
 											<label className="block text-sm font-medium text-gray-700 mb-3">
@@ -424,7 +430,6 @@ export function AuthModal({ defaultMode = "login" }) {
 													(PDF/JPG/PNG, max 5MB)
 												</div>
 
-												{/* Upload Area */}
 												<div
 													className={`relative border-2 border-dashed rounded-lg p-4 transition-all ${
 														isUploadingDoc
@@ -494,7 +499,6 @@ export function AuthModal({ defaultMode = "login" }) {
 													</div>
 												</div>
 
-												{/* Format Info */}
 												<div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
 													<div className="flex items-start space-x-2">
 														<div className="flex-shrink-0">
@@ -519,6 +523,7 @@ export function AuthModal({ defaultMode = "login" }) {
 											</div>
 										</div>
 									)}
+									*/}
 								</>
 							)}
 
