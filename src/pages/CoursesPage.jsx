@@ -4,12 +4,7 @@ import { Search } from "lucide-react";
 import { SearchFilter } from "../components/User/SearchFilter";
 import useAppStore from "../stores/useAppStore";
 
-export function CoursesPage({
-	onCourseClick,
-	filteredCourses,
-	courses,
-	userRole,
-}) {
+export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 	const {
 		searchQuery,
 		setSearchQuery,
@@ -17,12 +12,6 @@ export function CoursesPage({
 		resetCourseFilters,
 		applyFilters,
 	} = useAppStore();
-
-	// Filter hanya kursus dengan mentor aktif
-	const activeCourses =
-		courses?.filter((course) => {
-			return course.mentor && course.mentor.status === "active";
-		}) || [];
 
 	// Aplikasikan filter dari Zustand store
 	const finalFilteredCourses = applyFilters(
@@ -53,7 +42,7 @@ export function CoursesPage({
 	// Prioritaskan loading, lalu cek filteredCourses
 
 	// Tidak ada kursus sama sekali atau tidak ada kursus dengan mentor aktif
-	if (!activeCourses || activeCourses.length === 0) {
+	if (!filteredCourses || filteredCourses.length === 0) {
 		return <EmptyMentorsState context="courses" />;
 	}
 

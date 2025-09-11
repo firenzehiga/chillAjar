@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import showToast from "./components/User/customToast";
+import { ListChecks, LucideShieldQuestion } from "lucide-react";
 import { ListChecks } from "lucide-react";
 import { MentorCard } from "./components/MentorCard";
 import { BookingModal } from "./components/BookingModal";
@@ -228,6 +230,7 @@ function App() {
 			const mappedCourses = response.data.map((course) => ({
 				id: course.id,
 				mentor_id: course.mentor_id,
+				mentorName: course.mentor?.user?.nama,
 				courseName: course.namaKursus,
 				courseDescription: course.deskripsi,
 				courseImage: getImageUrl(course.fotoKursus, "/foto_kursus/default.jpg"),
@@ -381,16 +384,14 @@ function App() {
 		// Kalok kursus tidak ada jadwal, tampilkan toast error
 		toast.dismiss(); // Hapus semua toast sebelumnya
 		if (course.schedules.length === 0) {
-			toast.error("Maaf, belum ada jadwal yang bisa pesan", {
-				duration: 1000,
-				position: "top-center",
-				style: {
-					background: "#fef2f2",
-					border: "1px solid #ef4444",
-					padding: "16px",
-					borderRadius: "8px",
-					minWidth: "400px",
-				},
+			showToast({
+				type: "error",
+				icon: <LucideShieldQuestion size={25} className="text-red-200" />,
+				tipIcon: "💡",
+				tipText: "Silakan coba lagi nanti atau pilih kursus lainnya.",
+				title: "Belum ada jadwal kursus saat ini",
+				message: "Mohon maaf, mentor untuk kursus ini belum menambahkan jadwal",
+				duration: 2000,
 			});
 			return;
 		}
@@ -456,35 +457,12 @@ function App() {
 					statusSesi: "pending",
 					paket_id: selectedPackage?.id || null, // harus dikirim untuk cek logika di backend
 				});
-				// 🍞 Toast multi-line
-				toast.success(
-					<div className="text-center">
-						<div className="font-semibold text-green-800 mb-2">
-							🎉 Pemesanan Berhasil!
-						</div>
-						<div className="text-sm text-gray-700 leading-relaxed">
-							Silakan lakukan pembayaran untuk
-							<br />
-							mengonfirmasi sesi Anda
-						</div>
-					</div>,
-					{
-						duration: 4000, // 4 detik
-						position: "top-center",
-						style: {
-							background: "#f0fdf4", // Light green background
-							border: "1px solid #22c55e",
-							padding: "16px",
-							borderRadius: "8px",
-							minWidth: "300px",
-						},
-						iconTheme: {
-							primary: "#22c55e",
-							secondary: "#f0fdf4",
-						},
-					}
-				);
-
+				// 🍞 Toast
+				showToast({
+					type: "success",
+					title: "🎉 Pemesanan Berhasil!",
+					message: "Silakan lakukan pembayaran untuk mengonfirmasi sesi Anda",
+				});
 				// Simpan data sesi ke state booking
 				const sesiBaru = response.data.sesi;
 				// Pastikan sesiBaru menyertakan paket_id (fallback ke selectedPackage jika backend belum mengembalikan)
@@ -745,18 +723,11 @@ function App() {
 				history.push("/home");
 				queryClient.clear(); // <-- Hapus semua cache query!
 
-				toast.success("Berhasil Logout! Sampai jumpa👋", {
-					duration: 2000,
-					position: "top-center",
-					style: {
-						background: "#fffbe6",
-						color: "#333",
-						border: "1.5px solid #facc15",
-						borderRadius: "12px",
-						fontWeight: 500,
-						fontSize: "1rem",
-						boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-					},
+				showToast({
+					type: "success",
+					icon: "👋",
+					title: "Berhasil logout!",
+					message: "Selamat tinggal, sampai jumpa lagi!",
 				});
 			})
 			.catch((error) => {
@@ -779,16 +750,14 @@ function App() {
 		// Kalok kursus tidak ada jadwal, tampilkan toast error
 		toast.dismiss(); // Hapus semua toast sebelumnya
 		if (!course?.jadwal_kursus || course.jadwal_kursus.length === 0) {
-			toast.error("Maaf, belum ada jadwal yang bisa pesan", {
-				duration: 1000,
-				position: "top-center",
-				style: {
-					background: "#fef2f2",
-					border: "1px solid #ef4444",
-					padding: "16px",
-					borderRadius: "8px",
-					minWidth: "400px",
-				},
+			showToast({
+				type: "error",
+				icon: <LucideShieldQuestion size={25} className="text-red-200" />,
+				tipIcon: "💡",
+				tipText: "Silakan coba lagi nanti atau pilih kursus lainnya.",
+				title: "Belum ada jadwal kursus saat ini",
+				message: "Mohon maaf, mentor untuk kursus ini belum menambahkan jadwal",
+				duration: 2000,
 			});
 			return;
 		}
