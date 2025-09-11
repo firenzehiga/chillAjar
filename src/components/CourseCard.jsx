@@ -82,6 +82,9 @@ export function CourseCard({ course, onClick }) {
 						}}
 					/>
 				)}
+				{/* <div className="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium transform transition-transform duration-300 hover:scale-105">
+					Mulai dari Rp{course.price_per_hour.toLocaleString("id-ID")}/sesi
+				</div> */}
 				{/* Harga dihilangkan karena sekarang ada di paket */}
 			</div>
 			<div className="p-5">
@@ -136,7 +139,7 @@ export function CourseCard({ course, onClick }) {
 					</span>
 					<span className="flex items-center transform transition-transform duration-300 hover:scale-105 hover:text-blue-800">
 						<Users className="w-4 h-4 mr-1 text-blue-800" />
-						{course.mentors.length} Mentors
+						{course?.mentorName}
 					</span>
 				</div>
 			</div>

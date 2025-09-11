@@ -21,6 +21,7 @@ import logo from "../assets/title.png";
 import useAppStore from "../stores/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
+import { showToast } from "./User/customToast";
 
 export function AuthModal({ defaultMode = "login" }) {
 	// Get state and actions from store
@@ -77,9 +78,6 @@ export function AuthModal({ defaultMode = "login" }) {
 		e.preventDefault();
 		setError("");
 
-		// Dismiss semua toast sebelumnya
-		toast.dismiss();
-
 		// Prevent multiple submissions
 		if (isLoading) return;
 
@@ -119,21 +117,14 @@ export function AuthModal({ defaultMode = "login" }) {
 				localStorage.setItem("token", token);
 				localStorage.setItem("user", JSON.stringify(user));
 
-				toast.success(`Selamat datang kembali di ChillAjar! ${user.nama}`, {
-					duration: 2000,
+				showToast({
+					type: "success",
+					icon: "👋",
+					title: "Berhasil login!",
+					message: `Selamat datang kembali, ${user.nama}!`,
 					position: "top-right",
-					style: {
-						background: "#fffbe6",
-						color: "#333",
-						border: "1.5px solid #facc15",
-						borderRadius: "12px",
-						fontWeight: 500,
-						fontSize: "1rem",
-						boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-					},
-					icon: "🤙",
+					duration: 1000,
 				});
-
 				handleAuthSuccess(user.peran.toLowerCase(), user);
 			} else {
 				// Gunakan FormData agar bisa upload file
@@ -181,64 +172,13 @@ export function AuthModal({ defaultMode = "login" }) {
 				msg.includes("belum diverifikasi") ||
 				statusCode === 403
 			) {
-				toast(
-					<div className="flex items-start space-x-3 ">
-						{/* Icon */}
-						<div className="flex-shrink-0">
-							<div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
-								<span className="text-white text-lg">⏳</span>
-							</div>
-						</div>
-
-						{/* Content */}
-						<div className="flex-1 space-y-2 border-separate">
-							<div>
-								<h3 className="font-semibold text-gray-900 text-sm">
-									Akun Menunggu Verifikasi
-								</h3>
-								<p className="text-xs text-gray-600">
-									Akun mentor Anda sedang diproses oleh admin
-								</p>
-							</div>
-
-							<div className="bg-orange-50 rounded-lg p-2">
-								<div className="flex items-center space-x-2">
-									<span className="text-orange-600">💡</span>
-									<span className="text-xs text-orange-800">
-										Estimasi: 1-2 hari kerja
-									</span>
-								</div>
-							</div>
-
-							<div className="flex items-center justify-between">
-								<span className="text-xs text-gray-400">
-									Akan dikonfirmasi via email
-								</span>
-								<a
-									href="https://wa.me/6283871417229?text=Halo%20admin%2C%20saya%20ingin%20menanyakan%20status%20verifikasi%20akun%20mentor%20saya"
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-xs bg-orange-100 hover:bg-orange-200 text-orange-700 px-2 py-1 rounded-md transition-colors">
-									Hubungi Admin
-								</a>
-							</div>
-						</div>
-					</div>,
-					{
-						id: "mentor-verification-toast",
-						duration: 4000,
-						position: "top-center",
-						style: {
-							background: "white",
-							border: "2px solid #F97316",
-							padding: "16px",
-							borderRadius: "16px",
-							minWidth: "380px",
-							boxShadow:
-								"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-						},
-					}
-				);
+				showToast({
+					type: "warning",
+					title: "Akun Menunggu Verifikasi",
+					message: "Akun mentor Anda sedang diproses oleh admin",
+					tipText: "Estimasi: 1-2 hari kerja. Akan dikonfirmasi via email",
+					duration: 4000,
+				});
 				setError("Akun menunggu verifikasi admin");
 			} else if (
 				statusCode === 401 ||
@@ -246,7 +186,13 @@ export function AuthModal({ defaultMode = "login" }) {
 					msg.toLowerCase().includes("password"))
 			) {
 				// Untuk error login biasa (Unauthorized)
-				toast.error("Email atau password salah!");
+				showToast({
+					type: "error",
+					title: "Login Gagal",
+					message: "Email atau password salah!",
+					tipText: "Periksa kembali email dan password Anda",
+					tipIcon: "💡",
+				});
 				setError("Email atau password salah!");
 			} else if (mode === "register") {
 				// Untuk error registrasi
