@@ -26,8 +26,8 @@ export function MentorSchedulePage() {
 	// Query 1: Fetch daftar sesi mentor
 	const {
 		data: sessions = [],
-		isLoading: isLoadingSessions,
-		error: errorSessions,
+		isLoading: isLoading,
+		error: error,
 	} = useQuery({
 		queryKey: ["mentorSessions"],
 		queryFn: async () => {
@@ -41,27 +41,6 @@ export function MentorSchedulePage() {
 		enabled: isAuthenticated,
 		onError: (err) => {
 			console.error("Error fetching sessions:", err);
-		},
-	});
-
-	// Query 2: Fetch transaksi
-	const {
-		data: transactions = [],
-		isLoading: isLoadingTransactions,
-		error: errorTransactions,
-	} = useQuery({
-		queryKey: ["mentorTransactions"],
-		queryFn: async () => {
-			if (!isAuthenticated) return [];
-			const response = await api.get("/transaksi", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			// console.log("Fetched transactions:", response.data);
-			return response.data;
-		},
-		enabled: isAuthenticated,
-		onError: (err) => {
-			console.error("Error fetching transactions:", err);
 		},
 	});
 
@@ -258,13 +237,11 @@ export function MentorSchedulePage() {
 
 				// Apakah salah satu tombol ditekan
 				const disableStart =
-					isLoadingSessions ||
-					isLoadingTransactions ||
+					isLoading ||
 					!!endingSessionId ||
 					(!!startingSessionId && startingSessionId !== row.id);
 				const disableEnd =
-					isLoadingSessions ||
-					isLoadingTransactions ||
+					isLoading ||
 					!!startingSessionId ||
 					(!!endingSessionId && endingSessionId !== row.id);
 
@@ -330,7 +307,7 @@ export function MentorSchedulePage() {
 
 	const [previewImg, setPreviewImg] = React.useState(null);
 
-	if (errorSessions || errorTransactions) {
+	if (error) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
 				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
@@ -341,34 +318,37 @@ export function MentorSchedulePage() {
 			</div>
 		);
 	}
+	//GAK KEPAKE LAGI KARENA LOGIKANYA UDAH DARI BACKEND
+	// // Filter transaksi yang statusPembayaran === "accepted"
+	// const acceptedTransactions = transactions.filter(
+	// 	(transaction) => transaction.statusPembayaran === "accepted"
+	// );
 
-	// Filter transaksi yang statusPembayaran === "accepted"
-	const acceptedTransactions = transactions.filter(
-		(transaction) => transaction.statusPembayaran === "accepted"
-	);
+	// // Filter sesi yang memiliki transaksi dengan status "accepted"
+	// const filteredSessions = sessions.filter((session) =>
+	// 	acceptedTransactions.some(
+	// 		(transaction) => transaction.sesi_id === session.id
+	// 	)
+	// );
 
-	// Filter sesi yang memiliki transaksi dengan status "accepted"
-	const filteredSessions = sessions.filter((session) =>
-		acceptedTransactions.some(
-			(transaction) => transaction.sesi_id === session.id
-		)
-	);
-
-	// Sorting sesi terbaru di paling atas
-	const sortedSessions = [...filteredSessions].sort(
-		(a, b) => new Date(b.created_at) - new Date(a.created_at)
-	);
+	// // Sorting sesi terbaru di paling atas
+	// const sortedSessions = [...filteredSessions].sort(
+	// 	(a, b) => new Date(b.created_at) - new Date(a.created_at)
+	// );
 
 	// filter pencarian dengan filteredSessions
-	const filteredData = sortedSessions.filter((session) => {
-		const lower = searchTerm.toLowerCase();
-		const mode = session.jadwal_kursus?.gayaMengajar || "";
-		return (
-			session.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
-			session.kursus?.namaKursus?.toLowerCase().includes(lower) ||
-			mode.toLowerCase().includes(lower)
-		);
-	});
+	const filteredData = sessions
+		.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+		.filter((session) => {
+			const lower = searchTerm.toLowerCase();
+			const mode = session.jadwal_kursus?.gayaMengajar || "";
+			return (
+				session.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
+				session.mentor?.user?.nama?.toLowerCase().includes(lower) ||
+				session.kursus?.namaKursus?.toLowerCase().includes(lower) ||
+				mode.toLowerCase().includes(lower)
+			);
+		});
 
 	return (
 		<div className="py-8">
@@ -384,7 +364,7 @@ export function MentorSchedulePage() {
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Data Sesi</h2>
 				</div>
-				{isLoadingSessions || isLoadingTransactions ? (
+				{isLoading ? (
 					<div className="flex justify-center py-20">
 						<BookLoader size="small" message="Loading sessions" />
 					</div>

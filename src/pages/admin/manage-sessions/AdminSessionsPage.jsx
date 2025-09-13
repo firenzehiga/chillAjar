@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-import {
-	BookOpen,
-	AlertCircle,
-	XCircle,
-	PlayCircle,
-	Pencil,
-	Trash,
-} from "lucide-react";
+import { BookOpen, AlertCircle, XCircle, Pencil, Trash } from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,15 +12,15 @@ import { formatDate } from "../../../utils/dateFormatter";
 export function AdminSessionsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
-
 	const token = localStorage.getItem("token");
 	const isAuthenticated = !!token;
+
 	// Query 1: Fetch daftar sesi mentor
 	const {
 		data: sessions = [],
-		isLoading: isLoadingSessions,
-		error: errorSessions,
-		isFetching: isFetchingSessions,
+		isLoading,
+		error,
+		isFetching,
 	} = useQuery({
 		queryKey: ["adminSessions"],
 		queryFn: async () => {
@@ -35,61 +28,31 @@ export function AdminSessionsPage({ onNavigate }) {
 			const response = await api.get("/sesi", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			// console.log("Fetched sessions:", response.data);
+
 			return response.data;
 		},
 		enabled: isAuthenticated,
-		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 5 * 60 * 1000, // 5 menit cache
+		staleTime: 60 * 1000, // 1 menit
+		cacheTime: 5 * 60 * 1000, // 5 menit
 		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
+		refetchInterval: 60 * 1000, // auto refetch tiap 1 menit
 		retry: 1,
-		onError: (err) => {
-			console.error("Error fetching sessions:", err);
-		},
+		onError: (err) => console.error("Error fetching sessions:", err),
 	});
 
-	// Query 2: Fetch transaksi
-	const {
-		data: transactions = [],
-		isLoading: isLoadingTransactions,
-		error: errorTransactions,
-		isFetching: isFetchingTransactions,
-	} = useQuery({
-		queryKey: ["adminTransactions"],
-		queryFn: async () => {
-			const response = await api.get("/transaksi", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			// console.log("Fetched transactions:", response.data);
-			return response.data;
-		},
-		enabled: isAuthenticated,
-		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 5 * 60 * 1000, // 5 menit cache
-		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
-		retry: 1,
-		onError: (err) => {
-			console.error("Error fetching transactions:", err);
-		},
-	});
-
+	// Delete session mutation
 	const deleteSessionMutation = useMutation({
-		mutationFn: async (id) => {
-			return api.delete(`/sesi/${id}`, {
+		mutationFn: async (id) =>
+			api.delete(`/sesi/${id}`, {
 				headers: { Authorization: `Bearer ${token}` },
-			});
-		},
+			}),
 		onSuccess: (_, id) => {
 			queryClient.setQueryData(["adminSessions"], (oldData) =>
 				oldData.filter((s) => s.id !== id)
 			);
 			toast.success("Sesi berhasil dihapus.");
 		},
-		onError: () => {
-			toast.error("Gagal menghapus sesi.");
-		},
+		onError: () => toast.error("Gagal menghapus sesi."),
 	});
 
 	const handleDelete = (id) => {
@@ -102,54 +65,11 @@ export function AdminSessionsPage({ onNavigate }) {
 			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Yes, delete it!",
 		}).then((result) => {
-			if (result.isConfirmed) {
-				deleteSessionMutation.mutate(id);
-			}
+			if (result.isConfirmed) deleteSessionMutation.mutate(id);
 		});
 	};
 
-	// // Mutasi untuk memulai sesi
-	// const startSessionMutation = useMutation({
-	// 	mutationFn: async (sessionId) => {
-	// 		const token = localStorage.getItem("token");
-	// 		await api.post(
-	// 			`/mentor/mulai-sesi/${sessionId}`,
-	// 			{},
-	// 			{
-	// 				headers: { Authorization: `Bearer ${token}` },
-	// 			}
-	// 		);
-	// 	},
-	// 	onSuccess: () => {
-	// 		Swal.fire("Berhasil!", "Sesi telah dimulai.", "success");
-	// 		queryClient.invalidateQueries(["adminSessions"]);
-	// 		queryClient.invalidateQueries(["adminTransactions"]);
-	// 	},
-	// 	onError: () => {
-	// 		Swal.fire("Gagal", "Terjadi kesalahan saat memulai sesi.", "error");
-	// 	},
-	// });
-
-	// const handleStartSession = (sessionId) => {
-	// 	Swal.fire({
-	// 		title: "Mulai Sesi",
-	// 		text: "Apakah Anda yakin ingin memulai sesi ini?",
-	// 		icon: "warning",
-	// 		showCancelButton: true,
-	// 		confirmButtonColor: "#3085d6",
-	// 		cancelButtonColor: "#d33",
-	// 		confirmButtonText: "Ya, mulai!",
-	// 	}).then((result) => {
-	// 		if (result.isConfirmed) {
-	// 			startSessionMutation.mutate(sessionId);
-	// 		}
-	// 	});
-	// };
-
-	// Saat tombol edit diklik, navigasikan ke halaman edit course
-	const handleEdit = (id) => {
-		onNavigate(`admin-edit-session/${id}`);
-	};
+	const handleEdit = (id) => onNavigate(`admin-edit-session/${id}`);
 
 	const statusCheck = {
 		reviewed: {
@@ -177,7 +97,7 @@ export function AdminSessionsPage({ onNavigate }) {
 	const columns = [
 		{
 			name: "No",
-			cell: (row, index) => index + 1,
+			cell: (_, index) => index + 1,
 			sortable: false,
 			width: "60px",
 		},
@@ -203,25 +123,23 @@ export function AdminSessionsPage({ onNavigate }) {
 			name: "Gaya Pembelajaran",
 			selector: (row) => {
 				const mode = row.jadwal_kursus?.gayaMengajar;
-				if (mode === "online") {
+				if (mode === "online")
 					return (
 						<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
 							Online
 						</span>
 					);
-				} else if (mode === "offline") {
+				if (mode === "offline")
 					return (
 						<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
 							Offline
 						</span>
 					);
-				} else {
-					return (
-						<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-							Data mode tidak valid
-						</span>
-					);
-				}
+				return (
+					<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+						Data mode tidak valid
+					</span>
+				);
 			},
 			width: "150px",
 		},
@@ -237,23 +155,6 @@ export function AdminSessionsPage({ onNavigate }) {
 			},
 			width: "190px",
 		},
-		// {
-		// 	name: "Sesi",
-		// 	cell: (row) => (
-		// 		<div className="gap-2">
-		// 			{(row.statusSesi === "booked" || row.statusSesi === "pending") && (
-		// 				<button
-		// 					type="button"
-		// 					className="mt-2 mb-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 outline-none focus:outline-none"
-		// 					disabled={isLoadingSessions || isLoadingTransactions}
-		// 					onClick={() => handleStartSession(row.id)}>
-		// 					<PlayCircle className="w-4 h-4 inline mb-1" /> Mulai Sesi
-		// 				</button>
-		// 			)}
-		// 		</div>
-		// 	),
-		// 	width: "200px",
-		// },
 		{
 			name: "Aksi",
 			cell: (row) => (
@@ -273,48 +174,30 @@ export function AdminSessionsPage({ onNavigate }) {
 		},
 	];
 
-	const [previewImg, setPreviewImg] = React.useState(null);
+	const filteredData = sessions
+		.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+		.filter((session) => {
+			const lower = searchTerm.toLowerCase();
+			const mode = session.jadwal_kursus?.gayaMengajar || "";
+			return (
+				session.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
+				session.mentor?.user?.nama?.toLowerCase().includes(lower) ||
+				session.kursus?.namaKursus?.toLowerCase().includes(lower) ||
+				mode.toLowerCase().includes(lower)
+			);
+		});
 
-	if (errorSessions || errorTransactions) {
+	if (error) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
 				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 				<h3 className="text-lg font-semibold mb-2">Error</h3>
 				<p className="text-gray-500 mb-4 text-center">
-					Gagal mengambil data sesi atau transaksi
+					Gagal mengambil data sesi
 				</p>
 			</div>
 		);
 	}
-
-	// Filter transaksi yang statusPembayaran === "accepted"
-	const acceptedTransactions = transactions.filter(
-		(transaction) => transaction.statusPembayaran === "accepted"
-	);
-
-	// Filter sesi yang memiliki transaksi dengan status "accepted"
-	const filteredSessions = sessions.filter((session) =>
-		acceptedTransactions.some(
-			(transaction) => transaction.sesi_id === session.id
-		)
-	);
-
-	// Sorting data terbaru di paling atas
-	const sortedSessions = [...filteredSessions].sort(
-		(a, b) => new Date(b.created_at) - new Date(a.created_at)
-	);
-
-	// filter pencarian dengan filteredSessions
-	const filteredData = sortedSessions.filter((session) => {
-		const lower = searchTerm.toLowerCase();
-		const mode = session.jadwal_kursus?.gayaMengajar || "";
-		return (
-			session.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
-			session.mentor?.user?.nama?.toLowerCase().includes(lower) ||
-			session.kursus?.namaKursus?.toLowerCase().includes(lower) ||
-			mode.toLowerCase().includes(lower)
-		);
-	});
 
 	return (
 		<div className="py-8">
@@ -330,16 +213,14 @@ export function AdminSessionsPage({ onNavigate }) {
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Data Sesi</h2>
 				</div>
-				{/* Tampilan Loading hanya untuk initial load */}
-				{isLoadingSessions || isLoadingTransactions ? (
+
+				{isLoading ? (
 					<div className="flex justify-center py-20">
 						<BookLoader size="small" message="Loading Sessions" />
 					</div>
 				) : (
 					<>
-						{/* Small loading indicator untuk saat update */}
-						{isFetchingSessions && <UpdateLoadingSpinner />}
-
+						{isFetching && <UpdateLoadingSpinner />}
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"
@@ -401,52 +282,24 @@ export function AdminSessionsPage({ onNavigate }) {
 								</div>
 							)}
 							noDataComponent={
-								<>
-									{searchTerm ? (
-										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-											<h3 className="text-lg font-semibold mb-2">
-												No Matching Schedules
-											</h3>
-											<p className="text-gray-500 mb-4 text-center">
-												Tidak ada Schedules yang sesuai dengan pencarian.
-											</p>
-										</div>
-									) : (
-										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-											<h3 className="text-lg font-semibold mb-2">
-												No Schedules Available
-											</h3>
-											<p className="text-gray-500 mb-4 text-center">
-												Belum ada data sesi
-											</p>
-										</div>
-									)}
-								</>
+								<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+									<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+									<h3 className="text-lg font-semibold mb-2">
+										{searchTerm
+											? "No Matching Schedules"
+											: "No Schedules Available"}
+									</h3>
+									<p className="text-gray-500 mb-4 text-center">
+										{searchTerm
+											? "Tidak ada Schedules yang sesuai dengan pencarian."
+											: "Belum ada data sesi"}
+									</p>
+								</div>
 							}
 						/>
 					</>
 				)}
 			</div>
-			{previewImg && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-					<div className="relative bg-white rounded-lg shadow-lg p-7">
-						<button
-							className="absolute top-2 right-2 text-gray-600 hover:text-red-500 z-10 pointer-events-auto outline-none focus:outline-none"
-							onClick={() => setPreviewImg(null)}
-							style={{ zIndex: 10 }}>
-							<XCircle className="w-6 h-6" />
-						</button>
-						<img
-							src={previewImg}
-							alt="Preview"
-							className="max-w-[70vw] max-h-[70vh] rounded-lg shadow"
-							style={{ display: "block" }}
-						/>
-					</div>
-				</div>
-			)}
 		</div>
 	);
 }

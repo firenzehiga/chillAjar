@@ -54,7 +54,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 		location: userData?.alamat || "Location not specified",
 		phone: userData?.nomorTelepon || "Phone not specified",
 		joinedDate: userData?.created_at
-			? new Date(userData.created_at).toLocaleDateString("id-ID", {
+			? new Date(userData?.created_at).toLocaleDateString("id-ID", {
 					year: "numeric",
 					month: "long",
 					day: "numeric",

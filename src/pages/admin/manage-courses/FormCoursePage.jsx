@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, Loader2, AlertCircle, Plus, X, Package } from "lucide-react";
+import {
+	BookOpen,
+	Loader2,
+	AlertCircle,
+	Plus,
+	X,
+	Package,
+	Lightbulb,
+} from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-
+import { AsyncImage } from "loadable-image";
 export function AdminFormCoursePage({ onNavigate, courseId }) {
 	const queryClient = useQueryClient();
 
@@ -114,9 +122,10 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 				});
 				if (response.data.fotoKursus) {
 					setFotoPreview(getImageUrl(response.data.fotoKursus));
-				} else {
-					setFotoPreview("/foto_kursus/default.jpg"); // <-- tambahkan ini!
 				}
+				//  else {
+				// 	setFotoPreview("/foto_kursus/default.jpg"); // <-- tambahkan ini!
+				// }
 				// Simpan jadwal awal dari database
 				if (response.data.jadwal_kursus) {
 					const initial = response.data.jadwal_kursus.map((jadwal) => ({
@@ -603,7 +612,14 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 								htmlFor="fotoKursus"
 								className="block text-sm font-medium text-gray-700 mb-1">
 								Course Image
+								{/* hint kecil untuk gambar  */}
+								<span
+									className="ml-2 inline-block text-xs text-yellow-500 cursor-help"
+									title="Jika gambar yang tampil adalah placeholder abu-abu, berarti path terisi di database, namun tidak ditemukan dalam storage. Silakan unggah ulang gambar kursus.">
+									<Lightbulb className="inline-block w-3 h-3 mb-1" />
+								</span>
 							</label>
+
 							<div
 								className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors cursor-pointer"
 								onDragOver={(e) => {
@@ -632,15 +648,14 @@ export function AdminFormCoursePage({ onNavigate, courseId }) {
 									className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
 								/>
 								{fotoPreview ? (
-									<img
-										src={fotoPreview}
-										alt="Preview"
-										className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
-										onError={(e) => {
-											e.target.onerror = null;
-											e.target.src = "/foto_kursus/default.jpg"; // Ganti dengan path default
-										}}
-									/>
+									<>
+										<AsyncImage
+											style={{ width: 200, height: 150 }}
+											src={fotoPreview}
+											alt="Preview"
+											className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
+										/>
+									</>
 								) : (
 									<div className="text-gray-500">
 										<svg

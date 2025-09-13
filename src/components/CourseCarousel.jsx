@@ -3,7 +3,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getImageUrl } from "../utils/getImageUrl";
-
+import { AsyncImage } from "loadable-image";
+import { Fade } from "transitions-kit";
 export function CourseCarousel({ courses, onCourseClick }) {
 	// Debug: Lihat data courses yang diterima CourseCarousel
 	// console.log("[CourseCarousel] Data courses diterima:", courses);
@@ -36,8 +37,9 @@ export function CourseCarousel({ courses, onCourseClick }) {
 							<div
 								className="relative h-[400px] rounded-xl overflow-hidden cursor-pointer"
 								onClick={() => onCourseClick(course)}>
-								<img
-									loading="lazy"
+								<AsyncImage
+									loader={<div className="w-full h-full bg-gray-300" />}
+									Transition={Fade}
 									src={getImageUrl(
 										course.courseImage,
 										"/foto_kursus/default.jpg"
