@@ -297,7 +297,7 @@ export function FaQWidget() {
 						exit={{ opacity: 0, scale: 0.8, y: 50 }}
 						className="fixed bottom-24 left-6 w-80 h-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
 						{/* Header */}
-						<div className="p-4 bg-gradient-to-r from-yellow-600 to-yellow-600 text-white">
+						<div className="p-4 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center space-x-3">
 									<div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -399,7 +399,7 @@ export function FaQWidget() {
 										<button
 											onClick={handleBackToCategories}
 											disabled={isProcessing}
-											className={`text-xs transition-colors ${
+											className={`focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 focus:outline-none outline-none text-xs transition-colors ${
 												isProcessing
 													? "text-gray-400 cursor-not-allowed"
 													: "text-yellow-500 hover:text-yellow-600"

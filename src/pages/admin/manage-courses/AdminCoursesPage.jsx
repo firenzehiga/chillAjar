@@ -15,6 +15,7 @@ import { getImageUrl } from "../../../utils/getImageUrl";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
 import { BookLoader } from "../../../components/User/BookLoader";
 import { formatDate } from "../../../utils/dateFormatter";
+import { AsyncImage } from "loadable-image";
 
 export function AdminCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = React.useState("");
@@ -193,15 +194,10 @@ export function AdminCoursesPage({ onNavigate }) {
 			name: "Foto",
 			cell: (row) => (
 				<div className="flex items-center justify-center p-1">
-					<img
-						loading="lazy"
-						src={getImageUrl(row.fotoKursus || "/foto_kursus/default.jpg")}
+					<AsyncImage
+						src={getImageUrl(row.fotoKursus)}
 						alt={row.namaKursus}
 						className="h-16 w-16 object-cover rounded-lg border border-gray-200 bg-gray-50 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
-						onError={(e) => {
-							e.target.onerror = null;
-							e.target.src = "/foto_kursus/default.jpg";
-						}}
 					/>
 				</div>
 			),

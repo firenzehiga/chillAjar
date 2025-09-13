@@ -1,79 +1,29 @@
-import React, { useState } from "react";
-import {
-	Book,
-	Users,
-	Clock,
-	Laptop,
-	Building,
-	FileQuestion,
-} from "lucide-react";
+import { Users, Laptop, Building, FileQuestion } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
-
-// Cache global untuk gambar yang sudah dimuat
-const loadedImages = new Set();
-
-// Preload gambar default// Preload gambar default dari public folder
-const preloadDefaultImage = () => {
-	const defaultImg = new Image();
-	defaultImg.src = "/foto_kursus/default.jpg";
-	defaultImg.onload = () => {
-		loadedImages.add("/foto_kursus/default.jpg");
-	};
-	defaultImg.onerror = () => {};
-};
-
-// Panggil preload saat pertama kali import
-preloadDefaultImage();
+import { AsyncImage } from "loadable-image";
+import { Fade } from "transitions-kit";
 export function CourseCard({ course, onClick }) {
-	// Tentukan URL gambar yang akan digunakan
-	const hasCustomImage = course.courseImage && course.courseImage.trim() !== "";
-	const finalImageUrl = hasCustomImage
-		? getImageUrl(course.courseImage, "/foto_kursus/default.jpg")
-		: "/foto_kursus/default.jpg";
-
-	// Jadi ini (lebih simpel):
-	const [imgLoaded, setImgLoaded] = useState(
-		!hasCustomImage || loadedImages.has(finalImageUrl)
-	);
-	const handleImgLoad = () => {
-		loadedImages.add(finalImageUrl);
-		setImgLoaded(true);
-	};
-
-	// const filteredSchedules = course?.mentors?.[0]?.schedules || [];
-
-	// console.log("Course in CourseCard:", course);
-	// console.log("Filtered Schedules:", filteredSchedules);
-	// DEBUG: log url gambar mentor utama
-	const mentorImgUrl =
-		course.mentor && course.mentor.user
-			? getImageUrl(course.mentor.user.foto_profil, "/foto_mentor/default.png")
-			: "/foto_mentor/default.png";
 	return (
 		<div
 			onClick={() => onClick(course)}
 			className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer group mb-8">
 			<div className="relative overflow-hidden">
-				{!imgLoaded && (
-					<div className="absolute inset-0 bg-gray-300 animate-pulse" />
-				)}
-				<img
+				<AsyncImage
 					loading="lazy"
-					src={finalImageUrl}
+					Transition={Fade}
+					loader={<div className="w-full h-48 bg-gray-300 animate-pulse"></div>}
+					src={getImageUrl(course.courseImage)}
 					alt={course.courseName}
 					className="w-full h-48 object-cover transform transition-transform duration-500 group-hover:scale-110"
-					onLoad={handleImgLoad}
 					onError={(e) => {
 						e.target.onerror = null;
 						e.target.src = "/foto_kursus/default.jpg";
-						loadedImages.add("/foto_kursus/default.jpg"); // Cache default image
-						handleImgLoad(); // Tandai sebagai sudah dimuat meski error
 					}}
 				/>
 				{/* Avatar mentor utama */}
 				{course.mentor && course.mentor.user && (
-					<img
-						src={mentorImgUrl}
+					<AsyncImage
+						src={getImageUrl(course.mentor.user.foto_profil)}
 						alt={course.mentor.user.nama || "Mentor"}
 						className="absolute bottom-2 left-2 w-10 h-10 rounded-full border-2 border-white shadow object-cover bg-white"
 						onError={(e) => {

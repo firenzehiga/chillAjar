@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, Loader2, AlertCircle, Plus, X } from "lucide-react";
+import {
+	BookOpen,
+	Loader2,
+	AlertCircle,
+	Plus,
+	X,
+	Lightbulb,
+} from "lucide-react";
 import api from "../../../api";
 import Swal from "sweetalert2";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { AsyncImage } from "loadable-image";
 
 export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 	const isEditMode = !!courseId;
@@ -327,6 +335,12 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 								htmlFor="fotoKursus"
 								className="block text-sm font-medium text-gray-700 mb-1">
 								Course Image
+								{/* hint kecil untuk gambar  */}
+								<span
+									className="ml-2 inline-block text-xs text-yellow-500 cursor-help"
+									title="Jika gambar yang tampil adalah placeholder abu-abu, berarti path terisi di database, namun tidak ditemukan dalam storage. Silakan unggah ulang gambar kursus.">
+									<Lightbulb className="inline-block w-3 h-3 mb-1" />
+								</span>
 							</label>
 							<div
 								className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors cursor-pointer"
@@ -356,7 +370,8 @@ export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 									className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
 								/>
 								{fotoPreview ? (
-									<img
+									<AsyncImage
+										style={{ width: 200, height: 150 }}
 										src={fotoPreview}
 										alt="Preview"
 										className="mx-auto h-32 w-auto object-cover rounded-lg mb-2"
