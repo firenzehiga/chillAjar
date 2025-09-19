@@ -9,11 +9,13 @@ import {
 	Phone,
 	MapPin,
 	Loader2,
-	Upload,
-	FileText,
+	// Upload,
+	// FileText,
 	CheckCircle,
 	UserCheck,
-	GraduationCap,
+	// GraduationCap,
+	// Shield,
+	ExternalLink,
 } from "lucide-react";
 import api from "../api";
 import Swal from "sweetalert2";
@@ -22,15 +24,20 @@ import useAppStore from "../stores/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { showToast } from "./User/customToast";
+import { PrivacyPolicyModal } from "./PrivacyPolicyModal";
 
 export function AuthModal({ defaultMode = "login" }) {
 	// Get state and actions from store
 	const { showAuthModal, setShowAuthModal, handleAuthSuccess } = useAppStore();
 	const [isLoading, setIsLoading] = useState(false);
-	const [isUploadingDoc, setIsUploadingDoc] = useState(false);
+	// const [isUploadingDoc, setIsUploadingDoc] = useState(false);
 	const [mode, setMode] = useState(defaultMode);
 	const [showPassword, setShowPassword] = useState(false);
-	const [supportingDoc, setSupportingDoc] = useState(null);
+	// const [supportingDoc, setSupportingDoc] = useState(null);
+
+	// Privacy Policy States
+	const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+	const [agreedToTerms, setAgreedToTerms] = useState(false);
 
 	const [formData, setFormData] = useState({
 		name: "",
@@ -52,28 +59,34 @@ export function AuthModal({ defaultMode = "login" }) {
 		}));
 	};
 
-	const handleFileChange = (e) => {
-		const file = e.target.files[0];
-		if (!file) return;
-
-		setIsUploadingDoc(true);
-
-		// Simulate upload delay for better UX
-		setTimeout(() => {
-			setSupportingDoc(file);
-			setIsUploadingDoc(false);
-		}, 1000);
+	const handleModeChange = (newMode) => {
+		setMode(newMode);
+		setError("");
+		setAgreedToTerms(false); // Reset privacy policy checkbox when switching modes
 	};
 
-	const handleRemoveFile = () => {
-		setSupportingDoc(null);
-		setIsUploadingDoc(false);
-		// Reset the file input
-		const fileInput = document.querySelector('input[type="file"]');
-		if (fileInput) {
-			fileInput.value = "";
-		}
-	};
+	// const handleFileChange = (e) => {
+	// 	const file = e.target.files[0];
+	// 	if (!file) return;
+
+	// 	setIsUploadingDoc(true);
+
+	// 	// Simulate upload delay for better UX
+	// 	setTimeout(() => {
+	// 		setSupportingDoc(file);
+	// 		setIsUploadingDoc(false);
+	// 	}, 1000);
+	// };
+
+	// const handleRemoveFile = () => {
+	// 	setSupportingDoc(null);
+	// 	setIsUploadingDoc(false);
+	// 	// Reset the file input
+	// 	const fileInput = document.querySelector('input[type="file"]');
+	// 	if (fileInput) {
+	// 		fileInput.value = "";
+	// 	}
+	// };
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
@@ -98,6 +111,15 @@ export function AuthModal({ defaultMode = "login" }) {
 				setError("Silakan isi semua kolom yang diperlukan");
 				return;
 			}
+
+			// Validasi privacy policy untuk register
+			if (!agreedToTerms) {
+				setError(
+					"Anda harus menyetujui Syarat & Ketentuan dan Kebijakan Privasi"
+				);
+				return;
+			}
+
 			// Remove mentor document validation since mentor option is hidden
 			// if (formData.role === "mentor" && !supportingDoc) {
 			// 	setError("Silakan upload dokumen pendukung.");
@@ -156,7 +178,7 @@ export function AuthModal({ defaultMode = "login" }) {
 					confirmButtonColor: "#3B82F6",
 				});
 
-				setMode("login");
+				handleModeChange("login");
 			}
 		} catch (error) {
 			console.error(`${mode} failed:`, error);
@@ -328,13 +350,13 @@ export function AuthModal({ defaultMode = "login" }) {
 										</div>
 									</div>
 
-									<div className="mb-4">
+									{/* <div className="mb-4">
 										<label className="block text-sm font-medium text-gray-700 mb-3">
 											Daftar sebagai
 										</label>
-										<div className="grid grid-cols-1 gap-2">
-											{/* Pelanggan Option - Full width karena mentor di-hide */}
-											<label
+										<div className="grid grid-cols-1 gap-2"> */}
+									{/* Pelanggan Option - Full width karena mentor di-hide */}
+									{/* <label
 												className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
 													formData.role === "pelanggan"
 														? "border-yellow-500 bg-yellow-50"
@@ -371,10 +393,10 @@ export function AuthModal({ defaultMode = "login" }) {
 														<CheckCircle className="w-4 h-4 text-yellow-600" />
 													</div>
 												)}
-											</label>
+											</label> */}
 
-											{/* Mentor Option - HIDDEN/COMMENTED */}
-											{/* 
+									{/* Mentor Option - HIDDEN/COMMENTED */}
+									{/* 
 											<label
 												className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
 													formData.role === "mentor"
@@ -414,8 +436,8 @@ export function AuthModal({ defaultMode = "login" }) {
 												)}
 											</label>
 											*/}
-										</div>
-									</div>
+									{/* </div>
+									</div> */}
 
 									{/* Document Upload Section - HIDDEN/COMMENTED */}
 									{/* 
@@ -576,11 +598,50 @@ export function AuthModal({ defaultMode = "login" }) {
 								)}
 							</div>
 
+							{/* Privacy Policy Checkbox - Only show for register */}
+							{mode === "register" && (
+								<div className="mb-6">
+									<div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg border">
+										<div className="flex-shrink-0 mt-0.5">
+											<input
+												type="checkbox"
+												id="privacy-terms"
+												checked={agreedToTerms}
+												onChange={(e) => setAgreedToTerms(e.target.checked)}
+												className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+											/>
+										</div>
+										<div className="flex-1">
+											<label
+												htmlFor="privacy-terms"
+												className="text-sm text-gray-700 cursor-pointer">
+												Saya menyetujui{" "}
+												<button
+													type="button"
+													onClick={() => setShowPrivacyModal(true)}
+													className="text-blue-600 hover:text-blue-800 underline font-medium inline-flex items-center gap-1">
+													Syarat & Ketentuan dan Kebijakan Privasi
+													<ExternalLink className="w-3 h-3" />
+												</button>{" "}
+												ChillAjar
+											</label>
+											<p className="text-xs text-gray-500 mt-1">
+												Dengan mencentang kotak ini, Anda menyetujui untuk
+												mengikuti aturan platform kami dan cara kami menangani
+												data pribadi Anda.
+											</p>
+										</div>
+									</div>
+								</div>
+							)}
+
 							<button
 								type="submit"
-								disabled={isLoading}
+								disabled={isLoading || (mode === "register" && !agreedToTerms)}
 								className={`w-full outline-none focus:outline-none transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
-									isLoading ? "opacity-50 cursor-not-allowed" : ""
+									isLoading || (mode === "register" && !agreedToTerms)
+										? "opacity-50 cursor-not-allowed"
+										: ""
 								}`}>
 								{isLoading ? (
 									<>
@@ -598,7 +659,7 @@ export function AuthModal({ defaultMode = "login" }) {
 										Belum punya akun?{" "}
 										<button
 											type="button"
-											onClick={() => setMode("register")}
+											onClick={() => handleModeChange("register")}
 											className="text-yellow-600 hover:text-yellow-700 font-medium focus:outline-none outline-none">
 											Daftar
 										</button>
@@ -608,7 +669,7 @@ export function AuthModal({ defaultMode = "login" }) {
 										Sudah punya akun?{" "}
 										<button
 											type="button"
-											onClick={() => setMode("login")}
+											onClick={() => handleModeChange("login")}
 											className="text-yellow-600 hover:text-yellow-700 font-medium focus:outline-none outline-none">
 											Masuk
 										</button>
@@ -618,6 +679,12 @@ export function AuthModal({ defaultMode = "login" }) {
 						</form>
 					</div>
 				</motion.div>
+
+				{/* Privacy Policy Modal */}
+				<PrivacyPolicyModal
+					isOpen={showPrivacyModal}
+					onClose={() => setShowPrivacyModal(false)}
+				/>
 			</motion.div>
 		</AnimatePresence>
 	);

@@ -13,7 +13,7 @@ import { BookLoader } from "./components/User/BookLoader";
 import { NotFoundPage } from "./components/Fallback/NotFound";
 
 import { FaQWidget } from "./components/FaQWidget"; // Impor komponen FaQWidget
-import { GuideModal } from "./components/GuideModal"; // Impor komponen GuideModal
+import { GuideModal } from "./components/User/HelpButton"; // Impor komponen GuideModal
 import { HelpButton } from "./components/User/HelpButton"; // Impor komponen HelpButton
 import {
 	FloatingSessionReminder,
