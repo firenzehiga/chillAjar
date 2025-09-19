@@ -498,7 +498,7 @@ function App() {
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
 					// Gunakan jumlahSementara dari BookingModal jika ada, jika tidak gunakan perhitungan sendiri
-					jumlahSementara: jumlahSementara ?? 0,
+					jumlahSementara: sesiBaru.jumlahSementara ?? 0,
 				};
 				setCurrentBooking(booking);
 				setSelectedMentor(null);
