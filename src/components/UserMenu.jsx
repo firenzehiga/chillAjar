@@ -28,21 +28,21 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 	};
 
 	const handleLogout = () => {
-		Swal.fire({
-			title: "Are you sure?",
-			text: "You will be logged out of your account.",
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#3B82F6",
-			cancelButtonColor: "#EF4444",
-			confirmButtonText: "Yes, log me out",
-			cancelButtonText: "Cancel",
-		}).then((result) => {
-			if (result.isConfirmed) {
-				onLogout();
-				setIsOpen(false);
-			}
-		});
+		// Swal.fire({
+		// 	title: "Are you sure?",
+		// 	text: "You will be logged out of your account.",
+		// 	icon: "warning",
+		// 	showCancelButton: true,
+		// 	confirmButtonColor: "#3B82F6",
+		// 	cancelButtonColor: "#EF4444",
+		// 	confirmButtonText: "Yes, log me out",
+		// 	cancelButtonText: "Cancel",
+		// }).then((result) => {
+		// 	if (result.isConfirmed) {
+		onLogout();
+		setIsOpen(false);
+		// 	}
+		// });
 	};
 
 	const getDisplayName = (nama) => {
