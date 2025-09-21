@@ -275,7 +275,7 @@ export function MentorCoursesPage({ onNavigate }) {
 						<div className="flex justify-end mb-4">
 							<input
 								type="text"
-								placeholder="Cari nama, kursus, deskripsi atau komentar..."
+								placeholder="Cari nama, kursus, deskripsi atau mentor..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
 								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-yellow-500"

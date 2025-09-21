@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -8,6 +8,8 @@ import {
 	MapPin,
 	Calendar,
 } from "lucide-react";
+import { formatDateDay, formatTime } from "../../utils/dateFormatter";
+import { formatDate } from "date-fns";
 
 const MentorCalendar = ({ calendarData, loading }) => {
 	const [currentDate, setCurrentDate] = useState(new Date());
@@ -206,7 +208,7 @@ const MentorCalendar = ({ calendarData, loading }) => {
                             truncate
                           `}
 													title={`${session.time} - ${session.student} (${session.course})`}>
-													{session.time.slice(0, 5)}
+													{formatTime(session.time, true)}
 												</div>
 											))}
 											{sessions.length > 2 && (
@@ -231,7 +233,7 @@ const MentorCalendar = ({ calendarData, loading }) => {
 
 				{sessions.length > 0 ? (
 					<div className="space-y-3">
-						{sessions.slice(0, 3).map((session) => (
+						{sessions.map((session) => (
 							<div
 								key={session.id}
 								className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -241,12 +243,8 @@ const MentorCalendar = ({ calendarData, loading }) => {
 									</div>
 									<div>
 										<div className="text-sm font-medium text-gray-900">
-											{new Date(session.date).toLocaleDateString("id-ID", {
-												weekday: "long",
-												day: "numeric",
-												month: "long",
-											})}{" "}
-											• {session.time.slice(0, 5)}
+											{formatDateDay(session.date)} •{" "}
+											{formatTime(session.time, true)}
 										</div>
 										<div className="text-xs text-gray-500 flex items-center space-x-2">
 											<span className="flex items-center">
