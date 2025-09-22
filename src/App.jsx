@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import showToast from "./components/User/customToast";
 import { ListChecks, LucideShieldQuestion } from "lucide-react";
@@ -226,74 +226,85 @@ function App() {
 					: {},
 			});
 			// console.log("API Response:", response.data); // Debug: Periksa data dari API
-			const mappedCourses = response.data.map((course) => ({
-				id: course.id,
-				mentor_id: course.mentor_id,
-				mentorName: course.mentor?.user?.nama,
-				courseName: course.namaKursus,
-				courseDescription: course.deskripsi,
-				courseImage: getImageUrl(course.fotoKursus, "/foto_kursus/default.jpg"),
-				learnMethod:
-					course.gayaMengajar === "online"
-						? "Online Learning"
-						: course.gayaMengajar === "offline"
-						? "Offline Learning"
-						: "Belum diatur",
-				price_per_hour: course.mentor?.biayaPerSesi || 0,
-				mentor: course.mentor, // <-- tambahkan property mentor agar bisa diakses di CourseCard
-				mentors: [
-					{
-						id: course.mentor?.id || null,
-						status: course.mentor?.status || "active", // Tambahkan status field
-						mentorName: course.mentor?.user?.nama || "Unknown Mentor",
-						mentorImage: getImageUrl(
-							course.mentor?.user?.foto_profil,
-							"/foto_mentor/default.png"
-						),
-						mentorRating: course.mentor?.rating || 0,
-						mentorAbout: course.mentor?.deskripsi || "No description",
-						availableLearnMethod: [
-							course.gayaMengajar === "online"
-								? "Online Learning"
-								: course.gayaMengajar === "offline"
-								? "Offline Learning"
-								: "Belum diatur",
-						],
-						teachingMode: {
-							online: course.gayaMengajar === "online",
-							offline: course.gayaMengajar === "offline",
+			const mappedCourses = response.data.map((course) => {
+				const schedules = Array.isArray(course.jadwal_kursus) // Cek apakah jadwal_kursus ada dan merupakan array
+					? course.jadwal_kursus
+					: Array.isArray(course.jadwalKursus)
+					? course.jadwalKursus
+					: [];
+
+				const validModes = Array.from(
+					// Ini cara untuk mendapatkan mode belajar unik dari jadwal_kursus
+					new Set(
+						schedules
+							.map((j) => j.gayaMengajar)
+							.filter((m) => m === "online" || m === "offline")
+					)
+				);
+
+				// Simpan mode apa adanya (online / offline). Fallback kalau kosong.
+				const learnMethod =
+					validModes.length === 0
+						? "Belum diatur"
+						: validModes.length === 1
+						? validModes[0]
+						: validModes.join(", ");
+
+				const mentorData = course.mentor || {};
+
+				return {
+					id: course.id,
+					mentor_id: course.mentor_id,
+					mentorName: mentorData?.user?.nama,
+					courseName: course.namaKursus,
+					courseDescription: course.deskripsi,
+					courseImage: getImageUrl(
+						course.fotoKursus,
+						"/foto_kursus/default.jpg"
+					),
+					learnMethod,
+					price_per_hour: mentorData?.biayaPerSesi || 0,
+					mentor: mentorData,
+					mentors: [
+						{
+							id: mentorData?.id || null,
+							status: mentorData?.status || "active",
+							mentorName: mentorData?.user?.nama || "Unknown Mentor",
+							mentorImage: getImageUrl(
+								mentorData?.user?.foto_profil,
+								"/foto_mentor/default.png"
+							),
+							mentorRating: mentorData?.rating || 0,
+							mentorAbout: mentorData?.deskripsi || "No description",
+							mentorPhone: mentorData?.user?.nomorTelepon || "+1234567890",
+							mentorAddress:
+								mentorData?.user?.alamat || "Alamat tidak tersedia",
+							schedules: schedules.map((s) => ({
+								...s,
+								teachingMode: {
+									online: s.gayaMengajar === "online",
+									offline: s.gayaMengajar === "offline",
+								},
+							})),
+							courses: [
+								{
+									id: course.id,
+									courseName: course.namaKursus,
+									learnMethod,
+									schedules: schedules.map((s) => ({
+										...s,
+										teachingMode: {
+											online: s.gayaMengajar === "online",
+											offline: s.gayaMengajar === "offline",
+										},
+									})),
+								},
+							],
 						},
-						mentorPhone: course.mentor?.user?.nomorTelepon || "+1234567890",
-						// Jadwal kursus untuk mentor
-						schedules: Array.isArray(course.jadwal_kursus)
-							? course.jadwal_kursus
-							: Array.isArray(course.jadwalKursus)
-							? course.jadwalKursus
-							: [],
-						mentorAddress:
-							course.mentor?.user?.alamat || "Alamat tidak tersedia",
-						courses: [
-							{
-								id: course.id,
-								courseName: course.namaKursus,
-								learnMethod:
-									course.gayaMengajar === "online"
-										? "Online Learning"
-										: course.gayaMengajar === "offline"
-										? "Offline Learning"
-										: "Belum diatur",
-								schedules: Array.isArray(course.jadwal_kursus)
-									? course.jadwal_kursus
-									: Array.isArray(course.jadwalKursus)
-									? course.jadwalKursus
-									: [],
-							},
-						],
-					},
-				],
-				// PENTING: mapping jadwalKursus ke jadwal_kursus agar konsisten di seluruh frontend
-				jadwal_kursus: course.jadwal_kursus || [],
-			}));
+					],
+					jadwal_kursus: schedules,
+				};
+			});
 
 			// console.log("Mapped Courses:", mappedCourses); // Debug: Periksa data setelah pemetaan
 			return mappedCourses;
@@ -332,6 +343,151 @@ function App() {
 		return () => unlisten();
 	}, []);
 
+	const modalPushedRef = useRef(false);
+	const listenerAddedRef = useRef(false);
+	const ignoreNextPopRef = useRef(false);
+
+	useEffect(() => {
+		const onPopState = (e) => {
+			if (ignoreNextPopRef.current) {
+				ignoreNextPopRef.current = false;
+				return;
+			}
+
+			// hanya tangani jika salah satu modal terbuka dan kita memang sudah push state untuk modal
+			if (!(showBookingModal || showPayment) || !modalPushedRef.current) return;
+
+			// Booking modal open
+			if (showBookingModal) {
+				// tampilkan swal bercustom class (Tailwind)
+				Swal.fire({
+					title: "Batalkan pemesanan?",
+					html: "Jika Anda kembali sekarang, pemesanan yang belum diselesaikan akan dibatalkan.",
+					showCancelButton: true,
+					confirmButtonText: "Ya, batalkan",
+					cancelButtonText: "Tetap di sini",
+					buttonsStyling: false, // pake kelas custom sendiri
+					reverseButtons: true,
+					customClass: {
+						// kurangi ukuran popup (max-w-md vs max-w-lg) supaya card tidak terlalu besar
+						popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
+						title: "text-lg font-semibold text-gray-900",
+						content: "text-sm text-gray-600 dark:text-gray-300 mt-1",
+						// tambahkan container actions dengan gap agar tombol tidak saling dempet
+						actions: "flex gap-3 justify-center mt-4",
+						confirmButton:
+							"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+						cancelButton:
+							"px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-700",
+					},
+					backdrop: true,
+				}).then((result) => {
+					if (result.isConfirmed) {
+						modalPushedRef.current = false;
+						setShowBookingModal(false);
+						setSelectedMentor(null);
+						setBookingCourse(null);
+						setSelectedPackage(null);
+						// cleanup listener & nav
+						if (listenerAddedRef.current) {
+							window.removeEventListener("popstate", onPopState);
+							listenerAddedRef.current = false;
+						}
+						history.push("/home");
+					} else {
+						// tetap di modal — suppress next pop event dan kembalikan forward tanpa pushState
+						ignoreNextPopRef.current = true;
+						try {
+							window.history.forward();
+						} catch (e) {}
+						setTimeout(() => (ignoreNextPopRef.current = false), 500);
+					}
+				});
+				return;
+			}
+			// Payment modal open
+			if (showPayment) {
+				Swal.fire({
+					title: "Pembayaran belum selesai",
+					html: "Jika Anda kembali sekarang, pembayaran masih harus dilakukan untuk menyelesaikan pemesanan.",
+					showCancelButton: true,
+					confirmButtonText: "Ya, saya yakin",
+					cancelButtonText: "Tetap di sini",
+					buttonsStyling: false,
+					reverseButtons: true,
+					customClass: {
+						// kurangi ukuran popup (max-w-md vs max-w-lg) supaya card tidak terlalu besar
+						popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
+						title: "text-lg font-semibold text-gray-900",
+						content: "text-sm text-gray-600 dark:text-gray-300 mt-1",
+						// tambahkan container actions dengan gap agar tombol tidak saling dempet
+						actions: "flex gap-3 justify-center mt-4",
+						confirmButton:
+							"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+						cancelButton:
+							"px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-700",
+					},
+					backdrop: true,
+				}).then((result) => {
+					if (result.isConfirmed) {
+						modalPushedRef.current = false;
+						setShowPayment(false);
+						setCurrentBooking(null);
+						if (listenerAddedRef.current) {
+							window.removeEventListener("popstate", onPopState);
+							listenerAddedRef.current = false;
+						}
+						setCurrentPage("transaction-history");
+						history.push("/transaction-history");
+					} else {
+						ignoreNextPopRef.current = true;
+						try {
+							window.history.forward();
+						} catch (e) {}
+						setTimeout(() => (ignoreNextPopRef.current = false), 500);
+					}
+				});
+
+				setConfirmOpen(false);
+			}
+		};
+
+		// push/listener hanya sekali per buka modal
+		if (showBookingModal || showPayment) {
+			if (!modalPushedRef.current) {
+				window.history.pushState({ fromModal: true }, "");
+				modalPushedRef.current = true;
+			}
+			if (!listenerAddedRef.current) {
+				window.addEventListener("popstate", onPopState);
+				listenerAddedRef.current = true;
+			}
+		} else {
+			// kalau modal tertutup, bersihkan
+			if (listenerAddedRef.current) {
+				window.removeEventListener("popstate", onPopState);
+				listenerAddedRef.current = false;
+			}
+			modalPushedRef.current = false;
+		}
+
+		return () => {
+			if (listenerAddedRef.current) {
+				window.removeEventListener("popstate", onPopState);
+				listenerAddedRef.current = false;
+			}
+		};
+	}, [
+		showBookingModal,
+		showPayment,
+		setShowBookingModal,
+		setSelectedMentor,
+		setBookingCourse,
+		setSelectedPackage,
+		setShowPayment,
+		setCurrentBooking,
+		setCurrentPage,
+	]);
 	// Filtered course gunanaya untuk tampilan card course di coursepage dan home
 	const filteredCourses = courses.filter(
 		(course) => course.mentor && course.mentor.status === "active" // hanya kursus dengan mentor aktif
@@ -744,14 +900,47 @@ function App() {
 
 		setSelectedCourse(course);
 
-		// PENTING: Set mentor dari course ke store agar CoursePackageCard bisa akses
-		if (course.mentor) {
-			setSelectedMentor(course.mentor);
-		} else if (course.mentors && course.mentors.length > 0) {
-			setSelectedMentor(course.mentors[0]); // Ambil mentor pertama jika mentor tidak ada
+		// UBAH: Jangan langsung buka package selection, tapi tampilkan mentor selection di UI
+		// setShowPackageSelection(true); // Hapus ini
+
+		// Reset mentor dan package selection
+		setSelectedMentor(null);
+		setSelectedPackage(null);
+
+		// Navigate ke halaman courses dengan course terpilih untuk menampilkan mentor
+		// if (currentPage !== "courses") {
+		// 	setCurrentPage("courses");
+		// 	history.push("/courses");
+		// }
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
+
+	// Fungsi baru untuk handle klik mentor dari course page
+	const handleMentorClickFromCourse = (mentor, course) => {
+		if (!isAuthenticated) {
+			setShowAuthModal(true);
+			return;
 		}
 
-		setShowPackageSelection(true);
+		// Kalau mentor tidak ada jadwal untuk course ini, tampilkan toast error
+		const mentorSchedules = course.jadwal_kursus || [];
+		if (mentorSchedules.length === 0) {
+			showToast({
+				type: "error",
+				icon: <LucideShieldQuestion size={25} className="text-red-200" />,
+				tipIcon: "💡",
+				tipText: "Silakan coba mentor lain atau coba lagi nanti.",
+				title: "Mentor belum memiliki jadwal",
+				message:
+					"Mohon maaf, mentor ini belum menambahkan jadwal untuk kursus ini",
+				duration: 2000,
+			});
+			return;
+		}
+
+		setSelectedMentor(course.mentor);
+		setSelectedCourse(course);
+		setShowPackageSelection(true); // Sekarang baru buka package selection
 	};
 
 	// Fungsi untuk menangani pemilihan paket
@@ -767,14 +956,12 @@ function App() {
 	const handleBookingModalClose = () => {
 		setSelectedMentor(null);
 		setBookingCourse(null);
-		setSelectedCourse(null); // kalo gajadi, reset selectedCourse juga
 		setSelectedPackage(null);
 		setShowBookingModal(false);
 	};
 
 	// Fungsi untuk menutup PackageSelectionModal
 	const handlePackageSelectionClose = () => {
-		setSelectedCourse(null);
 		setSelectedPackage(null);
 		setShowPackageSelection(false);
 	};
@@ -1113,11 +1300,12 @@ function App() {
 						/>
 					);
 				case "courses":
-					return selectedCourse && selectedPackage ? (
+					return selectedCourse && !selectedPackage ? (
 						<div className="py-4">
 							<button
 								onClick={() => {
 									setSelectedCourse(null);
+									setSelectedMentor(null);
 									setSelectedPackage(null);
 								}}
 								className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
@@ -1141,59 +1329,16 @@ function App() {
 								<p className="translate-x-2">Go Back</p>
 							</button>
 
-							{/* Course & Package Info */}
-							<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+							{/* Course Info */}
+							{/* <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
 								<h3 className="text-xl font-semibold text-gray-900 mb-2">
 									{selectedCourse.courseName}
 								</h3>
 								<p className="text-gray-600 mb-3">
 									{selectedCourse.courseDescription}
 								</p>
-								<div className="flex items-center gap-4">
-									<div className="bg-white px-3 py-1 rounded-lg border">
-										<span className="text-sm font-medium text-gray-700">
-											Paket: {selectedPackage.name}
-										</span>
-									</div>
-									<div className="bg-white px-3 py-1 rounded-lg border">
-										<span className="text-sm font-medium text-green-600">
-											Rp{" "}
-											{(() => {
-												// ambil biaya mentor per sesi dari course
-												const mentorFee =
-													selectedCourse?.mentor?.biayaPerSesi || 0;
-
-												// Menghitung harga paket berdasarkan harga aktual items
-												const actualPackagePrice =
-													selectedPackage.items?.reduce(
-														(sum, item) =>
-															sum +
-															Math.max(
-																(item.harga || item.price || 0) -
-																	(item.diskon || 0),
-																0
-															),
-														0
-													) || 0;
-
-												const packageDiscount =
-													selectedPackage.packageDiscount || 0;
-												const finalPackagePrice = Math.max(
-													actualPackagePrice - packageDiscount,
-													0
-												);
-
-												// Total harga (paket + harga mentor)
-												const totalPrice = finalPackagePrice + mentorFee;
-
-												return totalPrice.toLocaleString();
-											})()}
-										</span>
-									</div>
-								</div>
-							</div>
-
-							{/* <h2 className="text-2xl font-bold text-gray-900 mb-6">
+							</div> */}
+							<h2 className="text-2xl font-bold text-gray-900 mb-6">
 								Pilih Mentor untuk {selectedCourse.courseName}
 							</h2>
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -1204,13 +1349,53 @@ function App() {
 											key={mentor.id}
 											mentor={mentor}
 											onSchedule={(selectedMentor, course) =>
-												handleSchedule(selectedMentor, course, selectedPackage)
+												handleMentorClickFromCourse(selectedMentor, course)
 											}
 											selectedCourse={selectedCourse}
 											schedules={schedules}
 										/>
 									))}
-							</div> */}
+							</div>
+						</div>
+					) : selectedCourse && selectedPackage && selectedMentor ? (
+						// Tampilan setelah semua terpilih (mentor + course + package)
+						<div className="py-4">
+							{/* Course & Package & Mentor Info */}
+							<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+								<h3 className="text-xl font-semibold text-gray-900 mb-2">
+									{selectedCourse.courseName}
+								</h3>
+								<p className="text-gray-600 mb-3">
+									{selectedCourse.courseDescription}
+								</p>
+								<div className="flex items-center gap-4 flex-wrap">
+									<div className="bg-white px-3 py-1 rounded-lg border">
+										<span className="text-sm font-medium text-gray-700">
+											Mentor: {selectedMentor.user?.nama}
+										</span>
+									</div>
+									<div className="bg-white px-3 py-1 rounded-lg border">
+										<span className="text-sm font-medium text-gray-700">
+											Paket: {selectedPackage.name}
+										</span>
+									</div>
+								</div>
+							</div>
+
+							{/* Button untuk proceed ke booking */}
+							<div className="text-center">
+								<button
+									onClick={() =>
+										handleSchedule(
+											selectedMentor,
+											selectedCourse,
+											selectedPackage
+										)
+									}
+									className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
+									Lanjut ke Pemesanan
+								</button>
+							</div>
 						</div>
 					) : (
 						<CoursesPage
@@ -1226,11 +1411,14 @@ function App() {
 				case "about":
 					return <AboutPage onNavigate={handleNavigate} />;
 				case "home":
-					return selectedCourse && selectedPackage ? (
+					return selectedCourse && !selectedPackage ? (
+						// Sama seperti logic di courses page - mentor selection dulu
+						// NOTE: KODE INI GAK KEPAKE, KARENA ALUR HOME PAKE PUNYA COURSESPAGE
 						<div className="py-4">
 							<button
 								onClick={() => {
 									setSelectedCourse(null);
+									setSelectedMentor(null);
 									setSelectedPackage(null);
 								}}
 								className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
@@ -1254,31 +1442,15 @@ function App() {
 								<p className="translate-x-2">Go Back</p>
 							</button>
 
-							{/* Course & Package Info */}
-							<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+							{/* Course Info */}
+							{/* <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
 								<h3 className="text-xl font-semibold text-gray-900 mb-2">
 									{selectedCourse.courseName}
 								</h3>
 								<p className="text-gray-600 mb-3">
 									{selectedCourse.courseDescription}
 								</p>
-								<div className="flex items-center gap-4">
-									<div className="bg-white px-3 py-1 rounded-lg border">
-										<span className="text-sm font-medium text-gray-700">
-											Paket: {selectedPackage.name}
-										</span>
-									</div>
-									<div className="bg-white px-3 py-1 rounded-lg border">
-										<span className="text-sm font-medium text-green-600">
-											Rp{" "}
-											{(
-												selectedPackage.totalPrice -
-												(selectedPackage.diskon || 0)
-											).toLocaleString()}
-										</span>
-									</div>
-								</div>
-							</div>
+							</div> */}
 
 							<h2 className="text-2xl font-bold text-gray-900 mb-6">
 								Pilih Mentor untuk {selectedCourse.courseName}
@@ -1291,11 +1463,51 @@ function App() {
 											key={mentor.id}
 											mentor={mentor}
 											onSchedule={(selectedMentor, course) =>
-												handleSchedule(selectedMentor, course, selectedPackage)
+												handleMentorClickFromCourse(selectedMentor, course)
 											}
 											selectedCourse={selectedCourse}
 										/>
 									))}
+							</div>
+						</div>
+					) : selectedCourse && selectedPackage && selectedMentor ? (
+						// Final selection UI setelah semua terpilih
+						<div className="py-4">
+							{/* Course & Package & Mentor Info */}
+							<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+								<h3 className="text-xl font-semibold text-gray-900 mb-2">
+									{selectedCourse.courseName}
+								</h3>
+								<p className="text-gray-600 mb-3">
+									{selectedCourse.courseDescription}
+								</p>
+								<div className="flex items-center gap-4 flex-wrap">
+									<div className="bg-white px-3 py-1 rounded-lg border">
+										<span className="text-sm font-medium text-gray-700">
+											Mentor: {selectedMentor.user?.nama}
+										</span>
+									</div>
+									<div className="bg-white px-3 py-1 rounded-lg border">
+										<span className="text-sm font-medium text-gray-700">
+											Paket: {selectedPackage.name}
+										</span>
+									</div>
+								</div>
+							</div>
+
+							{/* Button untuk proceed ke booking */}
+							<div className="text-center">
+								<button
+									onClick={() =>
+										handleSchedule(
+											selectedMentor,
+											selectedCourse,
+											selectedPackage
+										)
+									}
+									className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
+									Lanjut ke Pemesanan
+								</button>
 							</div>
 						</div>
 					) : (
@@ -1427,15 +1639,18 @@ function App() {
 							setShowPayment(false);
 							setCurrentBooking(null);
 							setCurrentPage("transaction-history"); // arahkan ke halaman tujuan
-							history.push("/transaction-history"); // update URL
 							// [gayaMengajar JADWAL ONLY] Komentar: Menampilkan PaymentModal hanya jika pembayaran sedang berlangsung dan booking sudah ada. Semua data mode belajar (gayaMengajar) sudah diambil dari jadwal_kursus, bukan dari level kursus.
-							Swal.fire({
-								icon: "warning",
-								title: "Pembayaran Belum Selesai",
-								html: `<span style="color:red;">Batas waktu pembayaran 1x24 jam.</span>`,
-								confirmButtonColor: "#f59e0b",
-								confirmButtonText: "Baik",
+							showToast({
+								type: "error",
+								icon: <ListChecks size={25} className="text-red-400" />,
+								tipIcon: "💡",
+								tipText: "Ingat: Batas waktu pembayaran 1x24 jam",
+								title: "Pemesanan Belum Selesai",
+								message:
+									"Anda memilih untuk membayar nanti. Sesi akan tetap ditahan sementara. Silakan lakukan pembayaran melalui Riwayat Transaksi dalam 1x24 jam untuk mengonfirmasi sesi.",
+								duration: 5000,
 							});
+							history.push("/transaction-history"); // update URL
 						}}
 						onSubmit={handlePaymentSubmit}
 					/>
@@ -1517,11 +1732,7 @@ function App() {
 						<CoursePackageSelectionModal
 							course={selectedCourse}
 							onClose={() => {
-								setShowPackageSelection(false);
-								// Reset jika tidak ada mentor yang dipilih
-								if (selectedMentor) {
-									setSelectedCourse(null);
-								}
+								handlePackageSelectionClose();
 							}}
 							onConfirm={(selectedPackage) => {
 								setSelectedPackage(selectedPackage);

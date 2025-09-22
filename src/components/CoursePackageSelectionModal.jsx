@@ -101,7 +101,6 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 	};
 
 	const handleClose = () => {
-		setSelectedPackage(null);
 		onClose();
 	};
 
