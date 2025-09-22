@@ -290,3 +290,22 @@ input:focus {
 .animation-delay-600 {
   animation-delay: 0.6s;
 }
+
+/* --- SweetAlert tweaks: lebih pipih, tombol punya jarak, icon kecil --- */
+/* pastikan popup tidak terlalu besar */
+
+/* --- Keep scrollbar visible when Swal open --- */
+/* SweetAlert menambahkan class `swal2-shown` pada <html> / <body> dan set overflow:hidden. */
+/* Override supaya scrollbar tetap muncul (tidak menghilang) saat swal terbuka. */
+html.swal2-shown, body.swal2-shown {
+  overflow: auto !important;
+  /* biarkan scrollbar tetap tampil */
+  padding-right: 0 !important;
+  /* jangan tambahkan padding kompensasi */
+}
+
+/* Jika ingin mencegah background scroll interaction tapi tetap tampil scrollbar:
+   gunakan pointer-events pada overlay (opsional): */
+.swal2-container .swal2-overlay {
+  pointer-events: auto;
+}
