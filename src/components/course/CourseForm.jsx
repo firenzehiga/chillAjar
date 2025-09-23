@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
 	BookOpen,
 	Loader2,
@@ -17,16 +16,11 @@ import {
 	FileText,
 	CheckCircle,
 } from "lucide-react";
-import toast from "react-hot-toast";
-import Swal from "sweetalert2";
 import { AsyncImage } from "loadable-image";
-
-import { getImageUrl } from "@/utils/getImageUrl";
 import { formatDate, formatTime } from "@/utils/dateFormatter";
 import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
 import useCourseForm from "@/hooks/course/useCourseForm";
 
-// Internal presentational subcomponents (kept compact)
 const TabNavigation = ({ tabs, activeTab, onTabChange, getTabStatus }) => (
 	<div className="mb-6">
 		<div className="border-b border-gray-200">
