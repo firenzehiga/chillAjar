@@ -1,5 +1,4 @@
 import React from "react";
-import { Download } from "lucide-react";
 import { FaFileCsv } from "react-icons/fa";
 
 export function ExportData({

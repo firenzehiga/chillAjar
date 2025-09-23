@@ -8,9 +8,12 @@ import {
 	MapPin,
 	Calendar,
 } from "lucide-react";
-import { formatDateDay, formatTime } from "../../utils/dateFormatter";
-import { formatDate } from "date-fns";
-
+import { formatDateDay, formatTime } from "@/utils/dateFormatter";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/id";
+dayjs.extend(relativeTime);
+dayjs.locale("id");
 const MentorCalendar = ({ calendarData, loading }) => {
 	const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -271,7 +274,7 @@ const MentorCalendar = ({ calendarData, loading }) => {
                     inline-block px-2 py-1 text-xs font-medium rounded-full border
                     ${getStatusColor(session.status)}
                   `}>
-										{getStatusText(session.status)}
+										{dayjs(session.date).fromNow()}{" "}
 									</span>
 								</div>
 							</div>

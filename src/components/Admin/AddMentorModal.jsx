@@ -14,7 +14,7 @@ import {
 	GraduationCap,
 	AlertCircle,
 } from "lucide-react";
-import api from "../../api";
+import api from "@/api";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
 

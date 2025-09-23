@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X, User, Mail, Phone, MapPin } from "lucide-react";
-import api from "../../api";
+import api from "@//api";
 import Swal from "sweetalert2";
 
 export function AddUserModal({ isOpen, onClose, onUserAdded }) {
