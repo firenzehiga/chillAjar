@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
 	BookOpen,
 	Loader2,
@@ -17,19 +17,16 @@ import {
 	FileText,
 	CheckCircle,
 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import showToast from "@/components/User/customToast";
 import Swal from "sweetalert2";
 import { AsyncImage } from "loadable-image";
 
-import api from "@/api";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { formatDate, formatTime } from "@/utils/dateFormatter";
 import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
+import useCourseForm from "@/hooks/course/useCourseForm";
 
-// ================== INTERNAL COMPONENTS ==================
-
+// Internal presentational subcomponents (kept compact)
 const TabNavigation = ({ tabs, activeTab, onTabChange, getTabStatus }) => (
 	<div className="mb-6">
 		<div className="border-b border-gray-200">
@@ -37,7 +34,6 @@ const TabNavigation = ({ tabs, activeTab, onTabChange, getTabStatus }) => (
 				{tabs.map((tab) => {
 					const Icon = tab.icon;
 					const status = getTabStatus(tab.id);
-
 					return (
 						<button
 							key={tab.id}
@@ -52,9 +48,6 @@ const TabNavigation = ({ tabs, activeTab, onTabChange, getTabStatus }) => (
 							}`}>
 							<Icon className="w-4 h-4" />
 							{tab.label}
-							{status === "completed" && (
-								<span className="w-2 h-2 bg-green-500 rounded-full" />
-							)}
 						</button>
 					);
 				})}
@@ -367,7 +360,6 @@ const ScheduleManager = ({
 								</div>
 							</div>
 
-							{/* Keterangan field - show for mentor only */}
 							{mentorName && (
 								<div>
 									<label
@@ -431,7 +423,6 @@ const PackageSelector = ({
 	onPackageToggle,
 	disabled = false,
 }) => {
-	// Helper function to check if package is active
 	const isPackageActive = (packageId) => {
 		const found = selectedPackages.find((p) => p.package_id === packageId);
 		return found ? found.is_active : false;
@@ -449,7 +440,6 @@ const PackageSelector = ({
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				{packages.map((pkg) => {
 					const isActive = isPackageActive(pkg.id);
-
 					return (
 						<div
 							key={pkg.id}
@@ -546,7 +536,6 @@ const PackageSelector = ({
 		</div>
 	);
 };
-
 const CourseReview = ({
 	formData,
 	schedules,
@@ -722,573 +711,71 @@ export function CourseForm({
 	userData = {},
 	backNavigationTarget = "mentor-manage-courses",
 }) {
-	const isEditMode = !!courseId;
-	const queryClient = useQueryClient();
-
-	// Configuration based on user role
-	const isAdmin = userRole === "admin";
-	const isMentor = userRole === "mentor";
-	const mentorName = userData?.nama || "";
-
-	// ======== STATES ========
-	const [formData, setFormData] = useState({
-		namaKursus: "",
-		deskripsi: "",
-		mentorId: "",
+	// Use hook to manage all form state and handlers
+	const {
+		isEditMode,
+		isAdmin,
+		isMentor,
+		mentorName,
+		formData,
+		schedules,
+		initialSchedules,
+		collapsedSchedules,
+		selectedPackages,
+		initialSelectedPackages,
+		mentors,
+		packages,
+		activeTab,
+		fotoKursus,
+		fotoPreview,
+		loading,
+		error,
+		setFormData,
+		setSchedules,
+		setInitialSchedules,
+		setSelectedPackages,
+		setInitialSelectedPackages,
+		setFotoPreview,
+		setLoading,
+		setError,
+		handleChange,
+		handleFileChange,
+		handleScheduleChange,
+		addSchedule,
+		removeSchedule,
+		toggleScheduleCollapse,
+		duplicateSchedule,
+		handlePackageToggle,
+		handleTabChange,
+		getTabStatus,
+		isFormValid,
+		handleSubmit,
+	} = useCourseForm({
+		courseId,
+		onNavigate,
+		userRole,
+		userData,
+		backNavigationTarget,
 	});
-	const [schedules, setSchedules] = useState([
-		{
-			tanggal: "",
-			waktu: "",
-			keterangan: mentorName ? `Kursus dengan ${mentorName}` : "",
-			tempat: "",
-			gayaMengajar: "online",
-		},
-	]);
-	const [initialSchedules, setInitialSchedules] = useState([]);
-	const [collapsedSchedules, setCollapsedSchedules] = useState({ 0: false });
-	const [selectedPackages, setSelectedPackages] = useState([]);
-	const [initialSelectedPackages, setInitialSelectedPackages] = useState([]);
-	const [mentors, setMentors] = useState([]);
-	const [packages, setPackages] = useState([]);
-	const [activeTab, setActiveTab] = useState("info");
-	const [fotoKursus, setFotoKursus] = useState(null);
-	const [fotoPreview, setFotoPreview] = useState(null);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
 
-	// Tab configuration
+	// Add tab definitions used by the UI (kept here so component controls presentation)
 	const baseTabs = [
-		{
-			id: "info",
-			label: "Info Dasar",
-			icon: FileText,
-		},
-		{
-			id: "jadwal",
-			label: "Jadwal",
-			icon: Calendar,
-		},
+		{ id: "info", label: "Info Dasar", icon: FileText },
+		{ id: "jadwal", label: "Jadwal", icon: Calendar },
 	];
 
 	const adminTabs = [
 		...baseTabs,
-		{
-			id: "paket",
-			label: "Paket",
-			icon: Package,
-		},
-		{
-			id: "review",
-			label: "Review & Save",
-			icon: CheckCircle,
-		},
+		{ id: "paket", label: "Paket", icon: Package },
+		{ id: "review", label: "Review & Save", icon: CheckCircle },
 	];
 
 	const mentorTabs = [
 		...baseTabs,
-		{
-			id: "review",
-			label: "Review & Save",
-			icon: CheckCircle,
-		},
+		{ id: "review", label: "Review & Save", icon: CheckCircle },
 	];
 
 	const tabs = isAdmin ? adminTabs : mentorTabs;
-
-	// ======== HANDLERS ========
-	const handleChange = (e) => {
-		const { name, value } = e.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
-	};
-
-	const handleFileChange = (e) => {
-		const file = e.target.files[0];
-		if (file) {
-			if (file.size > 3 * 1024 * 1024) {
-				Swal.fire({
-					icon: "error",
-					title: "Ukuran file terlalu besar",
-					text: "Ukuran file maksimal 3MB.",
-				});
-				return;
-			}
-			setFotoKursus(file);
-			setFotoPreview(URL.createObjectURL(file));
-		}
-	};
-
-	const handleScheduleChange = (index, e) => {
-		const { name, value } = e.target;
-		const newSchedules = [...schedules];
-		newSchedules[index] = { ...newSchedules[index], [name]: value };
-		setSchedules(newSchedules);
-	};
-
-	const addSchedule = () => {
-		const newIndex = schedules.length;
-		setSchedules([
-			...schedules,
-			{
-				tanggal: "",
-				waktu: "",
-				keterangan: mentorName ? `Kursus dengan ${mentorName}` : "",
-				tempat: "",
-				gayaMengajar: "online",
-			},
-		]);
-		setCollapsedSchedules((prev) => ({
-			...prev,
-			[newIndex]: false,
-		}));
-	};
-
-	const removeSchedule = (index) => {
-		if (index >= initialSchedules.length) {
-			setSchedules(schedules.filter((_, i) => i !== index));
-		}
-	};
-
-	const toggleScheduleCollapse = (index) => {
-		setCollapsedSchedules((prev) => ({
-			...prev,
-			[index]: !prev[index],
-		}));
-	};
-
-	const duplicateSchedule = (index) => {
-		const scheduleToClone = { ...schedules[index] };
-		scheduleToClone.tanggal = "";
-		scheduleToClone.waktu = "";
-		if (!scheduleToClone.keterangan && mentorName) {
-			scheduleToClone.keterangan = `Kursus dengan ${mentorName}`;
-		}
-		delete scheduleToClone.id;
-
-		const newSchedules = [...schedules];
-		newSchedules.splice(index + 1, 0, scheduleToClone);
-		setSchedules(newSchedules);
-
-		const newCollapsedStates = {};
-		Object.keys(collapsedSchedules).forEach((key) => {
-			const idx = parseInt(key);
-			if (idx > index) {
-				newCollapsedStates[idx + 1] = collapsedSchedules[idx];
-			} else {
-				newCollapsedStates[idx] = collapsedSchedules[idx];
-			}
-		});
-		newCollapsedStates[index + 1] = false;
-		setCollapsedSchedules(newCollapsedStates);
-	};
-
-	const handlePackageToggle = (packageId) => {
-		setSelectedPackages((prev) => {
-			const existingIndex = prev.findIndex((p) => p.package_id === packageId);
-
-			if (existingIndex >= 0) {
-				const updated = prev.map((p) =>
-					p.package_id === packageId ? { ...p, is_active: !p.is_active } : p
-				);
-				toast.dismiss();
-				const activeCount = updated.filter((p) => p.is_active).length;
-				if (activeCount === 0) {
-					showToast({
-						type: "warning",
-						title: "Minimal 1 paket harus dipilih",
-						message: "Anda harus memilih minimal 1 paket untuk kursus.",
-						duration: 2000,
-					});
-					return prev;
-				}
-
-				return updated;
-			} else {
-				return [...prev, { package_id: packageId, is_active: true }];
-			}
-		});
-	};
-
-	// Tab navigation functions
-	const handleTabChange = (tabId) => {
-		setActiveTab(tabId);
-	};
-
-	const getTabStatus = (tabId) => {
-		if (tabId === activeTab) return "active";
-
-		if (tabId === "info") {
-			return formData.namaKursus && formData.deskripsi
-				? "completed"
-				: "available";
-		}
-		if (tabId === "jadwal") {
-			return schedules.some((s) => s.tanggal && s.waktu)
-				? "completed"
-				: "available";
-		}
-		if (tabId === "paket" && isAdmin) {
-			return selectedPackages.some((p) => p.is_active)
-				? "completed"
-				: "available";
-		}
-
-		return "available";
-	};
-
-	// Form validation function
-	const isFormValid = () => {
-		if (!formData.namaKursus.trim() || !formData.deskripsi.trim()) {
-			return false;
-		}
-
-		const hasValidSchedule = schedules.some(
-			(schedule) => schedule.tanggal && schedule.waktu && schedule.gayaMengajar
-		);
-
-		if (!hasValidSchedule) return false;
-
-		if (isAdmin) {
-			const activePackages = selectedPackages.filter((p) => p.is_active);
-			if (activePackages.length === 0) return false;
-		}
-
-		return true;
-	};
-
-	// Fetch data on component mount
-	useEffect(() => {
-		const fetchData = async () => {
-			const token = localStorage.getItem("token");
-			if (!token) return;
-
-			try {
-				setLoading(true);
-
-				// Fetch mentors (admin only)
-				if (isAdmin) {
-					try {
-						const mentorResponse = await api.get("/admin/mentor", {
-							headers: { Authorization: `Bearer ${token}` },
-						});
-						setMentors(mentorResponse.data);
-					} catch (err) {
-						console.error("Failed to fetch mentors:", err);
-					}
-
-					// Fetch packages (admin only)
-					try {
-						const packageResponse = await api.get("/paket", {
-							headers: { Authorization: `Bearer ${token}` },
-						});
-						const paketData = Array.isArray(packageResponse.data)
-							? packageResponse.data.map((p) => ({
-									id: p.id,
-									name: p.nama,
-									price: p.harga_dasar,
-									totalPrice: Array.isArray(p.items)
-										? Math.max(
-												p.items.reduce(
-													(sum, item) =>
-														sum +
-														Math.max((item.harga || 0) - (item.diskon || 0), 0),
-													0
-												) - (p.diskon || 0),
-												0
-										  )
-										: Math.max((p.harga_dasar || 0) - (p.diskon || 0), 0),
-									description: p.deskripsi,
-									items: Array.isArray(p.items)
-										? p.items.map((item) => ({
-												name: item.nama,
-												price: Math.max(
-													(item.harga || 0) - (item.diskon || 0),
-													0
-												),
-												description: item.deskripsi,
-										  }))
-										: [],
-									diskon: p.diskon || 0,
-							  }))
-							: [];
-						setPackages(paketData);
-
-						if (!isEditMode && paketData.length > 0) {
-							setSelectedPackages([
-								{ package_id: paketData[0].id, is_active: true },
-							]);
-						}
-					} catch (err) {
-						console.error("Failed to fetch packages:", err);
-					}
-				}
-
-				// Fetch course data if in edit mode
-				if (isEditMode) {
-					try {
-						const response = await api.get(`/kursus/${courseId}`, {
-							headers: { Authorization: `Bearer ${token}` },
-						});
-
-						setFormData({
-							namaKursus: response.data.namaKursus,
-							deskripsi: response.data.deskripsi,
-							mentorId: response.data.mentor_id || "",
-						});
-
-						if (response.data.fotoKursus) {
-							setFotoPreview(getImageUrl(response.data.fotoKursus));
-						}
-
-						// Set schedules
-						if (response.data.jadwal_kursus) {
-							const initial = response.data.jadwal_kursus.map((jadwal) => ({
-								id: jadwal.id,
-								tanggal: jadwal.tanggal || "",
-								waktu: jadwal.waktu || "",
-								keterangan:
-									jadwal.keterangan ||
-									(isMentor ? `Kursus dengan ${mentorName}` : ""),
-								tempat: jadwal.tempat || "",
-								gayaMengajar: jadwal.gayaMengajar || "online",
-							}));
-							setInitialSchedules(initial);
-							setSchedules(initial);
-
-							const initialCollapsedState = {};
-							initial.forEach((_, index) => {
-								initialCollapsedState[index] = true;
-							});
-							setCollapsedSchedules(initialCollapsedState);
-						}
-
-						// Set packages for admin
-						if (isAdmin) {
-							if (
-								response.data.visibilitas_paket &&
-								Array.isArray(response.data.visibilitas_paket)
-							) {
-								const mapped = response.data.visibilitas_paket.map((vp) => ({
-									package_id: vp.paket_id,
-									is_active: !!vp.visibilitas,
-								}));
-								setSelectedPackages(mapped);
-								// simpan snapshot initial untuk perbandingan saat submit
-								setInitialSelectedPackages(mapped);
-							} else if (response.data.packages) {
-								const mapped = response.data.packages.map((pkg) => ({
-									package_id: pkg.id,
-									is_active: true,
-								}));
-								setSelectedPackages(mapped);
-								setInitialSelectedPackages(mapped);
-							}
-						}
-					} catch (err) {
-						setError("Gagal mengambil data kursus");
-					}
-				}
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchData();
-	}, [courseId, isEditMode, isAdmin, mentorName]);
-
-	// Submit handler
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		setLoading(true);
-		setError(null);
-
-		try {
-			const token = localStorage.getItem("token");
-			const payload = new FormData();
-			payload.append("namaKursus", formData.namaKursus);
-			payload.append("deskripsi", formData.deskripsi);
-			if (fotoKursus) {
-				payload.append("fotoKursus", fotoKursus);
-			}
-
-			if (isAdmin && formData.mentorId) {
-				payload.append("mentor_id", formData.mentorId);
-			}
-
-			// Attach package visibility info into the same payload (admin only)
-			if (isAdmin && Array.isArray(selectedPackages)) {
-				if (!isEditMode) {
-					// Create flow: kirim paket aktif dan visibilitas lengkap
-					const activePackages = selectedPackages.filter((p) => p.is_active);
-					activePackages.forEach((p, idx) => {
-						payload.append(`paket_ids[${idx}]`, p.package_id);
-					});
-
-					selectedPackages.forEach((p, idx) => {
-						payload.append(`visibilitas_paket[${idx}][paket_id]`, p.package_id);
-						payload.append(
-							`visibilitas_paket[${idx}][visibilitas]`,
-							p.is_active ? 1 : 0
-						);
-					});
-				} else {
-					// Edit flow: kirim hanya paket yang berubah visibilitasnya
-					const changedVisibilities = [];
-					selectedPackages.forEach((p) => {
-						const initial = initialSelectedPackages.find(
-							(ip) => ip.package_id === p.package_id
-						);
-						if (!initial || initial.is_active !== p.is_active) {
-							changedVisibilities.push(p);
-						}
-					});
-
-					changedVisibilities.forEach((p, idx) => {
-						payload.append(`visibilitas_paket[${idx}][paket_id]`, p.package_id);
-						payload.append(
-							`visibilitas_paket[${idx}][visibilitas]`,
-							p.is_active ? 1 : 0
-						);
-					});
-				}
-			}
-
-			let response;
-			const apiPath = isAdmin ? "/kursus" : "/mentor/kursus";
-
-			if (isEditMode) {
-				payload.append("_method", "PUT");
-				response = await api.post(`${apiPath}/${courseId}`, payload, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-						"Content-Type": "multipart/form-data",
-					},
-				});
-			} else {
-				response = await api.post(apiPath, payload, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-						"Content-Type": "multipart/form-data",
-					},
-				});
-			}
-
-			if (response.status === 200 || response.status === 201) {
-				let newCourseId;
-				if (isEditMode) {
-					newCourseId = courseId;
-				} else {
-					newCourseId =
-						response.data.kursus?.id ||
-						response.data.id ||
-						response.data.course_id ||
-						response.data.data?.id;
-
-					if (!newCourseId) {
-						const fetchCourseResponse = await api.get(
-							`/kursus?namaKursus=${formData.namaKursus}`,
-							{
-								headers: { Authorization: `Bearer ${token}` },
-							}
-						);
-						const latestCourse = fetchCourseResponse.data
-							.filter((course) => course.namaKursus === formData.namaKursus)
-							.sort(
-								(a, b) => new Date(b.created_at) - new Date(a.created_at)
-							)[0];
-						newCourseId = latestCourse?.id;
-
-						if (!newCourseId) {
-							throw new Error("Gagal mendapatkan ID kursus setelah pembuatan");
-						}
-					}
-				}
-
-				// Handle schedules - skip unchanged and run requests in parallel
-				const scheduleRequests = [];
-				const scheduleEndpoint = isAdmin
-					? "jadwal-kursus"
-					: "mentor/atur-jadwal";
-
-				for (const schedule of schedules) {
-					// validation: require fields
-					if (!schedule.tanggal || !schedule.waktu || !schedule.gayaMengajar) {
-						throw new Error(
-							"Setiap jadwal wajib mengisi tanggal, waktu, dan gayaMengajar."
-						);
-					}
-
-					// Jika jadwal sudah ada di DB dan tidak berubah dibanding initialSchedules -> skip
-					if (schedule.id) {
-						const initialSchedule = initialSchedules.find(
-							(s) => s.id === schedule.id
-						);
-						const unchanged =
-							initialSchedule &&
-							initialSchedule.tanggal === schedule.tanggal &&
-							initialSchedule.waktu === schedule.waktu &&
-							initialSchedule.gayaMengajar === schedule.gayaMengajar &&
-							(initialSchedule.tempat || "") === (schedule.tempat || "") &&
-							(initialSchedule.keterangan || "") ===
-								(schedule.keterangan || "");
-
-						if (unchanged) continue;
-					}
-
-					const jadwalPayload = {
-						kursus_id: newCourseId,
-						id: schedule.id || undefined,
-						tanggal: schedule.tanggal,
-						waktu: schedule.waktu,
-						keterangan: schedule.keterangan || "",
-						tempat: schedule.tempat || "",
-						gayaMengajar: schedule.gayaMengajar,
-					};
-
-					// push request promise, do not await here
-					scheduleRequests.push(
-						api.post(scheduleEndpoint, jadwalPayload, {
-							headers: { Authorization: `Bearer ${token}` },
-						})
-					);
-				}
-
-				if (scheduleRequests.length > 0) {
-					await Promise.all(scheduleRequests);
-				}
-
-				queryClient.invalidateQueries(["courses"]);
-				queryClient.invalidateQueries(["mentorCourses"]);
-
-				toast.success(
-					`Kursus ${isEditMode ? "diperbarui" : "dibuat"} berhasil!`
-				);
-				onNavigate(backNavigationTarget);
-			} else {
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: "Terjadi kesalahan saat menyimpan data.",
-					confirmButtonColor: "#EF4444",
-				});
-			}
-		} catch (err) {
-			const errorMessage =
-				err.response?.data?.message ||
-				err.message ||
-				(isEditMode ? "Gagal memperbarui kursus" : "Gagal membuat kursus");
-			setError(errorMessage);
-			Swal.fire({
-				icon: "error",
-				title: "Error",
-				text: errorMessage,
-				confirmButtonColor: "#EF4444",
-			});
-			console.error("Error details:", err.response ? err.response.data : err);
-		} finally {
-			setLoading(false);
-		}
-	};
 
 	if (loading && isEditMode) {
 		return <FormSkeletonCard />;

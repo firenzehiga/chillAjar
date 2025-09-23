@@ -1,4 +1,4 @@
-import { CourseForm } from "../../../components/course";
+import { CourseForm } from "@/components/course/CourseForm";
 
 export function AdminFormCoursePage({ onNavigate, courseId }) {
 	return (
