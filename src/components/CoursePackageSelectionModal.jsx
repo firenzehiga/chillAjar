@@ -82,10 +82,10 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 			}));
 		},
 		enabled: !!course?.id && isAuthenticated, // Hanya fetch jika course ID ada
-		staleTime: 5 * 60 * 1000, // Data fresh selama 5 menit
-		cacheTime: 10 * 60 * 1000, // Cache selama 10 menit
-		retry: 2,
-		refetchOnWindowFocus: false,
+		// staleTime: 5 * 60 * 1000, // Data fresh selama 5 menit
+		// cacheTime: 10 * 60 * 1000, // Cache selama 10 menit
+		// retry: 2,
+		// refetchOnWindowFocus: false,
 	});
 
 	const handlePackageSelect = (packageData) => {
