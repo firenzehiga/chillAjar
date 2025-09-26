@@ -1,4 +1,4 @@
-import React from "react";
+import useState from "react";
 import DataTable from "react-data-table-component";
 import {
 	BookOpen,
@@ -8,17 +8,17 @@ import {
 	AlertCircle,
 	XCircle,
 } from "lucide-react";
-import api from "../../../api";
+import api from "@/api";
 import Swal from "sweetalert2";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getImageUrl } from "../../../utils/getImageUrl";
-import { BookLoader } from "../../../components/User/BookLoader";
-import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
+import { getImageUrl } from "@/utils/getImageUrl";
+import { BookLoader } from "@/components/User/BookLoader";
+import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
 import toast from "react-hot-toast";
 import { AsyncImage } from "loadable-image";
 
 export function MentorCoursesPage({ onNavigate }) {
-	const [searchTerm, setSearchTerm] = React.useState("");
+	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
 	const token = localStorage.getItem("token");
@@ -207,7 +207,7 @@ export function MentorCoursesPage({ onNavigate }) {
 		},
 	];
 
-	const [previewImg, setPreviewImg] = React.useState(null);
+	const [previewImg, setPreviewImg] = useState(null);
 
 	if (error) {
 		return (

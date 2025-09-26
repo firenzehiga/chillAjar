@@ -1,6 +1,4 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import api from "../api";
 import {
 	Mail,
 	MapPin,
@@ -13,6 +11,7 @@ import {
 	Loader2,
 } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
+import { usePelangganProfileInfoQuery } from "../hooks/useProfile";
 import { ProfileSkeletonUser } from "../components/Skeleton/ProfileSkeleton";
 
 // Fungsi untuk menentukan tier badge
@@ -62,21 +61,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 			: "Unknown",
 		peran: userData?.peran || "unknown",
 	};
-
-	const {
-		data: statistik,
-		isLoading,
-		error,
-	} = useQuery({
-		queryKey: ["pelangganStatistik"],
-		queryFn: async () => {
-			const token = localStorage.getItem("token");
-			const res = await api.get("/pelanggan/profil-info", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			return res.data;
-		},
-	});
+	const { data: statistik, isLoading, error } = usePelangganProfileInfoQuery();
 
 	// Tentukan tier badge
 	const tier = getTier(statistik?.jumlah_sesi || 0);
@@ -88,7 +73,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 		<div className="py-8 px-4">
 			<div className="max-w-md sm:max-w-lg md:max-w-2xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-					<div className="h-48 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
+					<div className="h-28 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
 						<div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-8 md:translate-x-0">
 							<img
 								src={getImageUrl(

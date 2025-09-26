@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
 import { BookOpen, AlertCircle, XCircle, Pencil, Trash } from "lucide-react";
-import api from "../../../api";
 import Swal from "sweetalert2";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import BookLoader from "../../../components/User/BookLoader";
-import { formatDate } from "../../../utils/dateFormatter";
+import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
+import BookLoader from "@/components/User/BookLoader";
+import { formatDate } from "@/utils/dateFormatter";
+import {
+	useSessionsQuery,
+	useDeleteSessionMutation,
+} from "@/hooks/useSessions";
 
 export function AdminSessionsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
-	const queryClient = useQueryClient();
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
 
 	// Query 1: Fetch daftar sesi mentor
 	const {
@@ -21,39 +20,10 @@ export function AdminSessionsPage({ onNavigate }) {
 		isLoading,
 		error,
 		isFetching,
-	} = useQuery({
-		queryKey: ["adminSessions"],
-		queryFn: async () => {
-			if (!isAuthenticated) return [];
-			const response = await api.get("/sesi", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-
-			return response.data;
-		},
-		enabled: isAuthenticated,
-		staleTime: 60 * 1000, // 1 menit
-		cacheTime: 5 * 60 * 1000, // 5 menit
-		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // auto refetch tiap 1 menit
-		retry: 1,
-		onError: (err) => console.error("Error fetching sessions:", err),
-	});
+	} = useSessionsQuery();
 
 	// Delete session mutation
-	const deleteSessionMutation = useMutation({
-		mutationFn: async (id) =>
-			api.delete(`/sesi/${id}`, {
-				headers: { Authorization: `Bearer ${token}` },
-			}),
-		onSuccess: (_, id) => {
-			queryClient.setQueryData(["adminSessions"], (oldData) =>
-				oldData.filter((s) => s.id !== id)
-			);
-			toast.success("Sesi berhasil dihapus.");
-		},
-		onError: () => toast.error("Gagal menghapus sesi."),
-	});
+	const deleteSessionMutation = useDeleteSessionMutation();
 
 	const handleDelete = (id) => {
 		Swal.fire({
@@ -65,7 +35,16 @@ export function AdminSessionsPage({ onNavigate }) {
 			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Yes, delete it!",
 		}).then((result) => {
-			if (result.isConfirmed) deleteSessionMutation.mutate(id);
+			if (result.isConfirmed) {
+				deleteSessionMutation.mutate(id, {
+					onSuccess: () => {
+						toast.success("Sesi berhasil dihapus.");
+					},
+					onError: () => {
+						toast.error("Gagal menghapus sesi.");
+					},
+				});
+			}
 		});
 	};
 
@@ -182,6 +161,7 @@ export function AdminSessionsPage({ onNavigate }) {
 			return (
 				session.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
 				session.mentor?.user?.nama?.toLowerCase().includes(lower) ||
+				session.statusSesi.toLowerCase().includes(lower) ||
 				session.kursus?.namaKursus?.toLowerCase().includes(lower) ||
 				mode.toLowerCase().includes(lower)
 			);

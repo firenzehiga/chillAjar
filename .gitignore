@@ -26,6 +26,5 @@ dist-ssr
 *.sln
 *.sw?
 
-# Dokumentasi jangan di-commit
-COMMIT_GUIDE_gayaMengajar_JADWAL_ONLY.md
-NOTE_PERUBAHAN_gayaMengajar_JADWAL_ONLY.md
+# QWEN related
+QWEN.MD

@@ -1,21 +1,11 @@
 import React from "react";
 import { Mail, MapPin, Phone, Calendar, BookOpen, Star } from "lucide-react";
 import { getImageUrl } from "../../../utils/getImageUrl";
-import api from "../../../api";
-import { useQuery } from "@tanstack/react-query";
+import { useMentorProfileQuery } from "../../../hooks/useProfile";
 import { ProfileSkeletonMentor } from "../../../components/Skeleton/ProfileSkeleton";
 
 export function MentorProfilePage({ userData, userRole, onNavigate }) {
-	const { data: mentorProfile, isLoading } = useQuery({
-		queryKey: ["mentorProfile"],
-		queryFn: async () => {
-			const token = localStorage.getItem("token");
-			const res = await api.get("/mentor/profil-saya", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			return res.data;
-		},
-	});
+	const { data: mentorProfile, isLoading } = useMentorProfileQuery();
 
 	const currentUser = {
 		name: mentorProfile?.mentor?.user?.nama || "Unknown User",
@@ -50,7 +40,7 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 		<div className="py-8 px-4">
 			<div className="max-w-md sm:max-w-lg md:max-w-2xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-					<div className="h-48 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
+					<div className="h-28 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
 						<div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-8 md:translate-x-0">
 							<img
 								src={currentUser.avatar}

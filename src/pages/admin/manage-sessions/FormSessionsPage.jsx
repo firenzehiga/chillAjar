@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
-import api from "../../../api";
 import Swal from "sweetalert2";
-import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import {
+	useSessionByIdQuery,
+	useUpdateSessionMutation,
+} from "@/hooks/useSessions";
+
 export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 	// Pastikan selalu dalam mode edit
 	if (!sessionId) {
@@ -14,101 +18,29 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 	const queryClient = useQueryClient();
 
 	const [formData, setFormData] = useState({
-		mentorId: "",
-		pelangganId: "",
-		kursusId: "",
-		jadwalKursusId: "",
 		detailKursus: "",
 		statusSesi: "pending",
 	});
-	const [mentors, setMentors] = useState([]);
-	const [pelanggans, setPelanggans] = useState([]);
-	const [kursus, setKursus] = useState([]);
-	const [jadwalKursus, setJadwalKursus] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
-	// Fetch data sesi dan data relasi
+	// Hanya ambil data sesi spesifik
+	const { data: sessionData, isLoading: sessionLoading } =
+		useSessionByIdQuery(sessionId);
+
+	// Update form data when session data is loaded
 	useEffect(() => {
-		const fetchMentors = async () => {
-			if (!isAuthenticated) return;
-			try {
-				const response = await api.get("/admin/mentor", {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				setMentors(response.data);
-			} catch (err) {
-				setError("Gagal mengambil daftar mentor");
-			}
-		};
+		if (sessionData) {
+			setFormData({
+				detailKursus: sessionData.detailKursus || "",
+				statusSesi: sessionData.statusSesi || "pending",
+				// Tidak lagi mengupdate field yang tidak boleh diubah
+			});
+		}
+	}, [sessionData]);
 
-		const fetchPelanggans = async () => {
-			if (!isAuthenticated) return;
-			try {
-				const response = await api.get("/admin/pelanggan", {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				setPelanggans(response.data);
-			} catch (err) {
-				setError("Gagal mengambil daftar pelanggan");
-			}
-		};
-
-		const fetchKursus = async () => {
-			if (!isAuthenticated) return;
-			try {
-				const response = await api.get("/kursus", {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				setKursus(response.data);
-			} catch (err) {
-				setError("Gagal mengambil daftar kursus");
-			}
-		};
-
-		const fetchJadwalKursus = async () => {
-			if (!isAuthenticated) return;
-			try {
-				const response = await api.get("/jadwal-kursus", {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				setJadwalKursus(response.data);
-			} catch (err) {
-				setError("Gagal mengambil daftar jadwal kursus");
-			}
-		};
-
-		const fetchSession = async () => {
-			if (!isAuthenticated) return;
-			try {
-				setLoading(true);
-				const response = await api.get(`/sesi/${sessionId}`, {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				const sessionData = response.data;
-				setFormData({
-					mentorId: sessionData.mentor_id || "",
-					pelangganId: sessionData.pelanggan_id || "",
-					kursusId: sessionData.kursus_id || "",
-					jadwalKursusId: sessionData.jadwal_kursus_id || "",
-					detailKursus: sessionData.detailKursus || "",
-					statusSesi: sessionData.statusSesi || "pending",
-				});
-			} catch (err) {
-				setError("Gagal mengambil data sesi");
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		fetchMentors();
-		fetchPelanggans();
-		fetchKursus();
-		fetchJadwalKursus();
-		fetchSession();
-	}, [sessionId]);
+	// Mutation for updating session
+	const updateSessionMutation = useUpdateSessionMutation();
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -120,54 +52,50 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 		setLoading(true);
 		setError(null);
 
-		try {
-			const payload = {
-				mentor_id: formData.mentorId,
-				pelanggan_id: formData.pelangganId,
-				kursus_id: formData.kursusId,
-				jadwal_kursus_id: formData.jadwalKursusId,
-				detailKursus: formData.detailKursus,
-				statusSesi: formData.statusSesi,
-			};
+		const payload = {
+			detailKursus: formData.detailKursus,
+			statusSesi: formData.statusSesi,
+			// Tidak mengirim field yang tidak boleh diubah
+		};
 
-			const response = await api.put(`/sesi/${sessionId}`, payload, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-
-			if (response.status === 200) {
-				// Invalidate queries to refresh data
-				queryClient.invalidateQueries(["adminSessions"]);
-				queryClient.invalidateQueries(["adminTransactions"]);
-				queryClient.invalidateQueries(["statusTransactions"]);
-				queryClient.invalidateQueries(["sessionsWidget"]);
-
-				toast.success("Session berhasil diperbarui!");
-				onNavigate("admin-manage-sessions");
-			} else {
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: "Terjadi kesalahan saat memperbarui data.",
-					confirmButtonColor: "#EF4444",
-				});
+		updateSessionMutation.mutate(
+			{ sessionId, payload },
+			{
+				onSuccess: () => {
+					toast.success("Session berhasil diperbarui!");
+					onNavigate("admin-manage-sessions");
+				},
+				onError: (err) => {
+					const errorMessage =
+						err.response?.data?.message ||
+						err.message ||
+						"Gagal memperbarui sesi";
+					setError(errorMessage);
+					Swal.fire({
+						icon: "error",
+						title: "Error",
+						text: errorMessage,
+						confirmButtonColor: "#EF4444",
+					});
+					console.error(
+						"Error details:",
+						err.response ? err.response.data : err
+					);
+				},
+				onSettled: () => {
+					setLoading(false);
+				},
 			}
-		} catch (err) {
-			const errorMessage =
-				err.response?.data?.message || err.message || "Gagal memperbarui sesi";
-			setError(errorMessage);
-			Swal.fire({
-				icon: "error",
-				title: "Error",
-				text: errorMessage,
-				confirmButtonColor: "#EF4444",
-			});
-			console.error("Error details:", err.response ? err.response.data : err);
-		} finally {
-			setLoading(false);
-		}
+		);
 	};
 
-	if (loading) {
+	// Tampilkan skeleton jika query sesi masih loading
+	if (sessionLoading) {
+		return <FormSkeletonCard />;
+	}
+
+	// Tambahkan pengecekan tambahan jika sessionData belum ada atau form belum diisi
+	if (!sessionData) {
 		return <FormSkeletonCard />;
 	}
 
@@ -205,90 +133,58 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 						<div>
 							<label
-								htmlFor="mentorId"
+								htmlFor="mentorName"
 								className="block text-sm font-medium text-gray-700 mb-1">
 								Mentor
 							</label>
-							<select
-								id="mentorId"
-								name="mentorId"
-								value={formData.mentorId}
-								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
-								required>
-								<option value="">Select a mentor</option>
-								{mentors.map((mentor) => (
-									<option key={mentor.id} value={mentor.id}>
-										{mentor.user?.nama || "Unknown Mentor"}
-									</option>
-								))}
-							</select>
+							<div
+								id="mentorName"
+								className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100">
+								{sessionData.mentor?.user?.nama || "Unknown Mentor"}
+							</div>
 						</div>
 						<div>
 							<label
-								htmlFor="pelangganId"
+								htmlFor="pelangganName"
 								className="block text-sm font-medium text-gray-700 mb-1">
 								Pelanggan
 							</label>
-							<select
-								id="pelangganId"
-								name="pelangganId"
-								value={formData.pelangganId}
-								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
-								required>
-								<option value="">Select a pelanggan</option>
-								{pelanggans.map((pelanggan) => (
-									<option key={pelanggan.id} value={pelanggan.id}>
-										{pelanggan.user?.nama || "Unknown Pelanggan"}
-									</option>
-								))}
-							</select>
+							<div
+								id="pelangganName"
+								className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100">
+								{sessionData.pelanggan?.user?.nama || "Unknown Pelanggan"}
+							</div>
 						</div>
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 						<div>
 							<label
-								htmlFor="kursusId"
+								htmlFor="kursusName"
 								className="block text-sm font-medium text-gray-700 mb-1">
 								Kursus
 							</label>
-							<select
-								id="kursusId"
-								name="kursusId"
-								value={formData.kursusId}
-								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
-								required>
-								<option value="">Select a kursus</option>
-								{kursus.map((k) => (
-									<option key={k.id} value={k.id}>
-										{k.namaKursus || "Unknown Kursus"}
-									</option>
-								))}
-							</select>
+							<div
+								id="kursusName"
+								className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100">
+								{sessionData.kursus?.namaKursus || "Unknown Kursus"}
+							</div>
 						</div>
 						<div>
 							<label
-								htmlFor="jadwalKursusId"
+								htmlFor="jadwalKursus"
 								className="block text-sm font-medium text-gray-700 mb-1">
 								Jadwal Kursus
 							</label>
-							<select
-								id="jadwalKursusId"
-								name="jadwalKursusId"
-								value={formData.jadwalKursusId}
-								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
-								required>
-								<option value="">Select a jadwal</option>
-								{jadwalKursus.map((jadwal) => (
-									<option key={jadwal.id} value={jadwal.id}>
-										{jadwal.tanggal} {jadwal.waktu.slice(0, 5)} -{" "}
-										{jadwal.tempat || "Unknown Location"}
-									</option>
-								))}
-							</select>
+							<div
+								id="jadwalKursus"
+								className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100">
+								{sessionData.jadwal_kursus?.tanggal}{" "}
+								{sessionData.jadwal_kursus?.waktu.slice(0, 5)}{" "}
+								{sessionData.jadwal_kursus?.gayaMengajar === "offline" &&
+								sessionData.jadwal_kursus?.tempat
+									? `- ${sessionData.jadwal_kursus?.tempat}`
+									: "- Online"}{" "}
+							</div>
 						</div>
 					</div>
 					<div className="mb-4">

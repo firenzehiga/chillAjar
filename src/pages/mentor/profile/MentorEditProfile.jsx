@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Camera, AlertCircle } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getImageUrl } from "../../../utils/getImageUrl";
-import api from "../../../api";
+import { useQueryClient } from "@tanstack/react-query";
+import { getImageUrl } from "@/utils/getImageUrl";
+import {
+	useMentorProfileQuery,
+	useUpdateProfileMutation,
+} from "@/hooks/useProfile";
 import Swal from "sweetalert2";
-import { EditProfileSkeleton } from "../../../components/Skeleton/EditProfileSkeleton";
+import { EditProfileSkeleton } from "@/components/Skeleton/EditProfileSkeleton";
 
 const defaultFoto = "/foto_mentor/default.png";
 
-export function MentorEditProfile({
-	onNavigate,
-	userRole,
-	userData,
-	onUpdateUserData,
-}) {
+export function MentorEditProfile({ onNavigate, userData, onUpdateUserData }) {
 	const [formData, setFormData] = useState({
 		nama: "",
 		email: "",
@@ -30,16 +28,27 @@ export function MentorEditProfile({
 	const queryClient = useQueryClient();
 
 	// Ambil data profil mentor dari backend
-	const { data: mentorProfile, isLoading: isLoadingProfile } = useQuery({
-		queryKey: ["mentorProfile"],
-		queryFn: async () => {
-			const token = localStorage.getItem("token");
-			const res = await api.get("/mentor/profil-saya", {
-				headers: { Authorization: `Bearer ${token}` },
+	const { data: mentorProfile, isLoading: isLoadingProfile } =
+		useMentorProfileQuery();
+
+	// Mutation untuk update profil
+	const updateProfileMutation = useUpdateProfileMutation();
+
+	// Inisialisasi formData dari mentorProfile
+	useEffect(() => {
+		if (mentorProfile) {
+			setFormData({
+				nama: mentorProfile.mentor?.user?.nama || "",
+				email: mentorProfile.mentor?.user?.email || "",
+				nomorTelepon: mentorProfile.mentor?.user?.nomorTelepon || "",
+				alamat: mentorProfile.mentor?.user?.alamat || "",
+				deskripsi: mentorProfile.mentor?.deskripsi || "",
 			});
-			return res.data;
-		},
-	});
+			setProfileImage(
+				getImageUrl(mentorProfile.mentor?.user?.foto_profil, defaultFoto)
+			);
+		}
+	}, [mentorProfile]);
 	// Inisialisasi formData dari mentorProfile
 	useEffect(() => {
 		if (mentorProfile) {
@@ -86,33 +95,14 @@ export function MentorEditProfile({
 		setError(null);
 
 		try {
-			const token = localStorage.getItem("token");
+			const payload = {
+				...formData,
+				foto_profil: selectedImage,
+			};
 
-			// Update data utama di /user/profil
-			const userPayload = new FormData();
-			userPayload.append("nama", formData.nama);
-			userPayload.append("email", formData.email);
-			if (formData.nomorTelepon) {
-				userPayload.append("nomorTelepon", formData.nomorTelepon);
-			}
-			if (formData.alamat) {
-				userPayload.append("alamat", formData.alamat);
-			}
-			if (selectedImage) {
-				userPayload.append("foto_profil", selectedImage);
-			}
+			const response = await updateProfileMutation.mutateAsync(payload);
 
-			userPayload.append("deskripsi", formData.deskripsi);
-			userPayload.append("_method", "PUT");
-
-			const userResponse = await api.post("/user/profil", userPayload, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					"Content-Type": "multipart/form-data",
-				},
-			});
-
-			if (userResponse.status === 200) {
+			if (response) {
 				Swal.fire({
 					icon: "success",
 					title: "Success",
@@ -125,22 +115,15 @@ export function MentorEditProfile({
 					},
 				});
 
-				// Invalidate query agar UserMenu melakukan refetch
-				await queryClient.invalidateQueries({
-					queryKey: ["mentorProfile"],
-				});
-				// console.log(
-				// 	"Updated Profile Data from PUT /user/profil:",
-				// 	userResponse.data
-				// );
+				// Data sudah di-invalidate oleh mutation onSuccess
+
 				const updatedUserData = {
 					...userData,
 					nama: formData.nama,
 					email: formData.email,
 					nomorTelepon: formData.nomorTelepon,
 					alamat: formData.alamat,
-					foto_profil:
-						userResponse.data.user?.foto_profil || userData.foto_profil,
+					foto_profil: response.user?.foto_profil || userData.foto_profil,
 					// update relasi mentor jika ada
 					mentor: userData.mentor
 						? { ...userData.mentor, deskripsi: formData.deskripsi }
