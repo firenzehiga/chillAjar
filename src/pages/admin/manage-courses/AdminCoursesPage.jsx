@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import DataTable from "react-data-table-component";
 import {
 	BookOpen,
@@ -8,17 +8,17 @@ import {
 	LucideBookPlus,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../../../api";
+import api from "@/api";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import { getImageUrl } from "../../../utils/getImageUrl";
-import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { BookLoader } from "../../../components/User/BookLoader";
-import { formatDate } from "../../../utils/dateFormatter";
+import { getImageUrl } from "@/utils/getImageUrl";
+import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
+import { BookLoader } from "@/components/User/BookLoader";
+import { formatDate } from "@/utils/dateFormatter";
 import { AsyncImage } from "loadable-image";
 
 export function AdminCoursesPage({ onNavigate }) {
-	const [searchTerm, setSearchTerm] = React.useState("");
+	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
 	const token = localStorage.getItem("token");
