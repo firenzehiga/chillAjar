@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Camera, AlertCircle } from "lucide-react";
-import { getImageUrl } from "../../../utils/getImageUrl";
-import api from "../../../api";
+import { ArrowLeft, Camera, AlertCircle, CheckCircle2 } from "lucide-react";
+import { getImageUrl } from "@/utils/getImageUrl";
+import { useUpdateProfileMutation } from "@/hooks/useProfile";
 import Swal from "sweetalert2";
+import { showToast } from "@/components/User/customToast";
 
 const defaultFoto = "/foto_mentor/default.png";
 
@@ -24,6 +25,8 @@ export function AdminEditProfile({
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
+	const updateProfileMutation = useUpdateProfileMutation();
+
 	useEffect(() => {
 		if (userData) {
 			setFormData({
@@ -35,7 +38,6 @@ export function AdminEditProfile({
 			setProfileImage(getImageUrl(userData.foto_profil, defaultFoto));
 		}
 	}, [userData]);
-
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
@@ -73,46 +75,22 @@ export function AdminEditProfile({
 		}
 
 		try {
-			const token = localStorage.getItem("token");
+			const payload = {
+				...formData,
+				foto_profil: selectedImage,
+			};
 
-			const userPayload = new FormData();
-			userPayload.append("nama", formData.nama);
-			userPayload.append("email", formData.email);
-			if (formData.nomorTelepon) {
-				userPayload.append("nomorTelepon", formData.nomorTelepon);
-			}
-			if (formData.alamat) {
-				userPayload.append("alamat", formData.alamat);
-			}
-			if (selectedImage instanceof File) {
-				userPayload.append("foto_profil", selectedImage);
-			}
-			userPayload.append("_method", "PUT");
+			const response = await updateProfileMutation.mutateAsync(payload);
 
-			const userResponse = await api.post("/user/profil", userPayload, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					"Content-Type": "multipart/form-data",
-				},
-			});
-
-			if (userResponse.status === 200) {
-				Swal.fire({
-					icon: "success",
-					title: "Success",
-					text: "Profil berhasil diperbarui!",
-					showConfirmButton: false,
-					timer: 1200,
-					timerProgressBar: true,
-					didOpen: () => {
-						Swal.showLoading();
-					},
+			if (response) {
+				showToast({
+					type: "success",
+					lucideIcon: CheckCircle2,
+					title: "Profil berhasil diperbarui!",
+					message: "Perubahan profil Anda telah disimpan.",
+					position: "top-right",
+					duration: 2000,
 				});
-
-				// console.log(
-				// 	"Updated Profile Data from PUT /user/profil:",
-				// 	userResponse.data
-				// );
 
 				const updatedUserData = {
 					...userData,
@@ -120,8 +98,7 @@ export function AdminEditProfile({
 					email: formData.email,
 					nomorTelepon: formData.nomorTelepon,
 					alamat: formData.alamat,
-					foto_profil:
-						userResponse.data.user?.foto_profil || userData.foto_profil,
+					foto_profil: response.user?.foto_profil || userData.foto_profil,
 					peran: userRole,
 				};
 

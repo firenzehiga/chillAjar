@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import DataTable from "react-data-table-component";
 import {
 	Loader2,
@@ -9,14 +9,19 @@ import {
 	Eye,
 	Download,
 } from "lucide-react";
-import api from "../../../api";
 import Swal from "sweetalert2";
-import { getImageUrl } from "../../../utils/getImageUrl";
+import { getImageUrl } from "@/utils/getImageUrl";
 import toast from "react-hot-toast";
-import { BookLoader } from "../../../components/User/BookLoader";
-import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { ExportData } from "../../../components/Admin/ExportData";
-import { formatDate } from "../../../utils/dateFormatter";
+import { BookLoader } from "@/components/User/BookLoader";
+import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
+import { ExportData } from "@/components/Admin/ExportData";
+import { formatDate } from "@/utils/dateFormatter";
+import {
+	usePaymentsQuery,
+	useVerifyPaymentMutation,
+	useRejectPaymentMutation,
+} from "@/hooks/usePayments";
+import { downloadPaymentProof } from "@/services/paymentsService";
 
 export function AdminPaymentsPage() {
 	const [verifikasiTransaksiId, setVerifikasiTransaksiId] = useState(null);
@@ -25,54 +30,20 @@ export function AdminPaymentsPage() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
 
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
 	// Fetch data pembayaran menggunakan useQuery
 	const {
 		data: payments = [],
 		isLoading,
 		error,
 		isFetching,
-	} = useQuery({
-		queryKey: ["adminPayments"],
-		queryFn: async () => {
-			if (!isAuthenticated) return [];
-			const response = await api.get("/transaksi", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			return response.data;
-		},
-		enabled: isAuthenticated,
-		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 5 * 60 * 1000, // 5 menit cache
-		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
-		retry: 1,
-
-		onError: () => {
-			setError("Gagal mengambil data pembayaran");
-		},
-	});
+	} = usePaymentsQuery();
 
 	// Mutasi untuk verifikasi pembayaran
-	const verifikasiMutation = useMutation({
-		mutationFn: async (transaksiId) => {
-			const token = localStorage.getItem("token");
-			await api.post(
-				`/admin/verifikasi-pembayaran/${transaksiId}`,
-				{},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-		},
-	});
+	const verifikasiMutation = useVerifyPaymentMutation();
 
 	// Handler untuk tombol Setujui
 	const handleVerifikasi = (transaksiId) => {
-		// set temporary state so only the clicked row shows loading; will be cleared on cancel or when mutation finishes
-		setVerifikasiTransaksiId(transaksiId);
-
+		// don't set loading state yet — wait for user confirmation
 		Swal.fire({
 			title: "Verifikasi Pembayaran?",
 			text: "Pastikan pembayaran sudah benar sebelum menyetujui.",
@@ -94,25 +65,18 @@ export function AdminPaymentsPage() {
 			},
 			backdrop: true,
 		}).then(async (result) => {
-			if (!result.isConfirmed) {
-				setVerifikasiTransaksiId(null);
-				return;
-			}
+			if (!result.isConfirmed) return;
 
-			// gunakan mutateAsync sehingga kita dapat memberi toast.promise dengan Promise yang valid
-			const promise = verifikasiMutation.mutateAsync(transaksiId);
-
+			// set local loading state only after confirm
+			setVerifikasiTransaksiId(transaksiId);
+			const toastId = toast.loading("Memproses verifikasi...");
 			try {
-				await toast.promise(promise, {
-					loading: "Memproses verifikasi...",
-					success: "Pembayaran berhasil diverifikasi",
-					error: "Gagal memverifikasi pembayaran",
-				});
-				// invalidate data setelah sukses (refresh table)
-				queryClient.invalidateQueries(["adminPayments"]);
-				queryClient.invalidateQueries(["courses"]);
+				await verifikasiMutation.mutateAsync(transaksiId);
+				// ensure fresh data is fetched before showing success
+				await queryClient.invalidateQueries({ queryKey: ["adminPayments"] });
+				toast.success("Pembayaran berhasil diverifikasi", { id: toastId });
 			} catch (err) {
-				// error ditangani di toast + onError mutation jika ada
+				toast.error("Gagal memverifikasi pembayaran", { id: toastId });
 			} finally {
 				setVerifikasiTransaksiId(null);
 			}
@@ -120,23 +84,11 @@ export function AdminPaymentsPage() {
 	};
 
 	// Mutasi untuk menolak pembayaran
-	const tolakMutation = useMutation({
-		mutationFn: async (transaksiId) => {
-			const token = localStorage.getItem("token");
-			await api.post(
-				`/admin/tolak-pembayaran/${transaksiId}`,
-				{},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-		},
-	});
+	const tolakMutation = useRejectPaymentMutation();
 
 	// Handler untuk tombol Tolak
 	const handleTolak = (transaksiId) => {
-		// set temporary state so only the clicked row shows loading; will be cleared on cancel or when mutation finishes
-		setTolakTransaksiId(transaksiId);
+		// don't set loading yet, wait for confirmation
 		Swal.fire({
 			title: "Yakin ingin menolak?",
 			text: "Pembayaran akan ditolak!",
@@ -159,40 +111,23 @@ export function AdminPaymentsPage() {
 			},
 			backdrop: true,
 		}).then(async (result) => {
-			if (!result.isConfirmed) {
-				setTolakTransaksiId(null);
-				return;
-			}
+			if (!result.isConfirmed) return;
 
-			const promise = tolakMutation.mutateAsync(transaksiId);
+			setTolakTransaksiId(transaksiId);
+			const toastId = toast.loading("Memproses penolakan...");
 			try {
-				await toast.promise(promise, {
-					loading: "Memproses penolakan...",
-					success: "Pembayaran berhasil ditolak",
-					error: "Gagal menolak pembayaran",
-				});
-				queryClient.invalidateQueries(["adminPayments"]);
-				queryClient.invalidateQueries(["courses"]);
+				await tolakMutation.mutateAsync(transaksiId);
+				await queryClient.invalidateQueries({ queryKey: ["adminPayments"] });
+				toast.success("Pembayaran berhasil ditolak", { id: toastId });
 			} catch (err) {
-				// handled by toast
+				toast.error("Gagal menolak pembayaran", { id: toastId });
 			} finally {
 				setTolakTransaksiId(null);
 			}
 		});
 	};
 
-	// ini untuk mengatur loading state per transaksi
-	useEffect(() => {
-		if (!verifikasiMutation.isPending) {
-			setVerifikasiTransaksiId(null);
-		}
-	}, [verifikasiMutation.isPending]);
-
-	useEffect(() => {
-		if (!tolakMutation.isPending) {
-			setTolakTransaksiId(null);
-		}
-	}, [tolakMutation.isPending]);
+	// local per-row id state is authoritative for loading; removed watchers on mutation flags
 
 	// Handler untuk download bukti pembayaran melalui backend
 	const handleDownload = async (row) => {
@@ -226,19 +161,8 @@ export function AdminPaymentsPage() {
 		});
 
 		try {
-			// Download melalui backend API dengan cache busting
-			const timestamp = new Date().getTime(); // Cache busting
-			const response = await api.get(
-				`/admin/download-bukti-pembayaran/${row.id}?t=${timestamp}`, // Tambah timestamp untuk cache busting
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-						"Cache-Control": "no-cache", // Force no cache
-						Pragma: "no-cache", // Force no cache untuk HTTP/1.0
-					},
-					responseType: "blob", // Penting untuk file download
-				}
-			);
+			// Download melalui backend API with cache busting
+			const response = await downloadPaymentProof(row.id);
 
 			// Tutup loading
 			Swal.close();
@@ -264,7 +188,7 @@ export function AdminPaymentsPage() {
 			)}_${kursusNama.replace(/\s+/g, "_")}_${tanggal}${extension}`;
 
 			// Buat URL object untuk blob
-			const downloadUrl = window.URL.createObjectURL(response.data);
+			const downloadUrl = window.URL.createObjectURL(response);
 
 			// Buat element anchor untuk download
 			const link = document.createElement("a");
@@ -548,14 +472,11 @@ export function AdminPaymentsPage() {
 		{
 			name: "Aksi",
 			cell: (row) => {
-				// KONDISI BUTTON AKSI
-				// Saat verifikasi atau tolak yang dilakukan
-				const isApproving =
-					verifikasiMutation.isPending && verifikasiTransaksiId === row.id;
-				const isRejecting =
-					tolakMutation.isPending && tolakTransaksiId === row.id;
+				// KONDISI BUTTON AKSI (gunakan local id state sebagai sumber kebenaran)
+				const isApproving = verifikasiTransaksiId === row.id;
+				const isRejecting = tolakTransaksiId === row.id;
 
-				// Apakah salah satu tombol ditekan
+				// Apakah salah satu tombol ditekan (non-clickable untuk baris lain)
 				const disableApprove =
 					!!tolakTransaksiId ||
 					(verifikasiTransaksiId && verifikasiTransaksiId !== row.id);
@@ -577,7 +498,6 @@ export function AdminPaymentsPage() {
 								<button
 									onClick={() => {
 										handleVerifikasi(row.id);
-										setVerifikasiTransaksiId(row.id);
 									}}
 									className={`${approveClasses} ${
 										disableApprove || isFetching ? disabledClass : ""
@@ -599,7 +519,6 @@ export function AdminPaymentsPage() {
 
 								<button
 									onClick={() => {
-										setTolakTransaksiId(row.id);
 										handleTolak(row.id);
 									}}
 									className={`${rejectClasses} ${

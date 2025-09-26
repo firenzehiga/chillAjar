@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Camera, AlertCircle } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
-import api from "../api";
+import { useUpdateProfileMutation } from "../hooks/useProfile";
 import Swal from "sweetalert2";
 
 export function EditProfilePage({
@@ -21,6 +21,8 @@ export function EditProfilePage({
 	const [selectedImage, setSelectedImage] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+
+	const updateProfileMutation = useUpdateProfileMutation();
 
 	useEffect(() => {
 		if (userData) {
@@ -66,30 +68,14 @@ export function EditProfilePage({
 		setError(null);
 
 		try {
-			const token = localStorage.getItem("token");
+			const payload = {
+				...formData,
+				foto_profil: selectedImage,
+			};
 
-			const userPayload = new FormData();
-			userPayload.append("nama", formData.nama);
-			userPayload.append("email", formData.email);
-			if (formData.nomorTelepon) {
-				userPayload.append("nomorTelepon", formData.nomorTelepon);
-			}
-			if (formData.alamat) {
-				userPayload.append("alamat", formData.alamat);
-			}
-			if (selectedImage) {
-				userPayload.append("foto_profil", selectedImage);
-			}
-			userPayload.append("_method", "PUT");
+			const response = await updateProfileMutation.mutateAsync(payload);
 
-			const userResponse = await api.post("/user/profil", userPayload, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					"Content-Type": "multipart/form-data",
-				},
-			});
-
-			if (userResponse.status === 200) {
+			if (response) {
 				Swal.fire({
 					icon: "success",
 					title: "Success",
@@ -102,19 +88,13 @@ export function EditProfilePage({
 					},
 				});
 
-				// console.log(
-				// 	"Updated Profile Data from PUT /user/profil:",
-				// 	userResponse.data
-				// );
-
 				const updatedUserData = {
 					...userData,
 					nama: formData.nama,
-					email: formData.email,
+					// email: formData.email,
 					nomorTelepon: formData.nomorTelepon,
 					alamat: formData.alamat,
-					foto_profil:
-						userResponse.data.user?.foto_profil || userData.foto_profil,
+					foto_profil: response.user?.foto_profil || userData.foto_profil,
 					peran: userRole,
 				};
 
@@ -209,15 +189,11 @@ export function EditProfilePage({
 							className="text-sm font-semibold text-gray-900">
 							Email
 						</label>
-						<input
-							type="email"
+						<div
 							id="email"
-							name="email"
-							value={formData.email}
-							onChange={handleChange}
-							className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-							required
-						/>
+							className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg bg-gray-100">
+							{formData.email}
+						</div>
 					</div>
 				</div>
 

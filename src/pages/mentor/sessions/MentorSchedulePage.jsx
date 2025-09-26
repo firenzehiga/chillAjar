@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
 import toast from "react-hot-toast";
 import {
@@ -9,66 +9,30 @@ import {
 	StopCircle,
 	Loader2,
 } from "lucide-react";
-import api from "../../../api";
 import Swal from "sweetalert2";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BookLoader } from "../../../components/User/BookLoader";
+import { BookLoader } from "@/components/User/BookLoader";
+import {
+	useMentorSessionsQuery,
+	useStartSessionMutation,
+	useEndSessionMutation,
+} from "@/hooks/useSessions";
+
 export function MentorSchedulePage() {
 	const [startingSessionId, setStartingSessionId] = useState(null);
 	const [endingSessionId, setEndingSessionId] = useState(null);
 
 	const [searchTerm, setSearchTerm] = useState("");
-	const queryClient = useQueryClient();
-
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
 
 	// Query 1: Fetch daftar sesi mentor
 	const {
 		data: sessions = [],
 		isLoading: isLoading,
 		error: error,
-	} = useQuery({
-		queryKey: ["mentorSessions"],
-		queryFn: async () => {
-			if (!isAuthenticated) return [];
-			const response = await api.get("/mentor/daftar-sesi", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			// console.log("Fetched sessions:", response.data);
-			return response.data;
-		},
-		enabled: isAuthenticated,
-		onError: (err) => {
-			console.error("Error fetching sessions:", err);
-		},
-	});
+	} = useMentorSessionsQuery();
 
 	// Mutasi untuk memulai sesi
-	const startSessionMutation = useMutation({
-		mutationFn: async (sessionId) => {
-			await api.post(
-				`/mentor/mulai-sesi/${sessionId}`,
-				{},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-		},
-		onSuccess: async () => {
-			// 🔄 Refetch queries dan tunggu selesai
-			await queryClient.refetchQueries(["mentorSessions"]);
+	const startSessionMutation = useStartSessionMutation();
 
-			// 🔄 Transaksi refresh tanpa await (gak penting di halaman ini)
-			queryClient.refetchQueries(["mentorTransactions"]);
-
-			// ✅ Success message setelah data fresh
-			toast.success("Sesi berhasil dimulai!");
-		},
-		onError: () => {
-			Swal.fire("Gagal", "Terjadi kesalahan saat memulai sesi.", "error");
-		},
-	});
 	const handleStartSession = (sessionId) => {
 		setStartingSessionId(sessionId);
 		Swal.fire({
@@ -81,7 +45,14 @@ export function MentorSchedulePage() {
 			confirmButtonText: "Ya, mulai!",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				startSessionMutation.mutate(sessionId);
+				startSessionMutation.mutate(sessionId, {
+					onSuccess: () => {
+						toast.success("Sesi berhasil dimulai!");
+					},
+					onError: () => {
+						Swal.fire("Gagal", "Terjadi kesalahan saat memulai sesi.", "error");
+					},
+				});
 			} else {
 				setStartingSessionId(null);
 			}
@@ -89,30 +60,8 @@ export function MentorSchedulePage() {
 	};
 
 	// Mutasi untuk mengakhiri sesi
-	const endSessionMutation = useMutation({
-		mutationFn: async (sessionId) => {
-			await api.post(
-				`/mentor/selesai-sesi/${sessionId}`,
-				{},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-		},
-		onSuccess: async () => {
-			// 🔄 Tunggu data sesi refresh selesai (yang penting)
-			await queryClient.refetchQueries(["mentorSessions"]);
+	const endSessionMutation = useEndSessionMutation();
 
-			// 🔄 Transaksi refresh tanpa await (gak penting di halaman ini)
-			queryClient.refetchQueries(["mentorTransactions"]);
-
-			// ✅ Success message setelah data sesi fresh
-			toast.success("Sesi berhasil diakhiri!");
-		},
-		onError: () => {
-			Swal.fire("Gagal", "Terjadi kesalahan saat mengakhiri sesi.", "error");
-		},
-	});
 	const handleEndSession = (sessionId) => {
 		setEndingSessionId(sessionId);
 		Swal.fire({
@@ -124,7 +73,18 @@ export function MentorSchedulePage() {
 			confirmButtonText: "Ya, akhiri!",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				endSessionMutation.mutate(sessionId);
+				endSessionMutation.mutate(sessionId, {
+					onSuccess: () => {
+						toast.success("Sesi berhasil diakhiri!");
+					},
+					onError: () => {
+						Swal.fire(
+							"Gagal",
+							"Terjadi kesalahan saat mengakhiri sesi.",
+							"error"
+						);
+					},
+				});
 			} else {
 				setEndingSessionId(null);
 			}
@@ -305,7 +265,7 @@ export function MentorSchedulePage() {
 		},
 	];
 
-	const [previewImg, setPreviewImg] = React.useState(null);
+	const [previewImg, setPreviewImg] = useState(null);
 
 	if (error) {
 		return (
@@ -345,6 +305,7 @@ export function MentorSchedulePage() {
 			return (
 				session.pelanggan?.user?.nama?.toLowerCase().includes(lower) ||
 				session.mentor?.user?.nama?.toLowerCase().includes(lower) ||
+				session.statusSesi.toLowerCase().includes(lower) ||
 				session.kursus?.namaKursus?.toLowerCase().includes(lower) ||
 				mode.toLowerCase().includes(lower)
 			);
