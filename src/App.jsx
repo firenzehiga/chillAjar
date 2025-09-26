@@ -1,125 +1,89 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import showToast from "./components/User/customToast";
+import showToast from "@/components/User/customToast";
 import { ListChecks, LucideShieldQuestion } from "lucide-react";
-import { MentorCard } from "./components/MentorCard";
-import { BookingModal } from "./components/BookingModal";
-import { PaymentModal } from "./components/PaymentModal";
-import { Navigation } from "./components/Navigation";
-import { Footer } from "./components/Footer";
-import { CourseSkeletonCard } from "./components/Skeleton/CourseSkeletonCard";
-import { CarouselSkeleton } from "./components/Skeleton/CarouselSkeleton";
-import { BookLoader } from "./components/User/BookLoader";
-import { NotFoundPage } from "./components/Fallback/NotFound";
+import { MentorCard } from "@/components/MentorCard";
+import { BookingModal } from "@/components/BookingModal";
+import { PaymentModal } from "@/components/PaymentModal";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
+import { CourseSkeletonCard } from "@/components/Skeleton/CourseSkeletonCard";
+import { CarouselSkeleton } from "@/components/Skeleton/CarouselSkeleton";
+import { BookLoader } from "@/components/User/BookLoader";
+import { NotFoundPage } from "@/components/Fallback/NotFound";
 
-import { FaQWidget } from "./components/FaQWidget"; // Impor komponen FaQWidget
-import { GuideModal } from "./components/User/HelpButton"; // Impor komponen GuideModal
-import { HelpButton } from "./components/User/HelpButton"; // Impor komponen HelpButton
+import { FaQWidget } from "@/components/FaQWidget"; // Impor komponen FaQWidget
+import { GuideModal } from "@/components/User/HelpButton"; // Impor komponen GuideModal
+import { HelpButton } from "@/components/User/HelpButton"; // Impor komponen HelpButton
 import {
 	FloatingSessionReminder,
 	SessionBanner,
-} from "./components/SessionReminder"; // Impor Session Reminder
+} from "@/components/SessionReminder"; // Impor Session Reminder
 
 // Halaman utama
-import { CoursesPage } from "./pages/CoursesPage";
-import { MentorsPage } from "./pages/MentorsPage";
-import { ProfilePage } from "./pages/ProfilePage";
-import { EditProfilePage } from "./pages/EditProfilePage";
-import { TransactionHistoryPage } from "./pages/TransactionHistoryPage";
-import { SessionHistoryPage } from "./pages/SessionHistoryPage";
-import { AboutPage } from "./pages/AboutPage";
-import { AuthModal } from "./components/AuthModal";
-import { TestimoniModal } from "./components/TestimoniModal";
-import { CourseSelectionModal } from "./components/CourseSelectionModal";
-import { CoursePackageSelectionModal } from "./components/CoursePackageSelectionModal";
-import { Home } from "./pages/Home";
+import { CoursesPage } from "@/pages/CoursesPage";
+import { MentorsPage } from "@/pages/MentorsPage";
+import { ProfilePage } from "@/pages/ProfilePage";
+import { EditProfilePage } from "@/pages/EditProfilePage";
+import { TransactionHistoryPage } from "@/pages/TransactionHistoryPage";
+import { SessionHistoryPage } from "@/pages/SessionHistoryPage";
+import { AboutPage } from "@/pages/AboutPage";
+import { AuthModal } from "@/components/AuthModal";
+import { TestimoniModal } from "@/components/TestimoniModal";
+import { CourseSelectionModal } from "@/components/CourseSelectionModal";
+import { CoursePackageSelectionModal } from "@/components/CoursePackageSelectionModal";
+import { Home } from "@/pages/Home";
 
 // Import Zustand Store
-import useAppStore from "./stores/useAppStore";
+import useAppStore from "@/stores/useAppStore";
 
 // Halaman Admin
-import { AdminDashboard } from "./pages/admin/AdminDashboard";
-import { AdminProfilePage } from "./pages/admin/profile/AdminProfilePage";
-import { AdminEditProfile } from "./pages/admin/profile/AdminEditProfile";
-import { AdminUsersPage } from "./pages/admin/manage-users/AdminUsersPage";
-import { AdminCoursesPage } from "./pages/admin/manage-courses/AdminCoursesPage";
-import { AdminFormCoursePage } from "./pages/admin/manage-courses/FormCoursePage";
-import { AdminMentorsPage } from "./pages/admin/manage-mentors/AdminMentorsPage";
-import { AdminFormMentorsPage } from "./pages/admin/manage-mentors/FormMentorsPage";
-import { AdminPaymentsPage } from "./pages/admin/manage-payments/AdminPaymentsPage";
-import { AdminSessionsPage } from "./pages/admin/manage-sessions/AdminSessionsPage";
-import { AdminFormSessionsPage } from "./pages/admin/manage-sessions/FormSessionsPage";
-import { AdminTestimoniesPage } from "./pages/admin/manage-testimonials/AdminTestimoniesPage";
-import { AdminFormTestimoniesPage } from "./pages/admin/manage-testimonials/FormTestimoniesPage";
-import { AdminItemsPage } from "./pages/admin/manage-items/AdminItemsPage";
-import { AdminFormItemsPage } from "./pages/admin/manage-items/FormItemPage";
-import { AdminPackagesPage } from "./pages/admin/manage-packages/AdminPackagesPage";
-import { AdminFormPackagesPage } from "./pages/admin/manage-packages/FormPackagePage";
+import { AdminDashboard } from "@/pages/admin/AdminDashboard";
+import { AdminProfilePage } from "@/pages/admin/profile/AdminProfilePage";
+import { AdminEditProfile } from "@/pages/admin/profile/AdminEditProfile";
+import { AdminUsersPage } from "@/pages/admin/manage-users/AdminUsersPage";
+import { AdminCoursesPage } from "@/pages/admin/manage-courses/AdminCoursesPage";
+import { AdminFormCoursePage } from "@/pages/admin/manage-courses/FormCoursePage";
+import { AdminMentorsPage } from "@/pages/admin/manage-mentors/AdminMentorsPage";
+import { AdminFormMentorsPage } from "@/pages/admin/manage-mentors/FormMentorsPage";
+import { AdminPaymentsPage } from "@/pages/admin/manage-payments/AdminPaymentsPage";
+import { AdminSessionsPage } from "@/pages/admin/manage-sessions/AdminSessionsPage";
+import { AdminFormSessionsPage } from "@/pages/admin/manage-sessions/FormSessionsPage";
+import { AdminTestimoniesPage } from "@/pages/admin/manage-testimonials/AdminTestimoniesPage";
+import { AdminFormTestimoniesPage } from "@/pages/admin/manage-testimonials/FormTestimoniesPage";
+import { AdminItemsPage } from "@/pages/admin/manage-items/AdminItemsPage";
+import { AdminFormItemsPage } from "@/pages/admin/manage-items/FormItemPage";
+import { AdminPackagesPage } from "@/pages/admin/manage-packages/AdminPackagesPage";
+import { AdminFormPackagesPage } from "@/pages/admin/manage-packages/FormPackagePage";
 // Halaman Mentor
-import { MentorDashboard } from "./pages/mentor/MentorDashboard";
-import { MentorSchedulePage } from "./pages/mentor/sessions/MentorSchedulePage";
-import { MentorCoursesPage } from "./pages/mentor/courses/MentorCoursesPage";
-import { MentorTestimoniesPage } from "./pages/mentor/MentorTestimoniesPage";
-import { MentorFormCoursePage } from "./pages/mentor/courses/FormCoursePage";
-import { MentorProfilePage } from "./pages/mentor/profile/MentorProfilePage";
-import { MentorEditProfile } from "./pages/mentor/profile/MentorEditProfile";
+import { MentorDashboard } from "@/pages/mentor/MentorDashboard";
+import { MentorSchedulePage } from "@/pages/mentor/sessions/MentorSchedulePage";
+import { MentorCoursesPage } from "@/pages/mentor/courses/MentorCoursesPage";
+import { MentorTestimoniesPage } from "@/pages/mentor/MentorTestimoniesPage";
+import { MentorFormCoursePage } from "@/pages/mentor/courses/FormCoursePage";
+import { MentorProfilePage } from "@/pages/mentor/profile/MentorProfilePage";
+import { MentorEditProfile } from "@/pages/mentor/profile/MentorEditProfile";
 import { motion, AnimatePresence } from "framer-motion"; // Impor Framer Motion
 
-import { getImageUrl } from "./utils/getImageUrl"; // Utility function to get image URL
+import { getImageUrl } from "@/utils/getImageUrl"; // Utility function to get image URL
 
 import Swal from "sweetalert2";
-import api from "./api";
+import api from "@/api";
 import { useQuery } from "@tanstack/react-query";
 import { createBrowserHistory } from "history";
 import { useQueryClient } from "@tanstack/react-query";
-import ApiError from "./components/Fallback/ApiError";
+import ApiError from "@/components/Fallback/ApiError";
+
+import {
+	adminPages,
+	mentorPages,
+	pelangganPages,
+	publicPages,
+	protectedPages,
+	hideNavigationPages,
+} from "@/constants/pages";
 
 const history = createBrowserHistory();
-
-const adminPages = [
-	"admin-dashboard",
-	"admin-manage-users",
-	"admin-manage-payments",
-	"admin-manage-sessions",
-	"admin-edit-session",
-	"admin-manage-courses",
-	"admin-add-course",
-	"admin-edit-course",
-	"admin-manage-mentors",
-	"admin-add-mentor",
-	"admin-edit-mentor",
-	"admin-manage-items",
-	"admin-add-item",
-	"admin-edit-item",
-	"admin-manage-packages",
-	"admin-add-package",
-	"admin-edit-package",
-	"admin-profile",
-	"admin-edit-profile",
-	"admin-testimonial",
-	"admin-edit-testimonial",
-];
-const mentorPages = [
-	"mentor-dashboard",
-	"mentor-manage-schedule",
-	"mentor-manage-courses",
-	"mentor-manage-students",
-	"mentor-testimonial",
-	"mentor-add-course",
-	"mentor-edit-course",
-	"mentor-profile",
-	"mentor-edit-profile",
-];
-const protectedPages = [
-	...adminPages,
-	...mentorPages,
-	"profile",
-	"transaction-history",
-	"settings",
-];
-
-const hideNavigationPages = ["edit-profile"];
-
 function App() {
 	const queryClient = useQueryClient();
 
@@ -1076,31 +1040,48 @@ function App() {
 			return <div className="text-red-500 text-center mt-8">{msg}</div>;
 		}
 
-		// logika untuk mentor dan admin yang mencoba mengakses halaman pelanggan
-		if (
-			// apakah user sudah login dan perannya adalah admin atau mentor dan halaman yang diakses adalah home, courses, mentors, atau about
-			isAuthenticated &&
-			(userRole === "admin" || userRole === "mentor") &&
-			["home", "courses", "mentors", "about"].includes(currentPage)
-		) {
-			// Arahkan ke dashboard admin atau mentor sesuai dengan peran user
-			setCurrentPage(
-				userRole === "admin" ? "admin-dashboard" : "mentor-dashboard"
+		// ==== FUNGSI REDIRECT JIKA AKSES HALAMAN YANG TIDAK DIIZINKAN ====
+		const getRedirectPage = (currentPage, userRole) => {
+			const isPelangganPage = [...pelangganPages, ...publicPages].includes(
+				currentPage
 			);
-			history.push(
-				`/${userRole === "admin" ? "admin-dashboard" : "mentor-dashboard"}`
-			);
-			return userRole === "admin" ? <AdminDashboard /> : <MentorDashboard />;
-		}
+			const isMentorPage = mentorPages.includes(currentPage);
+			const isAdminPage = adminPages.includes(currentPage);
+			const isAdminOrMentor = userRole === "admin" || userRole === "mentor";
 
-		// logika untuk pelanggan yang mencoba mengakses halaman admin atau mentor
-		if (isAuthenticated && userRole === "pelanggan") {
+			// Jika admin/mentor mengakses halaman pelanggan
+			if (isAdminOrMentor && isPelangganPage)
+				return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
+
+			// Jika pelanggan mengakses halaman admin/mentor
+			if (userRole === "pelanggan" && (isAdminPage || isMentorPage))
+				return "home";
+
+			// Jika admin dan mentor saling mengakses halaman masing-masing
 			if (
-				adminPages.includes(currentPage) ||
-				mentorPages.includes(currentPage)
-			) {
-				setCurrentPage("home");
-				history.push("/home");
+				(userRole === "admin" && isMentorPage) ||
+				(userRole === "mentor" && isAdminPage)
+			)
+				return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
+
+			return null; // Tidak perlu redirect
+		};
+
+		// Gunakan fungsi untuk menentukan apakah perlu redirect
+		const redirectPage = isAuthenticated
+			? getRedirectPage(currentPage, userRole)
+			: null;
+
+		if (redirectPage) {
+			setCurrentPage(redirectPage);
+			history.push(`/${redirectPage}`);
+
+			// Return komponen yang sesuai
+			if (redirectPage === "admin-dashboard") {
+				return <AdminDashboard />;
+			} else if (redirectPage === "mentor-dashboard") {
+				return <MentorDashboard />;
+			} else if (redirectPage === "home") {
 				return (
 					<Home
 						courses={courses}
@@ -1260,19 +1241,6 @@ function App() {
 						break;
 				}
 			}
-		}
-
-		if (
-			(userRole === "admin" && mentorPages.includes(currentPage)) ||
-			(userRole === "mentor" && adminPages.includes(currentPage))
-		) {
-			setCurrentPage(
-				userRole === "admin" ? "admin-dashboard" : "mentor-dashboard"
-			);
-			history.push(
-				`/${userRole === "admin" ? "admin-dashboard" : "mentor-dashboard"}`
-			);
-			return userRole === "admin" ? <AdminDashboard /> : <MentorDashboard />;
 		}
 
 		const content = (() => {

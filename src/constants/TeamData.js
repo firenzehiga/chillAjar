@@ -1,6 +1,6 @@
-import higa from "../../assets/higa.png";
-import eko from "../../assets/eko.png";
-import farrel from "../../assets/farrel.png";
+import higa from "@/assets/higa.png";
+import eko from "@/assets/eko.png";
+import farrel from "@/assets/farrel.png";
 const teamsData = [
 	{
 		name: "Farrel Zulviano",

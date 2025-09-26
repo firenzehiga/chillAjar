@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
 	X,
 	Mail,
@@ -17,14 +17,14 @@ import {
 	// Shield,
 	ExternalLink,
 } from "lucide-react";
-import api from "../api";
+import api from "@/api";
 import Swal from "sweetalert2";
-import logo from "../assets/title.png";
-import useAppStore from "../stores/useAppStore";
+import logo from "@/assets/title.png";
+import useAppStore from "@/stores/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { showToast } from "./User/customToast";
-import { PrivacyPolicyModal } from "./PrivacyPolicyModal";
+import { showToast } from "@/components/User/customToast";
+import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 
 export function AuthModal({ defaultMode = "login" }) {
 	// Get state and actions from store
@@ -145,8 +145,8 @@ export function AuthModal({ defaultMode = "login" }) {
 					icon: "👋",
 					title: "Berhasil login!",
 					message: `Selamat datang kembali, ${user.nama}!`,
-					position: "top-right",
-					duration: 1000,
+					position: "top-center",
+					duration: 1500,
 				});
 				handleAuthSuccess(user.peran.toLowerCase(), user);
 			} else {

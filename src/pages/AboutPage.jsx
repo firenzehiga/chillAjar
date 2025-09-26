@@ -23,7 +23,7 @@ import {
 	TrendingUp,
 	Quote,
 } from "lucide-react";
-import teamsData from "../utils/constants/TeamData";
+import teamsData from "../constants/TeamData";
 import { useQuery } from "@tanstack/react-query";
 import api from "../api";
 

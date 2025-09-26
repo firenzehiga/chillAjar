@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import titleLogo from "../assets/title2.png";
+import { useState, useEffect } from "react";
+import titleLogo from "@/assets/title2.png";
 import {
-	GraduationCap,
 	Users,
 	BookOpen,
 	Menu,
@@ -16,16 +15,15 @@ import {
 	UserCheck,
 	LucideUserSquare2,
 	CircleDollarSign,
-	UserSquare2,
-	Building,
 	Users2,
 	DollarSign,
 	Package,
 	Gift,
 	Settings,
 } from "lucide-react";
-import { UserMenu } from "./UserMenu";
-import useAppStore from "../stores/useAppStore";
+import { UserMenu } from "@/components/UserMenu";
+import useAppStore from "@/stores/useAppStore";
+import { adminPages, mentorPages, getPageTitle } from "@/constants/pages";
 
 export function Navigation({ onNavigate, onLogout }) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,7 +35,7 @@ export function Navigation({ onNavigate, onLogout }) {
 		useAppStore();
 
 	// Close dropdown when clicking outside
-	React.useEffect(() => {
+	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (isManagementDropdownOpen && !event.target.closest(".relative")) {
 				setIsManagementDropdownOpen(false);
@@ -50,94 +48,16 @@ export function Navigation({ onNavigate, onLogout }) {
 		};
 	}, [isManagementDropdownOpen]);
 
-	const getPageTitle = (page) => {
-		switch (page) {
-			case "courses":
-				return "Courses";
-			case "mentors":
-				return "Mentors";
-			case "profile":
-				return "Profile";
-			case "transaction-history":
-				return "Riwayat Transaksi";
-			case "session-history":
-				return "Riwayat Sesi";
-			case "settings":
-				return "Settings";
-			case "about":
-				return "About Us";
-			// Halaman Admin
-			case "admin-dashboard":
-				return "Admin Dashboard";
-			case "admin-profile":
-				return "Admin Profile";
-			case "admin-edit-profile":
-				return "Admin Edit Profile";
-			case "admin-manage-users":
-				return "Users";
-			case "admin-manage-payments":
-				return "Payments";
-			case "admin-manage-sessions":
-				return "Sessions";
-			case "admin-edit-session":
-				return "Edit Session";
-			case "admin-manage-courses":
-				return "Courses";
-			case "admin-add-course":
-				return "Add Course";
-			case "admin-edit-course":
-				return "Edit Course";
-			case "admin-manage-mentors":
-				return "Mentors";
-			case "admin-manage-items":
-				return "Items";
-			case "admin-add-item":
-				return "Tambah Item";
-			case "admin-edit-item":
-				return "Edit Item";
-			case "admin-manage-packages":
-				return "Paket";
-			case "admin-add-package":
-				return "Tambah Paket";
-			case "admin-edit-package":
-				return "Edit Paket";
-			case "admin-testimonial":
-				return "Mentor Testimonials";
-			case "admin-edit-testimonial":
-				return "Edit Mentor Testimonials";
-
-			// Halaman Mentor
-			case "mentor-dashboard":
-				return "Mentor Dashboard";
-			case "mentor-profile":
-				return "Mentor Profile";
-			case "mentor-edit-profile":
-				return "Mentor Edit Profile";
-			case "mentor-manage-schedule":
-				return "Schedule";
-			case "mentor-manage-courses":
-				return "My Courses";
-			case "mentor-testimonial":
-				return "Testimonies";
-			case "mentor-add-course":
-				return "Add Course";
-			case "mentor-edit-course":
-				return "Edit Course";
-			default:
-				return "Home";
-		}
+	// derive role default redirect from pages lists so we don't hardcode routes twice
+	const getRoleRedirect = (role) => {
+		if (role === "admin") return adminPages?.[0] || "admin-dashboard";
+		if (role === "mentor") return mentorPages?.[0] || "mentor-dashboard";
+		return "home";
 	};
-
 	const roleCheck = {
-		admin: {
-			redirect: "admin-dashboard",
-		},
-		mentor: {
-			redirect: "mentor-dashboard",
-		},
-		user: {
-			redirect: "home",
-		},
+		admin: { redirect: getRoleRedirect("admin") },
+		mentor: { redirect: getRoleRedirect("mentor") },
+		user: { redirect: getRoleRedirect("user") },
 	};
 	const renderNavLinks = () => {
 		if (userRole === "admin") {
