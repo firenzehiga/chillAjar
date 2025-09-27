@@ -1,36 +1,18 @@
 import { useState } from "react";
 import DataTable from "react-data-table-component";
 import { BookOpen, AlertCircle, Star } from "lucide-react";
-import api from "../../api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookLoader } from "../../components/User/BookLoader";
+import { useMentorTestimoniesQuery } from "@/hooks/useTestimonial";
+import { BookLoader } from "@/components/User/BookLoader";
 
 export function MentorTestimoniesPage() {
 	const [searchTerm, setSearchTerm] = useState("");
-	const queryClient = useQueryClient();
 
 	// Fetch data transaksi yang mencakup detail sesi
 	const {
 		data: testimonies = [],
 		isLoading,
 		error,
-	} = useQuery({
-		queryKey: ["mentorTestimonies"],
-		queryFn: async () => {
-			const token = localStorage.getItem("token");
-			const response = await api.get("/mentor/daftar-testimoni", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			// Mapping agar jadwal_kursus selalu ada, baik dari jadwalKursus atau jadwal_kursus
-			return response.data.map((t) => ({
-				...t,
-				jadwal_kursus: t.jadwal_kursus || t.jadwalKursus || null,
-			}));
-		},
-		onError: (err) => {
-			console.error("Error fetching testimonies:", err);
-		},
-	});
+	} = useMentorTestimoniesQuery();
 
 	const columns = [
 		{

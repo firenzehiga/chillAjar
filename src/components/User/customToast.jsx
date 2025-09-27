@@ -41,7 +41,7 @@ const customToast = ({
 	const toastConfig = {
 		error: {
 			bgColor: "from-red-400 to-red-500",
-			borderColor: "#F97316",
+			borderColor: "#FF3131",
 			tipBg: "bg-red-50",
 			tipTextColor: "text-red-800",
 			tipIconColor: "text-red-600",

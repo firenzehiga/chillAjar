@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import api from "../../../api.jsx";
+import api from "@/api.jsx";
 import { Package, ArrowLeft, AlertCircle, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
-import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
@@ -108,6 +108,8 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 
 			// Invalidate queries to refresh data
 			queryClient.invalidateQueries(["adminItems"]);
+			queryClient.invalidateQueries(["adminPackages"]);
+			queryClient.invalidateQueries(["formCoursePackages"]);
 			toast.success(
 				`Item ${isEditMode ? "diperbarui" : "ditambahkan"} berhasil!`
 			);

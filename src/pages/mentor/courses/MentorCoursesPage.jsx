@@ -8,68 +8,28 @@ import {
 	AlertCircle,
 	XCircle,
 } from "lucide-react";
-import api from "@/api";
 import Swal from "sweetalert2";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { BookLoader } from "@/components/User/BookLoader";
 import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
 import toast from "react-hot-toast";
 import { AsyncImage } from "loadable-image";
+import {
+	useMentorCoursesQuery,
+	useDeleteMentorCourseMutation,
+} from "@/hooks/useCourse";
 
 export function MentorCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
-	const queryClient = useQueryClient();
 
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
-
-	// Fetch data menggunakan useQuery
 	const {
 		data: courses,
 		isLoading,
 		error,
 		isFetching,
-	} = useQuery({
-		queryKey: ["mentorCourses"],
-		queryFn: async () => {
-			if (!isAuthenticated) return [];
-			const response = await api.get("/mentor/daftar-kursus", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			console.log("Fetched courses:", response.data);
-			return response.data;
-		},
-		enabled: isAuthenticated, // Hanya jalankan query jika user sudah login
-		staleTime: 10 * 60 * 1000, // 5 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 10 * 60 * 1000, // 10 menit cache
-		retry: 1,
-		refetchOnWindowFocus: true, // Enable auto refresh
+	} = useMentorCoursesQuery();
 
-		onError: (err) => {
-			console.error("Error fetching courses:", err);
-		},
-	});
-
-	// Handle delete menggunakan useMutation
-	const deleteCourseMutation = useMutation({
-		mutationFn: async (id) => {
-			const token = localStorage.getItem("token");
-			await api.delete(`/kursus/${id}`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-		},
-		onSuccess: (_, id) => {
-			// Update data di cache setelah penghapusan
-			queryClient.setQueryData(["mentorCourses"], (oldData) =>
-				oldData.filter((course) => course.id !== id)
-			);
-			toast.success("Kursus berhasil dihapus!");
-		},
-		onError: () => {
-			Swal.fire("Error!", "Gagal Menghapus Kursus!", "error");
-		},
-	});
+	const deleteCourseMutation = useDeleteMentorCourseMutation();
 
 	const handleDelete = (id) => {
 		Swal.fire({
@@ -82,7 +42,14 @@ export function MentorCoursesPage({ onNavigate }) {
 			confirmButtonText: "Yes, delete it!",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				deleteCourseMutation.mutate(id);
+				deleteCourseMutation.mutate(id, {
+					onSuccess: () => {
+						toast.success("Kursus berhasil dihapus.");
+					},
+					onError: () => {
+						toast.error("Gagal menghapus kursus.");
+					},
+				});
 			}
 		});
 	};
@@ -220,6 +187,15 @@ export function MentorCoursesPage({ onNavigate }) {
 			</div>
 		);
 	}
+
+	// Sort courses by namaKursus ASC (A-Z)
+	// const sortedCourses = courses
+	// 	? [...courses].sort((a, b) =>
+	// 			(a.namaKursus || "").localeCompare(b.namaKursus || "", "id", {
+	// 				sensitivity: "base",
+	// 			})
+	// 	  )
+	// 	: [];
 
 	// Sort courses by created_at in descending order
 	const sortedCourses = courses

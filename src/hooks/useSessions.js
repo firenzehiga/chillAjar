@@ -310,10 +310,10 @@ export const useStartSessionMutation = () => {
 
 	return useMutation({
 		mutationFn: startSession,
-		onSuccess: async () => {
+		onSuccess: () => {
 			// Fetch ulang queries
-			await queryClient.refetchQueries(["mentorSessions"]);
-			queryClient.refetchQueries(["mentorTransactions"]);
+			queryClient.invalidateQueries(["mentorSessions"]);
+			queryClient.invalidateQueries(["mentorTransactions"]);
 			// Pesan sukses akan ditangani di komponen
 		},
 		onError: () => {
@@ -342,10 +342,10 @@ export const useEndSessionMutation = () => {
 
 	return useMutation({
 		mutationFn: endSession,
-		onSuccess: async () => {
+		onSuccess: () => {
 			// Fetch ulang queries
-			await queryClient.refetchQueries(["mentorSessions"]);
-			queryClient.refetchQueries(["mentorTransactions"]);
+			queryClient.invalidateQueries(["mentorSessions"]);
+			queryClient.invalidateQueries(["mentorTransactions"]);
 			// Pesan sukses akan ditangani di komponen
 		},
 		onError: () => {
