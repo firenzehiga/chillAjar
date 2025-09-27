@@ -1,5 +1,15 @@
 import { create } from "zustand";
 
+/**
+ * Global application store (Zustand)
+ *
+ * Menyimpan state aplikasi yang dipakai di banyak komponen,
+ * termasuk authentication, UI modal states, filter state, dan actions terkait.
+ *
+ * Perubahan kecil:
+ * - Menambahkan kontrol start/stop untuk periodic session checker agar interval
+ *   tidak bocor jika `initializeAuth` dipanggil berulang kali.
+ */
 const useAppStore = create((set, get) => ({
 	// Global API Error State
 	apiError: null,
@@ -46,6 +56,9 @@ const useAppStore = create((set, get) => ({
 	// Testimoni State
 	testimoniSession: null,
 	isSubmittingTestimoni: false,
+
+	// Interval ID untuk periodic session check (jika dijalankan)
+	sessionCheckerIntervalId: null,
 
 	// Actions - Authentication
 	setAuthenticated: (isAuth) => set({ isAuthenticated: isAuth }),
@@ -211,6 +224,24 @@ const useAppStore = create((set, get) => ({
 			isSubmittingTestimoni: false, // Reset loading saat close
 		}),
 
+	// Session checker control: start/stop periodic validity check
+	startSessionChecker: () => {
+		// Jika sudah jalan, jangan buat interval baru
+		if (get().sessionCheckerIntervalId) return;
+		const id = setInterval(() => {
+			get().checkSessionValid();
+		}, 5 * 60 * 1000); // 5 menit
+		set({ sessionCheckerIntervalId: id });
+	},
+
+	stopSessionChecker: () => {
+		const id = get().sessionCheckerIntervalId;
+		if (id) {
+			clearInterval(id);
+			set({ sessionCheckerIntervalId: null });
+		}
+	},
+
 	// Session Management
 	checkSessionValid: () => {
 		const token = localStorage.getItem("token");
@@ -242,6 +273,9 @@ const useAppStore = create((set, get) => ({
 	},
 
 	handleLogout: () => {
+		// Pastikan hentikan session checker saat logout
+		get().stopSessionChecker();
+
 		set({
 			isAuthenticated: false,
 			userRole: null,
@@ -292,10 +326,8 @@ const useAppStore = create((set, get) => ({
 						userData: user,
 					});
 
-					// Setup periodic session check (setiap 5 menit)
-					setInterval(() => {
-						get().checkSessionValid();
-					}, 5 * 60 * 1000); // 5 menit
+					// Mulai periodic session check (jika belum berjalan)
+					get().startSessionChecker();
 				} else {
 					localStorage.removeItem("token");
 					localStorage.removeItem("user");

@@ -15,7 +15,22 @@ import {
 } from "@/services/sessionsService";
 
 // ========== ADMIN SESI ==========
-// Hook untuk mengambil data sesi
+
+/**
+ * ROLE: ADMIN
+ *
+ * Mengambil semua sesi.
+ *
+ * - Hanya berjalan jika user terautentikasi.
+ * - Data otomatis refresh setiap 1 menit.
+ * - Cache bertahan 5 menit.
+ *
+ * @function useSessionsQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = useSessionsQuery();
+ */
 export const useSessionsQuery = () => {
 	const { isAuthenticated } = useAppStore();
 
@@ -36,7 +51,21 @@ export const useSessionsQuery = () => {
 	});
 };
 
-// Hook untuk menghapus sesi
+/**
+ * ROLE: ADMIN
+ *
+ * Mutation untuk menghapus sesi.
+ *
+ * - Menggunakan endpoint DELETE /sesi/{sessionId}.
+ * - Melakukan update cache secara optimis setelah sukses.
+ *
+ * @function useDeleteSessionMutation
+ * @returns {UseMutationResult<any>} Objek hasil mutation dari React Query.
+ *
+ * @example
+ * const deleteSession = useDeleteSessionMutation();
+ * deleteSession.mutate(sessionId);
+ */
 export const useDeleteSessionMutation = () => {
 	const queryClient = useQueryClient();
 
@@ -56,7 +85,19 @@ export const useDeleteSessionMutation = () => {
 };
 
 // ========== ADMIN FORM SESI ==========
-// Hook untuk mengambil data sesi berdasarkan ID
+
+/**
+ * ROLE: ADMIN
+ *
+ * Mengambil data sesi berdasarkan ID.
+ *
+ * @function useSessionByIdQuery
+ * @param {string|number} sessionId - ID sesi.
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = useSessionByIdQuery(sessionId);
+ */
 export const useSessionByIdQuery = (sessionId) => {
 	const { isAuthenticated } = useAppStore();
 
@@ -74,7 +115,21 @@ export const useSessionByIdQuery = (sessionId) => {
 	});
 };
 
-// Hook untuk memperbarui sesi
+/**
+ * ROLE: ADMIN
+ *
+ * Mutation untuk memperbarui sesi.
+ *
+ * - Menggunakan endpoint PUT /sesi/{sessionId}.
+ * - Setelah sukses, melakukan invalidasi query terkait agar data direfresh.
+ *
+ * @function useUpdateSessionMutation
+ * @returns {UseMutationResult<any>} Objek hasil mutation dari React Query.
+ *
+ * @example
+ * const updateSession = useUpdateSessionMutation();
+ * updateSession.mutate({ sessionId, payload });
+ */
 export const useUpdateSessionMutation = () => {
 	const queryClient = useQueryClient();
 
@@ -90,7 +145,17 @@ export const useUpdateSessionMutation = () => {
 	});
 };
 
-// Hook untuk mengambil data mentor
+/**
+ * ROLE: ADMIN
+ *
+ * Mengambil daftar mentor (admin).
+ *
+ * @function useMentorsQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = useMentorsQuery();
+ */
 export const useMentorsQuery = () => {
 	const { isAuthenticated } = useAppStore();
 
@@ -108,7 +173,17 @@ export const useMentorsQuery = () => {
 	});
 };
 
-// Hook untuk mengambil data pelanggan
+/**
+ * ROLE: ADMIN
+ *
+ * Mengambil daftar pelanggan (admin).
+ *
+ * @function usePelanggansQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = usePelanggansQuery();
+ */
 export const usePelanggansQuery = () => {
 	const { isAuthenticated } = useAppStore();
 
@@ -126,7 +201,17 @@ export const usePelanggansQuery = () => {
 	});
 };
 
-// Hook untuk mengambil data kursus
+/**
+ * ROLE: ADMIN
+ *
+ * Mengambil daftar kursus.
+ *
+ * @function useKursusQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = useKursusQuery();
+ */
 export const useKursusQuery = () => {
 	const { isAuthenticated } = useAppStore();
 
@@ -144,7 +229,17 @@ export const useKursusQuery = () => {
 	});
 };
 
-// Hook untuk mengambil data jadwal kursus
+/**
+ * ROLE: ADMIN
+ *
+ * Mengambil daftar jadwal kursus.
+ *
+ * @function useJadwalKursusQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = useJadwalKursusQuery();
+ */
 export const useJadwalKursusQuery = () => {
 	const { isAuthenticated } = useAppStore();
 
@@ -163,7 +258,18 @@ export const useJadwalKursusQuery = () => {
 };
 
 // ========== MENTOR SESI ==========
-// Hook untuk mengambil data sesi mentor
+
+/**
+ * ROLE: MENTOR
+ *
+ * Mengambil daftar sesi milik mentor yang sedang login.
+ *
+ * @function useMentorSessionsQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = useMentorSessionsQuery();
+ */
 export const useMentorSessionsQuery = () => {
 	const { isAuthenticated } = useAppStore();
 
@@ -184,7 +290,21 @@ export const useMentorSessionsQuery = () => {
 	});
 };
 
-// Hook untuk memulai sesi
+/**
+ * ROLE: MENTOR
+ *
+ * Mutation untuk memulai sesi.
+ *
+ * - Menggunakan endpoint POST /mentor/mulai-sesi/{sessionId}.
+ * - Setelah sukses, melakukan refetch queries terkait.
+ *
+ * @function useStartSessionMutation
+ * @returns {UseMutationResult<any>} Objek hasil mutation dari React Query.
+ *
+ * @example
+ * const startSession = useStartSessionMutation();
+ * startSession.mutate(sessionId);
+ */
 export const useStartSessionMutation = () => {
 	const queryClient = useQueryClient();
 
@@ -202,7 +322,21 @@ export const useStartSessionMutation = () => {
 	});
 };
 
-// Hook untuk mengakhiri sesi
+/**
+ * ROLE: MENTOR
+ *
+ * Mutation untuk mengakhiri sesi.
+ *
+ * - Menggunakan endpoint POST /mentor/selesai-sesi/{sessionId}.
+ * - Setelah sukses, melakukan refetch queries terkait.
+ *
+ * @function useEndSessionMutation
+ * @returns {UseMutationResult<any>} Objek hasil mutation dari React Query.
+ *
+ * @example
+ * const endSession = useEndSessionMutation();
+ * endSession.mutate(sessionId);
+ */
 export const useEndSessionMutation = () => {
 	const queryClient = useQueryClient();
 
