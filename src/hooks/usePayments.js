@@ -6,7 +6,19 @@ import {
 	rejectPayment,
 } from "@/services/paymentsService";
 
-// Hook untuk mengambil data pembayaran
+/**
+ * Hook React Query untuk mengambil daftar pembayaran (admin).
+ *
+ * - Hanya berjalan jika user sudah terautentikasi.
+ * - Data otomatis refresh setiap 1 menit.
+ * - Cache bertahan 5 menit.
+ *
+ * @function usePaymentsQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = usePaymentsQuery();
+ */
 export const usePaymentsQuery = () => {
 	const { isAuthenticated } = useAppStore();
 
@@ -18,39 +30,61 @@ export const usePaymentsQuery = () => {
 			return response;
 		},
 		enabled: isAuthenticated,
-		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering fetch ulang
-		cacheTime: 5 * 60 * 1000, // 5 menit cache
+		staleTime: 1 * 60 * 1000, // 1 menit
+		cacheTime: 5 * 60 * 1000, // 5 menit
 		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // Fetch ulang tiap 1 menit untuk update real-time
+		refetchInterval: 60 * 1000, // tiap 1 menit
 		retry: 1,
-		onError: () => {
-			// Penanganan error dapat diimplementasikan di sini jika diperlukan
+		onError: (err) => {
+			console.error("Error fetching payments:", err);
 		},
 	});
 };
 
-// Hook untuk verifikasi pembayaran
+/**
+ * Hook React Query untuk memverifikasi pembayaran (admin).z
+ *
+ * - Menggunakan mutation ke endpoint verifikasi pembayaran.
+ * - Setelah berhasil, query "adminPayments" dan "courses" di-refresh.
+ *
+ * @function useVerifyPaymentMutation
+ * @returns {UseMutationResult<any>} Objek hasil mutation dari React Query.
+ *
+ * @example
+ * const verifyPayment = useVerifyPaymentMutation();
+ * verifyPayment.mutate(transaksiId);
+ */
 export const useVerifyPaymentMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: verifyPayment,
 		onSuccess: () => {
-			// Invalidasi dan fetch ulang data
 			queryClient.invalidateQueries(["adminPayments"]);
 			queryClient.invalidateQueries(["courses"]);
 		},
 	});
 };
 
-// Hook untuk penolakan pembayaran
+/**
+ * Hook React Query untuk menolak pembayaran (admin).
+ *
+ * - Menggunakan mutation ke endpoint tolak pembayaran.
+ * - Setelah berhasil, query "adminPayments" dan "courses" di-refresh.
+ *
+ * @function useRejectPaymentMutation
+ * @returns {UseMutationResult<any>} Objek hasil mutation dari React Query.
+ *
+ * @example
+ * const rejectPayment = useRejectPaymentMutation();
+ * rejectPayment.mutate(transaksiId);
+ */
 export const useRejectPaymentMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
 		mutationFn: rejectPayment,
 		onSuccess: () => {
-			// Invalidasi dan fetch ulang data
 			queryClient.invalidateQueries(["adminPayments"]);
 			queryClient.invalidateQueries(["courses"]);
 		},

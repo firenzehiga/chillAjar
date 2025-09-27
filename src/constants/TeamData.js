@@ -17,17 +17,6 @@ const teamsData = [
 			linkedin: "https://www.linkedin.com/in/muhammad-farrel-zulviano-/",
 		},
 	},
-	// {
-	// 	name: "Arby Ali Amludin",
-	// 	role: "Scrum Master",
-	// 	image: arby,
-	// 	bio: "Scrum Master yang fokus pada kolaborasi tim dan pengembangan agile.",
-	// 	funFacts: ["Penggemar kopi hitam ☕", "Selalu tepat waktu ⏰"],
-	// 	socials: {
-	// 		email: "arby@email.com",
-	// 		linkedin: "https://www.linkedin.com/in/arby-ali-976b4a292/",
-	// 	},
-	// },
 	{
 		name: "Firenze Higa Putra",
 		role: "Frontend Developer",
@@ -59,47 +48,6 @@ const teamsData = [
 			github: "https://github.com/ekomh170",
 		},
 	},
-	// {
-	// 	name: "Ahmad Faiz Al Asad",
-	// 	role: "UI/UX Designer",
-	// 	image: faiz,
-	// 	bio: "UI/UX designer yang fokus pada pengalaman pengguna yang optimal.",
-	// 	funFacts: [
-	// 		"Penggemar film sci-fi 🚀",
-	// 		"Selalu mencari inspirasi desain baru 🌟",
-	// 	],
-	// 	socials: {
-	// 		email: "faiz@email.com",
-	// 		linkedin: "https://www.linkedin.com/in/ahmad-faiz-al-asad-753107294/",
-	// 	},
-	// },
-	// {
-	// 	name: "Fatiya Labibah",
-	// 	role: "Media Kreatif",
-	// 	image: fatiya,
-	// 	bio: "Media kreatif yang suka membuat konten visual menarik.",
-	// 	funFacts: ["Suka fotografi 📷", "Cat lover 🐱"],
-	// 	socials: {
-	// 		email: "fatiya@email.com",
-	// 		linkedin: "https://www.linkedin.com/in/fatiya-labibah-547252293/",
-	// 	},
-	// },
-	// {
-	// 	name: "Muhammad Wildan Ziyad Al Farabi",
-	// 	role: "Media Kreatif",
-	// 	image: wildan,
-	// 	bio: "Media kreatif yang berpengalaman dalam editing video dan animasi.",
-	// 	funFacts: [
-	// 		"Video enthusiast 🎬",
-	// 		"Senang belajar hal baru 📚",
-	// 		"Organizational 📋",
-	// 	],
-	// 	socials: {
-	// 		email: "wildan@email.com",
-	// 		linkedin:
-	// 			"https://www.linkedin.com/in/muhammad-wildan-ziyad-alfarabi-586094250/",
-	// 	},
-	// },
 ];
 
 export default teamsData;

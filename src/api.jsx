@@ -1,9 +1,6 @@
-// Helper API instance pakai base URL dari .env
-// Pakai: import api from './api.jsx'
-// - Base URL diatur lewat VITE_PUBLIC_API di .env
-// - Jika .env tidak diisi, fallback ke backend public default
+// Helper: instance API pakai base URL dari .env (VITE_PUBLIC_API)
+// - Jika VITE_PUBLIC_API tidak di-set, fallback ke https://peladen.my.id/api
 import axios from "axios";
-import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 
 const PUBLIC_API =
@@ -17,19 +14,23 @@ const api = axios.create({
 	},
 });
 
-// Request interceptor - tambah token ke header
+// Request interceptor - tambahkan token jika ada
 api.interceptors.request.use((config) => {
 	const token = localStorage.getItem("token");
-	// Hanya tambahkan Authorization jika token ada
 	if (token) {
 		config.headers.Authorization = `Bearer ${token}`;
 	} else {
-		// Pastikan header Authorization tidak dikirim jika tidak login
+		// pastikan tidak mengirim header Authorization jika tidak ada token
 		delete config.headers.Authorization;
 	}
 	return config;
 });
 
+/**
+ * Mapping singkat untuk alias error
+ * @param {any} error
+ * @returns {string}
+ */
 function getErrorAlias(error) {
 	if (error.code === "ERR_NETWORK") return "Network";
 	if (error.response?.status === 401 || error.response?.status === 403)
@@ -38,14 +39,15 @@ function getErrorAlias(error) {
 	if (error.response?.status === 404) return "Not Found";
 	return "Unknown";
 }
-// Response interceptor - handle session expired
+
+// Response interceptor - handle session expired & set api error di store
 api.interceptors.response.use(
 	(response) => response,
 	(error) => {
 		const originalRequest = error.config;
 		const message = error.response?.data?.message || "";
 
-		// Jangan trigger logout/toast jika error dari /login atau /register
+		// Jangan trigger logout/toast untuk requests ke /login atau /register
 		if (
 			error.response &&
 			(error.response.status === 401 || error.response.status === 403) &&
@@ -56,9 +58,13 @@ api.interceptors.response.use(
 		) {
 			localStorage.removeItem("token");
 			localStorage.removeItem("user");
+
+			// Panggil action logout dari store (dinamis import)
 			import("./stores/useAppStore").then((module) => {
 				module.default.getState().handleLogout();
 			});
+
+			// Informasi singkat ke user
 			toast.error(
 				<div className="text-center">
 					<div className="font-semibold text-red-800 mb-2">
@@ -80,10 +86,11 @@ api.interceptors.response.use(
 					},
 				}
 			);
+
 			return Promise.reject(error);
 		}
 
-		// JANGAN setApiError untuk error dari /login atau /register
+		// Jika error berasal dari /login atau /register, jangan setApiError di store
 		if (
 			originalRequest &&
 			["/login", "/register"].some((path) =>
@@ -93,11 +100,11 @@ api.interceptors.response.use(
 			return Promise.reject(error);
 		}
 
-		// Selain kasus Auth/session expired, baru setApiError
+		// Set api error di store untuk kasus selain login/register
 		const alias = getErrorAlias(error);
 		import("./stores/useAppStore").then((module) => {
 			module.default.getState().setApiError({
-				code: error.code + " - " + error.response?.status,
+				code: (error.code || "") + " - " + (error.response?.status || ""),
 				alias,
 				message:
 					"Terjadi masalah saat menghubungi server. Silakan coba lagi atau hubungi admin.",

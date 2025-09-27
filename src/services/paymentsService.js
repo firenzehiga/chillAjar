@@ -1,6 +1,14 @@
 import api from "@/api";
 
-// Mengambil semua pembayaran
+/**
+ * Mengambil semua data transaksi/pembayaran.
+ *
+ * @async
+ * @function getPayments
+ * @endpoint GET /transaksi
+ * @returns {Promise<any>} Data transaksi.
+ *
+ */
 export const getPayments = async () => {
 	const token = localStorage.getItem("token");
 	const response = await api.get("/transaksi", {
@@ -9,7 +17,16 @@ export const getPayments = async () => {
 	return response.data;
 };
 
-// Verifikasi pembayaran
+/**
+ * Verifikasi pembayaran untuk transaksi tertentu (admin).
+ *
+ * @async
+ * @function verifyPayment
+ * @endpoint POST /admin/verifikasi-pembayaran
+ * @param {string|number} transaksiId - ID transaksi.
+ * @returns {Promise<any>} Respons server.
+ *
+ */
 export const verifyPayment = async (transaksiId) => {
 	const token = localStorage.getItem("token");
 	const response = await api.post(
@@ -22,7 +39,16 @@ export const verifyPayment = async (transaksiId) => {
 	return response.data;
 };
 
-// Tolak pembayaran
+/**
+ * Menolak pembayaran untuk transaksi tertentu (admin).
+ *
+ * @async
+ * @function rejectPayment
+ * @endpoint POST /admin/tolak-pembayaran
+ * @param {string|number} transaksiId - ID transaksi.
+ * @returns {Promise<any>} Respons server.
+ *
+ */
 export const rejectPayment = async (transaksiId) => {
 	const token = localStorage.getItem("token");
 	const response = await api.post(
@@ -35,7 +61,16 @@ export const rejectPayment = async (transaksiId) => {
 	return response.data;
 };
 
-// Unduh bukti pembayaran
+/**
+ * Mengunduh file bukti pembayaran (Blob).
+ *
+ * @async
+ * @function downloadPaymentProof
+ * @endpoint GET /admin/download-bukti-pembayaran/{transaksiId}
+ * @param {string|number} transaksiId - ID transaksi.
+ * @returns {Promise<Blob>} File bukti pembayaran.
+ *
+ */
 export const downloadPaymentProof = async (transaksiId) => {
 	const token = localStorage.getItem("token");
 	const timestamp = new Date().getTime(); // Cache busting
@@ -45,7 +80,7 @@ export const downloadPaymentProof = async (transaksiId) => {
 			headers: {
 				Authorization: `Bearer ${token}`,
 				"Cache-Control": "no-cache",
-				Praga: "no-cache",
+				Pragma: "no-cache",
 			},
 			responseType: "blob",
 		}

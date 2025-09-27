@@ -5,7 +5,20 @@ import {
 	updateProfile,
 } from "@/services/profileService";
 
-// ========== PROFIL MENTOR ==========
+/**
+ * ROLE: MENTOR
+ *
+ * Hook React Query untuk mengambil profil mentor yang sedang login.
+ *
+ * - Hanya berjalan jika ada token di localStorage (autentikasi).
+ * - Mengembalikan data profil mentor.
+ *
+ * @function useMentorProfileQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = useMentorProfileQuery();
+ */
 export const useMentorProfileQuery = () => {
 	return useQuery({
 		queryKey: ["mentorProfile"],
@@ -16,7 +29,20 @@ export const useMentorProfileQuery = () => {
 	});
 };
 
-// ========== PROFIL PELANGGAN ==========
+/**
+ * ROLE: PELANGGAN
+ *
+ * Hook React Query untuk mengambil informasi profil pelanggan (statistik / info umum).
+ *
+ * - Hanya berjalan jika ada token di localStorage (autentikasi).
+ * - Mengembalikan data profil pelanggan.
+ *
+ * @function usePelangganProfileInfoQuery
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = usePelangganProfileInfoQuery();
+ */
 export const usePelangganProfileInfoQuery = () => {
 	return useQuery({
 		queryKey: ["pelangganStatistik"],
@@ -27,7 +53,21 @@ export const usePelangganProfileInfoQuery = () => {
 	});
 };
 
-// ========== EDIT PROFIL ==========
+/**
+ * ROLE: USER
+ *
+ * Hook React Query untuk meng-update profil user (umum).
+ *
+ * - Menggunakan mutation ke endpoint update profil.
+ * - Setelah sukses, meng-invalidate query profil mentor dan pelanggan agar data direfresh.
+ *
+ * @function useUpdateProfileMutation
+ * @returns {UseMutationResult<any>} Objek hasil mutation dari React Query.
+ *
+ * @example
+ * const updateProfile = useUpdateProfileMutation();
+ * updateProfile.mutate(formData);
+ */
 export const useUpdateProfileMutation = () => {
 	const queryClient = useQueryClient();
 
