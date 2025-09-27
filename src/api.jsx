@@ -107,7 +107,8 @@ api.interceptors.response.use(
 				code: (error.code || "") + " - " + (error.response?.status || ""),
 				alias,
 				message:
-					"Terjadi masalah saat menghubungi server. Silakan coba lagi atau hubungi admin.",
+					error.response?.data?.message ||
+					"Terjadi kesalahan pada server. Silakan coba lagi atau hubungi admin.",
 			});
 		});
 

@@ -1,87 +1,61 @@
 import DataTable from "react-data-table-component";
 import { BookOpen, AlertCircle, Star, Pencil, Trash } from "lucide-react";
-import api from "../../../api";
 import Swal from "sweetalert2";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { BookLoader } from "../../../components/User/BookLoader";
-import { ExportData } from "../../../components/Admin/ExportData";
-import { formatDate } from "../../../utils/dateFormatter";
+import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
+import { BookLoader } from "@/components/User/BookLoader";
+import { ExportData } from "@/components/Admin/ExportData";
+import { formatDate } from "@/utils/dateFormatter";
+import {
+	useTestimoniesQuery,
+	useDeleteTestimonieMutation,
+} from "@/hooks/useTestimonial";
 export function AdminTestimoniesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 
-	const queryClient = useQueryClient();
-
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
 	// Fetch data transaksi yang mencakup detail sesi
 	const {
 		data: testimonies = [],
 		isLoading,
 		error,
 		isFetching,
-	} = useQuery({
-		queryKey: ["adminTestimonies"],
-		queryFn: async () => {
-			if (!isAuthenticated) return [];
-			const response = await api.get("/testimoni", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			// Mapping agar sesi.jadwal_kursus selalu ada, baik dari jadwalKursus atau jadwal_kursus
-			return response.data.map((t) => ({
-				...t,
-				sesi: t.sesi
-					? {
-							...t.sesi,
-							jadwal_kursus:
-								t.sesi.jadwal_kursus || t.sesi.jadwalKursus || null,
-					  }
-					: t.sesi,
-			}));
-		},
-		enabled: isAuthenticated,
-		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 5 * 60 * 1000, // 5 menit cache
-		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
-		retry: 1,
-		onError: (err) => {
-			console.error("Error fetching testimonies:", err);
-		},
-	});
+	} = useTestimoniesQuery();
 
-	const deleteTestimonyMutation = useMutation({
-		mutationFn: async (id) => {
-			if (!isAuthenticated) throw new Error("Not authenticated");
-			return api.delete(`/testimoni/${id}`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-		},
-		onSuccess: (_, id) => {
-			queryClient.setQueryData(["adminTestimonies"], (oldData) =>
-				oldData.filter((t) => t.id !== id)
-			);
-			toast.success("Testimoni berhasil dihapus.");
-		},
-		onError: () => {
-			Swal.fire("Error!", "Gagal menghapus testimoni.", "error");
-		},
-	});
+	const deleteTestimonyMutation = useDeleteTestimonieMutation();
 
 	const handleDelete = (id) => {
 		Swal.fire({
-			title: "Are you sure?",
-			text: "You won't be able to revert this!",
+			title: "Apakah Anda yakin?",
+			text: "Kamu tidak akan bisa mengembalikan ini!",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#d33",
 			cancelButtonColor: "#3085d6",
-			confirmButtonText: "Yes, delete it!",
+			confirmButtonText: "Ya, hapus!",
+			customClass: {
+				// kurangi ukuran popup (max-w-md vs max-w-lg) supaya card tidak terlalu besar
+				popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
+				title: "text-lg font-semibold text-gray-900",
+				content: "text-sm text-gray-600 dark:text-gray-300 mt-1",
+				// tambahkan container actions dengan gap agar tombol tidak saling dempet
+				actions: "flex gap-3 justify-center mt-4",
+				confirmButton:
+					"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+				cancelButton:
+					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
+			},
+			backdrop: true,
 		}).then((result) => {
 			if (result.isConfirmed) {
-				deleteTestimonyMutation.mutate(id);
+				deleteTestimonyMutation.mutate(id, {
+					onSuccess: () => {
+						toast.success("Testimoni berhasil dihapus.");
+					},
+					onError: () => {
+						toast.error("Gagal menghapus testimoni.");
+					},
+				});
 			}
 		});
 	};
@@ -246,7 +220,10 @@ export function AdminTestimoniesPage({ onNavigate }) {
 				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 				<h3 className="text-lg font-semibold mb-2">Error</h3>
 				<p className="text-gray-500 mb-4 text-center">
-					Gagal mengambil data transaksi
+					Gagal mengambil data testimoni.
+				</p>
+				<p className="text-red-500 mb-4 text-center font-semibold">
+					{error.message}
 				</p>
 			</div>
 		);

@@ -7,8 +7,6 @@ import {
 	AlertCircle,
 	LucideBookPlus,
 } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/api";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { getImageUrl } from "@/utils/getImageUrl";
@@ -16,64 +14,19 @@ import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
 import { BookLoader } from "@/components/User/BookLoader";
 import { formatDate } from "@/utils/dateFormatter";
 import { AsyncImage } from "loadable-image";
+import { useCoursesQuery, useDeleteCourseMutation } from "@/hooks/useCourse";
 
 export function AdminCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
-	const queryClient = useQueryClient();
 
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
 	const {
 		data: courses = [],
 		isLoading,
 		error,
 		isFetching,
-	} = useQuery({
-		queryKey: ["adminCourses"],
-		queryFn: async () => {
-			if (!isAuthenticated) return [];
-			const response = await api.get("/kursus", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			return response.data;
-		},
-		enabled: isAuthenticated,
-		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 5 * 60 * 1000, // 5 menit cache
-		retry: 1,
-		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
+	} = useCoursesQuery();
 
-		onError: (err) => {
-			console.error("Error fetching courses:", err);
-		},
-	});
-
-	// Gunakan useMutation untuk delete
-	const deleteCourseMutation = useMutation({
-		// Function untuk menghapus kursus berdasarkan ID
-		mutationFn: async (id) => {
-			const token = localStorage.getItem("token"); // Ambil token dari local storage
-
-			// Lakukan request DELETE ke endpoint kursus dengan menyertakan token di header
-			return api.delete(`/kursus/${id}`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-		},
-		// Kode ini akan dijalankan jika proses delete berhasil
-		onSuccess: (_, id) => {
-			// Hapus data course dari cache
-			queryClient.setQueryData(["adminCourses"], (oldData) =>
-				oldData.filter((course) => course.id !== id)
-			);
-			toast.success("Kursus berhasil dihapus.");
-		},
-
-		// Kode ini akan dijalankan jika proses delete gagal
-		onError: () => {
-			toast.error("Gagal menghapus kursus.");
-		},
-	});
+	const deleteCourseMutation = useDeleteCourseMutation();
 
 	// Fungsi untuk menangani penghapusan kursus
 	const handleDelete = (id) => {
@@ -82,12 +35,31 @@ export function AdminCoursesPage({ onNavigate }) {
 			text: "Kamu tidak akan bisa mengembalikan ini!",
 			icon: "warning",
 			showCancelButton: true,
-			confirmButtonColor: "#d33",
-			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Ya, hapus!",
+			cancelButtonText: "Batal",
+			customClass: {
+				// kurangi ukuran popup (max-w-md vs max-w-lg) supaya card tidak terlalu besar
+				popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
+				title: "text-lg font-semibold text-gray-900",
+				content: "text-sm text-gray-600 dark:text-gray-300 mt-1",
+				// tambahkan container actions dengan gap agar tombol tidak saling dempet
+				actions: "flex gap-3 justify-center mt-4",
+				confirmButton:
+					"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+				cancelButton:
+					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
+			},
+			backdrop: true,
 		}).then((result) => {
 			if (result.isConfirmed) {
-				deleteCourseMutation.mutate(id); // Panggil fungsi deleteMutation dengan ID kursus
+				deleteCourseMutation.mutate(id, {
+					onSuccess: () => {
+						toast.success("Kursus berhasil dihapus.");
+					},
+					onError: () => {
+						toast.error("Gagal menghapus kursus.");
+					},
+				}); // Panggil fungsi deleteMutation dengan ID kursus
 			}
 		});
 	};
@@ -143,19 +115,6 @@ export function AdminCoursesPage({ onNavigate }) {
 										key="online"
 										title="Online Session"
 										className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200 shadow-sm">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											className="w-3 h-3"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor">
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M9.75 17h4.5M4 7h16M4 7v10a2 2 0 002 2h12a2 2 0 002-2V7M4 7l8 5 8-5"
-											/>
-										</svg>
 										Online
 									</span>
 								);
@@ -165,19 +124,6 @@ export function AdminCoursesPage({ onNavigate }) {
 										key="offline"
 										title="Offline Session"
 										className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200 shadow-sm">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											className="w-3 h-3"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor">
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M17.657 16.657L13.414 12.414a4 4 0 10-1.414 1.414l4.243 4.243a1 1 0 001.414-1.414z"
-											/>
-										</svg>
 										Offline
 									</span>
 								);
@@ -229,18 +175,28 @@ export function AdminCoursesPage({ onNavigate }) {
 				<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
 				<h3 className="text-lg font-semibold mb-2">Error</h3>
 				<p className="text-gray-500 mb-4 text-center">
-					Gagal mengambil data courses
+					Gagal mengambil data kursus.
+				</p>
+				<p className="text-red-500 mb-4 text-center font-semibold">
+					Error: {error.message}
 				</p>
 			</div>
 		);
 	}
 
 	// Sort courses by namaKursus ASC (A-Z)
+	// const sortedCourses = courses
+	// 	? [...courses].sort((a, b) =>
+	// 			(a.namaKursus || "").localeCompare(b.namaKursus || "", "id", {
+	// 				sensitivity: "base",
+	// 			})
+	// 	  )
+	// 	: [];
+
+	// Sort courses by created_at in descending order
 	const sortedCourses = courses
-		? [...courses].sort((a, b) =>
-				(a.namaKursus || "").localeCompare(b.namaKursus || "", "id", {
-					sensitivity: "base",
-				})
+		? [...courses].sort(
+				(a, b) => new Date(b.created_at) - new Date(a.created_at)
 		  )
 		: [];
 

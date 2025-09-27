@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, ArrowLeft, AlertCircle, X } from "lucide-react";
-import api from "../../../api";
+import { BookOpen, AlertCircle, X } from "lucide-react";
 import Swal from "sweetalert2";
-import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import {
+	useTestimonieByIdQuery,
+	useUpdateTestimonieMutation,
+} from "@/hooks/useTestimonial";
 
 export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 	if (!testimonieId) {
@@ -25,44 +28,31 @@ export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
-
 	// Fetch data testimoni
-	useEffect(() => {
-		const fetchTestimonie = async () => {
-			if (!isAuthenticated) return;
-			try {
-				setLoading(true);
-				const response = await api.get(`/testimoni/${testimonieId}`, {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				setFormData({
-					rating: response.data.rating || 0,
-					komentar: response.data.komentar || "",
-					tanggal: response.data.tanggal || "",
-				});
-				setAdditionalData({
-					sesi_id: response.data.sesi_id || null,
-					pelanggan_id: response.data.pelanggan_id || null,
-					mentor_id: response.data.mentor_id || null,
-				});
-			} catch (err) {
-				setError("Gagal mengambil data testimoni");
-			} finally {
-				setLoading(false);
-			}
-		};
+	const { data: testimonieData, isLoading: isLoadingTestimonie } =
+		useTestimonieByIdQuery(testimonieId);
 
-		if (testimonieId) {
-			fetchTestimonie();
+	useEffect(() => {
+		if (testimonieData) {
+			setFormData({
+				rating: testimonieData.rating || 0,
+				komentar: testimonieData.komentar || "",
+				tanggal: testimonieData.tanggal || "",
+			});
+			setAdditionalData({
+				sesi_id: testimonieData.sesi_id || null,
+				pelanggan_id: testimonieData.pelanggan_id || null,
+				mentor_id: testimonieData.mentor_id || null,
+			});
 		}
-	}, [testimonieId]);
+	}, [testimonieData]);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
+
+	const updateTestimonieMutation = useUpdateTestimonieMutation();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -72,22 +62,10 @@ export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 		try {
 			const payload = { ...formData };
 
-			const response = await api.put(`/testimoni/${testimonieId}`, payload, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
+			await updateTestimonieMutation.mutateAsync({ testimonieId, payload });
 
-			if (response.status === 200) {
-				queryClient.invalidateQueries(["adminTestimonies"]);
-				toast.success("Testimoni berhasil diperbarui.");
-				onNavigate("admin-testimonial");
-			} else {
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: "Terjadi kesalahan saat menyimpan data.",
-					confirmButtonColor: "#EF4444",
-				});
-			}
+			toast.success("Testimoni berhasil diperbarui.");
+			onNavigate("admin-testimonial");
 		} catch (err) {
 			const errorMessage =
 				err.response?.data?.message ||
@@ -106,7 +84,7 @@ export function AdminFormTestimoniesPage({ onNavigate, testimonieId }) {
 		}
 	};
 
-	if (loading) {
+	if (loading || isLoadingTestimonie) {
 		return <FormSkeletonCard />;
 	}
 

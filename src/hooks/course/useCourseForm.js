@@ -1,11 +1,29 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import showToast from "@/components/User/customToast";
+import { showToast } from "@/components/User/customToast";
 import Swal from "sweetalert2";
-
-import api from "@/api";
 import { getImageUrl } from "@/utils/getImageUrl";
+import {
+	getCourseById,
+	getMentors,
+	getPackages,
+	createCourse,
+	updateCourse,
+	createMentorCourse,
+	updateMentorCourse,
+	setMentorSchedule,
+	setSchedule,
+} from "@/services/courseService";
+import {
+	useCourseByIdQuery,
+	useMentorsQuery,
+	usePackagesQuery,
+	useCreateCourseMutation,
+	useUpdateCourseMutation,
+	useCreateMentorCourseMutation,
+	useUpdateMentorCourseMutation,
+} from "@/hooks/useCourse";
 
 export default function useCourseForm({
 	courseId,
@@ -47,140 +65,137 @@ export default function useCourseForm({
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	// Fetch data on mount / when relevant inputs change
+	// Fetch course data using hook
+	const { data: courseData, isLoading: isCourseLoading } =
+		useCourseByIdQuery(courseId);
+
+	// Fetch mentors data for admin using hook
+	const { data: mentorsData, isLoading: isMentorsLoading } = useMentorsQuery();
+
+	// Fetch packages data for admin using hook
+	const { data: packagesData, isLoading: isPackagesLoading } =
+		usePackagesQuery();
+
+	// Update mentors state when data is available
 	useEffect(() => {
-		const fetchData = async () => {
-			const token = localStorage.getItem("token");
-			if (!token) return;
+		if (isAdmin && mentorsData && !isMentorsLoading) {
+			setMentors(mentorsData);
+		}
+	}, [mentorsData, isMentorsLoading, isAdmin]);
 
-			try {
-				setLoading(true);
-
-				if (isAdmin) {
-					try {
-						const mentorResponse = await api.get("/admin/mentor", {
-							headers: { Authorization: `Bearer ${token}` },
-						});
-						setMentors(mentorResponse.data);
-					} catch (err) {
-						console.error("Failed to fetch mentors:", err);
-					}
-
-					try {
-						const packageResponse = await api.get("/paket", {
-							headers: { Authorization: `Bearer ${token}` },
-						});
-						const paketData = Array.isArray(packageResponse.data)
-							? packageResponse.data.map((p) => ({
-									id: p.id,
-									name: p.nama,
-									price: p.harga_dasar,
-									totalPrice: Array.isArray(p.items)
-										? Math.max(
-												p.items.reduce(
-													(sum, item) =>
-														sum +
-														Math.max((item.harga || 0) - (item.diskon || 0), 0),
-													0
-												) - (p.diskon || 0),
-												0
-										  )
-										: Math.max((p.harga_dasar || 0) - (p.diskon || 0), 0),
-									description: p.deskripsi,
-									items: Array.isArray(p.items)
-										? p.items.map((item) => ({
-												name: item.nama,
-												price: Math.max(
-													(item.harga || 0) - (item.diskon || 0),
-													0
-												),
-												description: item.deskripsi,
-										  }))
-										: [],
-									diskon: p.diskon || 0,
+	// Update packages state when data is available
+	useEffect(() => {
+		if (isAdmin && packagesData && !isPackagesLoading) {
+			const paketData = Array.isArray(packagesData)
+				? packagesData.map((p) => ({
+						id: p.id,
+						name: p.nama,
+						price: p.harga_dasar,
+						totalPrice: Array.isArray(p.items)
+							? Math.max(
+									p.items.reduce(
+										(sum, item) =>
+											sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
+										0
+									) - (p.diskon || 0),
+									0
+							  )
+							: Math.max((p.harga_dasar || 0) - (p.diskon || 0), 0),
+						description: p.deskripsi,
+						items: Array.isArray(p.items)
+							? p.items.map((item) => ({
+									name: item.nama,
+									price: Math.max((item.harga || 0) - (item.diskon || 0), 0),
+									description: item.deskripsi,
 							  }))
-							: [];
-						setPackages(paketData);
+							: [],
+						diskon: p.diskon || 0,
+				  }))
+				: [];
+			setPackages(paketData);
 
-						if (!isEditMode && paketData.length > 0) {
-							setSelectedPackages([
-								{ package_id: paketData[0].id, is_active: true },
-							]);
-						}
-					} catch (err) {
-						console.error("Failed to fetch packages:", err);
-					}
-				}
-
-				if (isEditMode) {
-					try {
-						const response = await api.get(`/kursus/${courseId}`, {
-							headers: { Authorization: `Bearer ${token}` },
-						});
-
-						setFormData({
-							namaKursus: response.data.namaKursus,
-							deskripsi: response.data.deskripsi,
-							mentorId: response.data.mentor_id || "",
-						});
-
-						if (response.data.fotoKursus) {
-							setFotoPreview(getImageUrl(response.data.fotoKursus));
-						}
-
-						if (response.data.jadwal_kursus) {
-							const initial = response.data.jadwal_kursus.map((jadwal) => ({
-								id: jadwal.id,
-								tanggal: jadwal.tanggal || "",
-								waktu: jadwal.waktu || "",
-								keterangan:
-									jadwal.keterangan ||
-									(isMentor ? `Kursus dengan ${mentorName}` : ""),
-								tempat: jadwal.tempat || "",
-								gayaMengajar: jadwal.gayaMengajar || "online",
-							}));
-							setInitialSchedules(initial);
-							setSchedules(initial);
-
-							const initialCollapsedState = {};
-							initial.forEach((_, index) => {
-								initialCollapsedState[index] = true;
-							});
-							setCollapsedSchedules(initialCollapsedState);
-						}
-
-						if (isAdmin) {
-							if (
-								response.data.visibilitas_paket &&
-								Array.isArray(response.data.visibilitas_paket)
-							) {
-								const mapped = response.data.visibilitas_paket.map((vp) => ({
-									package_id: vp.paket_id,
-									is_active: !!vp.visibilitas,
-								}));
-								setSelectedPackages(mapped);
-								setInitialSelectedPackages(mapped);
-							} else if (response.data.packages) {
-								const mapped = response.data.packages.map((pkg) => ({
-									package_id: pkg.id,
-									is_active: true,
-								}));
-								setSelectedPackages(mapped);
-								setInitialSelectedPackages(mapped);
-							}
-						}
-					} catch (err) {
-						setError("Gagal mengambil data kursus");
-					}
-				}
-			} finally {
-				setLoading(false);
+			if (!isEditMode && paketData.length > 0) {
+				setSelectedPackages([{ package_id: paketData[0].id, is_active: true }]);
 			}
-		};
+		}
+	}, [packagesData, isPackagesLoading, isEditMode, isAdmin]);
 
-		fetchData();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [courseId, isEditMode, isAdmin, mentorName]);
+	// Update loading state based on all required data loading
+	useEffect(() => {
+		if (isEditMode) {
+			// For admin, wait for course, mentors, and packages data
+			if (isAdmin) {
+				setLoading(isCourseLoading || isMentorsLoading || isPackagesLoading);
+			}
+			// For mentor, only wait for course data
+			else {
+				setLoading(isCourseLoading);
+			}
+		}
+	}, [
+		isCourseLoading,
+		isMentorsLoading,
+		isPackagesLoading,
+		isEditMode,
+		isAdmin,
+	]);
+
+	// Update form data when course data is available
+	useEffect(() => {
+		if (isEditMode && courseData && !isCourseLoading) {
+			setFormData({
+				namaKursus: courseData.namaKursus,
+				deskripsi: courseData.deskripsi,
+				mentorId: courseData.mentor_id || courseData.mentor?.id || "",
+			});
+
+			if (courseData.fotoKursus) {
+				setFotoPreview(getImageUrl(courseData.fotoKursus));
+			}
+
+			if (courseData.jadwal_kursus) {
+				const initial = courseData.jadwal_kursus.map((jadwal) => ({
+					id: jadwal.id,
+					tanggal: jadwal.tanggal || "",
+					waktu: jadwal.waktu || "",
+					keterangan:
+						jadwal.keterangan ||
+						(isMentor ? `Kursus dengan ${mentorName}` : ""),
+					tempat: jadwal.tempat || "",
+					gayaMengajar: jadwal.gayaMengajar || "online",
+				}));
+				setInitialSchedules(initial);
+				setSchedules(initial);
+
+				const initialCollapsedState = {};
+				initial.forEach((_, index) => {
+					initialCollapsedState[index] = true;
+				});
+				setCollapsedSchedules(initialCollapsedState);
+			}
+
+			if (isAdmin) {
+				if (
+					courseData.visibilitas_paket &&
+					Array.isArray(courseData.visibilitas_paket)
+				) {
+					const mapped = courseData.visibilitas_paket.map((vp) => ({
+						package_id: vp.paket_id,
+						is_active: !!vp.visibilitas,
+					}));
+					setSelectedPackages(mapped);
+					setInitialSelectedPackages(mapped);
+				} else if (courseData.packages) {
+					const mapped = courseData.packages.map((pkg) => ({
+						package_id: pkg.id,
+						is_active: true,
+					}));
+					setSelectedPackages(mapped);
+					setInitialSelectedPackages(mapped);
+				}
+			}
+		}
+	}, [courseData, isCourseLoading, isEditMode, isAdmin, mentorName]);
 
 	const handleChange = useCallback((e) => {
 		const { name, value } = e.target;
@@ -206,11 +221,14 @@ export default function useCourseForm({
 	const handleFileChange = useCallback((e) => {
 		const file = e.target.files[0];
 		if (file) {
-			if (file.size > 3 * 1024 * 1024) {
-				Swal.fire({
-					icon: "error",
-					title: "Ukuran file terlalu besar",
-					text: "Ukuran file maksimal 3MB.",
+			if (file.size > 5 * 1024 * 1024) {
+				toast.dismiss();
+				showToast({
+					type: "warning",
+					title: "Upload Gagal",
+					message: "Ukuran file maksimal 5MB.",
+					tipText: "Periksa kembali ukuran file Anda",
+					tipIcon: "💡",
 				});
 				return;
 			}
@@ -363,6 +381,12 @@ export default function useCourseForm({
 		return true;
 	}, [formData, schedules, selectedPackages, isAdmin]);
 
+	// Use mutations
+	const createCourseMutation = useCreateCourseMutation();
+	const updateCourseMutation = useUpdateCourseMutation();
+	const createMentorCourseMutation = useCreateMentorCourseMutation();
+	const updateMentorCourseMutation = useUpdateMentorCourseMutation();
+
 	const handleSubmit = useCallback(
 		async (e) => {
 			if (e && e.preventDefault) e.preventDefault();
@@ -370,7 +394,6 @@ export default function useCourseForm({
 			setError(null);
 
 			try {
-				const token = localStorage.getItem("token");
 				const payload = new FormData();
 				payload.append("namaKursus", formData.namaKursus);
 				payload.append("deskripsi", formData.deskripsi);
@@ -378,8 +401,13 @@ export default function useCourseForm({
 					payload.append("fotoKursus", fotoKursus);
 				}
 
-				if (isAdmin && formData.mentorId) {
-					payload.append("mentor_id", formData.mentorId);
+				if (isAdmin) {
+					// For admin, always send mentor_id field
+					// This ensures the field exists in the request
+					payload.append(
+						"mentor_id",
+						formData.mentorId !== undefined ? formData.mentorId.toString() : ""
+					);
 				}
 
 				if (isAdmin && Array.isArray(selectedPackages)) {
@@ -424,63 +452,47 @@ export default function useCourseForm({
 				}
 
 				let response;
-				const apiPath = isAdmin ? "/kursus" : "/mentor/kursus";
-
-				if (isEditMode) {
-					payload.append("_method", "PUT");
-					response = await api.post(`${apiPath}/${courseId}`, payload, {
-						headers: {
-							Authorization: `Bearer ${token}`,
-							"Content-Type": "multipart/form-data",
-						},
-					});
+				if (isAdmin) {
+					if (isEditMode) {
+						response = await updateCourseMutation.mutateAsync({
+							courseId,
+							payload,
+						});
+					} else {
+						response = await createCourseMutation.mutateAsync(payload);
+					}
 				} else {
-					response = await api.post(apiPath, payload, {
-						headers: {
-							Authorization: `Bearer ${token}`,
-							"Content-Type": "multipart/form-data",
-						},
-					});
+					if (isEditMode) {
+						response = await updateMentorCourseMutation.mutateAsync({
+							courseId,
+							payload,
+						});
+					} else {
+						response = await createMentorCourseMutation.mutateAsync(payload);
+					}
 				}
 
-				if (response.status === 200 || response.status === 201) {
+				if (response) {
 					let newCourseId;
 					if (isEditMode) {
 						newCourseId = courseId;
 					} else {
 						newCourseId =
-							response.data.kursus?.id ||
-							response.data.id ||
-							response.data.course_id ||
-							response.data.data?.id;
+							response.kursus?.id ||
+							response.id ||
+							response.course_id ||
+							response.data?.id;
 
 						if (!newCourseId) {
-							const fetchCourseResponse = await api.get(
-								`/kursus?namaKursus=${formData.namaKursus}`,
-								{
-									headers: { Authorization: `Bearer ${token}` },
-								}
-							);
-							const latestCourse = fetchCourseResponse.data
-								.filter((course) => course.namaKursus === formData.namaKursus)
-								.sort(
-									(a, b) => new Date(b.created_at) - new Date(a.created_at)
-								)[0];
-							newCourseId = latestCourse?.id;
-
-							if (!newCourseId) {
-								throw new Error(
-									"Gagal mendapatkan ID kursus setelah pembuatan"
-								);
-							}
+							// Jika tidak bisa mendapatkan ID dari response, kita bisa coba cara lain
+							// Misalnya dengan mengambil data kursus terbaru yang sesuai nama
+							// Tapi untuk sekarang, kita asumsikan pasti ada
+							throw new Error("Gagal mendapatkan ID kursus setelah pembuatan");
 						}
 					}
 
-					const scheduleRequests = [];
-					const scheduleEndpoint = isAdmin
-						? "jadwal-kursus"
-						: "mentor/atur-jadwal";
-
+					// Proses jadwal
+					const schedulePromises = [];
 					for (const schedule of schedules) {
 						if (
 							!schedule.tanggal ||
@@ -518,15 +530,15 @@ export default function useCourseForm({
 							gayaMengajar: schedule.gayaMengajar,
 						};
 
-						scheduleRequests.push(
-							api.post(scheduleEndpoint, jadwalPayload, {
-								headers: { Authorization: `Bearer ${token}` },
-							})
-						);
+						if (isAdmin) {
+							schedulePromises.push(setSchedule(jadwalPayload));
+						} else {
+							schedulePromises.push(setMentorSchedule(jadwalPayload));
+						}
 					}
 
-					if (scheduleRequests.length > 0) {
-						await Promise.all(scheduleRequests);
+					if (schedulePromises.length > 0) {
+						await Promise.all(schedulePromises);
 					}
 
 					queryClient.invalidateQueries(["courses"]);
@@ -537,11 +549,11 @@ export default function useCourseForm({
 					);
 					onNavigate(backNavigationTarget);
 				} else {
-					Swal.fire({
-						icon: "error",
+					toast.dismiss();
+					showToast({
+						type: "error",
 						title: "Error",
-						text: "Terjadi kesalahan saat menyimpan data.",
-						confirmButtonColor: "#EF4444",
+						message: "Terjadi kesalahan saat menyimpan data.",
 					});
 				}
 			} catch (err) {
@@ -550,11 +562,14 @@ export default function useCourseForm({
 					err.message ||
 					(isEditMode ? "Gagal memperbarui kursus" : "Gagal membuat kursus");
 				setError(errorMessage);
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: errorMessage,
-					confirmButtonColor: "#EF4444",
+				toast.dismiss();
+				showToast({
+					type: "error",
+					title: "Terjadi Kesalahan",
+					message: errorMessage,
+					tipText: `Perbaiki segera`,
+					tipIcon: "💡",
+					duration: 5000,
 				});
 				console.error("Error details:", err.response ? err.response.data : err);
 			} finally {
@@ -574,6 +589,10 @@ export default function useCourseForm({
 			queryClient,
 			onNavigate,
 			backNavigationTarget,
+			updateCourseMutation,
+			createCourseMutation,
+			updateMentorCourseMutation,
+			createMentorCourseMutation,
 		]
 	);
 
