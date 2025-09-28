@@ -10,7 +10,11 @@ import {
 	Linkedin,
 } from "lucide-react";
 
-export function Footer({ onNavigate, className = "", onShowGuideModal }) {
+export default function Footer({
+	onNavigate,
+	className = "",
+	onShowGuideModal,
+}) {
 	return (
 		<footer className={`bg-gray-900 text-gray-300 ${className}`}>
 			<div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">

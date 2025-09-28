@@ -5,8 +5,9 @@ import { ListChecks, LucideShieldQuestion } from "lucide-react";
 import { MentorCard } from "@/components/MentorCard";
 import { BookingModal } from "@/components/BookingModal";
 import { PaymentModal } from "@/components/PaymentModal";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+import { Navigation } from "@/components/Layout/Navigation";
+import Hero from "@/components/Layout/Hero";
+import Footer from "@/components/Layout/Footer";
 import { CourseSkeletonCard } from "@/components/Skeleton/CourseSkeletonCard";
 import { CarouselSkeleton } from "@/components/Skeleton/CarouselSkeleton";
 import { BookLoader } from "@/components/User/BookLoader";
@@ -1569,9 +1570,25 @@ function App() {
 			)}
 
 			<main className="flex-grow">
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-					<AnimatePresence mode="wait">{renderContent()}</AnimatePresence>{" "}
-				</div>
+				{currentPage === "home" ? (
+					<>
+						{/* 1) full-width hero */}
+						<Hero onNavigate={handleNavigate} />
+
+						{/* 2) sisa konten HOME tetap di dalam container */}
+						<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+							<AnimatePresence mode="wait">
+								{renderContent()}{" "}
+								{/* NOTE: renderContent() harus TIDAK mengandung Hero lagi */}
+							</AnimatePresence>
+						</div>
+					</>
+				) : (
+					// halaman lain tetap terpusat
+					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+						<AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
+					</div>
+				)}
 				{selectedMentor && bookingCourse && (
 					<BookingModal
 						mentor={selectedMentor}

@@ -1,13 +1,13 @@
-import React from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
-import { CourseCard } from "../components/CourseCard";
-import { CourseCarousel } from "../components/CourseCarousel";
-import { SearchFilter } from "../components/User/SearchFilter";
-import { CarouselSkeleton } from "../components/Skeleton/CarouselSkeleton";
-import { CourseSkeletonCard } from "../components/Skeleton/CourseSkeletonCard";
-import { getImageUrl } from "../utils/getImageUrl";
-import { EmptyMentorsState } from "../components/Fallback/EmptyMentorsState";
-import useAppStore from "../stores/useAppStore";
+import { CourseCard } from "@/components/CourseCard";
+import { CourseCarousel } from "@/components/CourseCarousel";
+import { SearchFilter } from "@/components/User/SearchFilter";
+import { CarouselSkeleton } from "@/components/Skeleton/CarouselSkeleton";
+import { CourseSkeletonCard } from "@/components/Skeleton/CourseSkeletonCard";
+import { getImageUrl } from "@/utils/getImageUrl";
+import { EmptyMentorsState } from "@/components/Fallback/EmptyMentorsState";
+import useAppStore from "@/stores/useAppStore";
 
 export function Home({
 	courses,
@@ -15,7 +15,7 @@ export function Home({
 	handleCourseClick,
 	userRole,
 }) {
-	const [visibleCourses, setVisibleCourses] = React.useState(6);
+	const [visibleCourses, setVisibleCourses] = useState(6);
 
 	const {
 		searchQuery,
@@ -93,7 +93,7 @@ export function Home({
 	// });
 
 	return (
-		<div className="space-y-8 ">
+		<div className="space-y-8">
 			{/* Section "Your Sessions" dihapus */}
 			{/* Carousel Section - Di luar dari Your Sessions */}
 			{!activeCourses || activeCourses.length === 0 ? (
@@ -165,7 +165,7 @@ export function Home({
 						courses={mappedCourses}
 						onCourseClick={handleCourseClick}
 					/>
-					<div>
+					<div className="px-4">
 						<h2 className="text-2xl font-bold text-gray-900 mb-6">
 							Semua Kursus
 						</h2>
