@@ -23,9 +23,9 @@ import {
 	TrendingUp,
 	Quote,
 } from "lucide-react";
-import teamsData from "../constants/TeamData";
+import teamsData from "@/constants/TeamData";
 import { useQuery } from "@tanstack/react-query";
-import api from "../api";
+import api from "@/api";
 
 export function AboutPage({ onNavigate }) {
 	const [hoveredMember, setHoveredMember] = useState(null);
@@ -170,9 +170,10 @@ export function AboutPage({ onNavigate }) {
 
 			<div className="relative z-10 py-12">
 				{/* Hero Section */}
+				{/*
 				<div className="text-center mb-16 relative">
 					{/* Background decoration */}
-					<div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
+				{/* <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
 						<div className="w-32 h-32 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full opacity-20 blur-3xl"></div>
 					</div>
 
@@ -199,7 +200,7 @@ export function AboutPage({ onNavigate }) {
 						</p>
 
 						{/* CTA Buttons */}
-						<div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 animate-fadeInUp animation-delay-600">
+				{/* <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 animate-fadeInUp animation-delay-600">
 							<button
 								onClick={() => onNavigate("courses")}
 								className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
@@ -215,16 +216,17 @@ export function AboutPage({ onNavigate }) {
 								<Coffee className="w-5 h-5" />
 								Pelajari Lebih Lanjut
 							</a>
-						</div>
-					</div>
-				</div>
+						</div> */}
+				{/* </div>
+				</div> */}
+
 				{/* Stats */}
 				<div className="relative mb-20">
 					{/* Background decoration */}
 					<div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-3xl transform rotate-1 opacity-10"></div>
 					<div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl transform -rotate-1 opacity-10"></div>
 
-					<div className="relative bg-yellow-500 py-8 rounded-3xl shadow-2xl mx-4">
+					<div className="relative bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400  py-8 rounded-3xl shadow-2xl mx-4">
 						<div className="max-w-4xl mx-auto px-1 sm:px-3 lg:px-5">
 							<div className="text-center mb-8">
 								<h2 className="text-3xl font-bold text-white mb-4">
