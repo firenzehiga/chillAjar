@@ -1,6 +1,4 @@
-import React from "react";
-
-export function NotFoundPage() {
+export function NotFoundPage({ onNavigate }) {
 	return (
 		<div className="mt-8 mb-7 flex flex-col items-center justify-center">
 			<div className="bg-white bg-opacity-80 rounded-xl px-8 py-6 shadow-lg text-center">
@@ -12,7 +10,7 @@ export function NotFoundPage() {
 					Maaf, halaman yang Anda cari tidak tersedia atau sudah dipindahkan.
 				</p>
 				<a
-					href="/"
+					onClick={() => onNavigate("home")}
 					className="inline-block px-6 py-2 bg-yellow-600 text-white rounded-full font-semibold hover:bg-yellow-700 transition">
 					Kembali ke Beranda
 				</a>

@@ -878,10 +878,10 @@ function App() {
 		setSelectedPackage(null);
 
 		// Navigate ke halaman courses dengan course terpilih untuk menampilkan mentor
-		// if (currentPage !== "courses") {
-		// 	setCurrentPage("courses");
-		// 	history.push("/courses");
-		// }
+		if (currentPage !== "courses") {
+			setCurrentPage("courses");
+			history.push("/courses");
+		}
 		window.scrollTo({ top: 0, behavior: "smooth" });
 	};
 
@@ -936,6 +936,33 @@ function App() {
 		setShowPackageSelection(false);
 	};
 
+	// ==== FUNGSI REDIRECT JIKA AKSES HALAMAN YANG TIDAK DIIZINKAN ====
+	const getRedirectPage = (currentPage, userRole) => {
+		const isPelangganPage = [...pelangganPages, ...publicPages].includes(
+			currentPage
+		);
+		const isMentorPage = mentorPages.includes(currentPage);
+		const isAdminPage = adminPages.includes(currentPage);
+		const isAdminOrMentor = userRole === "admin" || userRole === "mentor";
+
+		// Jika admin/mentor mengakses halaman pelanggan
+		if (isAdminOrMentor && isPelangganPage)
+			return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
+
+		// Jika pelanggan mengakses halaman admin/mentor
+		if (userRole === "pelanggan" && (isAdminPage || isMentorPage))
+			return "home";
+
+		// Jika admin dan mentor saling mengakses halaman masing-masing
+		if (
+			(userRole === "admin" && isMentorPage) ||
+			(userRole === "mentor" && isAdminPage)
+		)
+			return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
+
+		return null; // Tidak perlu redirect
+	};
+
 	// Render konten berdasarkan halaman
 	const renderContent = () => {
 		// Tambahkan pengecekan authChecked sebelum pengecekan protectedPages di renderContent.
@@ -947,22 +974,15 @@ function App() {
 				</div>
 			);
 		}
-		// Jika user belum login dan ingin mengakses halaman yang protected,
+		/**
+		 *  Kondisi untuk non-user yang mengakses halaman terproteksi
+		 *  Cek apakah user sudah login dan halaman yang diakses termasuk protectedPages
+		 *  */
 		// maka redirect ke halaman home dan tampilkan modal autentikasi
 		if (!isAuthenticated && protectedPages.includes(currentPage)) {
 			setCurrentPage("home");
 			history.push("/home");
-			setShowAuthModal(true);
-			return (
-				<Home
-					courses={courses}
-					filteredCourses={filteredCourses}
-					searchQuery={searchQuery}
-					setSearchQuery={setSearchQuery}
-					handleCourseClick={handleCourseClick}
-					userRole={userRole}
-				/>
-			);
+			setShowAuthModal(false);
 		}
 
 		// Menampilkan skeleton loading jika halaman yang diakses sedang loading dan termasuk dalam array skeletonPages
@@ -1031,33 +1051,6 @@ function App() {
 			return <div className="text-red-500 text-center mt-8">{msg}</div>;
 		}
 
-		// ==== FUNGSI REDIRECT JIKA AKSES HALAMAN YANG TIDAK DIIZINKAN ====
-		const getRedirectPage = (currentPage, userRole) => {
-			const isPelangganPage = [...pelangganPages, ...publicPages].includes(
-				currentPage
-			);
-			const isMentorPage = mentorPages.includes(currentPage);
-			const isAdminPage = adminPages.includes(currentPage);
-			const isAdminOrMentor = userRole === "admin" || userRole === "mentor";
-
-			// Jika admin/mentor mengakses halaman pelanggan
-			if (isAdminOrMentor && isPelangganPage)
-				return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
-
-			// Jika pelanggan mengakses halaman admin/mentor
-			if (userRole === "pelanggan" && (isAdminPage || isMentorPage))
-				return "home";
-
-			// Jika admin dan mentor saling mengakses halaman masing-masing
-			if (
-				(userRole === "admin" && isMentorPage) ||
-				(userRole === "mentor" && isAdminPage)
-			)
-				return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
-
-			return null; // Tidak perlu redirect
-		};
-
 		// Gunakan fungsi untuk menentukan apakah perlu redirect
 		const redirectPage = isAuthenticated
 			? getRedirectPage(currentPage, userRole)
@@ -1067,7 +1060,10 @@ function App() {
 			setCurrentPage(redirectPage);
 			history.push(`/${redirectPage}`);
 
-			// Return komponen yang sesuai
+			/**
+			 * Kondisi untuk user yang sudah login tapi mengakses halaman yang tidak diizinkan
+			 * Redirect ke halaman yang sesuai role
+			 */
 			if (redirectPage === "admin-dashboard") {
 				return <AdminDashboard />;
 			} else if (redirectPage === "mentor-dashboard") {
@@ -1086,9 +1082,15 @@ function App() {
 			}
 		}
 
-		// LOGIKA UNTUK HANDLE EDIT DATA (ADMIN)
+		/**
+		 * LOGIKA UNTUK ADMIN
+		 * Untuk Halaman Edit yang Dinamis (dengan ID), menggunakan logika if terpisah
+		 * karena harus ekstrak ID dari URL terlebih dahulu sebelum render komponen.
+		 * Contoh: admin-edit-course/:id
+		 * Switch Case untuk halaman statis admin
+		 * */
 		if (userRole === "admin") {
-			// Tangani URL dinamis terlebih dahulu
+			// Logika untuk halaman statis admin
 			if (currentPage.startsWith("admin-edit-course")) {
 				const id = currentPage.split("admin-edit-course/")[1];
 				return (
@@ -1132,8 +1134,7 @@ function App() {
 				);
 			}
 
-			// LOGIKA UNTUK HANDLE HALAMAN ADMIN
-			// Gunakan switch untuk halaman statis
+			// Logika untuk halaman statis admin
 			if (adminPages.includes(currentPage)) {
 				switch (currentPage) {
 					case "admin-dashboard":
@@ -1185,9 +1186,15 @@ function App() {
 			}
 		}
 
-		// LOGIKA UNTUK HANDLE EDIT DATA (MENTOR)
+		/**
+		 * LOGIKA UNTUK MENTOR
+		 * Untuk Halaman Edit yang Dinamis (dengan ID), menggunakan logika if terpisah
+		 * karena harus ekstrak ID dari URL terlebih dahulu sebelum render komponen.
+		 * Contoh: mentor-edit-course/:id
+		 * Switch Case untuk halaman statis mentor
+		 * */
 		if (userRole === "mentor") {
-			// Tangani URL dinamis terlebih dahulu
+			// Logika untuk halaman dinamis mentor
 			if (currentPage.startsWith("mentor-edit-course")) {
 				const id = currentPage.split("mentor-edit-course/")[1];
 				return (
@@ -1195,8 +1202,7 @@ function App() {
 				);
 			}
 
-			// LOGIKA UNTUK HANDLE HALAMAN MENTOR
-			// Gunakan switch untuk halaman statis
+			// Logika untuk halaman statis mentor
 			if (mentorPages.includes(currentPage)) {
 				switch (currentPage) {
 					case "mentor-dashboard":
@@ -1234,190 +1240,184 @@ function App() {
 			}
 		}
 
-		const content = (() => {
-			switch (currentPage) {
-				case "profile":
-					return isAuthenticated ? (
-						<ProfilePage
-							userRole={userRole}
-							userData={userData}
-							onNavigate={handleNavigate}
-						/>
-					) : null;
-				case "edit-profile":
-					return isAuthenticated ? (
-						<EditProfilePage
-							onNavigate={handleNavigate}
-							userRole={userRole}
-							userData={userData}
-							onUpdateUserData={handleUpdateUserData}
-						/>
-					) : null;
-				case "transaction-history":
-					return isAuthenticated ? (
-						<TransactionHistoryPage
-							userData={userData}
-							onPaymentSubmit={handlePaymentSubmit}
-						/>
-					) : null;
-				case "session-history":
-					return isAuthenticated ? (
-						<SessionHistoryPage userData={userData} />
-					) : null;
-				case "mentors":
-					return (
-						<MentorsPage
-							courses={courses}
-							onSchedule={handleSchedule}
-							onCoursePackageSelect={handleCoursePackageSelect}
-							showPostLoginLoading={showPostLoginLoading}
-						/>
-					);
-				case "courses":
-					return selectedCourse && !selectedPackage ? (
-						<div className="py-4">
-							<button
-								onClick={() => {
-									setSelectedCourse(null);
-									setSelectedMentor(null);
-									setSelectedPackage(null);
-								}}
-								className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
-								type="button">
-								<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 1024 1024"
-										height="25px"
-										width="25px">
-										<path
-											d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
-											fill="#000000"
-										/>
-										<path
-											d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
-											fill="#000000"
-										/>
-									</svg>
+		/**
+		 * LOGIKA UNTUK PELANGGAN/NON USER
+		 * Untuk Halaman Pelanggan dilakukan cek isAuthenticated terlebih dahulu
+		 * Switch Case untuk halaman statis pelanggan
+		 * */
+		switch (currentPage) {
+			case "profile":
+				return isAuthenticated ? (
+					<ProfilePage
+						userRole={userRole}
+						userData={userData}
+						onNavigate={handleNavigate}
+					/>
+				) : null;
+			case "edit-profile":
+				return isAuthenticated ? (
+					<EditProfilePage
+						onNavigate={handleNavigate}
+						userRole={userRole}
+						userData={userData}
+						onUpdateUserData={handleUpdateUserData}
+					/>
+				) : null;
+			case "transaction-history":
+				return isAuthenticated ? (
+					<TransactionHistoryPage
+						userData={userData}
+						onPaymentSubmit={handlePaymentSubmit}
+					/>
+				) : null;
+			case "session-history":
+				return isAuthenticated ? (
+					<SessionHistoryPage userData={userData} />
+				) : null;
+			case "mentors":
+				return (
+					<MentorsPage
+						courses={courses}
+						onSchedule={handleSchedule}
+						onCoursePackageSelect={handleCoursePackageSelect}
+						showPostLoginLoading={showPostLoginLoading}
+						coursesIsLoading={isLoading}
+					/>
+				);
+			case "courses":
+				return selectedCourse && !selectedPackage ? (
+					<div className="py-4">
+						<button
+							onClick={() => {
+								setSelectedCourse(null);
+								setSelectedMentor(null);
+								setSelectedPackage(null);
+							}}
+							className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
+							type="button">
+							<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 1024 1024"
+									height="25px"
+									width="25px">
+									<path
+										d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
+										fill="#000000"
+									/>
+									<path
+										d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
+										fill="#000000"
+									/>
+								</svg>
+							</div>
+							<p className="translate-x-2">Go Back</p>
+						</button>
+						<h2 className="text-2xl font-bold text-gray-900 mb-6">
+							Pilih Mentor untuk {selectedCourse.courseName}
+						</h2>
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+							{selectedCourse.mentors
+								?.filter((mentor) => mentor.status === "active")
+								.map((mentor) => (
+									<MentorCard
+										key={mentor.id}
+										mentor={mentor}
+										onSchedule={(selectedMentor, course) =>
+											handleMentorClickFromCourse(selectedMentor, course)
+										}
+										selectedCourse={selectedCourse}
+										schedules={schedules}
+									/>
+								))}
+						</div>
+					</div>
+				) : selectedCourse && selectedPackage && selectedMentor ? (
+					// Tampilan setelah semua terpilih (mentor + course + package)
+					<div className="py-4">
+						{/* Course & Package & Mentor Info */}
+						<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+							<h3 className="text-xl font-semibold text-gray-900 mb-2">
+								{selectedCourse.courseName}
+							</h3>
+							<p className="text-gray-600 mb-3">
+								{selectedCourse.courseDescription}
+							</p>
+							<div className="flex items-center gap-4 flex-wrap">
+								<div className="bg-white px-3 py-1 rounded-lg border">
+									<span className="text-sm font-medium text-gray-700">
+										Mentor: {selectedMentor.user?.nama}
+									</span>
 								</div>
-								<p className="translate-x-2">Go Back</p>
-							</button>
-
-							{/* Course Info */}
-							{/* <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-								<h3 className="text-xl font-semibold text-gray-900 mb-2">
-									{selectedCourse.courseName}
-								</h3>
-								<p className="text-gray-600 mb-3">
-									{selectedCourse.courseDescription}
-								</p>
-							</div> */}
-							<h2 className="text-2xl font-bold text-gray-900 mb-6">
-								Pilih Mentor untuk {selectedCourse.courseName}
-							</h2>
-							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-								{selectedCourse.mentors
-									?.filter((mentor) => mentor.status === "active")
-									.map((mentor) => (
-										<MentorCard
-											key={mentor.id}
-											mentor={mentor}
-											onSchedule={(selectedMentor, course) =>
-												handleMentorClickFromCourse(selectedMentor, course)
-											}
-											selectedCourse={selectedCourse}
-											schedules={schedules}
-										/>
-									))}
+								<div className="bg-white px-3 py-1 rounded-lg border">
+									<span className="text-sm font-medium text-gray-700">
+										Paket: {selectedPackage.name}
+									</span>
+								</div>
 							</div>
 						</div>
-					) : selectedCourse && selectedPackage && selectedMentor ? (
-						// Tampilan setelah semua terpilih (mentor + course + package)
-						<div className="py-4">
-							{/* Course & Package & Mentor Info */}
-							<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-								<h3 className="text-xl font-semibold text-gray-900 mb-2">
-									{selectedCourse.courseName}
-								</h3>
-								<p className="text-gray-600 mb-3">
-									{selectedCourse.courseDescription}
-								</p>
-								<div className="flex items-center gap-4 flex-wrap">
-									<div className="bg-white px-3 py-1 rounded-lg border">
-										<span className="text-sm font-medium text-gray-700">
-											Mentor: {selectedMentor.user?.nama}
-										</span>
-									</div>
-									<div className="bg-white px-3 py-1 rounded-lg border">
-										<span className="text-sm font-medium text-gray-700">
-											Paket: {selectedPackage.name}
-										</span>
-									</div>
-								</div>
-							</div>
-
-							{/* Button untuk proceed ke booking */}
-							<div className="text-center">
-								<button
-									onClick={() =>
-										handleSchedule(
-											selectedMentor,
-											selectedCourse,
-											selectedPackage
-										)
-									}
-									className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
-									Lanjut ke Pemesanan
-								</button>
-							</div>
-						</div>
-					) : (
-						<CoursesPage
-							courses={courses}
-							onCourseClick={handleCourseClick}
-							isLoading={isLoading}
-							searchQuery={searchQuery}
-							setSearchQuery={setSearchQuery}
-							userRole={userRole}
-							filteredCourses={filteredCourses}
-						/>
-					);
-				case "about":
-					return <AboutPage onNavigate={handleNavigate} />;
-				case "home":
-					return selectedCourse && !selectedPackage ? (
-						// Sama seperti logic di courses page - mentor selection dulu
-						// NOTE: KODE INI GAK KEPAKE, KARENA ALUR HOME PAKE PUNYA COURSESPAGE
-						<div className="py-4">
+						{/* Button untuk proceed ke booking */}
+						<div className="text-center">
 							<button
-								onClick={() => {
-									setSelectedCourse(null);
-									setSelectedMentor(null);
-									setSelectedPackage(null);
-								}}
-								className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
-								type="button">
-								<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 1024 1024"
-										height="25px"
-										width="25px">
-										<path
-											d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
-											fill="#000000"
-										/>
-										<path
-											d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
-											fill="#000000"
-										/>
-									</svg>
-								</div>
-								<p className="translate-x-2">Go Back</p>
+								onClick={() =>
+									handleSchedule(
+										selectedMentor,
+										selectedCourse,
+										selectedPackage
+									)
+								}
+								className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
+								Lanjut ke Pemesanan
 							</button>
+						</div>
+					</div>
+				) : (
+					<CoursesPage
+						courses={courses}
+						onCourseClick={handleCourseClick}
+						isLoading={isLoading}
+						searchQuery={searchQuery}
+						setSearchQuery={setSearchQuery}
+						userRole={userRole}
+						filteredCourses={filteredCourses}
+					/>
+				);
+			case "about":
+				return <AboutPage onNavigate={handleNavigate} />;
+			case "home":
+				return selectedCourse && !selectedPackage ? (
+					// Sama seperti logic di courses page - mentor selection dulu
+					// NOTE: KODE INI GAK KEPAKE, KARENA ALUR HOME PAKE PUNYA COURSESPAGE
+					<div className="py-4">
+						<button
+							onClick={() => {
+								setSelectedCourse(null);
+								setSelectedMentor(null);
+								setSelectedPackage(null);
+							}}
+							className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
+							type="button">
+							<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox="0 0 1024 1024"
+									height="25px"
+									width="25px">
+									<path
+										d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
+										fill="#000000"
+									/>
+									<path
+										d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
+										fill="#000000"
+									/>
+								</svg>
+							</div>
+							<p className="translate-x-2">Go Back</p>
+						</button>
 
-							{/* Course Info */}
-							{/* <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+						{/* Course Info */}
+						{/* <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
 								<h3 className="text-xl font-semibold text-gray-900 mb-2">
 									{selectedCourse.courseName}
 								</h3>
@@ -1426,98 +1426,83 @@ function App() {
 								</p>
 							</div> */}
 
-							<h2 className="text-2xl font-bold text-gray-900 mb-6">
-								Pilih Mentor untuk {selectedCourse.courseName}
-							</h2>
-							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-								{selectedCourse.mentors
-									?.filter((mentor) => mentor.status === "active")
-									.map((mentor) => (
-										<MentorCard
-											key={mentor.id}
-											mentor={mentor}
-											onSchedule={(selectedMentor, course) =>
-												handleMentorClickFromCourse(selectedMentor, course)
-											}
-											selectedCourse={selectedCourse}
-										/>
-									))}
-							</div>
+						<h2 className="text-2xl font-bold text-gray-900 mb-6">
+							Pilih Mentor untuk {selectedCourse.courseName}
+						</h2>
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+							{selectedCourse.mentors
+								?.filter((mentor) => mentor.status === "active")
+								.map((mentor) => (
+									<MentorCard
+										key={mentor.id}
+										mentor={mentor}
+										onSchedule={(selectedMentor, course) =>
+											handleMentorClickFromCourse(selectedMentor, course)
+										}
+										selectedCourse={selectedCourse}
+									/>
+								))}
 						</div>
-					) : selectedCourse && selectedPackage && selectedMentor ? (
-						// Final selection UI setelah semua terpilih
-						<div className="py-4">
-							{/* Course & Package & Mentor Info */}
-							<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-								<h3 className="text-xl font-semibold text-gray-900 mb-2">
-									{selectedCourse.courseName}
-								</h3>
-								<p className="text-gray-600 mb-3">
-									{selectedCourse.courseDescription}
-								</p>
-								<div className="flex items-center gap-4 flex-wrap">
-									<div className="bg-white px-3 py-1 rounded-lg border">
-										<span className="text-sm font-medium text-gray-700">
-											Mentor: {selectedMentor.user?.nama}
-										</span>
-									</div>
-									<div className="bg-white px-3 py-1 rounded-lg border">
-										<span className="text-sm font-medium text-gray-700">
-											Paket: {selectedPackage.name}
-										</span>
-									</div>
+					</div>
+				) : selectedCourse && selectedPackage && selectedMentor ? (
+					// Final selection UI setelah semua terpilih
+					<div className="py-4">
+						{/* Course & Package & Mentor Info */}
+						<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+							<h3 className="text-xl font-semibold text-gray-900 mb-2">
+								{selectedCourse.courseName}
+							</h3>
+							<p className="text-gray-600 mb-3">
+								{selectedCourse.courseDescription}
+							</p>
+							<div className="flex items-center gap-4 flex-wrap">
+								<div className="bg-white px-3 py-1 rounded-lg border">
+									<span className="text-sm font-medium text-gray-700">
+										Mentor: {selectedMentor.user?.nama}
+									</span>
+								</div>
+								<div className="bg-white px-3 py-1 rounded-lg border">
+									<span className="text-sm font-medium text-gray-700">
+										Paket: {selectedPackage.name}
+									</span>
 								</div>
 							</div>
-
-							{/* Button untuk proceed ke booking */}
-							<div className="text-center">
-								<button
-									onClick={() =>
-										handleSchedule(
-											selectedMentor,
-											selectedCourse,
-											selectedPackage
-										)
-									}
-									className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
-									Lanjut ke Pemesanan
-								</button>
-							</div>
 						</div>
-					) : (
-						<Home
-							courses={courses}
-							filteredCourses={filteredCourses}
-							searchQuery={searchQuery}
-							setSearchQuery={setSearchQuery}
-							handleCourseClick={handleCourseClick}
-							userRole={userRole}
-							onNavigate={handleNavigate}
-							isLoading={isLoading}
-						/>
-					);
-				case "privacy-policy":
-					return <PrivacyPolicyPage onNavigate={handleNavigate} />;
-				case "terms-conditions":
-					return <TermsConditionsPage onNavigate={handleNavigate} />;
 
-				default:
-					return <NotFoundPage />;
-			}
-		})();
-
-		return (
-			<motion.div
-				className="page-transition"
-				initial={{ opacity: 0 }} // Masuk dari kanan
-				animate={{ opacity: 1 }} // Posisi normal
-				exit={{ opacity: 0 }} // Keluar ke kiri
-				transition={{ duration: 0.3 }}
-				key={currentPage} // Key untuk memicu animasi
-			>
-				{content}
-			</motion.div>
-		);
+						{/* Button untuk proceed ke booking */}
+						<div className="text-center">
+							<button
+								onClick={() =>
+									handleSchedule(
+										selectedMentor,
+										selectedCourse,
+										selectedPackage
+									)
+								}
+								className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
+								Lanjut ke Pemesanan
+							</button>
+						</div>
+					</div>
+				) : (
+					<Home
+						courses={courses}
+						filteredCourses={filteredCourses}
+						searchQuery={searchQuery}
+						setSearchQuery={setSearchQuery}
+						handleCourseClick={handleCourseClick}
+						userRole={userRole}
+						onNavigate={handleNavigate}
+						isLoading={isLoading}
+					/>
+				);
+			case "privacy-policy":
+				return <PrivacyPolicyPage onNavigate={handleNavigate} />;
+			case "terms-conditions":
+				return <TermsConditionsPage onNavigate={handleNavigate} />;
+			default:
+				return <NotFoundPage />;
+		}
 	};
 
 	if (apiError) {
@@ -1579,25 +1564,23 @@ function App() {
 			)}
 
 			<main className="flex-grow">
-				{currentPage === "home" ? (
-					<>
-						{/* 1) full-width hero */}
-						<Hero onNavigate={handleNavigate} />
+				{currentPage === "home" && <Hero />}
 
-						{/* 2) sisa konten HOME tetap di dalam container */}
-						<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-							<AnimatePresence mode="wait">
-								{renderContent()}{" "}
-								{/* NOTE: renderContent() harus TIDAK mengandung Hero lagi */}
-							</AnimatePresence>
+				<div
+					className={
+						!(
+							currentPage === "terms-conditions" ||
+							currentPage === "privacy-policy"
+						)
+							? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+							: ""
+					}>
+					<AnimatePresence mode="wait">
+						<div className="page-transition " key={currentPage}>
+							{renderContent()}
 						</div>
-					</>
-				) : (
-					// halaman lain tetap terpusat
-					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-						<AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
-					</div>
-				)}
+					</AnimatePresence>
+				</div>
 				{selectedMentor && bookingCourse && (
 					<BookingModal
 						mentor={selectedMentor}
@@ -1650,7 +1633,9 @@ function App() {
 						onSubmit={handlePaymentSubmit}
 					/>
 				)}
-				{showAuthModal && <AuthModal defaultMode="login" onNavigate={handleNavigate} />}
+				{showAuthModal && (
+					<AuthModal defaultMode="login" onNavigate={handleNavigate} />
+				)}
 			</main>
 			<Footer
 				onNavigate={handleNavigate}

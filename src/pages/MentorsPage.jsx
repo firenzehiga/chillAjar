@@ -1,15 +1,16 @@
-import { MentorCard } from "../components/MentorCard";
-import api from "../api";
+import { MentorCard } from "@/components/MentorCard";
+import api from "@/api";
 import { useQuery } from "@tanstack/react-query";
-import { MentorSkeletonCard } from "../components/Skeleton/MentorSkeletonCard";
-import { getImageUrl } from "../utils/getImageUrl";
-import { EmptyMentorsState } from "../components/Fallback/EmptyMentorsState";
+import { MentorSkeletonCard } from "@/components/Skeleton/MentorSkeletonCard";
+import { getImageUrl } from "@/utils/getImageUrl";
+import { EmptyMentorsState } from "@/components/Fallback/EmptyMentorsState";
 export function MentorsPage({
 	courses,
 	onSchedule,
 	onCoursePackageSelect,
 	showPostLoginLoading,
 	onNavigate,
+	coursesIsLoading = false,
 }) {
 	const {
 		data: mentors = [],
@@ -28,7 +29,7 @@ export function MentorsPage({
 		retry: 1,
 	});
 
-	if (isLoading | showPostLoginLoading) {
+	if (isLoading || coursesIsLoading || showPostLoginLoading) {
 		return (
 			<div className="py-8">
 				<h2 className="text-2xl font-bold text-gray-900 mb-6">Mentor Kami</h2>
@@ -119,6 +120,7 @@ export function MentorsPage({
 								onSchedule={onSchedule}
 								onCoursePackageSelect={onCoursePackageSelect}
 								showCourseSelect={true}
+								isLoading={coursesIsLoading || isLoading}
 							/>
 						))}
 					</div>
