@@ -229,13 +229,6 @@ export function TermsConditionsPage({ onNavigate }) {
 								</div>
 							</div>
 							<div className="flex gap-3">
-								{onNavigate && (
-									<button
-										onClick={() => onNavigate("home")}
-										className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200 font-medium">
-										Kembali ke Beranda
-									</button>
-								)}
 								<button
 									onClick={() => {
 										if (onNavigate) {
