@@ -1,18 +1,9 @@
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import {
-	Shield,
-	FileText,
-	Eye,
-	Lock,
-	Users,
-	AlertCircle,
-	ArrowLeft,
-} from "lucide-react";
+import { Shield, FileText, Eye, AlertCircle, ArrowLeft } from "lucide-react";
 
-// Import markdown files
-import privacyPolicyMd from "../assets/policies/privacy-policy.md?raw";
-import termsConditionsMd from "../assets/policies/terms-conditions.md?raw";
+import privacyPolicyMd from "@/assets/policies/privacy-policy.md?raw";
+import termsConditionsMd from "@/assets/policies/terms-conditions.md?raw";
 
 export function PrivacyPolicyPage({ onNavigate }) {
 	return (
@@ -138,7 +129,7 @@ export function TermsConditionsPage({ onNavigate }) {
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
 			{/* Header */}
-			<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-lg">
+			<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-sm">
 				<div className="max-w-6xl mx-auto px-4 py-8">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-4">
