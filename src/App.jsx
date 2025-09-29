@@ -1578,23 +1578,44 @@ function App() {
 			)}
 
 			<main className="flex-grow">
-				{currentPage === "home" && <Hero />}
+				{currentPage === "home" ? (
+					<>
+						{/* 1) full-width hero */}
+						<Hero onNavigate={handleNavigate} />
 
-				<div
-					className={
-						!(
-							currentPage === "terms-conditions" ||
-							currentPage === "privacy-policy"
-						)
-							? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-							: ""
-					}>
-					<AnimatePresence mode="wait">
-						<div className="page-transition " key={currentPage}>
-							{renderContent()}
+						{/* 2) sisa konten HOME tetap di dalam container */}
+						<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+							<AnimatePresence mode="wait">
+								<motion.div
+									className="page-transition"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 0.3 }}
+									key={currentPage}>
+									{renderContent()}
+								</motion.div>
+							</AnimatePresence>
 						</div>
-					</AnimatePresence>
-				</div>
+					</>
+				) : (
+					// halaman lain tetap terpusat
+					<div
+						className={
+							!(
+								currentPage === "terms-conditions" ||
+								currentPage === "privacy-policy"
+							)
+								? "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+								: ""
+						}>
+						<AnimatePresence mode="wait">
+							<div className="page-transition " key={currentPage}>
+								{renderContent()}
+							</div>
+						</AnimatePresence>
+					</div>
+				)}
 				{selectedMentor && bookingCourse && (
 					<BookingModal
 						mentor={selectedMentor}
