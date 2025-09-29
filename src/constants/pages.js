@@ -5,6 +5,9 @@ export const PAGES = {
 	mentors: { title: "Mentor", roles: ["public"] },
 	about: { title: "Tentang Kami", roles: ["public"] },
 
+	"privacy-policy": { title: "Kebijakan Privasi", roles: ["public"] },
+	"terms-conditions": { title: "Syarat & Ketentuan", roles: ["public"] },
+
 	// Pelanggan
 	"transaction-history": { title: "Riwayat Transaksi", roles: ["pelanggan"] },
 	"session-history": { title: "Riwayat Sesi", roles: ["pelanggan"] },
@@ -31,7 +34,7 @@ export const PAGES = {
 	"admin-edit-package": { title: "Edit Paket", roles: ["admin"] },
 	"admin-profile": { title: "Admin Profile", roles: ["admin"] },
 	"admin-edit-profile": { title: "Admin Edit Profile", roles: ["admin"] },
-	"admin-testimonial": { title: "Testimonials", roles: ["admin"] },
+	"admin-testimonial": { title: "Mentor Testimonials", roles: ["admin"] },
 	"admin-edit-testimonial": {
 		title: "Edit Mentor Testimonials",
 		roles: ["admin"],
@@ -106,7 +109,11 @@ export const protectedPages = [
 /**
  * Halaman yang menyembunyikan navigasi (manual override)
  */
-export const hideNavigationPages = ["edit-profile"];
+export const hideNavigationPages = [
+	"edit-profile",
+	"privacy-policy",
+	"terms-conditions",
+];
 
 /**
  * Mengambil judul halaman berdasarkan nama halaman yang diberikan.

@@ -4,6 +4,7 @@
 
 ChillAjar berkomitmen untuk melindungi privasi dan keamanan data pribadi Anda. Kebijakan ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda.
 
+
 ## 1. Informasi yang Kami Kumpulkan
 
 ### Informasi Akun
@@ -25,10 +26,7 @@ ChillAjar berkomitmen untuk melindungi privasi dan keamanan data pribadi Anda. K
 - **Catatan:** Data kartu kredit/debit tidak disimpan di server kami
 
 ### Informasi Teknis
-- Alamat IP dan lokasi geografis
-- Jenis browser dan device yang digunakan
-- Log aktivitas dalam platform
-- Preferensi dan pengaturan akun
+- Kami tidak mengumpulkan informasi teknis seperti IP address, browser, atau jenis perangkat yang digunakan
 
 ## 2. Penggunaan Informasi
 
@@ -154,10 +152,9 @@ Untuk pertanyaan, keluhan, atau permintaan terkait privasi:
 ### Waktu Respons
 Kami berkomitmen untuk merespons pertanyaan privasi dalam waktu 7 hari kerja.
 
-### Otoritas Pengawas
-Jika Anda tidak puas dengan penanganan keluhan privasi, Anda dapat menghubungi otoritas perlindungan data yang berwenang di Indonesia.
 
 ---
+
 
 **Terakhir diperbarui:** September 2025  
 **Versi:** 1.0  

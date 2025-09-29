@@ -22,6 +22,10 @@ import {
 } from "@/components/SessionReminder"; // Impor Session Reminder
 
 // Halaman utama
+import {
+	PrivacyPolicyPage,
+	TermsConditionsPage,
+} from "@/pages/PolicyTermsPage";
 import { CoursesPage } from "@/pages/CoursesPage";
 import { MentorsPage } from "@/pages/MentorsPage";
 import { ProfilePage } from "@/pages/ProfilePage";
@@ -1492,6 +1496,11 @@ function App() {
 							isLoading={isLoading}
 						/>
 					);
+				case "privacy-policy":
+					return <PrivacyPolicyPage onNavigate={handleNavigate} />;
+				case "terms-conditions":
+					return <TermsConditionsPage onNavigate={handleNavigate} />;
+
 				default:
 					return <NotFoundPage />;
 			}
@@ -1641,7 +1650,7 @@ function App() {
 						onSubmit={handlePaymentSubmit}
 					/>
 				)}
-				{showAuthModal && <AuthModal defaultMode="login" />}
+				{showAuthModal && <AuthModal defaultMode="login" onNavigate={handleNavigate} />}
 			</main>
 			<Footer
 				onNavigate={handleNavigate}

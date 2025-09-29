@@ -18,7 +18,7 @@ export default function Footer({
 	return (
 		<footer className={`bg-gray-900 text-gray-300 ${className}`}>
 			<div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+				<div className="grid grid-cols-1 md:grid-cols-5 gap-8">
 					{/* Company Info */}
 					<div className="space-y-4">
 						<div className="flex items-center">
@@ -105,6 +105,27 @@ export default function Footer({
 										Privacy Policy
 									</a>
 								</li> */}
+						</ul>
+					</div>
+
+					{/* Legal */}
+					<div>
+						<h3 className="text-lg font-semibold text-white mb-4">Legal</h3>
+						<ul className="space-y-2">
+							<li>
+								<a
+									onClick={() => onNavigate("terms-conditions")}
+									className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
+									Terms of Service
+								</a>
+							</li>
+							<li>
+								<a
+									onClick={() => onNavigate("privacy-policy")}
+									className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
+									Privacy Policy
+								</a>
+							</li>
 						</ul>
 					</div>
 
