@@ -24,9 +24,8 @@ import useAppStore from "@/stores/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { showToast } from "@/components/User/customToast";
-import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 
-export function AuthModal({ defaultMode = "login" }) {
+export function AuthModal({ defaultMode = "login", onNavigate }) {
 	// Get state and actions from store
 	const { showAuthModal, setShowAuthModal, handleAuthSuccess } = useAppStore();
 	const [isLoading, setIsLoading] = useState(false);
@@ -616,14 +615,28 @@ export function AuthModal({ defaultMode = "login" }) {
 												htmlFor="privacy-terms"
 												className="text-sm text-gray-700 cursor-pointer">
 												Saya menyetujui{" "}
-												<button
-													type="button"
-													onClick={() => setShowPrivacyModal(true)}
-													className="text-blue-600 hover:text-blue-800 underline font-medium inline-flex items-center gap-1">
-													Syarat & Ketentuan dan Kebijakan Privasi
+												<a
+													onClick={() => {
+														onNavigate("terms-conditions");
+														// Tutup modal setelah navigasi
+														setShowAuthModal(false);
+													}}
+													className="text-blue-600 hover:text-blue-800 underline font-medium inline-flex items-center gap-1 cursor-pointer">
+													Syarat & Ketentuan
 													<ExternalLink className="w-3 h-3" />
-												</button>{" "}
-												ChillAjar
+												</a>
+												&nbsp;dan
+												<a
+													onClick={() => {
+														onNavigate("privacy-policy");
+														// Tutup modal setelah navigasi
+														setShowAuthModal(false);
+													}}
+													className="text-blue-600 hover:text-blue-800 underline font-medium inline-flex items-center gap-1 cursor-pointer">
+													Kebijakan Privasi
+													<ExternalLink className="w-3 h-3" />
+												</a>
+												&nbsp;ChillAjar
 											</label>
 											<p className="text-xs text-gray-500 mt-1">
 												Dengan mencentang kotak ini, Anda menyetujui untuk
@@ -679,12 +692,6 @@ export function AuthModal({ defaultMode = "login" }) {
 						</form>
 					</div>
 				</motion.div>
-
-				{/* Privacy Policy Modal */}
-				<PrivacyPolicyModal
-					isOpen={showPrivacyModal}
-					onClose={() => setShowPrivacyModal(false)}
-				/>
 			</motion.div>
 		</AnimatePresence>
 	);
