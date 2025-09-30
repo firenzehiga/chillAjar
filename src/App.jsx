@@ -74,9 +74,9 @@ import { getImageUrl } from "@/utils/getImageUrl"; // Utility function to get im
 
 import Swal from "sweetalert2";
 import api from "@/api";
-import { useQuery } from "@tanstack/react-query";
 import { createBrowserHistory } from "history";
 import { useQueryClient } from "@tanstack/react-query";
+import { usePublicCoursesQuery } from "@/hooks/useCourse";
 import ApiError from "@/components/Fallback/ApiError";
 
 import {
@@ -177,77 +177,80 @@ function App() {
 		(!isAuthenticated || userRole === "pelanggan");
 
 	const {
-		data: courses = [],
+		data: rawCourses = [],
 		isLoading,
 		error,
 		refetch,
-	} = useQuery({
-		queryKey: ["courses", isAuthenticated],
-		queryFn: async () => {
-			const endpoint = isAuthenticated
-				? "/pelanggan/daftar-kursus"
-				: "/public/kursus"; // Endpoint publik
-			const response = await api.get(endpoint, {
-				headers: isAuthenticated
-					? {
-							Authorization: `Bearer ${localStorage.getItem("token")}`,
-					  }
-					: {},
-			});
-			// console.log("API Response:", response.data); // Debug: Periksa data dari API
-			const mappedCourses = response.data.map((course) => {
-				const schedules = Array.isArray(course.jadwal_kursus) // Cek apakah jadwal_kursus ada dan merupakan array
-					? course.jadwal_kursus
-					: Array.isArray(course.jadwalKursus)
-					? course.jadwalKursus
-					: [];
+	} = usePublicCoursesQuery({
+		enabled: shouldFetchCourses,
+	});
 
-				const validModes = Array.from(
-					// Ini cara untuk mendapatkan mode belajar unik dari jadwal_kursus
-					new Set(
-						schedules
-							.map((j) => j.gayaMengajar)
-							.filter((m) => m === "online" || m === "offline")
-					)
-				);
+	// Proses mapping data courses seperti yang sudah Anda buat
+	const courses = rawCourses.map((course) => {
+		const schedules = Array.isArray(course.jadwal_kursus) // Cek apakah jadwal_kursus ada dan merupakan array
+			? course.jadwal_kursus
+			: Array.isArray(course.jadwalKursus)
+			? course.jadwalKursus
+			: [];
 
-				// Simpan mode apa adanya (online / offline). Fallback kalau kosong.
-				const learnMethod =
-					validModes.length === 0
-						? "Belum diatur"
-						: validModes.length === 1
-						? validModes[0]
-						: validModes.join(", ");
+		const validModes = Array.from(
+			// Ini cara untuk mendapatkan mode belajar unik dari jadwal_kursus
+			new Set(
+				schedules
+					.map((j) => j.gayaMengajar)
+					.filter((m) => m === "online" || m === "offline")
+			)
+		);
 
-				const mentorData = course.mentor || {};
+		// Simpan mode apa adanya (online / offline). Fallback kalau kosong.
+		const learnMethod =
+			validModes.length === 0
+				? "Belum diatur"
+				: validModes.length === 1
+				? validModes[0]
+				: validModes.join(", ");
 
-				return {
-					id: course.id,
-					mentor_id: course.mentor_id,
-					mentorName: mentorData?.user?.nama,
-					courseName: course.namaKursus,
-					courseDescription: course.deskripsi,
-					courseImage: getImageUrl(
-						course.fotoKursus,
-						"/foto_kursus/default.jpg"
+		const mentorData = course.mentor || {};
+
+		return {
+			id: course.id,
+			mentor_id: course.mentor_id,
+			mentorName: mentorData?.user?.nama,
+			courseName: course.namaKursus,
+			courseDescription: course.deskripsi,
+			courseImage: getImageUrl(
+				course.fotoKursus,
+				"/foto_kursus/default.jpg"
+			),
+			learnMethod,
+			price_per_hour: mentorData?.biayaPerSesi || 0,
+			mentor: mentorData,
+			mentors: [
+				{
+					id: mentorData?.id || null,
+					status: mentorData?.status || "active",
+					mentorName: mentorData?.user?.nama || "Unknown Mentor",
+					mentorImage: getImageUrl(
+						mentorData?.user?.foto_profil,
+						"/foto_mentor/default.png"
 					),
-					learnMethod,
-					price_per_hour: mentorData?.biayaPerSesi || 0,
-					mentor: mentorData,
-					mentors: [
+					mentorRating: mentorData?.rating || 0,
+					mentorAbout: mentorData?.deskripsi || "No description",
+					mentorPhone: mentorData?.user?.nomorTelepon || "+1234567890",
+					mentorAddress:
+						mentorData?.user?.alamat || "Alamat tidak tersedia",
+					schedules: schedules.map((s) => ({
+						...s,
+						teachingMode: {
+							online: s.gayaMengajar === "online",
+							offline: s.gayaMengajar === "offline",
+						},
+					})),
+					courses: [
 						{
-							id: mentorData?.id || null,
-							status: mentorData?.status || "active",
-							mentorName: mentorData?.user?.nama || "Unknown Mentor",
-							mentorImage: getImageUrl(
-								mentorData?.user?.foto_profil,
-								"/foto_mentor/default.png"
-							),
-							mentorRating: mentorData?.rating || 0,
-							mentorAbout: mentorData?.deskripsi || "No description",
-							mentorPhone: mentorData?.user?.nomorTelepon || "+1234567890",
-							mentorAddress:
-								mentorData?.user?.alamat || "Alamat tidak tersedia",
+							id: course.id,
+							courseName: course.namaKursus,
+							learnMethod,
 							schedules: schedules.map((s) => ({
 								...s,
 								teachingMode: {
@@ -255,34 +258,12 @@ function App() {
 									offline: s.gayaMengajar === "offline",
 								},
 							})),
-							courses: [
-								{
-									id: course.id,
-									courseName: course.namaKursus,
-									learnMethod,
-									schedules: schedules.map((s) => ({
-										...s,
-										teachingMode: {
-											online: s.gayaMengajar === "online",
-											offline: s.gayaMengajar === "offline",
-										},
-									})),
-								},
-							],
 						},
 					],
-					jadwal_kursus: schedules,
-				};
-			});
-			// console.log("Mapped Courses:", mappedCourses); // Debug: Periksa data setelah pemetaan
-			return mappedCourses;
-		},
-		enabled: shouldFetchCourses,
-		// staleTime: 60 * 1000, // 30 detik (sangat pendek)
-		// cacheTime: 2 * 60 * 1000, // 2 menit cache
-		// refetchOnWindowFocus: true, // Refetch saat focus (safety)
-		// refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
-		// retry: 1,
+				},
+			],
+			jadwal_kursus: schedules,
+		};
 	});
 
 	// Get schedules dari course data yang sudah terfilter di backend

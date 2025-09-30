@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
 	Users,
 	BookOpen,
@@ -24,56 +24,29 @@ import {
 	Quote,
 } from "lucide-react";
 import teamsData from "@/constants/TeamData";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/api";
+import { usePublicCoursesQuery } from "@/hooks/useCourse";
+import { usePublicMentorsQuery } from "@/hooks/useMentors";
 
 export function AboutPage({ onNavigate }) {
 	const [hoveredMember, setHoveredMember] = useState(null);
 	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	// Menggunakan endpoint publik untuk jumlah kursus tanpa autentikasi
 	const {
-		data: jumlahCourse,
+		data: coursesData = [],
 		isLoading: coursesLoading,
 		error: coursesError,
-	} = useQuery({
-		queryKey: ["publicCountCourses"],
-		queryFn: async () => {
-			const response = await api.get("/public/kursus	", {
-				headers: localStorage.getItem("token")
-					? { Authorization: `Bearer ${localStorage.getItem("token")}` }
-					: {}, // Header hanya ditambahkan jika token ada
-			});
-			return response.data.length;
-		},
-		staleTime: 60 * 1000, // 30 detik (sangat pendek)
-		cacheTime: 2 * 60 * 1000, // 2 menit cache
-		refetchOnWindowFocus: true, // Refetch saat focus (safety)
-		refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
-		retry: 1,
-	});
+	} = usePublicCoursesQuery();
 
+	// Menggunakan endpoint publik untuk jumlah mentor tanpa autentikasi
 	const {
-		data: jumlahMentor,
+		data: mentorsData = [],
 		isLoading: mentorsLoading,
 		error: mentorsError,
-	} = useQuery({
-		queryKey: ["publicCountMentors"],
-		queryFn: async () => {
-			const response = await api.get("/public/mentor", {
-				headers: localStorage.getItem("token")
-					? { Authorization: `Bearer ${localStorage.getItem("token")}` }
-					: {},
-			});
-			// Hanya hitung mentor dengan status 'aktif'
-			return response.data.filter((mentor) => mentor.status === "active")
-				.length;
-		},
-		staleTime: 60 * 1000, // 30 detik (sangat pendek)
-		cacheTime: 2 * 60 * 1000, // 2 menit cache
-		refetchOnWindowFocus: true, // Refetch saat focus (safety)
-		refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
-		retry: 1,
-	});
+	} = usePublicMentorsQuery();
+
+	// Hitung jumlah courses dan mentors aktif
+	const jumlahCourse = coursesData.length;
+	const jumlahMentor = mentorsData.filter((mentor) => mentor.status === "active").length;
 
 	const stats = [
 		{ icon: Users, label: "Active Students", value: "20+" },

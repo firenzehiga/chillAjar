@@ -1,9 +1,9 @@
 import { MentorCard } from "@/components/MentorCard";
-import api from "@/api";
-import { useQuery } from "@tanstack/react-query";
 import { MentorSkeletonCard } from "@/components/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { EmptyMentorsState } from "@/components/Fallback/EmptyMentorsState";
+import { usePublicMentorsQuery } from "@/hooks/useMentors";
+
 export function MentorsPage({
 	courses,
 	onSchedule,
@@ -14,23 +14,10 @@ export function MentorsPage({
 }) {
 	const {
 		data: mentors = [],
-		isLoading,
-		error,
-	} = useQuery({
-		queryKey: ["publicMentorsPage"],
-		queryFn: async () => {
-			// Fetch mentors data
-			const mentorsResponse = await api.get("/public/mentor");
-			return mentorsResponse.data;
-		},
-		staleTime: 60 * 1000, // 30 detik (sangat pendek)
-		cacheTime: 2 * 60 * 1000, // 2 menit cache
-		refetchOnWindowFocus: true, // Refetch saat focus (safety)
-		refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
-		retry: 1,
-	});
-
-	if (isLoading || coursesIsLoading || showPostLoginLoading) {
+		isLoading: mentorsLoading,
+		error: mentorsError,
+	} = usePublicMentorsQuery();
+	if (mentorsLoading || coursesIsLoading || showPostLoginLoading) {
 		return (
 			<div className="py-8">
 				<h2 className="text-2xl font-bold text-gray-900 mb-6">Mentor Kami</h2>
@@ -43,10 +30,14 @@ export function MentorsPage({
 		);
 	}
 
-	if (error) {
-		let msg = error.message;
-		if (error.response && error.response.data && error.response.data.message) {
-			msg = error.response.data.message;
+	if (mentorsError) {
+		let msg = mentorsError.message;
+		if (
+			mentorsError.response &&
+			mentorsError.response.data &&
+			mentorsError.response.data.message
+		) {
+			msg = mentorsError.response.data.message;
 		}
 		return <p className="text-red-500 text-center mt-8">{msg}</p>;
 	}
@@ -121,7 +112,7 @@ export function MentorsPage({
 								onSchedule={onSchedule}
 								onCoursePackageSelect={onCoursePackageSelect}
 								showCourseSelect={true}
-								isLoading={coursesIsLoading || isLoading}
+								isLoading={coursesIsLoading || mentorsLoading}
 							/>
 						))}
 					</div>

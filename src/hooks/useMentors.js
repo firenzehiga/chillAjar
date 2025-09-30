@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+	getPublicMentors,
 	getMentors,
 	getMentorById,
 	updateMentor,
@@ -114,5 +115,25 @@ export const useToggleMentorStatusMutation = () => {
 export const useDownloadMentorDocument = () => {
 	return useMutation({
 		mutationFn: downloadMentorDocument,
+	});
+};
+
+// ========== PELANGGAN MENTORS ==========
+// Hook untuk mengambil data mentor public untuk halaman about
+export const usePublicMentorsQuery = () => {
+	return useQuery({
+		queryKey: ["publicMentors"],
+		queryFn: async () => {
+			const response = await getPublicMentors();
+			return response;
+		},
+		// staleTime: 60 * 1000, // 30 detik (sangat pendek)
+		// cacheTime: 2 * 60 * 1000, // 2 menit cache
+		// refetchOnWindowFocus: true, // Refetch saat focus (safety)
+		// refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
+		// retry: 1,
+		onError: (err) => {
+			console.error("Error fetching public Mentors:", err);
+		},
 	});
 };
