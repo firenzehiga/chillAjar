@@ -70,3 +70,22 @@ export const toggleMentorStatus = async (mentorId, newStatus) => {
 	);
 	return response.data;
 };
+
+// ========== PELANGGAN MENTORS ==========
+/**
+ * Mengambil kursus yang dipakai oleh App dan AboutPage.
+ *
+ * @async
+ * @function getPublicMentors
+ * @endpoint GET /public/mentor
+ * @returns {Promise<any>} Data semua mentor public.
+ */
+export const getPublicMentors = async () => {
+	const token = localStorage.getItem("token");
+	const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+	const response = await api.get("/public/mentor", {
+		headers: headers,
+	});
+	return response.data;
+};

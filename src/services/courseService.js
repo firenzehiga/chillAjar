@@ -220,3 +220,22 @@ export const setMentorSchedule = async (payload) => {
 	});
 	return response.data;
 };
+
+// ========== PELANGGAN COURSE ==========
+/**
+ * Mengambil kursus yang dipakai oleh App dan AboutPage.
+ *
+ * @async
+ * @function getPublicCourses
+ * @endpoint GET /public/kursus
+ * @returns {Promise<any>} Data semua kursus public.
+ */
+export const getPublicCourses = async () => {
+	const token = localStorage.getItem("token");
+	const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+	const response = await api.get("/public/kursus", {
+		headers: headers,
+	});
+	return response.data;
+};

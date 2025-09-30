@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAppStore from "@/stores/useAppStore";
 import {
+	getPublicCourses,
 	getCourses,
 	getCourseById,
 	createCourse,
@@ -282,5 +283,30 @@ export const useSetMentorScheduleMutation = () => {
 export const useSetScheduleMutation = () => {
 	return useMutation({
 		mutationFn: setSchedule,
+	});
+};
+
+// ========== PELANGGAN COURSE ==============
+/**
+ * Ambil kursus untuk halaman about/public.
+ *
+ * @returns {UseQueryResult<Array>} Daftar kursus
+ */
+export const usePublicCoursesQuery = (options = {}) => {
+	return useQuery({
+		queryKey: ["publicCourses"],
+		queryFn: async () => {
+			const response = await getPublicCourses();
+			return response;
+		},
+		// staleTime: 60 * 1000, // 30 detik (sangat pendek)
+		// cacheTime: 2 * 60 * 1000, // 2 menit cache
+		// refetchOnWindowFocus: true, // Refetch saat focus (safety)
+		// refetchInterval: 60 * 1000, // Auto refetch setiap 1 menit
+		// retry: 1,
+		onError: (err) => {
+			console.error("Error fetching public Courses:", err);
+		},
+		...options, // Spread opsi tambahan
 	});
 };
