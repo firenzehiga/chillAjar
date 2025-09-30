@@ -84,7 +84,7 @@ export default function Hero({ onNavigate }) {
 							</span>
 						</span>
 					</h1>
-					<p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-600">
+					<p className="max-w-3xl mx-auto text-lg md:text-lg font-semibold text-gray-600">
 						ChillAjar menghubungkan mahasiswa dengan mentor ahli untuk
 						menciptakan pengalaman belajar yang bermakna dan transformatif.
 					</p>
@@ -104,6 +104,7 @@ export default function Hero({ onNavigate }) {
 									className="h-full w-full object-contain"
 								/>
 							</div>
+							<Zap className="w-5 h-5 mr-2" />
 							<span className="font-medium">Mulai Belajar</span>
 						</a>
 						<a

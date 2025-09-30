@@ -80,24 +80,26 @@ export function AboutPage({ onNavigate }) {
 		{
 			icon: BookOpen,
 			label: "Available Courses",
-			value: coursesLoading ? (
-				<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
-			) : coursesError ? (
-				"Error"
-			) : (
-				jumlahCourse
-			),
+			value:
+				coursesLoading || mentorsLoading ? (
+					<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
+				) : coursesError ? (
+					"Error"
+				) : (
+					jumlahCourse
+				),
 		},
 		{
 			icon: Users,
 			label: "Active Mentors",
-			value: mentorsLoading ? (
-				<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
-			) : mentorsError ? (
-				"Error"
-			) : (
-				jumlahMentor
-			),
+			value:
+				mentorsLoading || coursesLoading ? (
+					<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
+				) : mentorsError ? (
+					"Error"
+				) : (
+					jumlahMentor
+				),
 		},
 	];
 

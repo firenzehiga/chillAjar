@@ -42,10 +42,8 @@ export const useSessionsQuery = () => {
 			return response;
 		},
 		enabled: isAuthenticated,
-		staleTime: 60 * 1000, // 1 menit
-		cacheTime: 5 * 60 * 1000, // 5 menit
-		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // fetch ulang otomatis tiap 1 menit
+		staleTime: 1 * 60 * 1000,
+		cacheTime: 5 * 60 * 1000,
 		retry: 1,
 		onError: (err) => console.error("Error fetching sessions:", err),
 	});
@@ -76,6 +74,8 @@ export const useDeleteSessionMutation = () => {
 			queryClient.setQueryData(["adminSessions"], (oldData) =>
 				oldData.filter((s) => s.id !== sessionId)
 			);
+			queryClient.invalidateQueries(["adminSessions"]);
+
 			// toast success akan ditangani di komponen
 		},
 		onError: () => {
