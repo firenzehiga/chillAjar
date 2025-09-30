@@ -16,9 +16,9 @@ import {
 } from "lucide-react";
 import api from "@/api";
 import Swal from "sweetalert2";
-import { motion, AnimatePresence } from "framer-motion";
-
+import { useQueryClient } from "@tanstack/react-query";
 export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
+	const queryClient = useQueryClient();
 	const [isLoading, setIsLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [error, setError] = useState("");
@@ -103,6 +103,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 			});
 
 			const { user, mentor } = response.data;
+			queryClient.invalidateQueries(["adminMentors"]);
 
 			Swal.fire({
 				icon: "success",

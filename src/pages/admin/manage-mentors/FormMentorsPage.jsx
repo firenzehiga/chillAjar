@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
-import api from "../../../api";
-import Swal from "sweetalert2";
-import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+	useMentorByIdQuery,
+	useUpdateMentorMutation,
+} from "@/hooks/useMentors";
+import Swal from "sweetalert2";
+import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
 import toast from "react-hot-toast";
 
 export function AdminFormMentorsPage({ onNavigate, mentorId }) {
@@ -28,47 +31,43 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
+	const { data: mentorData, isLoading: isMentorLoading } =
+		useMentorByIdQuery(mentorId);
+
 	// Fetch data mentor
 	useEffect(() => {
-		const fetchMentor = async () => {
-			if (!isAuthenticated) return;
-			try {
-				setLoading(true);
-				const response = await api.get(`/admin/mentor/${mentorId}`, {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				const mentorData = response.data;
-				setFormData({
-					nama: mentorData.user?.nama || "",
-					email: mentorData.user?.email || "",
-					rating: mentorData.rating || 0,
-					deskripsi: mentorData.deskripsi || "",
-					biayaPerSesi: mentorData.biayaPerSesi || "",
-					status: mentorData.status || "pending",
-				});
-				setDokumenName(
-					mentorData.dokumen_pendukung
-						? mentorData.dokumen_pendukung.split("/").pop()
-						: ""
-				);
-				setDokumenUrl(
-					mentorData.dokumen_pendukung
-						? `${import.meta.env.VITE_API_URL || ""}/storage/${
-								mentorData.dokumen_pendukung
-						  }`
-						: ""
-				);
-			} catch (err) {
-				setError("Gagal mengambil data mentor");
-			} finally {
-				setLoading(false);
-			}
-		};
+		if (mentorData) {
+			setFormData({
+				nama: mentorData.user?.nama || "",
+				email: mentorData.user?.email || "",
+				rating: mentorData.rating || 0,
+				deskripsi: mentorData.deskripsi || "",
+				biayaPerSesi: mentorData.biayaPerSesi || "",
+				biayaPerSesiOffline: mentorData.biayaPerSesiOffline || "",
+				status: mentorData.status || "pending",
+			});
+			setDokumenName(
+				mentorData.dokumen_pendukung
+					? mentorData.dokumen_pendukung.split("/").pop()
+					: ""
+			);
+			setDokumenUrl(
+				mentorData.dokumen_pendukung
+					? `${import.meta.env.VITE_API_URL || ""}/storage/${
+							mentorData.dokumen_pendukung
+					  }`
+					: ""
+			);
+		}
+	}, [mentorData]);
 
-		fetchMentor();
-	}, [mentorId]);
+	useEffect(() => {
+		if (isMentorLoading) {
+			setLoading(true);
+		} else {
+			setLoading(false);
+		}
+	}, [isMentorLoading]);
 
 	// Handler file
 	const handleDokumenChange = (e) => {
@@ -81,6 +80,9 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
 	};
+
+	// Mutation untuk update mentor
+	const updateMentorMutation = useUpdateMentorMutation();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -97,28 +99,12 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 				payload.append("dokumen_pendukung", dokumenPendukung);
 			}
 			payload.append("_method", "PUT");
-			const response = await api.post(`/admin/mentor/${mentorId}`, payload, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-					"Content-Type": "multipart/form-data",
-				},
-			});
 
-			if (response.status === 200 || response.status === 201) {
-				// Invalidate queries to refresh data
-				queryClient.invalidateQueries(["adminMentors"]);
-				queryClient.invalidateQueries(["publicMentorsPage"]);
-				queryClient.invalidateQueries(["courses"]);
-				toast.success("Mentor berhasil diperbarui!");
-				onNavigate("admin-manage-mentors");
-			} else {
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: "Terjadi kesalahan saat memperbarui data.",
-					confirmButtonColor: "#EF4444",
-				});
-			}
+			// Update data mentor
+			await updateMentorMutation.mutateAsync({ mentorId, payload });
+
+			toast.success("Mentor berhasil diperbarui!");
+			onNavigate("admin-manage-mentors");
 		} catch (err) {
 			const errorMessage =
 				err.response?.data?.message ||
@@ -137,7 +123,7 @@ export function AdminFormMentorsPage({ onNavigate, mentorId }) {
 		}
 	};
 
-	if (loading) {
+	if (loading || isMentorLoading) {
 		return <FormSkeletonCard />;
 	}
 

@@ -10,7 +10,7 @@ export default function ApiError({ code, message, alias }) {
 				<span className="font-mono text-red-700">{code || "Unknown"}</span>
 				{alias && <span className="ml-2 text-red-700">({alias})</span>}
 			</div>
-			<p className="text-gray-700 mb-4 bg-red-100 p-3 rounded border border-red-600">
+			<p className="text-gray-700 mb-4 bg-red-100 p-3 rounded border border-red-600 inline-block max-w-full sm:max-w-2xl break-words whitespace-normal mx-auto">
 				{message ||
 					"Terjadi masalah saat menghubungi server. Silakan coba lagi atau hubungi admin."}
 			</p>

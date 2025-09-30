@@ -8,97 +8,36 @@ import {
 	Star,
 	AlertCircle,
 } from "lucide-react";
-import api from "../../../api";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+	useMentorsQuery,
+	useDeleteMentorMutation,
+	useToggleMentorStatusMutation,
+	useDownloadMentorDocument,
+} from "@/hooks/useMentors";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { BookLoader } from "../../../components/User/BookLoader";
-import { formatDate } from "../../../utils/dateFormatter";
+import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
+import { BookLoader } from "@/components/User/BookLoader";
+import { formatDate } from "@/utils/dateFormatter";
 
 export function AdminMentorsPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
 
-	const queryClient = useQueryClient();
-
-	// Fetch data transaksi yang mencakup detail sesi
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
-
+	// Fetch data mentors
 	const {
 		data: mentors = [],
 		isLoading,
 		error,
 		isFetching,
-	} = useQuery({
-		queryKey: ["adminMentors"],
-		queryFn: async () => {
-			if (!isAuthenticated) return [];
-			const response = await api.get("/admin/mentor", {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			return response.data;
-		},
-		enabled: isAuthenticated,
-		staleTime: 1 * 60 * 1000, // 1 menit - cukup fresh tapi tidak terlalu sering refetch
-		cacheTime: 5 * 60 * 1000, // 5 menit cache
-		refetchOnWindowFocus: true,
-		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
-		retry: 1,
-
-		onError: (err) => {
-			console.error("Error fetching Mentors:", err);
-		},
-	});
-
+	} = useMentorsQuery();
 	// Gunakan useMutation untuk delete
-	const deleteMentorMutation = useMutation({
-		// Function untuk menghapus mentor berdasarkan ID
-		mutationFn: async (id) => {
-			// Lakukan request DELETE ke endpoint kursus dengan menyertakan token di header
-			return api.delete(`/admin/mentor/${id}`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-		},
-		// Kode ini akan dijalankan jika proses delete berhasil
-		onSuccess: (_, id) => {
-			// Hapus data course dari cache
-			queryClient.setQueryData(["adminMentors"], (oldData) =>
-				oldData.filter((mentor) => mentor.id !== id)
-			);
-			// Invalidate related queries for immediate refresh on public pages
-			queryClient.invalidateQueries(["publicMentorsPage"]);
-			queryClient.invalidateQueries(["courses"]);
-			toast.success("Mentor berhasil dihapus."); // Tampilkan pesan sukses
-		},
-		onError: () => {
-			Swal.fire("Error!", "Gagal menghapus mentor.", "error");
-		},
-	});
+	const deleteMentorMutation = useDeleteMentorMutation();
 
-	// Update mutation untuk menggunakan endpoint edit yang sudah ada
-	const toggleStatusMutation = useMutation({
-		mutationFn: async ({ mentorId, newStatus }) => {
-			// Gunakan endpoint PUT/PATCH yang sudah ada untuk edit mentor
-			const response = await api.put(
-				`/admin/mentor/${mentorId}`,
-				{
-					status: newStatus,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-			return response.data;
-		},
-		onSuccess: (_, { mentorId, newStatus }) => {
-			// Update cache optimistically
-			queryClient.setQueryData(["adminMentors"], (oldData) =>
-				oldData.map((mentor) =>
-					mentor.id === mentorId ? { ...mentor, status: newStatus } : mentor
-				)
-			);
+	// Update mutation untuk toggle status
 
+	// Update mutation untuk toggle status
+	const toggleStatusMutation = useToggleMentorStatusMutation({
+		onSuccess: (_, { newStatus }) => {
 			const statusText =
 				newStatus === "active" ? "diaktifkan" : "dinonaktifkan";
 			toast.success(`Mentor berhasil ${statusText}.`);
@@ -113,6 +52,9 @@ export function AdminMentorsPage({ onNavigate }) {
 		},
 	});
 
+	// Hook untuk download dokumen mentor
+	const downloadMentorDocumentMutation = useDownloadMentorDocument();
+
 	// Fungsi untuk menangani penghapusan mentor
 	const handleDelete = (id) => {
 		Swal.fire({
@@ -125,11 +67,17 @@ export function AdminMentorsPage({ onNavigate }) {
 			confirmButtonText: "Yes, delete it!",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				deleteMentorMutation.mutate(id); // Panggil fungsi deleteMutation dengan ID mentor
+				deleteMentorMutation.mutate(id, {
+					onSuccess: () => {
+						toast.success("Mentor berhasil dihapus.");
+					},
+					onError: () => {
+						Swal.fire("Error!", "Gagal menghapus mentor.", "error");
+					},
+				});
 			}
 		});
 	};
-
 	// Saat tombol edit diklik, navigasikan ke halaman edit course
 	const handleEdit = (id) => {
 		onNavigate(`admin-edit-mentor/${id}`);
@@ -152,10 +100,27 @@ export function AdminMentorsPage({ onNavigate }) {
 			cancelButtonText: "Batal",
 		}).then((result) => {
 			if (result.isConfirmed) {
-				toggleStatusMutation.mutate({
-					mentorId: mentor.id,
-					newStatus: newStatus,
-				});
+				toggleStatusMutation.mutate(
+					{
+						mentorId: mentor.id,
+						newStatus: newStatus,
+					},
+					{
+						onSuccess: () => {
+							const statusText =
+								newStatus === "active" ? "diaktifkan" : "dinonaktifkan";
+							toast.success(`Mentor berhasil ${statusText}.`);
+						},
+						onError: (error) => {
+							console.error("Error toggling mentor status:", error);
+							Swal.fire({
+								icon: "error",
+								title: "Error!",
+								text: "Gagal mengubah status mentor.",
+							});
+						},
+					}
+				);
 			}
 		});
 	};
@@ -355,9 +320,9 @@ export function AdminMentorsPage({ onNavigate }) {
 							noHeader
 							expandableRows
 							expandableRowsComponent={({ data }) => {
-								// Handler untuk download dokumen mentor (ikuti teknik bukti pembayaran)
+								// Handler untuk download dokumen mentor (menggunakan hook)
 								const handleDownloadDokumen = async (mentor) => {
-									// Validasi awal yang lebih ketat (sama seperti bukti pembayaran)
+									// Validasi awal yang lebih ketat
 									if (
 										!mentor.dokumen_pendukung ||
 										mentor.dokumen_pendukung.trim() === "" ||
@@ -374,7 +339,7 @@ export function AdminMentorsPage({ onNavigate }) {
 										return;
 									}
 
-									// Tampilkan loading indicator (sama seperti bukti pembayaran)
+									// Tampilkan loading indicator
 									Swal.fire({
 										title: "Mengunduh File...",
 										text: "Mohon tunggu, sedang memproses download.",
@@ -387,19 +352,11 @@ export function AdminMentorsPage({ onNavigate }) {
 									});
 
 									try {
-										// Download melalui backend API dengan cache busting
-										const timestamp = new Date().getTime(); // Cache busting
-										const response = await api.get(
-											`/admin/download-dokumen-mentor/${mentor.id}?t=${timestamp}`, // Tambah timestamp
-											{
-												headers: {
-													Authorization: `Bearer ${token}`,
-													"Cache-Control": "no-cache", // Force no cache
-													Pragma: "no-cache", // Force no cache untuk HTTP/1.0
-												},
-												responseType: "blob", // Penting untuk file download
-											}
-										);
+										// Gunakan hook mutation untuk download dokumen
+										const response =
+											await downloadMentorDocumentMutation.mutateAsync(
+												mentor.id
+											);
 
 										// Tutup loading
 										Swal.close();
@@ -426,9 +383,7 @@ export function AdminMentorsPage({ onNavigate }) {
 										)}_${tanggal}${extension}`;
 
 										// Buat URL object untuk blob
-										const downloadUrl = window.URL.createObjectURL(
-											response.data
-										);
+										const downloadUrl = window.URL.createObjectURL(response);
 
 										// Buat element anchor untuk download
 										const link = document.createElement("a");
@@ -452,7 +407,7 @@ export function AdminMentorsPage({ onNavigate }) {
 										// Tutup loading jika masih terbuka
 										Swal.close();
 
-										// Handle berbagai jenis error dengan lebih spesifik (sama seperti bukti pembayaran)
+										// Handle berbagai jenis error dengan lebih spesifik
 										if (
 											error.response?.status === 404 ||
 											error.response?.status === 403
