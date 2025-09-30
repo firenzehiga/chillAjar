@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
 	Calendar,
 	Clock,
@@ -15,9 +15,9 @@ import {
 	Monitor,
 } from "lucide-react";
 import { MdRateReview } from "react-icons/md";
-import api from "../api";
-import useAppStore from "../stores/useAppStore";
-import { BookLoader } from "../components/User/BookLoader";
+import api from "@/api";
+import useAppStore from "@/stores/useAppStore";
+import { BookLoader } from "@/components/User/BookLoader";
 
 // Custom Select Component
 const CustomSelect = ({
@@ -87,7 +87,9 @@ const CustomSelect = ({
 };
 
 export function SessionHistoryPage({ userData }) {
-	const [updatingSessionId, setUpdatingSessionId] = useState(null);
+	// use global updatingSessionId from store so other components (modal/handlers) can set it
+	const updatingSessionId = useAppStore((s) => s.updatingSessionId);
+	const setUpdatingSessionId = useAppStore((s) => s.setUpdatingSessionId);
 	const [filters, setFilters] = useState({
 		status: "",
 		mode: "",
@@ -121,9 +123,6 @@ export function SessionHistoryPage({ userData }) {
 
 	// Get testimoni state from store
 	const { openTestimoniModal, isSubmittingTestimoni } = useAppStore();
-
-	const queryClient = useQueryClient();
-
 	const pelangganId = userData?.pelanggan?.id;
 
 	const {
@@ -311,17 +310,26 @@ export function SessionHistoryPage({ userData }) {
 		openTestimoniModal(testimoniData);
 	};
 
+	// updatingSessionId is managed by the action that performs the update (submit/payment).
+	// SessionHistoryPage only reads it to show the "Memperbarui..." indicator.
+
 	useEffect(() => {
 		if (!updatingSessionId) return;
 		const updatedSession = history.find((s) => s.id === updatingSessionId);
+		// If the session now has a testimoni or statusSesi is 'reviewed', consider update finished
 		if (
 			updatedSession &&
-			updatedSession.status !== "pending_payment" &&
-			updatedSession.status !== "rejected"
+			(updatedSession.sudahTestimoni ||
+				updatedSession.statusSesi === "reviewed")
 		) {
 			setUpdatingSessionId(null);
+			return;
 		}
-	}, [history, updatingSessionId]);
+		// As a fallback, if the session is not present in history anymore, clear the flag
+		if (!updatedSession) {
+			setUpdatingSessionId(null);
+		}
+	}, [history, updatingSessionId, setUpdatingSessionId]);
 
 	const isLoading = loadingSessions || loadingTransactions;
 
@@ -542,24 +550,14 @@ export function SessionHistoryPage({ userData }) {
 									<p className="text-gray-600">dengan {session.mentor}</p>
 								</div>
 								{updatingSessionId === session.id ? (
-									<div className="flex items-center text-blue-500">
-										<svg
-											className="animate-spin h-5 w-5 mr-2"
-											fill="none"
-											viewBox="0 0 24 24">
-											<circle
-												className="opacity-25"
-												cx="12"
-												cy="12"
-												r="10"
-												stroke="currentColor"
-												strokeWidth="4"></circle>
-											<path
-												className="opacity-75"
-												fill="currentColor"
-												d="M4 12a8 8 0 018-8v8z"></path>
-										</svg>
-										Memperbarui...
+									<div
+										className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100 shadow-sm"
+										role="status"
+										aria-live="polite">
+										<Loader2 className="animate-spin h-4 w-4 text-blue-600" />
+										<span className="text-sm font-medium">
+											Memperbarui status
+										</span>
 									</div>
 								) : session.status === "started" ? (
 									<span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-red-600 rounded-full text-sm font-medium">
@@ -620,7 +618,8 @@ export function SessionHistoryPage({ userData }) {
 
 									<div className="flex items-center gap-2">
 										{!session.sudahTestimoni &&
-											session.statusSesi === "end" && (
+											session.statusSesi === "end" &&
+											updatingSessionId !== session.id && (
 												<button
 													className={`ml-4 px-4 py-2 rounded-lg text-white transition-colors ${
 														isSubmittingTestimoni

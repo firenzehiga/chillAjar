@@ -2,26 +2,46 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useSubmitTestimonialMutation } from "@/hooks/useTestimonial";
+import useAppStore from "@/stores/useAppStore";
 
-export const TestimoniModal = ({ isOpen, onClose, onSubmit }) => {
+export const TestimoniModal = ({ isOpen, onClose, session }) => {
 	const [rating, setRating] = useState(5);
 	const [comment, setComment] = useState("");
 	const [hoverRating, setHoverRating] = useState(0);
 	const today = new Date().toISOString().slice(0, 10);
 	const [loading, setLoading] = useState(false);
 
+	// Hook untuk submit testimoni
+	const submitTestimonialMutation = useSubmitTestimonialMutation();
+
 	if (!isOpen) return null;
+
+	const setUpdatingSessionId = useAppStore((s) => s.setUpdatingSessionId);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLoading(true);
+		// Set global flag so session/transaction pages show "Memperbarui..."
+		setUpdatingSessionId(session.id);
 		try {
-			await onSubmit({ rating, komentar: comment }); // hanya kirim rating & komentar
+			// Gunakan mutation hook untuk submit testimoni
+			await submitTestimonialMutation.mutateAsync({
+				sessionId: session.id,
+				payload: {
+					rating,
+					komentar: comment,
+				},
+			});
+
 			toast.success("Testimoni berhasil dikirim.");
 			setRating(5);
 			setComment("");
 			onClose();
+			// Do NOT clear updatingSessionId here — pages will clear after query results reflect the update.
 		} catch (err) {
+			// Clear flag on error so UI doesn't get stuck
+			setUpdatingSessionId(null);
 			Swal.fire({
 				icon: "error",
 				title: "Gagal",

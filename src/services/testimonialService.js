@@ -87,3 +87,26 @@ export const getMentorTestimonies = async () => {
 	});
 	return response.data;
 };
+
+// ========== PELANGGAN TESTIMONIAL ==========
+/**
+ * Memberikan testimoni untuk sesi tertentu (pelanggan).
+ *
+ * @async
+ * @function submitTestimonial
+ * @endpoint POST /pelanggan/beri-testimoni/{sessionId}
+ * @param {string|number} sessionId - ID sesi.
+ * @param {Object} payload - Data testimoni (rating, komentar).
+ * @returns {Promise<any>} Respons server.
+ */
+export const submitTestimonial = async (sessionId, payload) => {
+	const token = localStorage.getItem("token");
+	const response = await api.post(
+		`/pelanggan/beri-testimoni/${sessionId}`,
+		payload,
+		{
+			headers: { Authorization: `Bearer ${token}` },
+		}
+	);
+	return response.data;
+};
