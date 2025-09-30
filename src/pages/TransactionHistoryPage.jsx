@@ -13,10 +13,13 @@ import {
 	Filter,
 	Search,
 	X,
+	Loader2,
 } from "lucide-react";
-import api from "../api";
-import { PaymentModal } from "../components/PaymentModal";
-import { BookLoader } from "../components/User/BookLoader";
+import api from "@/api";
+import { PaymentModal } from "@/components/PaymentModal";
+import { BookLoader } from "@/components/User/BookLoader";
+
+import useAppStore from "@/stores/useAppStore";
 
 // Custom Select Component
 const CustomSelect = ({
@@ -88,7 +91,8 @@ const CustomSelect = ({
 export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
 	const [selectedSession, setSelectedSession] = useState(null);
-	const [updatingSessionId, setUpdatingSessionId] = useState(null);
+	const updatingSessionId = useAppStore((s) => s.updatingSessionId);
+	const setUpdatingSessionId = useAppStore((s) => s.setUpdatingSessionId);
 	const [filters, setFilters] = useState({
 		status: "",
 		mode: "",
@@ -207,7 +211,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				paymentDate: transaksi?.tanggalPembayaran || null,
 				transaksiId: transaksi?.id,
 				statusSesi,
-				created_at: transaksi?.created_at || sesi.created_at || "-", // <-- tambahkan ini!
+				created_at: transaksi?.created_at || sesi.created_at || "-",
 			};
 		});
 	}, [sessions, transactions]);
@@ -331,7 +335,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 		) {
 			setUpdatingSessionId(null);
 		}
-	}, [history, updatingSessionId]);
+	}, [history, updatingSessionId, setUpdatingSessionId]);
 
 	const isLoading = loadingSessions || loadingTransactions;
 
@@ -555,24 +559,14 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 									<p className="text-gray-600">dengan {session.mentor}</p>
 								</div>
 								{updatingSessionId === session.id ? (
-									<div className="flex items-center text-blue-500">
-										<svg
-											className="animate-spin h-5 w-5 mr-2"
-											fill="none"
-											viewBox="0 0 24 24">
-											<circle
-												className="opacity-25"
-												cx="12"
-												cy="12"
-												r="10"
-												stroke="currentColor"
-												strokeWidth="4"></circle>
-											<path
-												className="opacity-75"
-												fill="currentColor"
-												d="M4 12a8 8 0 018-8v8z"></path>
-										</svg>
-										Memperbarui...
+									<div
+										className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100 shadow-sm"
+										role="status"
+										aria-live="polite">
+										<Loader2 className="animate-spin h-4 w-4 text-blue-600" />
+										<span className="text-sm font-medium">
+											Memperbarui status
+										</span>
 									</div>
 								) : (
 									<span
@@ -661,28 +655,30 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 									</div>
 								)}
 
-								{session.status === "rejected" && (
-									<div className="mt-4 bg-red-50 p-4 rounded-lg">
-										<p className="text-red-800 text-sm mb-3">
-											Pembayaran Anda ditolak. Silakan kirim ulang bukti
-											pembayaran yang valid.
-										</p>
-										<button
-											className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-											onClick={() => handleContinuePayment(session)}>
-											Kirim Ulang Bukti
-										</button>
-									</div>
-								)}
-								{session.status === "pending_payment" && (
-									<div className="mt-4">
-										<button
-											className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-											onClick={() => handleContinuePayment(session)}>
-											Selesaikan Pembayaran
-										</button>
-									</div>
-								)}
+								{session.status === "rejected" &&
+									updatingSessionId !== session.id && (
+										<div className="mt-4 bg-red-50 p-4 rounded-lg">
+											<p className="text-red-800 text-sm mb-3">
+												Pembayaran Anda ditolak. Silakan kirim ulang bukti
+												pembayaran yang valid.
+											</p>
+											<button
+												className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+												onClick={() => handleContinuePayment(session)}>
+												Kirim Ulang Bukti
+											</button>
+										</div>
+									)}
+								{session.status === "pending_payment" &&
+									updatingSessionId !== session.id && (
+										<div className="mt-4">
+											<button
+												className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+												onClick={() => handleContinuePayment(session)}>
+												Selesaikan Pembayaran
+											</button>
+										</div>
+									)}
 							</div>
 						</div>
 					))
@@ -706,6 +702,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						paket: selectedSession.paket
 							? {
 									...selectedSession.paket,
+									// Pastikan data paket lengkap dari session
 									id: selectedSession.paket.id,
 									name: selectedSession.paket.nama,
 									diskon: selectedSession.paket.diskon ?? 0,
@@ -724,9 +721,10 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						jumlahSementara:
 							selectedSession.jumlahSementara ?? selectedSession.amount,
 						sesi: {
+							// tambahkan sesi jika perlu id untuk transaksi
 							id: selectedSession.id,
 							pelanggan_id: userData?.pelanggan?.id,
-							mentor_id: selectedSession.mentor_id,
+							mentor_id: selectedSession.mentor_id, // pastikan ada
 						},
 					}}
 					mentor={{

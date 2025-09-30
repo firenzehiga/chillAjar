@@ -57,6 +57,10 @@ const useAppStore = create((set, get) => ({
 	testimoniSession: null,
 	isSubmittingTestimoni: false,
 
+	// Global flag to indicate a session/transaction is being updated (used to show "Memperbarui..." UI)
+	updatingSessionId: null,
+	setUpdatingSessionId: (id) => set({ updatingSessionId: id }),
+
 	// Interval ID untuk periodic session check (jika dijalankan)
 	sessionCheckerIntervalId: null,
 

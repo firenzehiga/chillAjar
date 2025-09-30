@@ -762,36 +762,6 @@ function App() {
 		updateUserData(updatedData);
 	};
 
-	// Global testimoni handler
-	const handleSubmitTestimoni = async ({ rating, komentar }) => {
-		try {
-			setIsSubmittingTestimoni(true); // Set loading true
-
-			const token = localStorage.getItem("token");
-			await api.post(
-				`/pelanggan/beri-testimoni/${testimoniSession.id}`,
-				{
-					rating,
-					komentar,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-
-			// Invalidate queries untuk update UI
-			queryClient.invalidateQueries(["sessionsWidget"]);
-			queryClient.invalidateQueries(["pelangganSessions"]);
-			queryClient.invalidateQueries(["pelangganTransactions"]);
-			queryClient.invalidateQueries(["statusTransactions"]);
-
-			closeTestimoniModal();
-		} catch (error) {
-			console.error("Error submitting testimoni:", error);
-			setIsSubmittingTestimoni(false); // Reset loading jika error
-		}
-	};
-
 	// Fungsi untuk logout - menggunakan kombinasi store dan custom logic
 	const handleLogoutWithHistory = () => {
 		api
@@ -1742,7 +1712,6 @@ function App() {
 				<TestimoniModal
 					isOpen={showTestimoniModal}
 					onClose={closeTestimoniModal}
-					onSubmit={handleSubmitTestimoni}
 					session={testimoniSession}
 				/>
 			)}

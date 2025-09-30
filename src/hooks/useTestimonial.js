@@ -6,6 +6,7 @@ import {
 	updateTestimonie,
 	deleteTestimonie,
 	getMentorTestimonies,
+	submitTestimonial,
 } from "@/services/testimonialService";
 
 // ========== TESTIMONIAL ADMIN ==========
@@ -130,6 +131,30 @@ export const useMentorTestimoniesQuery = () => {
 		},
 		onError: (err) => {
 			console.error("Error fetching testimonies:", err);
+		},
+	});
+};
+
+// ========== TESTIMONIAL PELANGGAN ==========
+/**
+ * Submit testimoni untuk sesi tertentu (pelanggan).
+ *
+ * @function useSubmitTestimonialMutation
+ * @returns {UseMutationResult} Mutation hook
+ * @example Gunakan .mutate({ sessionId, payload })
+ */
+export const useSubmitTestimonialMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ sessionId, payload }) =>
+			submitTestimonial(sessionId, payload),
+		onSuccess: () => {
+			// Invalidate queries untuk update UI
+			queryClient.invalidateQueries(["sessionsWidget"]);
+			queryClient.invalidateQueries(["pelangganSessions"]);
+			queryClient.invalidateQueries(["pelangganTransactions"]);
+			queryClient.invalidateQueries(["statusTransactions"]);
 		},
 	});
 };
