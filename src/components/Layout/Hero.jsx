@@ -32,11 +32,11 @@ export default function Hero({ onNavigate }) {
 							// --- Ganti di sini untuk gambar berbeda ---
 							// Masukkan array link gambar Anda di bawah:
 							const heroImages = [
-								"https://cdn.devdojo.com/tails/avatars/024.jpg",
-								"https://cdn.devdojo.com/tails/avatars/032.jpg",
-								"https://cdn.devdojo.com/tails/avatars/105.jpg",
-								"https://cdn.devdojo.com/tails/avatars/011.jpg",
-								"https://cdn.devdojo.com/tails/avatars/099.jpg",
+								"/hero/1.jpg",
+								"/hero/2.jpg",
+								"/hero/3.jpg",
+								"/hero/4.jpg",
+								"/hero/5.jpg",
 							];
 							// Gunakan link sesuai index; fallback ke picsum jika kosong
 							const avatarUrl =
