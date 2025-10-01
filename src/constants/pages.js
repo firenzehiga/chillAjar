@@ -108,6 +108,7 @@ export const protectedPages = [
 
 /**
  * Halaman yang menyembunyikan navigasi (manual override)
+ * Tambahkan page key di sini jika ingin menyembunyikan navigasi secara eksplisit
  */
 export const hideNavigationPages = [
 	"edit-profile",
@@ -115,6 +116,75 @@ export const hideNavigationPages = [
 	"terms-conditions",
 ];
 
+/**
+ * Konfigurasi untuk menentukan apakah halaman yang tidak terdaftar
+ * di PAGES harus menyembunyikan navigasi atau tidak.
+ *
+ * true  = halaman tidak terdaftar (404) akan menyembunyikan navigasi
+ * false = halaman tidak terdaftar (404) akan tetap menampilkan navigasi
+ */
+const HIDE_NAVIGATION_FOR_UNREGISTERED_PAGES = true;
+
+/**
+ * Cek apakah sebuah page key terdaftar di PAGES
+ * @param {string} pageKey - Key halaman yang akan dicek
+ * @returns {boolean} true jika page terdaftar, false jika tidak
+ */
+const isPageRegistered = (pageKey) => Boolean(PAGES?.[pageKey]);
+
+/**
+ * Menentukan apakah navigasi harus disembunyikan untuk sebuah URL atau page key.
+ *
+ * Aturan penyembunyian navigasi:
+ * 1. Jika pageKey ada di array hideNavigationPages => sembunyikan navigasi
+ * 2. Jika pageKey tidak terdaftar di PAGES (halaman 404/tidak dikenal):
+ *    - Jika HIDE_NAVIGATION_FOR_UNREGISTERED_PAGES = true => sembunyikan navigasi
+ *    - Jika HIDE_NAVIGATION_FOR_UNREGISTERED_PAGES = false => tampilkan navigasi
+ *
+ * @param {string} pathOrPage - URL path (misal: '/admin/dashboard') atau page key (misal: 'admin-dashboard')
+ * @returns {boolean} true = sembunyikan navigasi, false = tampilkan navigasi
+ *
+ * @example
+ * // Halaman terdaftar dan tidak ada di hideNavigationPages
+ * shouldHideNavigation('/home') // false - tampilkan navigasi
+ * shouldHideNavigation('home') // false - tampilkan navigasi
+ *
+ * // Halaman terdaftar tapi ada di hideNavigationPages
+ * shouldHideNavigation('/edit-profile') // true - sembunyikan navigasi
+ *
+ * // Halaman tidak terdaftar (404)
+ * shouldHideNavigation('/halaman-tidak-ada') // true/false tergantung config
+ *
+ * // Path kosong atau invalid
+ * shouldHideNavigation('') // false - tampilkan navigasi
+ * shouldHideNavigation('/') // false - tampilkan navigasi (home)
+ */
+export const shouldHideNavigation = (pathOrPage) => {
+	if (!pathOrPage) return false;
+
+	// Ekstrak segment pertama dari URL sebagai page key
+	// Contoh: '/admin/dashboard/edit' => 'admin'
+	// Contoh: 'edit-profile' => 'edit-profile'
+	const pageKey = pathOrPage.replace(/^\/+/, "").split("/")[0];
+
+	// Jika tidak ada pageKey (URL root '/'), tampilkan navigasi
+	if (!pageKey) return false;
+
+	// Prioritas 1: Cek manual override di hideNavigationPages
+	if (hideNavigationPages.includes(pageKey)) {
+		return true; // Sembunyikan navigasi (manual override)
+	}
+
+	// Prioritas 2: Cek apakah halaman terdaftar di PAGES
+	const isRegistered = isPageRegistered(pageKey);
+	if (!isRegistered) {
+		// Halaman tidak terdaftar - gunakan konfigurasi
+		return HIDE_NAVIGATION_FOR_UNREGISTERED_PAGES;
+	}
+
+	// Halaman terdaftar dan tidak ada di hideNavigationPages
+	return false; // Tampilkan navigasi
+};
 /**
  * Mengambil judul halaman berdasarkan nama halaman yang diberikan.
  *

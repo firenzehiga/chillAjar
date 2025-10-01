@@ -90,16 +90,6 @@ api.interceptors.response.use(
 			return Promise.reject(error);
 		}
 
-		// Jika error berasal dari /login atau /register, jangan setApiError di store
-		if (
-			originalRequest &&
-			["/login", "/register"].some((path) =>
-				originalRequest.url?.includes(path)
-			)
-		) {
-			return Promise.reject(error);
-		}
-
 		// Jika request menandakan skipGlobalError, jangan set api error di store
 		if (originalRequest && originalRequest.skipGlobalError) {
 			return Promise.reject(error);

@@ -130,10 +130,14 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 
 		try {
 			if (mode === "login") {
-				const response = await api.post("/login", {
-					email: formData.email,
-					password: formData.password,
-				});
+				const response = await api.post(
+					"/login",
+					{
+						email: formData.email,
+						password: formData.password,
+					},
+					{ skipGlobalError: true }
+				); // Skip global error handling for login
 				const { token, user } = response.data;
 
 				localStorage.setItem("token", token);
@@ -164,6 +168,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 
 				const response = await api.post("/register", formPayload, {
 					headers: { "Content-Type": "multipart/form-data" },
+					skipGlobalError: true,
 				});
 				const { token, user } = response.data;
 
