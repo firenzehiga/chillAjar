@@ -312,9 +312,9 @@ export const useStartSessionMutation = () => {
 
 	return useMutation({
 		mutationFn: startSession,
-		onSuccess: () => {
+		onSuccess: async () => {
 			// Fetch ulang queries
-			queryClient.invalidateQueries(["mentorSessions"]);
+			await queryClient.invalidateQueries(["mentorSessions"]);
 			queryClient.invalidateQueries(["mentorTransactions"]);
 			// Pesan sukses akan ditangani di komponen
 		},
@@ -344,9 +344,10 @@ export const useEndSessionMutation = () => {
 
 	return useMutation({
 		mutationFn: endSession,
-		onSuccess: () => {
+		onSuccess: async () => {
 			// Fetch ulang queries
-			queryClient.invalidateQueries(["mentorSessions"]);
+
+			await queryClient.invalidateQueries(["mentorSessions"]);
 			queryClient.invalidateQueries(["mentorTransactions"]);
 			// Pesan sukses akan ditangani di komponen
 		},

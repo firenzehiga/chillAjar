@@ -76,10 +76,21 @@ export function AdminItemsPage({ onNavigate }) {
 			text: "Item ini akan dihapus dan tidak bisa dikembalikan!",
 			icon: "warning",
 			showCancelButton: true,
-			confirmButtonColor: "#d33",
-			cancelButtonColor: "#3085d6",
 			confirmButtonText: "Ya, hapus!",
 			cancelButtonText: "Batal",
+			customClass: {
+				// kurangi ukuran popup (max-w-md vs max-w-lg) supaya card tidak terlalu besar
+				popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
+				title: "text-lg font-semibold text-gray-900",
+				content: "text-sm text-gray-600 dark:text-gray-300 mt-1",
+				// tambahkan container actions dengan gap agar tombol tidak saling dempet
+				actions: "flex gap-3 justify-center mt-4",
+				confirmButton:
+					"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+				cancelButton:
+					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
+			},
+			backdrop: true,
 		}).then((result) => {
 			if (result.isConfirmed) {
 				deleteItemMutation.mutate(id);
