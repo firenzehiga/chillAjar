@@ -10,7 +10,8 @@ import {
 	AlertCircle,
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
-import { getImageUrl } from "../utils/getImageUrl";
+import { AsyncImage } from "loadable-image";
+import { Fade } from "transitions-kit";
 
 export function MentorCard({
 	mentor,
@@ -86,7 +87,8 @@ export function MentorCard({
 				<div className="relative">
 					<div className="h-32 bg-gradient-to-r bg-yellow-500" />
 					<div className="absolute -bottom-12 left-6">
-						<img
+						<AsyncImage
+							Transition={Fade}
 							src={mentor.mentorImage}
 							alt={mentor.mentorName}
 							className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover object-center"

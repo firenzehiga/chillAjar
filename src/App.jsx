@@ -6,7 +6,7 @@ import { MentorCard } from "@/components/MentorCard";
 import { BookingModal } from "@/components/BookingModal";
 import { PaymentModal } from "@/components/PaymentModal";
 import { Navigation } from "@/components/Layout/Navigation";
-import Hero from "@/components/Layout/Hero";
+import { Hero } from "@/components/Layout/Hero";
 import Footer from "@/components/Layout/Footer";
 import { CourseSkeletonCard } from "@/components/Skeleton/CourseSkeletonCard";
 import { CarouselSkeleton } from "@/components/Skeleton/CarouselSkeleton";
@@ -41,6 +41,8 @@ import { Home } from "@/pages/Home";
 
 // Import Zustand Store
 import useAppStore from "@/stores/useAppStore";
+// Import halaman berdasarkan role user
+import { shouldHideNavigation } from "@/constants/pages";
 
 // Halaman Admin
 import { AdminDashboard } from "@/pages/admin/AdminDashboard";
@@ -1446,7 +1448,7 @@ function App() {
 			case "terms-conditions":
 				return <TermsConditionsPage onNavigate={handleNavigate} />;
 			default:
-				return <NotFoundPage />;
+				return <NotFoundPage onNavigate={handleNavigate} />;
 		}
 	};
 
@@ -1480,7 +1482,7 @@ function App() {
 							flex items-center gap-2 px-3 py-1.5 rounded-md bg-green-500
 							text-white font-medium shadow hover:bg-green-600 active:bg-green-700
 							transition-all duration-150 text-sm
-						  ">
+						">
 									<svg
 										className="w-4 h-4"
 										fill="currentColor"
@@ -1501,7 +1503,7 @@ function App() {
 
 	return (
 		<div className="min-h-screen bg-gray-50 flex flex-col">
-			{!hideNavigationPages.includes(currentPage) && (
+			{!shouldHideNavigation(currentPage) && (
 				<Navigation
 					onNavigate={handleNavigate}
 					onLogout={handleLogoutWithHistory}
@@ -1603,11 +1605,13 @@ function App() {
 					<AuthModal defaultMode="login" onNavigate={handleNavigate} />
 				)}
 			</main>
-			<Footer
-				onNavigate={handleNavigate}
-				className="mt-auto"
-				onShowGuideModal={() => setShowFlowModal(true)}
-			/>
+			{!shouldHideNavigation(currentPage) && (
+				<Footer
+					onNavigate={handleNavigate}
+					className="mt-auto"
+					onShowGuideModal={() => setShowFlowModal(true)}
+				/>
+			)}
 			{userRole === "pelanggan" || userRole === null ? (
 				<>
 					<div
