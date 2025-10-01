@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
 	Calendar,
 	Clock,
@@ -11,10 +11,10 @@ import {
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { MdRateReview } from "react-icons/md";
-import api from "../api";
-import { useQuery, useQueryClient, useIsFetching } from "@tanstack/react-query";
-import { getImageUrl } from "../utils/getImageUrl";
-import useAppStore from "../stores/useAppStore";
+import { useQueryClient } from "@tanstack/react-query";
+import { usePelangganSessionsQuery } from "@/hooks/useSessions"; // Import hook baru
+import { getImageUrl } from "@/utils/getImageUrl";
+import useAppStore from "@/stores/useAppStore";
 
 export function SessionsWidget({
 	variant = "full",
@@ -31,22 +31,9 @@ export function SessionsWidget({
 	const queryClient = useQueryClient();
 
 	// Transaksi (buat filter accepted & badge)
-	const {
-		data: transactions = [],
-		isLoading: loadingTransactions,
-		isFetching: fetchingTransactions,
-		error: errorTransactions,
-	} = useQuery({
-		queryKey: ["statusTransactions", pelangganId],
-		queryFn: async () => {
-			const res = await api.get("/transaksi");
-			return res.data.filter((t) => t.pelanggan_id === pelangganId);
-		},
-		enabled: !!pelangganId,
-		refetchOnWindowFocus: true,
-		staleTime: 30 * 1000, // 30 detik - balance antara fresh dan performance
-		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
-	});
+	// NOTE: backend should already return only sessions that have accepted transaksi
+	// so we don't need to fetch /transaksi separately. If backend includes
+	// transaksi inside sesi (sesi.transaksi) we'll use that when needed.
 
 	// Hanya untuk pelanggan
 	if (userRole !== "pelanggan") {
@@ -63,28 +50,7 @@ export function SessionsWidget({
 		isLoading,
 		isFetching: fetchingSessions,
 		error: errorSessions,
-	} = useQuery({
-		queryKey: ["sessionsWidget", userId],
-		queryFn: async () => {
-			const token = localStorage.getItem("token");
-			const response = await api.get(
-				`/pelanggan/daftar-sesi?user_id=${userId}`,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-			return response.data;
-		},
-		enabled: !!userId && userRole === "pelanggan",
-		staleTime: 30 * 1000, // 30 detik - balance antara fresh dan performance
-		refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
-		refetchOnWindowFocus: true,
-		retry: 1,
-	});
-
-	const acceptedTransactions = (transactions || []).filter(
-		(trx) => trx.statusPembayaran === "accepted"
-	);
+	} = usePelangganSessionsQuery(pelangganId);
 
 	const sortedSessions = (sessions || [])
 		.filter((session) => {
@@ -93,11 +59,8 @@ export function SessionsWidget({
 				session.statusSesi === "pending" ||
 				session.statusSesi === "end";
 			if (!validStatus) return false;
-
-			const hasAcceptedTransaction = acceptedTransactions.some(
-				(trx) => trx.sesi_id === session.id
-			);
-			return hasAcceptedTransaction;
+			// Backend already filters by accepted transaksi, so keep the session
+			return true;
 		})
 		.sort((a, b) => {
 			if (a.statusSesi === "started" && b.statusSesi !== "started") return -1;
@@ -119,22 +82,15 @@ export function SessionsWidget({
 		});
 
 	const activeSessions = sessions.filter(
-		(s) =>
-			s.statusSesi === "started" &&
-			acceptedTransactions.some((trx) => trx.sesi_id === s.id)
+		(s) => s.statusSesi === "started"
 	).length;
 
 	const upcomingSessions = sessions.filter(
-		(s) =>
-			s.statusSesi === "pending" &&
-			acceptedTransactions.some((trx) => trx.sesi_id === s.id)
+		(s) => s.statusSesi === "pending"
 	).length;
 
 	const needReviewSessions = sessions.filter(
-		(s) =>
-			s.statusSesi === "end" &&
-			!s.testimoni &&
-			acceptedTransactions.some((trx) => trx.sesi_id === s.id)
+		(s) => s.statusSesi === "end" && !s.testimoni
 	).length;
 
 	const sessionsToShow = maxSessions
@@ -193,15 +149,14 @@ export function SessionsWidget({
 			onSuccess: () => {
 				// Refetch data sessions untuk update widget
 				queryClient.invalidateQueries(["sessionsWidget", userId]);
-				queryClient.invalidateQueries(["statusTransactions", pelangganId]);
 			},
 		};
 		openTestimoniModal(testimoniData);
 	};
 
 	// Loading guard - show loading untuk initial load DAN background fetching
-	const isBusy = isLoading || loadingTransactions;
-	const isBackgroundFetching = fetchingSessions || fetchingTransactions;
+	const isBusy = isLoading;
+	const isBackgroundFetching = fetchingSessions;
 	const showLoading = isBusy || isBackgroundFetching;
 
 	// ------------- Variant compact-dropdown -------------

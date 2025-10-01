@@ -1,5 +1,6 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { usePelangganSessionsTransactionQuery } from "@/hooks/useSessions"; // Import hook baru
 import {
 	Calendar,
 	Clock,
@@ -136,14 +137,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 		data: sessions = [],
 		isLoading: loadingSessions,
 		error: errorSessions,
-	} = useQuery({
-		queryKey: ["sessions", pelangganId],
-		queryFn: async () => {
-			const res = await api.get("/pelanggan/daftar-sesi");
-			return res.data;
-		},
-		enabled: !!pelangganId,
-	});
+	} = usePelangganSessionsTransactionQuery(pelangganId);
 
 	const {
 		data: transactions = [],
@@ -384,6 +378,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	}, [history, updatingSessionId, setUpdatingSessionId]);
 
 	const isLoading = loadingSessions || loadingTransactions;
+	const isErro = errorSessions || errorTransactions;
 
 	if (isLoading) {
 		return (
@@ -393,7 +388,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 		);
 	}
 
-	if (errorSessions || errorTransactions) {
+	if (isError) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-red-600">
 				<p>Gagal memuat data. Silakan coba lagi.</p>
