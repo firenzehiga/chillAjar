@@ -12,6 +12,8 @@ import {
 	getMentorSessions,
 	startSession,
 	endSession,
+	getPelangganSessions,
+	getPelangganSessionsTransaction,
 } from "@/services/sessionsService";
 
 // ========== ADMIN SESI ==========
@@ -350,6 +352,80 @@ export const useEndSessionMutation = () => {
 		},
 		onError: () => {
 			// Error akan ditangani di komponen
+		},
+	});
+};
+
+// ========== PELANGGAN SESI ==========
+
+/**
+ * ROLE: PELANGGAN
+ *
+ * Mengambil daftar sesi milik pelanggan yang sedang login.
+ *
+ * @function usePelangganSessionsQuery
+ * @param {string|number} pelangganId - ID pelanggan.
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = usePelangganSessionsQuery(pelangganId);
+ */
+export const usePelangganSessionsQuery = (pelangganId) => {
+	const { isAuthenticated, userRole } = useAppStore();
+	const isEnabled =
+		isAuthenticated && userRole === "pelanggan" && !!pelangganId;
+
+	return useQuery({
+		queryKey: ["pelangganSessions", pelangganId],
+		queryFn: async () => {
+			if (!isEnabled) return [];
+			const response = await getPelangganSessions();
+			return response;
+		},
+		enabled: isEnabled,
+		// staleTime: 30 * 1000, // 30 detik - balance antara fresh dan performance
+		// cacheTime: 5 * 60 * 1000, // 5 menit cache
+		// refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
+		// refetchOnWindowFocus: true,
+		retry: 1,
+		onError: (err) => {
+			console.error("Error fetching pelanggan sessions:", err);
+		},
+	});
+};
+
+/**
+ * ROLE: PELANGGAN
+ *
+ * Mengambil daftar sesi milik pelanggan yang sedang login.
+ *
+ * @function usePelangganSessionsQuery
+ * @param {string|number} pelangganId - ID pelanggan.
+ * @returns {UseQueryResult<any>} Objek hasil query dari React Query.
+ *
+ * @example
+ * const { data, isLoading } = usePelangganSessionsQuery(pelangganId);
+ */
+export const usePelangganSessionsTransactionQuery = (pelangganId) => {
+	const { isAuthenticated, userRole } = useAppStore();
+	const isEnabled =
+		isAuthenticated && userRole === "pelanggan" && !!pelangganId;
+
+	return useQuery({
+		queryKey: ["pelangganSessionsTransaction", pelangganId],
+		queryFn: async () => {
+			if (!isEnabled) return [];
+			const response = await getPelangganSessionsTransaction();
+			return response;
+		},
+		enabled: isEnabled,
+		// staleTime: 30 * 1000, // 30 detik - balance antara fresh dan performance
+		// cacheTime: 5 * 60 * 1000, // 5 menit cache
+		// refetchInterval: 60 * 1000, // Auto refetch tiap 1 menit untuk update real-time
+		// refetchOnWindowFocus: true,
+		retry: 1,
+		onError: (err) => {
+			console.error("Error fetching pelanggan sessions:", err);
 		},
 	});
 };

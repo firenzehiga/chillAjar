@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { X, Clock, Video, MapPin, Bell } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import api from "../api";
-import { useQuery } from "@tanstack/react-query";
-import { getImageUrl } from "../utils/getImageUrl";
-import useAppStore from "../stores/useAppStore";
+import { getImageUrl } from "@/utils/getImageUrl";
+import useAppStore from "@/stores/useAppStore";
+import { usePelangganSessionsQuery } from "@/hooks/useSessions";
 
 // Floating Session Reminder
 export function FloatingSessionReminder() {
@@ -18,27 +17,15 @@ export function FloatingSessionReminder() {
 	const { userRole, userData, isAuthenticated, openTestimoniModal } =
 		useAppStore();
 	const userId = userData?.id;
+	const pelangganId = userData?.pelanggan?.id;
 
-	// Fetch daftar sesi pelanggan berdasarkan userId
+	// Daftar sesi
 	const {
 		data: sessions = [],
 		isLoading,
+		isFetching,
 		error,
-	} = useQuery({
-		queryKey: ["sessionReminder", userId],
-		queryFn: async () => {
-			const token = localStorage.getItem("token");
-			const response = await api.get(
-				`/pelanggan/daftar-sesi?user_id=${userId}`,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-			return response.data;
-		},
-		enabled: !!userId && isAuthenticated && userRole === "pelanggan",
-		refetchInterval: 30000, // Refetch setiap 30 detik untuk update real-time
-	});
+	} = usePelangganSessionsQuery(pelangganId);
 
 	useEffect(() => {
 		if (!isAuthenticated || userRole !== "pelanggan") {
@@ -337,21 +324,8 @@ export function SessionBanner({ isAuthenticated }) {
 	}
 
 	// Fetch daftar sesi pelanggan berdasarkan userId
-	const { data: sessions = [] } = useQuery({
-		queryKey: ["sessionBanner", userId],
-		queryFn: async () => {
-			const token = localStorage.getItem("token");
-			const response = await api.get(
-				`/pelanggan/daftar-sesi?user_id=${userId}`,
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-			return response.data;
-		},
-		enabled: !!userId && isAuthenticated && userRole === "pelanggan",
-		refetchInterval: 30000, // Refetch setiap 30 detik
-	});
+	// Daftar sesi
+	const { data: sessions = [] } = usePelangganSessionsQuery(pelangganId);
 
 	useEffect(() => {
 		if (!isAuthenticated || !sessions.length) return;

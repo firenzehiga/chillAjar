@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState, useEffect } from "react";
+import { usePelangganSessionsQuery } from "@/hooks/useSessions"; // Import hook baru
 import {
 	Calendar,
 	Clock,
@@ -15,7 +15,6 @@ import {
 	Monitor,
 } from "lucide-react";
 import { MdRateReview } from "react-icons/md";
-import api from "@/api";
 import useAppStore from "@/stores/useAppStore";
 import { BookLoader } from "@/components/User/BookLoader";
 
@@ -129,54 +128,23 @@ export function SessionHistoryPage({ userData }) {
 		data: sessions = [],
 		isLoading: loadingSessions,
 		error: errorSessions,
-	} = useQuery({
-		queryKey: ["pelangganSessions", pelangganId],
-		queryFn: async () => {
-			const res = await api.get("/pelanggan/daftar-sesi");
-			return res.data;
-		},
-		enabled: !!pelangganId,
-	});
+	} = usePelangganSessionsQuery(pelangganId);
 
-	const {
-		data: transactions = [],
-		isLoading: loadingTransactions,
-		error: errorTransactions,
-	} = useQuery({
-		queryKey: ["pelangganTransactions", pelangganId],
-		queryFn: async () => {
-			const res = await api.get("/transaksi");
-			return res.data.filter((t) => t.pelanggan_id === pelangganId);
-		},
-		enabled: !!pelangganId,
-	});
-
-	// 1. Filter transaksi yang statusnya "accepted"
-	// Hanya ambil transaksi yang sudah pembayaran diterima
-	const acceptedTransactions = transactions.filter(
-		(trx) => trx.statusPembayaran === "accepted"
-	);
-
-	// 2. Filter sesi yang hanya punya transaksi accepted
-	// Hanya ambil sesi yang sudah dibayar (sudah ada transaksi accepted)
-	const filteredSessions = sessions.filter((sesi) =>
-		acceptedTransactions.some((trx) => trx.sesi_id === sesi.id)
-	);
+	// NOTE: backend now returns only sesi yang memiliki transaksi dengan status 'accepted'
+	// jadi kita tidak perlu lagi melakukan fetch /transaksi dan filter ulang di frontend.
 
 	// 3. Mapping & transform data sesi untuk kebutuhan tampilan (history)
 	// Di sini juga bisa dibilang "filter", karena hanya sesi hasil filter di atas yang di-mapping
 	const history = useMemo(() => {
 		if (!sessions.length) return [];
-		// Ulangi filter accepted agar data selalu sinkron
-		const acceptedTransactions = transactions.filter(
-			(trx) => trx.statusPembayaran === "accepted"
-		);
-		const filteredSessions = sessions.filter((sesi) =>
-			acceptedTransactions.some((trx) => trx.sesi_id === sesi.id)
-		);
-		// Mapping ke bentuk yang siap dipakai di UI
-		return filteredSessions.map((sesi) => {
-			const transaksi = transactions.find((t) => t.sesi_id === sesi.id);
+		// Backend already filters sesi to those with accepted transaksi. If the backend
+		// also includes transaksi data inside setiap sesi (sesi.transaksi), prefer that.
+		return sessions.map((sesi) => {
+			// sesi.transaksi mungkin disertakan oleh backend. Karena backend sudah
+			// mem-filter sesi yang memiliki transaksi dengan status 'accepted', kita
+			// cukup ambil transaksi pertama jika berupa array atau gunakan objeknya
+			// langsung. Jika tidak disertakan, transaksi akan null.
+
 			const jadwal = sesi.jadwal_kursus || sesi.jadwalKursus;
 			const sudahTestimoni = sesi.testimoni || sesi.statusSesi === "reviewed";
 			const statusSesi = sesi.statusSesi || "-";
@@ -193,14 +161,14 @@ export function SessionHistoryPage({ userData }) {
 				location: jadwal?.tempat || "-",
 				status: statusSesi,
 				amount: sesi.mentor?.biayaPerSesi || 0,
-				paymentDate: transaksi?.tanggalPembayaran || null,
-				transaksiId: transaksi?.id,
+				paymentDate: sesi.transaksi?.tanggalPembayaran || null,
+				transaksiId: sesi.transaksi?.id || null,
 				sudahTestimoni,
 				statusSesi,
-				created_at: transaksi?.created_at || sesi.created_at || "-",
+				created_at: sesi.transaksi?.created_at || sesi.created_at || "-",
 			};
 		});
-	}, [sessions, transactions]);
+	}, [sessions]);
 
 	// Comprehensive filtering with search and multiple filters
 	const filteredHistory = useMemo(() => {
@@ -328,7 +296,7 @@ export function SessionHistoryPage({ userData }) {
 		}
 	}, [history, updatingSessionId, setUpdatingSessionId]);
 
-	const isLoading = loadingSessions || loadingTransactions;
+	const isLoading = loadingSessions;
 
 	if (isLoading) {
 		return (
@@ -338,7 +306,7 @@ export function SessionHistoryPage({ userData }) {
 		);
 	}
 
-	if (errorSessions || errorTransactions) {
+	if (errorSessions) {
 		return (
 			<div className="flex flex-col items-center justify-center h-[40vh] text-red-600">
 				<p>Gagal memuat data. Silakan coba lagi.</p>

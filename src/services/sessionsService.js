@@ -193,3 +193,39 @@ export const endSession = async (sessionId) => {
 	);
 	return response.data;
 };
+
+// ========== PELANGGAN SESI ==========
+
+/**
+ * Mengambil daftar sesi milik pelanggan yang sedang login.
+ *
+ * @async
+ * @function getPelangganSessions
+ * @endpoint GET /pelanggan/daftar-sesi
+ * @returns {Promise<any>} Data sesi pelanggan.
+ */
+export const getPelangganSessions = async () => {
+	const token = localStorage.getItem("token");
+	const response = await api.get("/pelanggan/daftar-sesi", {
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	return response.data;
+};
+
+// ========== PELANGGAN SESI ==========
+
+/**
+ * Mengambil daftar sesi milik pelanggan yang sedang login.
+ *
+ * @async
+ * @function getPelangganSessions
+ * @endpoint GET /pelanggan/daftar-sesi
+ * @returns {Promise<any>} Data sesi pelanggan.
+ */
+export const getPelangganSessionsTransaction = async () => {
+	const token = localStorage.getItem("token");
+	const response = await api.get("/pelanggan/daftar-sesi-transaksi", {
+		headers: { Authorization: `Bearer ${token}` },
+	});
+	return response.data;
+};
