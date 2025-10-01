@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import api from "@/api";
 import Swal from "sweetalert2";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 	const queryClient = useQueryClient();
@@ -150,7 +151,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 					initial={{ scale: 0.8, y: 40, opacity: 0 }}
 					animate={{ scale: 1, y: 0, opacity: 1 }}
 					exit={{ scale: 0.8, y: 40, opacity: 0 }}
-					transition={{ type: "spring", stiffness: 300, damping: 25 }}
+					transition={{ type: "spring", stiffness: 400, damping: 25 }}
 					className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
 					<div className="p-6 border-b">
 						<div className="flex justify-between items-center">

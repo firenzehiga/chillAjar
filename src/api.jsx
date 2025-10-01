@@ -100,6 +100,10 @@ api.interceptors.response.use(
 			return Promise.reject(error);
 		}
 
+		// Jika request menandakan skipGlobalError, jangan set api error di store
+		if (originalRequest && originalRequest.skipGlobalError) {
+			return Promise.reject(error);
+		}
 		// Set api error di store untuk kasus selain login/register
 		const alias = getErrorAlias(error);
 		import("./stores/useAppStore").then((module) => {
