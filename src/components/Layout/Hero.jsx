@@ -22,7 +22,7 @@ export default function Hero({ onNavigate }) {
 									: "w-12 h-12 md:w-16 md:h-16";
 
 							// overlap dan z-index: tengah paling depan
-							const overlap = -18;
+							const overlap = -15;
 							const marginLeft = i === 0 ? 0 : overlap;
 							const zIndex = i === center ? 50 : 10 + i;
 
@@ -39,9 +39,7 @@ export default function Hero({ onNavigate }) {
 								"/hero/5.jpg",
 							];
 							// Gunakan link sesuai index; fallback ke picsum jika kosong
-							const avatarUrl =
-								heroImages[i % heroImages.length] ||
-								`https://picsum.photos/seed/hero-${i + 1}/200/200`;
+							const avatarUrl = heroImages[i % heroImages.length];
 
 							return (
 								<img

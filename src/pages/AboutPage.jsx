@@ -201,7 +201,7 @@ export function AboutPage({ onNavigate }) {
 					<div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-3xl transform rotate-1 opacity-10"></div>
 					<div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl transform -rotate-1 opacity-10"></div>
 
-					<div className="relative bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400  py-8 rounded-3xl shadow-2xl mx-4">
+					<div className="relative bg-gradient-to-r from-chill-yellow via-orange-400 to-chill-yellow  py-8 rounded-3xl shadow-2xl mx-4">
 						<div className="max-w-4xl mx-auto px-1 sm:px-3 lg:px-5">
 							<div className="text-center mb-8">
 								<h2 className="text-3xl font-bold text-white mb-4">
