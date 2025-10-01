@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { LogOut, User, Clock, History, BookCopy } from "lucide-react";
-import { getImageUrl } from "../utils/getImageUrl";
-import Swal from "sweetalert2";
-import { SessionsWidget } from "./SessionWidget";
-import useAppStore from "../stores/useAppStore";
+import { getImageUrl } from "@/utils/getImageUrl";
+import { SessionsWidget } from "@/components/SessionWidget";
+import useAppStore from "@/stores/useAppStore";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function UserMenu({ onNavigate, onLogout, userRole }) {
 	const { isAuthenticated, userData } = useAppStore();
@@ -12,6 +12,25 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 	const [showSessionsDropdown, setShowSessionsDropdown] = useState(false);
 	const [showMobileSessionsDropdown, setShowMobileSessionsDropdown] =
 		useState(false);
+
+	const menuRef = useRef(null);
+
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+			if (menuRef.current && !menuRef.current.contains(event.target)) {
+				setIsOpen(false);
+				setShowSessionsDropdown(false);
+				setShowMobileSessionsDropdown(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("touchstart", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("touchstart", handleClickOutside);
+		};
+	}, []);
 
 	const handleNavigate = (page) => {
 		onNavigate(page);
@@ -55,7 +74,7 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 	};
 
 	return (
-		<div className="relative">
+		<div ref={menuRef} className="relative">
 			<button
 				onClick={() => setIsOpen(!isOpen)}
 				className="flex items-center space-x-3 focus:outline-none group">
@@ -74,99 +93,107 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 			</button>
 
 			{isOpen && (
-				<div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
-					<div className="px-4 py-2 border-b">
-						<p className="text-sm font-medium text-gray-900">
-							{getDisplayName(currentUser.nama)}
-						</p>
-						<p className="text-sm text-gray-500">{currentUser.email}</p>
-					</div>
+				<AnimatePresence>
+					<motion.div
+						initial={{ scale: 0.8, y: -40, opacity: 0 }}
+						animate={{ scale: 1, y: 0, opacity: 1 }}
+						exit={{ scale: 0.8, y: -40, opacity: 0 }}
+						transition={{ type: "spring", stiffness: 400, damping: 25 }}
+						style={{ transformOrigin: "top right" }}
+						className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+						<div className="px-4 py-2 border-b">
+							<p className="text-sm font-medium text-gray-900">
+								{getDisplayName(currentUser.nama)}
+							</p>
+							<p className="text-sm text-gray-500">{currentUser.email}</p>
+						</div>
 
-					{userRole === "admin" && (
-						<button
-							onClick={() => handleNavigate("admin-profile")}
-							className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-							<User className="w-4 h-4 mr-2" />
-							Profil Saya
-						</button>
-					)}
-					{userRole === "mentor" && (
-						<button
-							onClick={() => handleNavigate("mentor-profile")}
-							className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-							<User className="w-4 h-4 mr-2" />
-							Profile Saya
-						</button>
-					)}
-					{userRole === "pelanggan" && (
-						<button
-							onClick={() => handleNavigate("profile")}
-							className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-							<User className="w-4 h-4 mr-2" />
-							Profil Saya
-						</button>
-					)}
-
-					{userRole === "pelanggan" && isAuthenticated && (
-						<div className="relative">
+						{userRole === "admin" && (
 							<button
-								onClick={() => {
-									// Desktop: toggle sessions dropdown
-									if (window.innerWidth >= 768) {
-										setShowSessionsDropdown(!showSessionsDropdown);
-									} else {
-										// Mobile: close user menu and show mobile sessions
-										setIsOpen(false);
-										setShowMobileSessionsDropdown(true);
-									}
-								}}
-								className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-								<Clock className="w-4 h-4 mr-2" />
-								Sesi Saya
+								onClick={() => handleNavigate("admin-profile")}
+								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								<User className="w-4 h-4 mr-2" />
+								Profil Saya
 							</button>
+						)}
+						{userRole === "mentor" && (
+							<button
+								onClick={() => handleNavigate("mentor-profile")}
+								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								<User className="w-4 h-4 mr-2" />
+								Profile Saya
+							</button>
+						)}
+						{userRole === "pelanggan" && (
+							<button
+								onClick={() => handleNavigate("profile")}
+								className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								<User className="w-4 h-4 mr-2" />
+								Profil Saya
+							</button>
+						)}
 
-							{/* Desktop Sessions Dropdown */}
-							{showSessionsDropdown && (
-								<div
-									className="
+						{userRole === "pelanggan" && isAuthenticated && (
+							<div className="relative">
+								<button
+									onClick={() => {
+										// Desktop: toggle sessions dropdown
+										if (window.innerWidth >= 768) {
+											setShowSessionsDropdown(!showSessionsDropdown);
+										} else {
+											// Mobile: close user menu and show mobile sessions
+											setIsOpen(false);
+											setShowMobileSessionsDropdown(true);
+										}
+									}}
+									className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+									<Clock className="w-4 h-4 mr-2" />
+									Sesi Saya
+								</button>
+
+								{/* Desktop Sessions Dropdown */}
+								{showSessionsDropdown && (
+									<div
+										className="
 									hidden md:block absolute z-50
 									top-0 right-full left-auto mr-2 mt-0 w-80
 								">
-									<SessionsWidget
-										variant="compact-dropdown"
-										maxSessions={10}
-										onNavigate={(page) => {
-											onNavigate(page);
-											setShowSessionsDropdown(false);
-										}}
-									/>
-								</div>
-							)}
-						</div>
-					)}
-					{userRole === "pelanggan" && (
+										<SessionsWidget
+											variant="compact-dropdown"
+											maxSessions={10}
+											onNavigate={(page) => {
+												onNavigate(page);
+												setShowSessionsDropdown(false);
+											}}
+										/>
+									</div>
+								)}
+							</div>
+						)}
+						{userRole === "pelanggan" && (
+							<button
+								onClick={() => handleNavigate("session-history")}
+								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								<BookCopy className="w-4 h-4 mr-2" />
+								Riwayat Sesi
+							</button>
+						)}
+						{userRole === "pelanggan" && (
+							<button
+								onClick={() => handleNavigate("transaction-history")}
+								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+								<History className="w-4 h-4 mr-2" />
+								Riwayat Transaksi
+							</button>
+						)}
 						<button
-							onClick={() => handleNavigate("session-history")}
-							className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-							<BookCopy className="w-4 h-4 mr-2" />
-							Riwayat Sesi
+							onClick={handleLogout}
+							className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:outline-none">
+							<LogOut className="w-4 h-4 mr-2" />
+							Keluar
 						</button>
-					)}
-					{userRole === "pelanggan" && (
-						<button
-							onClick={() => handleNavigate("transaction-history")}
-							className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-							<History className="w-4 h-4 mr-2" />
-							Riwayat Transaksi
-						</button>
-					)}
-					<button
-						onClick={handleLogout}
-						className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 focus:outline-none">
-						<LogOut className="w-4 h-4 mr-2" />
-						Keluar
-					</button>
-				</div>
+					</motion.div>
+				</AnimatePresence>
 			)}
 
 			{/* Mobile Sessions Dropdown - Fixed overlay */}
