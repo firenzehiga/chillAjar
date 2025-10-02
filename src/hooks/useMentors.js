@@ -106,7 +106,7 @@ export const useToggleMentorStatusMutation = () => {
 					mentor.id === mentorId ? { ...mentor, status: newStatus } : mentor
 				)
 			);
-			queryClient.invalidateQueries(["adminMentors"]);
+			queryClient.invalidateQueries(["mentor", mentorId]);
 		},
 	});
 };

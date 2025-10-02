@@ -162,7 +162,7 @@ export function FloatingSessionReminder() {
 			setIsDismissed(true);
 		} else {
 			// Handle view details for upcoming sessions
-			console.log("View session details:", currentSession.id);
+			// console.log("View session details:", currentSession.id);
 		}
 	};
 
@@ -358,6 +358,7 @@ export function SessionBanner({ isAuthenticated }) {
 				sesi_id: currentSession.id,
 				pelanggan_id: userData?.pelanggan?.id,
 				mentor_id: currentSession.mentor?.id,
+				user_id: userId,
 			};
 			openTestimoniModal(testimoniData);
 		}

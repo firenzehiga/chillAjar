@@ -12,7 +12,7 @@ import {
 import { CourseSelectionModal } from "./CourseSelectionModal";
 import { AsyncImage } from "loadable-image";
 import { Fade } from "transitions-kit";
-
+import useAppStore from "@/stores/useAppStore";
 export function MentorCard({
 	mentor,
 	onSchedule,
@@ -20,6 +20,12 @@ export function MentorCard({
 	selectedCourse = null,
 	resetCourseSelection,
 }) {
+	const {
+		showCourseSelection,
+		setShowBookingModal,
+		setShowCourseSelection,
+		setShowPayment,
+	} = useAppStore();
 	const [showCourseModal, setShowCourseModal] = useState(false);
 	const [selectedMentorCourse, setSelectedMentorCourse] = useState(null);
 	const [showDetails, setShowDetails] = useState(false);
@@ -53,7 +59,7 @@ export function MentorCard({
 		if (selectedCourse) {
 			onSchedule(mentor, selectedCourse);
 		} else if (mentor.courses) {
-			setShowCourseModal(true);
+			setShowCourseSelection(true);
 		}
 	};
 
@@ -63,7 +69,7 @@ export function MentorCard({
 
 	const handleConfirmCourse = () => {
 		if (selectedMentorCourse) {
-			setShowCourseModal(false);
+			setShowCourseSelection(false);
 			// Use package selection flow instead of direct scheduling
 			if (onCoursePackageSelect) {
 				onCoursePackageSelect(selectedMentorCourse);
@@ -75,7 +81,7 @@ export function MentorCard({
 	};
 
 	const handleCloseCourseModal = () => {
-		setShowCourseModal(false);
+		setShowCourseSelection(false);
 		setSelectedMentorCourse(null);
 	};
 
@@ -246,7 +252,7 @@ export function MentorCard({
 				</div>
 			</div>
 
-			{showCourseModal && (
+			{showCourseSelection && (
 				<CourseSelectionModal
 					courses={mentor.courses || []}
 					selectedCourse={selectedMentorCourse}
