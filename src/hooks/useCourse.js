@@ -100,7 +100,8 @@ export const useUpdateCourseMutation = () => {
 
 	return useMutation({
 		mutationFn: ({ courseId, payload }) => updateCourse(courseId, payload),
-		onSuccess: () => {
+		onSuccess: async () => {
+			await queryClient.invalidateQueries(["formCoursePackages"]);
 			queryClient.invalidateQueries(["adminCourses"]);
 			queryClient.invalidateQueries(["mentorCourses"]);
 		},
@@ -168,9 +169,9 @@ export const usePackagesQuery = () => {
 			return response;
 		},
 		enabled: isAuthenticated,
-		staleTime: 1 * 60 * 1000,
-		cacheTime: 5 * 60 * 1000,
-		retry: 1,
+		// staleTime: 1 * 60 * 1000,
+		// cacheTime: 5 * 60 * 1000,
+		// retry: 1,
 	});
 };
 
@@ -236,9 +237,10 @@ export const useUpdateMentorCourseMutation = () => {
 	return useMutation({
 		mutationFn: ({ courseId, payload }) =>
 			updateMentorCourse(courseId, payload),
-		onSuccess: () => {
+		onSuccess: (data, { courseId }) => {
 			queryClient.invalidateQueries(["mentorCourses"]);
 			queryClient.invalidateQueries(["adminCourses"]);
+			queryClient.invalidateQueries(["courses"]);
 		},
 	});
 };
@@ -294,7 +296,7 @@ export const useSetScheduleMutation = () => {
  */
 export const usePublicCoursesQuery = (options = {}) => {
 	return useQuery({
-		queryKey: ["publicCourses"],
+		queryKey: ["courses"],
 		queryFn: async () => {
 			const response = await getPublicCourses();
 			return response;

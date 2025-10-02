@@ -541,9 +541,6 @@ export default function useCourseForm({
 						await Promise.all(schedulePromises);
 					}
 
-					queryClient.invalidateQueries(["courses"]);
-					queryClient.invalidateQueries(["mentorCourses"]);
-
 					toast.success(
 						`Kursus ${isEditMode ? "diperbarui" : "dibuat"} berhasil!`
 					);

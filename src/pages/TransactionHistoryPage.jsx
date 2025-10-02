@@ -378,7 +378,7 @@ export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	}, [history, updatingSessionId, setUpdatingSessionId]);
 
 	const isLoading = loadingSessions || loadingTransactions;
-	const isErro = errorSessions || errorTransactions;
+	const isError = errorSessions || errorTransactions;
 
 	if (isLoading) {
 		return (

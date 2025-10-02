@@ -232,10 +232,8 @@ export const setMentorSchedule = async (payload) => {
  */
 export const getPublicCourses = async () => {
 	const token = localStorage.getItem("token");
+	const endpoint = token ? "/pelanggan/daftar-kursus" : "/public/kursus";
 	const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-	const response = await api.get("/public/kursus", {
-		headers: headers,
-	});
+	const response = await api.get(endpoint, { headers });
 	return response.data;
 };

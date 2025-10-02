@@ -723,9 +723,17 @@ function App() {
 			// Invalidate queries setelah sukses
 			queryClient.invalidateQueries(["transactions", sesi.pelanggan_id]);
 			queryClient.invalidateQueries(["sessions", sesi.pelanggan_id]);
+			
+			setShowPayment(false);
+
+			setCurrentBooking(null);
+			setSelectedCourse(null); // ✅ Reset course
+			setSelectedMentor(null); // ✅ Reset mentor
+			setSelectedPackage(null); // ✅ Reset package
+			setBookingCourse(null); // ✅ Reset booking course
+			setShowPackageSelection(false); // ✅ Close package modal jika masih terbuka
 
 			// console.log("Transaksi response:", res.data); // Debugging
-			setShowPayment(false);
 			Swal.fire({
 				icon: "success",
 				title: transaksiId ? "Proof Updated!" : "Payment Submitted!",
@@ -898,9 +906,16 @@ function App() {
 
 	// Fungsi untuk menutup PackageSelectionModal
 	const handlePackageSelectionClose = () => {
-		setSelectedCourse(null);
 		setSelectedPackage(null);
 		setShowPackageSelection(false);
+
+		/**
+		 * Reset selectedCourse dan selectedMentor
+		 * Agar Saat close modal paket di halaman mentor,
+		 * engga ngebuat halaman course jadi di kondisi setelah klik course
+		 */
+		setSelectedCourse(null);
+		setSelectedMentor(null);
 	};
 
 	// ==== FUNGSI REDIRECT JIKA AKSES HALAMAN YANG TIDAK DIIZINKAN ====
@@ -1578,7 +1593,7 @@ function App() {
 						location={location}
 					/>
 				)}
-				{showCourseSelection && selectedMentor && (
+				{/* {showCourseSelection && selectedMentor && (
 					<CourseSelectionModal
 						// Komponen CourseSelectionModal kini hanya menerima courses dari selectedMentor,
 						// dan setiap course diharapkan sudah memiliki field jadwal_kursus hasil mapping dari backend.
@@ -1595,14 +1610,22 @@ function App() {
 						onCoursePackageSelect={handleCoursePackageSelect}
 						selectedCourse={bookingCourse}
 					/>
-				)}
+				)} */}
 				{showPayment && currentBooking && (
 					<PaymentModal
 						booking={currentBooking}
 						mentor={currentBooking?.mentor}
 						onClose={() => {
 							setShowPayment(false);
+							
 							setCurrentBooking(null);
+							setSelectedMentor(null);
+							setSelectedPackage(null);
+							setBookingCourse(null);
+							setShowPackageSelection(false);
+							setShowCourseSelection(false);
+							setSelectedCourse(null);
+
 							setCurrentPage("transaction-history"); // arahkan ke halaman tujuan
 							// [gayaMengajar JADWAL ONLY] Komentar: Menampilkan PaymentModal hanya jika pembayaran sedang berlangsung dan booking sudah ada. Semua data mode belajar (gayaMengajar) sudah diambil dari jadwal_kursus, bukan dari level kursus.
 							showToast({
