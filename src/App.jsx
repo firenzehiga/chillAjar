@@ -1,93 +1,138 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, lazy, Suspense } from "react";
+// Icons
+import { ListChecks, LucideShieldQuestion } from "lucide-react";
+// Shared UI
+import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import showToast from "@/components/User/customToast";
-import { ListChecks, LucideShieldQuestion } from "lucide-react";
-import { MentorCard } from "@/components/MentorCard";
-import { BookingModal } from "@/components/BookingModal";
-import { PaymentModal } from "@/components/PaymentModal";
+import { motion, AnimatePresence } from "framer-motion";
+// Layout
 import { Navigation } from "@/components/Layout/Navigation";
 import { Hero } from "@/components/Layout/Hero";
 import Footer from "@/components/Layout/Footer";
+// Loading
 import { CourseSkeletonCard } from "@/components/Skeleton/CourseSkeletonCard";
 import { CarouselSkeleton } from "@/components/Skeleton/CarouselSkeleton";
 import { BookLoader } from "@/components/User/BookLoader";
-import { NotFoundPage } from "@/components/Fallback/NotFound";
-
-import { FaQWidget } from "@/components/FaQWidget"; // Impor komponen FaQWidget
-import { GuideModal } from "@/components/User/HelpButton"; // Impor komponen GuideModal
-import { HelpButton } from "@/components/User/HelpButton"; // Impor komponen HelpButton
-import {
-	FloatingSessionReminder,
-	SessionBanner,
-} from "@/components/SessionReminder"; // Impor Session Reminder
-
-// Halaman utama
+// Core Components
+import { FaQWidget } from "@/components/FaQWidget";
+import { GuideModal } from "@/components/User/HelpButton";
+import { HelpButton } from "@/components/User/HelpButton";
+import { FloatingSessionReminder } from "@/components/SessionReminder";
+import { AuthModal } from "@/components/AuthModal";
+import { MentorCard } from "@/components/MentorCard";
+import { CourseSelectionModal } from "@/components/CourseSelectionModal";
+import { CoursePackageSelectionModal } from "@/components/CoursePackageSelectionModal";
+import { BookingModal } from "@/components/BookingModal";
+import { PaymentModal } from "@/components/PaymentModal";
+import { TestimoniModal } from "@/components/TestimoniModal";
+// Pages
+import { Home } from "@/pages/Home";
+import { CoursesPage } from "@/pages/CoursesPage";
+import { MentorsPage } from "@/pages/MentorsPage";
+import { AboutPage } from "@/pages/AboutPage";
 import {
 	PrivacyPolicyPage,
 	TermsConditionsPage,
 } from "@/pages/PolicyTermsPage";
-import { CoursesPage } from "@/pages/CoursesPage";
-import { MentorsPage } from "@/pages/MentorsPage";
-import { ProfilePage } from "@/pages/ProfilePage";
-import { EditProfilePage } from "@/pages/EditProfilePage";
-import { TransactionHistoryPage } from "@/pages/TransactionHistoryPage";
-import { SessionHistoryPage } from "@/pages/SessionHistoryPage";
-import { AboutPage } from "@/pages/AboutPage";
-import { AuthModal } from "@/components/AuthModal";
-import { TestimoniModal } from "@/components/TestimoniModal";
-import { CourseSelectionModal } from "@/components/CourseSelectionModal";
-import { CoursePackageSelectionModal } from "@/components/CoursePackageSelectionModal";
-import { Home } from "@/pages/Home";
+// Fallbacks
+import { NotFoundPage } from "@/components/Fallback/NotFound";
+import { PageLoader } from "@/components/Fallback/PageLoader";
+import ApiError from "@/components/Fallback/ApiError";
+// ============= LAZY LOADED PAGES =============
+// Halaman Pelanggan (di-lazy load karena hanya untuk user login)
+const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
+const EditProfilePage = lazy(() => import("@/pages/EditProfilePage"));
+const TransactionHistoryPage = lazy(() =>
+	import("@/pages/TransactionHistoryPage")
+);
+const SessionHistoryPage = lazy(() => import("@/pages/SessionHistoryPage"));
 
-// Import Zustand Store
+// Halaman Admin (di-lazy load karena jarang diakses)
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const AdminProfilePage = lazy(() =>
+	import("@/pages/admin/profile/AdminProfilePage")
+);
+const AdminEditProfile = lazy(() =>
+	import("@/pages/admin/profile/AdminEditProfile")
+);
+const AdminUsersPage = lazy(() =>
+	import("@/pages/admin/manage-users/AdminUsersPage")
+);
+const AdminCoursesPage = lazy(() =>
+	import("@/pages/admin/manage-courses/AdminCoursesPage")
+);
+const AdminFormCoursePage = lazy(() =>
+	import("@/pages/admin/manage-courses/FormCoursePage")
+);
+const AdminMentorsPage = lazy(() =>
+	import("@/pages/admin/manage-mentors/AdminMentorsPage")
+);
+const AdminFormMentorsPage = lazy(() =>
+	import("@/pages/admin/manage-mentors/FormMentorsPage")
+);
+const AdminPaymentsPage = lazy(() =>
+	import("@/pages/admin/manage-payments/AdminPaymentsPage")
+);
+const AdminSessionsPage = lazy(() =>
+	import("@/pages/admin/manage-sessions/AdminSessionsPage")
+);
+const AdminFormSessionsPage = lazy(() =>
+	import("@/pages/admin/manage-sessions/FormSessionsPage")
+);
+const AdminTestimoniesPage = lazy(() =>
+	import("@/pages/admin/manage-testimonials/AdminTestimoniesPage")
+);
+const AdminFormTestimoniesPage = lazy(() =>
+	import("@/pages/admin/manage-testimonials/FormTestimoniesPage")
+);
+const AdminItemsPage = lazy(() =>
+	import("@/pages/admin/manage-items/AdminItemsPage")
+);
+const AdminFormItemsPage = lazy(() =>
+	import("@/pages/admin/manage-items/FormItemPage")
+);
+const AdminPackagesPage = lazy(() =>
+	import("@/pages/admin/manage-packages/AdminPackagesPage")
+);
+const AdminFormPackagesPage = lazy(() =>
+	import("@/pages/admin/manage-packages/FormPackagePage")
+);
+
+// Halaman Mentor (di-lazy load karena jarang diakses)
+const MentorDashboard = lazy(() => import("@/pages/mentor/MentorDashboard"));
+const MentorSchedulePage = lazy(() =>
+	import("@/pages/mentor/sessions/MentorSchedulePage")
+);
+const MentorCoursesPage = lazy(() =>
+	import("@/pages/mentor/courses/MentorCoursesPage")
+);
+const MentorTestimoniesPage = lazy(() =>
+	import("@/pages/mentor/MentorTestimoniesPage")
+);
+const MentorFormCoursePage = lazy(() =>
+	import("@/pages/mentor/courses/FormCoursePage")
+);
+const MentorProfilePage = lazy(() =>
+	import("@/pages/mentor/profile/MentorProfilePage")
+);
+const MentorEditProfile = lazy(() =>
+	import("@/pages/mentor/profile/MentorEditProfile")
+);
+// Logic (Stores, API, Routing, Data Fetching)
 import useAppStore from "@/stores/useAppStore";
-// Import halaman berdasarkan role user
-import { shouldHideNavigation } from "@/constants/pages";
-
-// Halaman Admin
-import { AdminDashboard } from "@/pages/admin/AdminDashboard";
-import { AdminProfilePage } from "@/pages/admin/profile/AdminProfilePage";
-import { AdminEditProfile } from "@/pages/admin/profile/AdminEditProfile";
-import { AdminUsersPage } from "@/pages/admin/manage-users/AdminUsersPage";
-import { AdminCoursesPage } from "@/pages/admin/manage-courses/AdminCoursesPage";
-import { AdminFormCoursePage } from "@/pages/admin/manage-courses/FormCoursePage";
-import { AdminMentorsPage } from "@/pages/admin/manage-mentors/AdminMentorsPage";
-import { AdminFormMentorsPage } from "@/pages/admin/manage-mentors/FormMentorsPage";
-import { AdminPaymentsPage } from "@/pages/admin/manage-payments/AdminPaymentsPage";
-import { AdminSessionsPage } from "@/pages/admin/manage-sessions/AdminSessionsPage";
-import { AdminFormSessionsPage } from "@/pages/admin/manage-sessions/FormSessionsPage";
-import { AdminTestimoniesPage } from "@/pages/admin/manage-testimonials/AdminTestimoniesPage";
-import { AdminFormTestimoniesPage } from "@/pages/admin/manage-testimonials/FormTestimoniesPage";
-import { AdminItemsPage } from "@/pages/admin/manage-items/AdminItemsPage";
-import { AdminFormItemsPage } from "@/pages/admin/manage-items/FormItemPage";
-import { AdminPackagesPage } from "@/pages/admin/manage-packages/AdminPackagesPage";
-import { AdminFormPackagesPage } from "@/pages/admin/manage-packages/FormPackagePage";
-// Halaman Mentor
-import { MentorDashboard } from "@/pages/mentor/MentorDashboard";
-import { MentorSchedulePage } from "@/pages/mentor/sessions/MentorSchedulePage";
-import { MentorCoursesPage } from "@/pages/mentor/courses/MentorCoursesPage";
-import { MentorTestimoniesPage } from "@/pages/mentor/MentorTestimoniesPage";
-import { MentorFormCoursePage } from "@/pages/mentor/courses/FormCoursePage";
-import { MentorProfilePage } from "@/pages/mentor/profile/MentorProfilePage";
-import { MentorEditProfile } from "@/pages/mentor/profile/MentorEditProfile";
-import { motion, AnimatePresence } from "framer-motion"; // Impor Framer Motion
-
-import { getImageUrl } from "@/utils/getImageUrl"; // Utility function to get image URL
-
-import Swal from "sweetalert2";
 import api from "@/api";
+import { getImageUrl } from "@/utils/getImageUrl";
 import { createBrowserHistory } from "history";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePublicCoursesQuery } from "@/hooks/useCourse";
-import ApiError from "@/components/Fallback/ApiError";
-
+import { shouldHideNavigation } from "@/constants/pages";
 import {
 	adminPages,
 	mentorPages,
 	pelangganPages,
 	publicPages,
 	protectedPages,
-	hideNavigationPages,
 } from "@/constants/pages";
 
 const history = createBrowserHistory();
@@ -1028,9 +1073,17 @@ function App() {
 			 * Redirect ke halaman yang sesuai role
 			 */
 			if (redirectPage === "admin-dashboard") {
-				return <AdminDashboard />;
+				return (
+					<Suspense fallback={<PageLoader />}>
+						<AdminDashboard />
+					</Suspense>
+				);
 			} else if (redirectPage === "mentor-dashboard") {
-				return <MentorDashboard />;
+				return (
+					<Suspense fallback={<PageLoader />}>
+						<MentorDashboard />
+					</Suspense>
+				);
 			} else if (redirectPage === "home") {
 				return (
 					<Home
@@ -1045,6 +1098,12 @@ function App() {
 			}
 		}
 
+		// Wrap lazy-loaded content dengan Suspense
+		return <Suspense fallback={<PageLoader />}>{renderPageContent()}</Suspense>;
+	};
+
+	// Pisahkan rendering halaman agar bisa di-wrap Suspense dengan bersih
+	const renderPageContent = () => {
 		/**
 		 * LOGIKA UNTUK ADMIN
 		 * Untuk Halaman Edit yang Dinamis (dengan ID), menggunakan logika if terpisah
@@ -1348,106 +1407,7 @@ function App() {
 			case "about":
 				return <AboutPage onNavigate={handleNavigate} />;
 			case "home":
-				return selectedCourse && !selectedPackage ? (
-					// Sama seperti logic di courses page - mentor selection dulu
-					// NOTE: KODE INI GAK KEPAKE, KARENA ALUR HOME PAKE PUNYA COURSESPAGE
-					<div className="py-4">
-						<button
-							onClick={() => {
-								setSelectedCourse(null);
-								setSelectedMentor(null);
-								setSelectedPackage(null);
-							}}
-							className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
-							type="button">
-							<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 1024 1024"
-									height="25px"
-									width="25px">
-									<path
-										d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
-										fill="#000000"
-									/>
-									<path
-										d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
-										fill="#000000"
-									/>
-								</svg>
-							</div>
-							<p className="translate-x-2">Go Back</p>
-						</button>
-
-						{/* Course Info */}
-						{/* <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-								<h3 className="text-xl font-semibold text-gray-900 mb-2">
-									{selectedCourse.courseName}
-								</h3>
-								<p className="text-gray-600 mb-3">
-									{selectedCourse.courseDescription}
-								</p>
-							</div> */}
-
-						<h2 className="text-2xl font-bold text-gray-900 mb-6">
-							Pilih Mentor untuk {selectedCourse.courseName}
-						</h2>
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-							{selectedCourse.mentors
-								?.filter((mentor) => mentor.status === "active")
-								.map((mentor) => (
-									<MentorCard
-										key={mentor.id}
-										mentor={mentor}
-										onSchedule={(selectedMentor, course) =>
-											handleMentorClickFromCourse(selectedMentor, course)
-										}
-										selectedCourse={selectedCourse}
-									/>
-								))}
-						</div>
-					</div>
-				) : selectedCourse && selectedPackage && selectedMentor ? (
-					// Final selection UI setelah semua terpilih
-					<div className="py-4">
-						{/* Course & Package & Mentor Info */}
-						<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-							<h3 className="text-xl font-semibold text-gray-900 mb-2">
-								{selectedCourse.courseName}
-							</h3>
-							<p className="text-gray-600 mb-3">
-								{selectedCourse.courseDescription}
-							</p>
-							<div className="flex items-center gap-4 flex-wrap">
-								<div className="bg-white px-3 py-1 rounded-lg border">
-									<span className="text-sm font-medium text-gray-700">
-										Mentor: {selectedMentor.user?.nama}
-									</span>
-								</div>
-								<div className="bg-white px-3 py-1 rounded-lg border">
-									<span className="text-sm font-medium text-gray-700">
-										Paket: {selectedPackage.name}
-									</span>
-								</div>
-							</div>
-						</div>
-
-						{/* Button untuk proceed ke booking */}
-						<div className="text-center">
-							<button
-								onClick={() =>
-									handleSchedule(
-										selectedMentor,
-										selectedCourse,
-										selectedPackage
-									)
-								}
-								className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
-								Lanjut ke Pemesanan
-							</button>
-						</div>
-					</div>
-				) : (
+				return (
 					<Home
 						courses={courses}
 						filteredCourses={filteredCourses}
@@ -1466,7 +1426,8 @@ function App() {
 			default:
 				return <NotFoundPage onNavigate={handleNavigate} />;
 		}
-	};
+	}; // End of renderPageContent
+	// End of renderContent
 
 	if (apiError) {
 		return (

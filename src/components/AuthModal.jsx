@@ -267,13 +267,13 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+				className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
 				<motion.div
 					initial={{ scale: 0.8, y: 40, opacity: 0 }}
 					animate={{ scale: 1, y: 0, opacity: 1 }}
 					exit={{ scale: 0.8, y: 40, opacity: 0 }}
 					transition={{ type: "spring", stiffness: 300, damping: 25 }}
-					className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+					className="bg-white rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
 					<div className="p-6 border-b">
 						<div className="flex justify-between items-center">
 							<h2 className="text-xl font-semibold">
@@ -612,7 +612,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												id="privacy-terms"
 												checked={agreedToTerms}
 												onChange={(e) => setAgreedToTerms(e.target.checked)}
-												className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+												className="w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500 focus:ring-2 focus:outline-none "
 											/>
 										</div>
 										<div className="flex-1">
@@ -621,22 +621,16 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												className="text-sm text-gray-700 cursor-pointer">
 												Saya menyetujui{" "}
 												<a
-													onClick={() => {
-														onNavigate("terms-conditions");
-														// Tutup modal setelah navigasi
-														setShowAuthModal(false);
-													}}
+													href="/terms-conditions"
+													target="_blank"
 													className="text-blue-600 hover:text-blue-800 underline font-medium inline-flex items-center gap-1 cursor-pointer">
 													Syarat & Ketentuan
 													<ExternalLink className="w-3 h-3" />
 												</a>
 												&nbsp;dan
 												<a
-													onClick={() => {
-														onNavigate("privacy-policy");
-														// Tutup modal setelah navigasi
-														setShowAuthModal(false);
-													}}
+													href="/privacy-policy"
+													target="_blank"
 													className="text-blue-600 hover:text-blue-800 underline font-medium inline-flex items-center gap-1 cursor-pointer">
 													Kebijakan Privasi
 													<ExternalLink className="w-3 h-3" />
