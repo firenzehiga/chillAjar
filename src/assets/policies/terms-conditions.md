@@ -189,45 +189,24 @@ Perubahan akan diberitahukan melalui:
 - Pengguna yang tidak setuju dapat **menghentikan penggunaan** layanan
 - **Penggunaan berkelanjutan** dianggap sebagai persetujuan
 
-## 11. Penyelesaian Sengketa
-
-### Mediasi Internal
-- Semua sengketa akan diselesaikan melalui **mediasi internal** terlebih dahulu
-- Tim customer service akan memfasilitasi **dialog dan negosiasi**
-- **Solusi win-win** akan diupayakan untuk semua pihak
-
-### Arbitrase
-Jika mediasi gagal, sengketa akan diselesaikan melalui **arbitrase** sesuai dengan:
-- **Aturan arbitrase** yang berlaku di Indonesia
-- **Bahasa Indonesia** sebagai bahasa persidangan
-- **Jakarta** sebagai tempat arbitrase
-
-### Hukum yang Berlaku
-Syarat dan ketentuan ini tunduk pada **hukum Republik Indonesia** dan akan diinterpretasikan sesuai dengan peraturan yang berlaku.
-
-## 12. Kontak dan Dukungan
+## 11. Kontak dan Dukungan
 
 ### Customer Support
 Untuk pertanyaan, keluhan, atau bantuan:
-- **Email:** support@chillajar.com
+- **Email:** chillajar@gmail.com
 - **WhatsApp:** +62 838-7141-7229
 - **Jam Operasional:** Senin-Jumat, 09:00-18:00 WIB
 
-### Legal & Compliance
-Untuk masalah hukum dan kepatuhan:
-- **Email:** legal@chillajar.com
-- **Alamat:** Jakarta, Indonesia
-
 ### Feedback dan Saran
 Kami selalu terbuka untuk feedback:
-- **Email:** feedback@chillajar.com
+- **Email:** chillajar@gmail.com
 - **Survey** berkala untuk improvement platform
 
 ---
 
-**Efektif mulai:** September 2025  
+**Efektif mulai:** Oktober 2025  
 **Versi:** 1.0  
-**Revisi terakhir:** September 19, 2025  
+**Revisi terakhir:** Oktober 21, 2025  
 **Bahasa:** Bahasa Indonesia
 
 Dengan menggunakan platform ChillAjar, Anda menyatakan telah membaca, memahami, dan menyetujui semua syarat dan ketentuan di atas.

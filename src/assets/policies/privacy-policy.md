@@ -87,41 +87,18 @@ Data hanya akan dibagikan dalam kondisi berikut:
 - Membatasi pemrosesan data tertentu
 - Keberatan terhadap penggunaan data untuk tujuan tertentu
 
-## 6. Cookies dan Teknologi Pelacakan
-
-### Jenis Cookies yang Digunakan
-- **Essential Cookies:** Untuk menjaga sesi login dan fungsi dasar
-- **Preference Cookies:** Untuk mengingat pengaturan dan preferensi Anda
-- **Analytics Cookies:** Untuk memahami bagaimana platform digunakan
-- **Marketing Cookies:** Untuk personalisasi konten (dengan persetujuan)
-
-### Kontrol Cookies
-Anda dapat mengatur browser untuk:
-- Menolak semua cookies
-- Menerima hanya cookies tertentu
-- Menghapus cookies yang ada
-
-**Catatan:** Menolak cookies dapat memengaruhi fungsionalitas platform.
-
-## 7. Penyimpanan dan Retensi Data
+## 6. Penyimpanan dan Retensi Data
 
 ### Periode Penyimpanan
 - **Data akun aktif:** Selama akun masih aktif
-- **Data transaksi:** 7 tahun untuk keperluan audit dan hukum
-- **Data pembelajaran:** 3 tahun setelah penyelesaian kursus
-- **Data komunikasi:** 2 tahun untuk keperluan dukungan pelanggan
+- **Data transaksi:** -
+- **Data pembelajaran:** -
+- **Data komunikasi:** -
 
 ### Penghapusan Otomatis
-Data akan dihapus secara otomatis setelah periode retensi berakhir, kecuali ada kewajiban hukum untuk menyimpannya lebih lama.
+Data akan dihapus secara otomatis setelah periode retensi berakhir, kecuali ada kewajiban untuk menyimpannya lebih lama.
 
-## 8. Transfer Data Internasional
-
-Jika terjadi transfer data ke luar Indonesia, kami akan memastikan:
-- Negara tujuan memiliki tingkat perlindungan data yang memadai
-- Implementasi safeguard yang sesuai
-- Pemberitahuan kepada pengguna tentang transfer tersebut
-
-## 9. Hak Anak di Bawah Umur
+## 7. Hak Anak di Bawah Umur
 
 ### Pembatasan Usia
 - Platform ini ditujukan untuk pengguna berusia 16 tahun ke atas
@@ -130,7 +107,7 @@ Jika terjadi transfer data ke luar Indonesia, kami akan memastikan:
 ### Perlindungan Khusus
 Jika kami mengetahui adanya data anak di bawah 16 tahun tanpa persetujuan orang tua, data tersebut akan segera dihapus.
 
-## 10. Perubahan Kebijakan Privasi
+## 8. Perubahan Kebijakan Privasi
 
 ### Pemberitahuan Perubahan
 Kami akan memberitahu Anda tentang perubahan material dalam kebijakan ini melalui:
@@ -141,11 +118,11 @@ Kami akan memberitahu Anda tentang perubahan material dalam kebijakan ini melalu
 ### Berlaku Efektif
 Perubahan akan berlaku 30 hari setelah pemberitahuan, memberikan Anda waktu untuk meninjau dan memutuskan.
 
-## 11. Kontak dan Pengaduan
+## 9. Kontak dan Pengaduan
 
 ### Tim Privasi
 Untuk pertanyaan, keluhan, atau permintaan terkait privasi:
-- **Email:** privacy@chillajar.com
+- **Email:** chillajar@gmail.com
 - **WhatsApp:** +62 838-7141-7229
 - **Alamat:** Jakarta, Indonesia
 
@@ -156,6 +133,6 @@ Kami berkomitmen untuk merespons pertanyaan privasi dalam waktu 7 hari kerja.
 ---
 
 
-**Terakhir diperbarui:** September 2025  
+**Terakhir diperbarui:** Oktober 2025  
 **Versi:** 1.0  
 **Bahasa:** Bahasa Indonesia
