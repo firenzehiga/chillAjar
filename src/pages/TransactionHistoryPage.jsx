@@ -89,7 +89,7 @@ const CustomSelect = ({
 	);
 };
 
-export function TransactionHistoryPage({ userData, onPaymentSubmit }) {
+export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
 	const [selectedSession, setSelectedSession] = useState(null);
 	const updatingSessionId = useAppStore((s) => s.updatingSessionId);

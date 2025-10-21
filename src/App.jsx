@@ -133,6 +133,7 @@ import {
 	pelangganPages,
 	publicPages,
 	protectedPages,
+	getRedirectPage,
 } from "@/constants/pages";
 
 const history = createBrowserHistory();
@@ -960,32 +961,6 @@ function App() {
 		setSelectedMentor(null);
 	};
 
-	// ==== FUNGSI REDIRECT JIKA AKSES HALAMAN YANG TIDAK DIIZINKAN ====
-	const getRedirectPage = (currentPage, userRole) => {
-		const isPelangganPage = [...pelangganPages, ...publicPages].includes(
-			currentPage
-		);
-		const isMentorPage = mentorPages.includes(currentPage);
-		const isAdminPage = adminPages.includes(currentPage);
-		const isAdminOrMentor = userRole === "admin" || userRole === "mentor";
-
-		// Jika admin/mentor mengakses halaman pelanggan
-		if (isAdminOrMentor && isPelangganPage)
-			return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
-
-		// Jika pelanggan mengakses halaman admin/mentor
-		if (userRole === "pelanggan" && (isAdminPage || isMentorPage))
-			return "home";
-
-		// Jika admin dan mentor saling mengakses halaman masing-masing
-		if (
-			(userRole === "admin" && isMentorPage) ||
-			(userRole === "mentor" && isAdminPage)
-		)
-			return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
-
-		return null; // Tidak perlu redirect
-	};
 	// Render konten berdasarkan halaman
 	const renderContent = () => {
 		// Tambahkan pengecekan authChecked sebelum pengecekan protectedPages di renderContent.
