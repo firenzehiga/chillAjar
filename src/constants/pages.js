@@ -192,3 +192,29 @@ export const shouldHideNavigation = (pathOrPage) => {
  * @returns {string} Judul halaman sesuai dengan key yang diberikan, atau "Home" jika key tidak ditemukan.
  */
 export const getPageTitle = (page) => PAGES[page]?.title ?? "Home";
+
+// ==== FUNGSI REDIRECT JIKA AKSES HALAMAN YANG TIDAK DIIZINKAN ====
+export const getRedirectPage = (currentPage, userRole) => {
+	const isPelangganPage = [...pelangganPages, ...publicPages].includes(
+		currentPage
+	);
+	const isMentorPage = mentorPages.includes(currentPage);
+	const isAdminPage = adminPages.includes(currentPage);
+	const isAdminOrMentor = userRole === "admin" || userRole === "mentor";
+
+	// Jika admin/mentor mengakses halaman pelanggan
+	if (isAdminOrMentor && isPelangganPage)
+		return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
+
+	// Jika pelanggan mengakses halaman admin/mentor
+	if (userRole === "pelanggan" && (isAdminPage || isMentorPage)) return "home";
+
+	// Jika admin dan mentor saling mengakses halaman masing-masing
+	if (
+		(userRole === "admin" && isMentorPage) ||
+		(userRole === "mentor" && isAdminPage)
+	)
+		return userRole === "admin" ? "admin-dashboard" : "mentor-dashboard";
+
+	return null; // Tidak perlu redirect
+};

@@ -85,7 +85,7 @@ const CustomSelect = ({
 	);
 };
 
-export function SessionHistoryPage({ userData }) {
+export default function SessionHistoryPage({ userData }) {
 	// use global updatingSessionId from store so other components (modal/handlers) can set it
 	const updatingSessionId = useAppStore((s) => s.updatingSessionId);
 	const setUpdatingSessionId = useAppStore((s) => s.setUpdatingSessionId);

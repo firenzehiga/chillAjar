@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Camera, AlertCircle } from "lucide-react";
+import { ArrowLeft, Camera, CheckCircle2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getImageUrl } from "@/utils/getImageUrl";
 import {
@@ -8,7 +8,8 @@ import {
 } from "@/hooks/useProfile";
 import Swal from "sweetalert2";
 import { EditProfileSkeleton } from "@/components/Skeleton/EditProfileSkeleton";
-
+import { showToast } from "@/components/User/customToast";
+import toast from "react-hot-toast";
 const defaultFoto = "/foto_mentor/default.png";
 
 export function MentorEditProfile({ onNavigate, userData, onUpdateUserData }) {
@@ -73,13 +74,15 @@ export function MentorEditProfile({ onNavigate, userData, onUpdateUserData }) {
 	const handleImageChange = (e) => {
 		const file = e.target.files[0];
 		if (file) {
-			if (file.size > 5 * 1024 * 1024) {
-				setError("Ukuran gambar terlalu besar. Maksimal 5MB.");
-				Swal.fire({
-					icon: "error",
-					title: "Error",
-					text: "Ukuran gambar terlalu besar. Maksimal 5MB.",
-					confirmButtonColor: "#EF4444",
+			if (file.size > 3 * 1024 * 1024) {
+				toast.dismiss();
+				setError("Ukuran gambar terlalu besar. Maksimal 10MB.");
+				showToast({
+					type: "error",
+					title: "Gagal!",
+					message: "Ukuran gambar terlalu besar. Maksimal 3MB.",
+					tipText: "Periksa kembali ukuran gambar Anda",
+					tipIcon: "💡",
 				});
 				return;
 			}
@@ -103,16 +106,13 @@ export function MentorEditProfile({ onNavigate, userData, onUpdateUserData }) {
 			const response = await updateProfileMutation.mutateAsync(payload);
 
 			if (response) {
-				Swal.fire({
-					icon: "success",
-					title: "Success",
-					text: "Profil berhasil diperbarui!",
-					showConfirmButton: false,
-					timer: 1200,
-					timerProgressBar: true,
-					didOpen: () => {
-						Swal.showLoading();
-					},
+				showToast({
+					type: "success",
+					lucideIcon: CheckCircle2,
+					title: "Profil berhasil diperbarui!",
+					message: "Perubahan profil Anda telah disimpan.",
+					position: "top-right",
+					duration: 2000,
 				});
 
 				// Data sudah di-invalidate oleh mutation onSuccess
@@ -283,12 +283,12 @@ export function MentorEditProfile({ onNavigate, userData, onUpdateUserData }) {
 					/>
 				</div>
 
-				{error && (
+				{/* {error && (
 					<div className="mb-4 text-red-500 text-sm flex items-center">
 						<AlertCircle className="w-4 h-4 mr-2" />
 						{error}
 					</div>
-				)}
+				)} */}
 
 				<div className="flex justify-end space-x-4">
 					<button

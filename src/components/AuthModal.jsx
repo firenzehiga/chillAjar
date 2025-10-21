@@ -267,7 +267,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+				className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
 				<motion.div
 					initial={{ scale: 0.8, y: 40, opacity: 0 }}
 					animate={{ scale: 1, y: 0, opacity: 1 }}
