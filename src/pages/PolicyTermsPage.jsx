@@ -105,7 +105,7 @@ export function PrivacyPolicyPage({ onNavigate }) {
 									<p className="font-medium text-gray-700">
 										Terakhir diperbarui
 									</p>
-									<p className="text-xs text-gray-500">September 2025</p>
+									<p className="text-xs text-gray-500">Oktober 2025</p>
 								</div>
 							</div>
 							<div className="flex gap-3">
@@ -225,7 +225,7 @@ export function TermsConditionsPage({ onNavigate }) {
 									<p className="font-medium text-gray-700">
 										Terakhir diperbarui
 									</p>
-									<p className="text-xs text-gray-500">September 2025</p>
+									<p className="text-xs text-gray-500">Oktober 2025</p>
 								</div>
 							</div>
 							<div className="flex gap-3">
