@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
 import toast from "react-hot-toast";
 
-export function AdminFormMentorsPage({ onNavigate, mentorId }) {
+export default function AdminFormMentorsPage({ onNavigate, mentorId }) {
 	if (!mentorId) {
 		onNavigate("admin-manage-mentors");
 		return null;
