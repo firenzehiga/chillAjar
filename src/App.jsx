@@ -764,8 +764,17 @@ function App() {
 			});
 
 			// Invalidate queries setelah sukses
-			queryClient.invalidateQueries(["transactions", sesi.pelanggan_id]);
-			queryClient.invalidateQueries(["sessions", sesi.pelanggan_id]);
+			await Promise.all([
+				queryClient.refetchQueries({
+					queryKey: ["transactions", sesi.pelanggan_id],
+				}),
+				queryClient.refetchQueries({
+					queryKey: ["sessions", sesi.pelanggan_id],
+				}),
+				queryClient.refetchQueries({
+					queryKey: ["pelangganSessions", sesi.pelanggan_id],
+				}),
+			]);
 
 			setShowPayment(false);
 
