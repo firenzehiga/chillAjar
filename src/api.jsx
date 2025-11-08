@@ -3,8 +3,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 
-const PUBLIC_API =
-	import.meta.env.VITE_PUBLIC_API || "https://peladen.my.id/api";
+const PUBLIC_API = import.meta.env.VITE_PUBLIC_API || "https://ekomh29.biz.id";
 
 const api = axios.create({
 	baseURL: PUBLIC_API,
