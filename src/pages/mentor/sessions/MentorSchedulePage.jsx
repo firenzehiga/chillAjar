@@ -133,7 +133,7 @@ export function MentorSchedulePage() {
 		reviewed: {
 			label: "Reviewed",
 			class:
-				"inline-flex items-center rounded-md bg-blue-200 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-green-600/20 ring-inset",
+				"inline-flex items-center rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset",
 		},
 		pending: {
 			label: "Pending",

@@ -75,14 +75,14 @@ export function Navigation({ onNavigate, onLogout }) {
 				}}
 				onMouseEnter={() => setHoveredItem(to)}
 				onMouseLeave={() => setHoveredItem(null)}
-				className={`focus:outline-none inline-flex items-center relative px-4 py-2.5 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden ${
+				className={`focus:outline-none inline-flex items-center relative px-3 py-2 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden ${
 					isActive
 						? "bg-blue-500 text-white shadow-lg shadow-blue-600/25 scale-105"
 						: "text-white hover:text-white hover:bg-blue-500"
 				}`}>
 				{Icon && (
 					<Icon
-						className={`w-5 h-5 mr-1 transition-transform duration-300 ${
+						className={`w-4 h-4 mr-1 transition-transform duration-300 ${
 							isActive
 								? "text-white scale-110"
 								: hoveredItem === to
@@ -109,11 +109,6 @@ export function Navigation({ onNavigate, onLogout }) {
 					/>
 
 					<NavLink to="admin-manage-sessions" Icon={Clock} label="Sessions" />
-					<NavLink
-						to="admin-manage-mentors"
-						Icon={LucideUserSquare2}
-						label="Mentors"
-					/>
 
 					{/* Management Dropdown */}
 					<div className="relative">
@@ -121,7 +116,7 @@ export function Navigation({ onNavigate, onLogout }) {
 							onClick={() =>
 								setIsManagementDropdownOpen(!isManagementDropdownOpen)
 							}
-							className={`focus:outline-none inline-flex items-center relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ease-out overflow-hidden ${
+							className={`focus:outline-none inline-flex items-center relative px-3 py-2.5 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden ${
 								currentPage === "admin-manage-items" ||
 								currentPage === "admin-manage-packages" ||
 								currentPage === "admin-manage-courses"
@@ -139,6 +134,19 @@ export function Navigation({ onNavigate, onLogout }) {
 
 						{isManagementDropdownOpen && (
 							<div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[160px]">
+								<a
+									onClick={() => {
+										onNavigate("admin-manage-mentors");
+										setIsManagementDropdownOpen(false);
+									}}
+									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer last:rounded-b-lg ${
+										currentPage === "admin-manage-mentors"
+											? "bg-blue-100 text-blue-800"
+											: "text-gray-700"
+									}`}>
+									<LucideUserSquare2 className="w-4 h-4 inline-block mr-2" />
+									Mentors
+								</a>
 								<a
 									onClick={() => {
 										onNavigate("admin-manage-courses");
@@ -331,7 +339,7 @@ export function Navigation({ onNavigate, onLogout }) {
 							<img
 								src={titleLogo}
 								alt="Logo ChillAjar"
-								className="h-14 w-auto -top-1 relative"
+								className="h-[53px] w-auto -top-1 relative"
 								onClick={() => {
 									onNavigate("home");
 									setIsMobileMenuOpen(false);

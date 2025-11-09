@@ -131,7 +131,7 @@ const MentorCalendar = ({ calendarData, loading }) => {
 
 	const getStatusColor = (status) => {
 		// Karena backend hanya mengirim status "pending", semua akan berwarna kuning
-		return "bg-blue-100 text-blue-800 border-blue-200";
+		return "bg-yellow-100 text-yellow-800 border-yellow-200";
 	};
 
 	const getStatusText = (status) => {
@@ -291,12 +291,12 @@ const MentorCalendar = ({ calendarData, loading }) => {
 			{/* Legend */}
 			<div className="mt-4 pt-4 border-t border-gray-100">
 				<div className="flex items-center justify-center space-x-6 text-xs">
-					<div className="flex items-center space-x-1">
+					{/* <div className="flex items-center space-x-1">
 						<div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
 						<span className="text-gray-600">Dikonfirmasi</span>
-					</div>
+					</div> */}
 					<div className="flex items-center space-x-1">
-						<div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
+						<div className="w-3 h-3 ring-2 ring-yellow-500 bg-yellow-50 rounded"></div>
 						<span className="text-gray-600">Menunggu</span>
 					</div>
 					<div className="flex items-center space-x-1">
