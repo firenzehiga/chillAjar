@@ -182,7 +182,7 @@ export default function Footer({
 				)}
 
 				{/* Kalo di admin hanya tampilkan copyright */}
-				{userRole !== "user" && isAuthenticated && (
+				{userRole !== "pelanggan" && isAuthenticated && (
 					<div className="-mb-6 text-center text-sm">
 						<p>
 							&copy; {new Date().getFullYear()} ChillAjar. All rights reserved.
