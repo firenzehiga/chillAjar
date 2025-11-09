@@ -134,7 +134,7 @@ export function AdminUsersPage() {
 				// tambahkan container actions dengan gap agar tombol tidak saling dempet
 				actions: "flex gap-3 justify-center mt-4",
 				confirmButton:
-					"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+					"px-4 py-2 focus:outline-none rounded-md bg-chill-blue hover:bg-chill-blue-dark text-white",
 				cancelButton:
 					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
 			},
@@ -252,7 +252,7 @@ export function AdminUsersPage() {
 				</p>
 				<button
 					onClick={() => refetch()}
-					className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+					className="px-4 py-2 bg-chill-blue-dark text-white rounded-lg hover:bg-chill-blue">
 					Coba Lagi
 				</button>
 			</div>
@@ -308,7 +308,7 @@ export function AdminUsersPage() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<Users className="w-6 h-6 mr-2 text-yellow-600" />
+					<Users className="w-6 h-6 mr-2 text-chill-blue-dark" />
 					Manage Users
 				</h1>
 				<p className="text-gray-600">
@@ -337,10 +337,10 @@ export function AdminUsersPage() {
 				</div>
 				<div className="bg-white p-4 rounded-lg shadow">
 					<h3 className="text-sm font-medium text-gray-500 flex items-center">
-						<Calendar className="w-4 h-4 mr-1 text-blue-600" />
+						<Calendar className="w-4 h-4 mr-1 text-chill-blue-dark" />
 						Sesi Mendatang
 					</h3>
-					<p className="text-2xl font-bold text-blue-600">
+					<p className="text-2xl font-bold text-chill-blue-dark">
 						{stats.totalSesiMendatang}
 					</p>
 				</div>
@@ -355,10 +355,10 @@ export function AdminUsersPage() {
 				</div>
 				<div className="bg-white p-4 rounded-lg shadow">
 					<h3 className="text-sm font-medium text-gray-500 flex items-center">
-						<CheckCircle className="w-4 h-4 mr-1 text-yellow-600" />
+						<CheckCircle className="w-4 h-4 mr-1 text-chill-blue-dark" />
 						Sesi Selesai
 					</h3>
-					<p className="text-2xl font-bold text-yellow-600">
+					<p className="text-2xl font-bold text-chill-blue-dark">
 						{stats.totalSesiSelesai}
 					</p>
 				</div>
@@ -376,13 +376,13 @@ export function AdminUsersPage() {
 						/>
 						<button
 							onClick={() => setShowAddMentorModal(true)}
-							className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+							className="flex items-center px-4 py-2 bg-chill-blue-dark text-white rounded-lg hover:bg-chill-blue">
 							<GraduationCap className="w-4 h-4 mr-2" />
 							Add Mentor
 						</button>
 						<button
 							onClick={() => setShowAddModal(true)}
-							className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+							className="flex items-center px-4 py-2 bg-chill-blue-dark text-white rounded-lg hover:bg-chill-blue">
 							<UserPlus className="w-4 h-4 mr-2" />
 							Add User
 						</button>
@@ -402,7 +402,7 @@ export function AdminUsersPage() {
 								<select
 									value={roleFilter}
 									onChange={(e) => setRoleFilter(e.target.value)}
-									className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+									className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
 									<option value="all">Semua Role</option>
 									<option value="admin">Admin</option>
 									<option value="mentor">Mentor</option>
@@ -415,7 +415,7 @@ export function AdminUsersPage() {
 									placeholder="Cari nama, email, role, atau data sesi..."
 									value={searchTerm}
 									onChange={(e) => setSearchTerm(e.target.value)}
-									className="border border-gray-300 rounded-md px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-yellow-500"
+									className="border border-gray-300 rounded-md px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
 								/>
 							</div>
 						</div>
@@ -490,7 +490,7 @@ export function AdminUsersPage() {
 												<span
 													className={`px-2 py-1 rounded-full text-xs font-medium ${
 														(data.sesi_selesai || 0) > 0
-															? "bg-yellow-100 text-yellow-800"
+															? "bg-blue-100 text-blue-800"
 															: "bg-gray-100 text-gray-600"
 													}`}>
 													<CheckCircle className="w-3 h-3 inline mr-1" />

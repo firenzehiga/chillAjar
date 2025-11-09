@@ -62,7 +62,7 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 								placeholder="Cari nama kursus..."
 								value={searchQuery || ""}
 								onChange={(e) => setSearchQuery(e.target.value)}
-								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300 focus:outline-none"
+								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 focus:outline-none"
 							/>
 						</div>
 						<SearchFilter />
@@ -86,14 +86,14 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 						{hasSearchQuery && (
 							<button
 								onClick={() => setSearchQuery("")}
-								className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
+								className="px-4 py-2 bg-chill-blue text-white rounded-lg hover:bg-blue-600 transition-colors">
 								Hapus Pencarian
 							</button>
 						)}
 						{hasActiveFilters && (
 							<button
 								onClick={resetCourseFilters}
-								className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors">
+								className="px-4 py-2 bg-chill-blue text-white rounded-lg hover:bg-blue-600 transition-colors">
 								Reset Filter
 							</button>
 						)}
@@ -117,7 +117,7 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 							placeholder="Cari nama kursus..."
 							value={searchQuery || ""}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300 outline-none focus:outline-none"
+							className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 outline-none focus:outline-none"
 						/>
 					</div>
 					<SearchFilter />

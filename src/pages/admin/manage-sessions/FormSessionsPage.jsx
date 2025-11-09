@@ -105,7 +105,7 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 				onClick={() => onNavigate("admin-manage-sessions")}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 				type="button">
-				<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+				<div className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 1024 1024"
@@ -125,7 +125,7 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 			</button>
 			<div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
-					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
 					Edit Session
 				</h2>
 
@@ -198,7 +198,7 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 							name="detailKursus"
 							value={formData.detailKursus}
 							onChange={handleChange}
-							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 							placeholder="Enter session details"
 							rows="4"
 						/>
@@ -214,7 +214,7 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 							name="statusSesi"
 							value={formData.statusSesi}
 							onChange={handleChange}
-							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 							required>
 							<option value="">Select status</option>
 							<option value="pending">Pending</option>
@@ -241,7 +241,7 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 							className={`px-4 py-2 rounded-lg transition-colors ${
 								loading
 									? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
-									: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
+									: "bg-blue-600 text-white hover:bg-blue-700 outline-none focus:outline-none"
 							}`}>
 							{loading ? "Processing..." : "Update Session"}
 						</button>

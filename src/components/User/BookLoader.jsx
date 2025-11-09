@@ -36,9 +36,13 @@ export function BookLoader({ message = "", size = "medium", width, height }) {
 		<div
 			className="relative flex flex-col items-center"
 			style={{
-				"--background": "linear-gradient(135deg, #fff59d, #ffb300)", // gradasi kuning
-				"--shadow": "rgba(255, 152, 0, 0.28)",
-				"--text": "#6b4f00",
+				// Chill blue gradient
+				"--chill-blue": "#2FA1FF",
+				"--chill-blue-dark": "#298FE4",
+				"--background":
+					"linear-gradient(135deg, var(--chill-blue), var(--chill-blue-dark))",
+				"--shadow": "rgba(41, 143, 228, 0.28)",
+				"--text": "#003A66",
 				"--page": "rgba(255, 255, 255, 0.36)",
 				"--page-fold": "rgba(255, 255, 255, 0.52)",
 				"--duration": "3s",
@@ -242,21 +246,21 @@ export function BookLoader({ message = "", size = "medium", width, height }) {
 					</p>
 					<div className="flex justify-center gap-1 items-center mt-2">
 						<span
-							className="bg-yellow-500 rounded-full animate-bounce"
+							className="bg-chill-blue rounded-full animate-bounce"
 							style={{
 								width: `${Math.round(8 * scale)}px`,
 								height: `${Math.round(8 * scale)}px`,
 								animationDelay: "-0.3s",
 							}}></span>
 						<span
-							className="bg-yellow-500 rounded-full animate-bounce"
+							className="bg-chill-blue rounded-full animate-bounce"
 							style={{
 								width: `${Math.round(8 * scale)}px`,
 								height: `${Math.round(8 * scale)}px`,
 								animationDelay: "-0.15s",
 							}}></span>
 						<span
-							className="bg-yellow-500 rounded-full animate-bounce"
+							className="bg-chill-blue rounded-full animate-bounce"
 							style={{
 								width: `${Math.round(8 * scale)}px`,
 								height: `${Math.round(8 * scale)}px`,

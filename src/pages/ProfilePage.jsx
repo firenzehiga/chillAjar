@@ -73,7 +73,7 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 		<div className="py-8 px-4">
 			<div className="max-w-md sm:max-w-lg md:max-w-2xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-					<div className="h-28 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
+					<div className="h-28 bg-gradient-to-r from-chill-blue to-chill-blue-dark relative">
 						<div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-8 md:translate-x-0">
 							<img
 								src={getImageUrl(
@@ -114,17 +114,17 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 								</div>
 								<div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-gray-600 text-xs sm:text-sm mb-2">
 									<span className="flex items-center">
-										<Calendar className="w-4 h-4 mr-1 text-yellow-600" />
+										<Calendar className="w-4 h-4 mr-1 text-blue-600" />
 										Joined {currentUser.joinedDate}
 									</span>
 									<span className="flex items-center">
-										<MapPin className="w-4 h-4 mr-1 text-yellow-600" />
+										<MapPin className="w-4 h-4 mr-1 text-blue-600" />
 										{currentUser.location}
 									</span>
 								</div>
 							</div>
 							<button
-								className="bg-yellow-600 text-white px-2 py-2 rounded-full font-medium ml-0 md:ml-4 mt-2 md:mt-0 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-yellow-700 hover:shadow-lg"
+								className="bg-chill-blue-dark text-white px-2 py-2 rounded-full font-medium ml-0 md:ml-4 mt-2 md:mt-0 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg"
 								onClick={() => onNavigate("edit-profile")}>
 								Edit Profile
 							</button>
@@ -143,8 +143,8 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 							) : (
 								<>
 									{/* Card statistik */}
-									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
-										<BookOpen className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
+									<div className="bg-blue-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
+										<BookOpen className="w-6 h-6 text-blue-600 mx-auto mb-2" />
 										{isLoading ? (
 											<div className="mx-auto h-8 w-12 rounded bg-gray-100 animate-pulse mb-1"></div>
 										) : (
@@ -156,8 +156,8 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 											Courses Enrolled
 										</div>
 									</div>
-									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
-										<Users className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
+									<div className="bg-blue-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
+										<Users className="w-6 h-6 text-blue-600 mx-auto mb-2" />
 										{isLoading ? (
 											<div className="mx-auto h-8 w-12 rounded bg-gray-100 animate-pulse mb-1"></div>
 										) : (
@@ -167,8 +167,8 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 										)}
 										<div className="text-sm text-gray-600">Mentors Booked</div>
 									</div>
-									<div className="bg-yellow-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
-										<Building2Icon className="w-6 h-6 text-yellow-600 mx-auto mb-2" />
+									<div className="bg-blue-50 p-4 rounded-xl text-center flex flex-col justify-center min-h-[110px]">
+										<Building2Icon className="w-6 h-6 text-blue-600 mx-auto mb-2" />
 										{isLoading ? (
 											<div className="mx-auto h-8 w-12 rounded bg-gray-100 animate-pulse mb-1"></div>
 										) : (
@@ -189,11 +189,11 @@ export function ProfilePage({ userData, userRole, onNavigate }) {
 							</h3>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div className="flex items-center text-gray-600 transform transition-all duration-300 hover:translate-x-2">
-									<Mail className="w-5 h-5 mr-3 text-yellow-600" />
+									<Mail className="w-5 h-5 mr-3 text-blue-600" />
 									<span>{currentUser.email}</span>
 								</div>
 								<div className="flex items-center text-gray-600 transform transition-all duration-300 hover:translate-x-2">
-									<Phone className="w-5 h-5 mr-3 text-yellow-600" />
+									<Phone className="w-5 h-5 mr-3 text-blue-600" />
 									<span>{currentUser.phone}</span>
 								</div>
 							</div>

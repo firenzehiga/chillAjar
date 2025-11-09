@@ -9,7 +9,7 @@ export function PrivacyPolicyPage({ onNavigate }) {
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
 			{/* Header */}
-			<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white animate-none">
+			<div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white animate-none">
 				<div className="max-w-6xl mx-auto px-4 py-8">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-4">
@@ -24,7 +24,7 @@ export function PrivacyPolicyPage({ onNavigate }) {
 								</div>
 								<div>
 									<h1 className="text-3xl font-bold">Kebijakan Privasi</h1>
-									<p className="text-yellow-100 text-base font-medium">
+									<p className="text-blue-100 text-base font-medium">
 										ChillAjar - Platform Pembelajaran
 									</p>
 								</div>
@@ -42,13 +42,13 @@ export function PrivacyPolicyPage({ onNavigate }) {
 								components={{
 									h1: ({ node, ...props }) => (
 										<h1
-											className="text-3xl font-bold text-gray-900 mb-6 pb-3 border-b-2 border-yellow-500 flex items-center gap-3"
+											className="text-3xl font-bold text-gray-900 mb-6 pb-3 border-b-2 border-blue-500 flex items-center gap-3"
 											{...props}
 										/>
 									),
 									h2: ({ node, ...props }) => (
 										<h2
-											className="text-2xl font-semibold text-gray-800 mt-8 mb-4 flex items-center gap-2 bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500"
+											className="text-2xl font-semibold text-gray-800 mt-8 mb-4 flex items-center gap-2 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500"
 											{...props}
 										/>
 									),
@@ -72,13 +72,13 @@ export function PrivacyPolicyPage({ onNavigate }) {
 									),
 									li: ({ node, ...props }) => (
 										<li className="text-gray-600 relative flex items-start">
-											<span className="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-4 flex-shrink-0 shadow-sm"></span>
+											<span className="w-2 h-2 bg-chill-blue rounded-full mt-2 mr-4 flex-shrink-0 shadow-sm"></span>
 											<span className="flex-1" {...props} />
 										</li>
 									),
 									strong: ({ node, ...props }) => (
 										<strong
-											className="font-semibold text-gray-800 bg-yellow-100 px-1 rounded"
+											className="font-semibold text-gray-800 bg-blue-100 px-1 rounded"
 											{...props}
 										/>
 									),
@@ -98,8 +98,8 @@ export function PrivacyPolicyPage({ onNavigate }) {
 					<div className="border-t border-gray-200 p-6 bg-gradient-to-r from-gray-50 to-gray-100">
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-3 text-sm text-gray-600">
-								<div className="bg-yellow-100 p-2 rounded-full">
-									<AlertCircle className="w-4 h-4 text-yellow-600" />
+								<div className="bg-blue-100 p-2 rounded-full">
+									<AlertCircle className="w-4 h-4 text-blue-600" />
 								</div>
 								<div>
 									<p className="font-medium text-gray-700">
@@ -112,7 +112,7 @@ export function PrivacyPolicyPage({ onNavigate }) {
 								<div className="flex gap-3">
 									<button
 										onClick={() => onNavigate("home")}
-										className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium">
+										className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium">
 										Kembali ke Beranda
 									</button>
 								</div>
@@ -129,7 +129,7 @@ export function TermsConditionsPage({ onNavigate }) {
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
 			{/* Header */}
-			<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-sm">
+			<div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm">
 				<div className="max-w-6xl mx-auto px-4 py-8">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-4">
@@ -144,7 +144,7 @@ export function TermsConditionsPage({ onNavigate }) {
 								</div>
 								<div>
 									<h1 className="text-3xl font-bold">Syarat & Ketentuan</h1>
-									<p className="text-yellow-100 text-base font-medium">
+									<p className="text-blue-100 text-base font-medium">
 										ChillAjar - Platform Pembelajaran
 									</p>
 								</div>
@@ -162,13 +162,13 @@ export function TermsConditionsPage({ onNavigate }) {
 								components={{
 									h1: ({ node, ...props }) => (
 										<h1
-											className="text-3xl font-bold text-gray-900 mb-6 pb-3 border-b-2 border-yellow-500 flex items-center gap-3"
+											className="text-3xl font-bold text-gray-900 mb-6 pb-3 border-b-2 border-blue-500 flex items-center gap-3"
 											{...props}
 										/>
 									),
 									h2: ({ node, ...props }) => (
 										<h2
-											className="text-2xl font-semibold text-gray-800 mt-8 mb-4 flex items-center gap-2 bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500"
+											className="text-2xl font-semibold text-gray-800 mt-8 mb-4 flex items-center gap-2 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500"
 											{...props}
 										/>
 									),
@@ -192,13 +192,13 @@ export function TermsConditionsPage({ onNavigate }) {
 									),
 									li: ({ node, ...props }) => (
 										<li className="text-gray-600 relative flex items-start">
-											<span className="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-4 flex-shrink-0 shadow-sm"></span>
+											<span className="w-2 h-2 bg-chill-blue rounded-full mt-2 mr-4 flex-shrink-0 shadow-sm"></span>
 											<span className="flex-1" {...props} />
 										</li>
 									),
 									strong: ({ node, ...props }) => (
 										<strong
-											className="font-semibold text-gray-800 bg-yellow-100 px-1 rounded"
+											className="font-semibold text-gray-800 bg-blue-100 px-1 rounded"
 											{...props}
 										/>
 									),
@@ -218,8 +218,8 @@ export function TermsConditionsPage({ onNavigate }) {
 					<div className="border-t border-gray-200 p-6 bg-gradient-to-r from-gray-50 to-gray-100">
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-3 text-sm text-gray-600">
-								<div className="bg-yellow-100 p-2 rounded-full">
-									<AlertCircle className="w-4 h-4 text-yellow-600" />
+								<div className="bg-blue-100 p-2 rounded-full">
+									<AlertCircle className="w-4 h-4 text-blue-600" />
 								</div>
 								<div>
 									<p className="font-medium text-gray-700">
@@ -237,7 +237,7 @@ export function TermsConditionsPage({ onNavigate }) {
 											window.history.back();
 										}
 									}}
-									className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium">
+									className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium">
 									{onNavigate ? "Ke Beranda" : "Kembali"}
 								</button>
 							</div>
@@ -255,7 +255,7 @@ export default function PolicyTermsPage({ onNavigate }) {
 	return (
 		<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
 			{/* Header */}
-			<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-lg">
+			<div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
 				<div className="max-w-6xl mx-auto px-4 py-8">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-4">
@@ -276,7 +276,7 @@ export default function PolicyTermsPage({ onNavigate }) {
 											? "Kebijakan Privasi"
 											: "Syarat & Ketentuan"}
 									</h1>
-									<p className="text-yellow-100 text-base font-medium">
+									<p className="text-blue-100 text-base font-medium">
 										ChillAjar - Platform Pembelajaran
 									</p>
 								</div>
@@ -294,8 +294,8 @@ export default function PolicyTermsPage({ onNavigate }) {
 							onClick={() => setActiveTab("privacy")}
 							className={`px-8 py-5 focus:outline-none font-medium transition-all duration-200 relative overflow-hidden group ${
 								activeTab === "privacy"
-									? "text-yellow-600 border-b-3 border-yellow-500 bg-white shadow-sm"
-									: "text-gray-600 hover:text-yellow-600 hover:bg-gray-50"
+									? "text-blue-600 border-b-3 border-blue-500 bg-white shadow-sm"
+									: "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
 							}`}>
 							<div className="flex items-center gap-3 relative z-10">
 								<Eye
@@ -308,15 +308,15 @@ export default function PolicyTermsPage({ onNavigate }) {
 								<span className="font-semibold">Kebijakan Privasi</span>
 							</div>
 							{activeTab === "privacy" && (
-								<div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
+								<div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600"></div>
 							)}
 						</button>
 						<button
 							onClick={() => setActiveTab("terms")}
 							className={`px-8 py-5 focus:outline-none font-medium transition-all duration-200 relative overflow-hidden group ${
 								activeTab === "terms"
-									? "text-yellow-600 border-b-3 border-yellow-500 bg-white shadow-sm"
-									: "text-gray-600 hover:text-yellow-600 hover:bg-gray-50"
+									? "text-blue-600 border-b-3 border-blue-500 bg-white shadow-sm"
+									: "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
 							}`}>
 							<div className="flex items-center gap-3 relative z-10">
 								<FileText
@@ -329,7 +329,7 @@ export default function PolicyTermsPage({ onNavigate }) {
 								<span className="font-semibold">Syarat & Ketentuan</span>
 							</div>
 							{activeTab === "terms" && (
-								<div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-yellow-600"></div>
+								<div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600"></div>
 							)}
 						</button>
 					</div>
@@ -343,13 +343,13 @@ export default function PolicyTermsPage({ onNavigate }) {
 								components={{
 									h1: ({ node, ...props }) => (
 										<h1
-											className="text-3xl font-bold text-gray-900 mb-6 pb-3 border-b-2 border-yellow-500 flex items-center gap-3"
+											className="text-3xl font-bold text-gray-900 mb-6 pb-3 border-b-2 border-blue-500 flex items-center gap-3"
 											{...props}
 										/>
 									),
 									h2: ({ node, ...props }) => (
 										<h2
-											className="text-2xl font-semibold text-gray-800 mt-8 mb-4 flex items-center gap-2 bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500"
+											className="text-2xl font-semibold text-gray-800 mt-8 mb-4 flex items-center gap-2 bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500"
 											{...props}
 										/>
 									),
@@ -373,13 +373,13 @@ export default function PolicyTermsPage({ onNavigate }) {
 									),
 									li: ({ node, ...props }) => (
 										<li className="text-gray-600 relative flex items-start">
-											<span className="w-2 h-2 bg-yellow-500 rounded-full mt-2 mr-4 flex-shrink-0 shadow-sm"></span>
+											<span className="w-2 h-2 bg-chill-blue rounded-full mt-2 mr-4 flex-shrink-0 shadow-sm"></span>
 											<span className="flex-1" {...props} />
 										</li>
 									),
 									strong: ({ node, ...props }) => (
 										<strong
-											className="font-semibold text-gray-800 bg-yellow-100 px-1 rounded"
+											className="font-semibold text-gray-800 bg-blue-100 px-1 rounded"
 											{...props}
 										/>
 									),
@@ -399,8 +399,8 @@ export default function PolicyTermsPage({ onNavigate }) {
 					<div className="border-t border-gray-200 p-6 bg-gradient-to-r from-gray-50 to-gray-100">
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-3 text-sm text-gray-600">
-								<div className="bg-yellow-100 p-2 rounded-full">
-									<AlertCircle className="w-4 h-4 text-yellow-600" />
+								<div className="bg-blue-100 p-2 rounded-full">
+									<AlertCircle className="w-4 h-4 text-blue-600" />
 								</div>
 								<div>
 									<p className="font-medium text-gray-700">
@@ -412,7 +412,7 @@ export default function PolicyTermsPage({ onNavigate }) {
 							<div className="flex gap-3">
 								<button
 									onClick={() => onNavigate("home")}
-									className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium">
+									className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium">
 									Kembali ke Beranda
 								</button>
 							</div>

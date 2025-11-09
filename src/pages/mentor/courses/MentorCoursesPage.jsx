@@ -47,7 +47,7 @@ export function MentorCoursesPage({ onNavigate }) {
 				// tambahkan container actions dengan gap agar tombol tidak saling dempet
 				actions: "flex gap-3 justify-center mt-4",
 				confirmButton:
-					"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+					"px-4 py-2 focus:outline-none rounded-md bg-chill-blue hover:bg-chill-blue text-white",
 				cancelButton:
 					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
 			},
@@ -173,7 +173,7 @@ export function MentorCoursesPage({ onNavigate }) {
 				<div className="flex gap-2">
 					<button
 						onClick={() => onNavigate(`mentor-edit-course/${row.id}`)}
-						className="text-blue-600 hover:text-blue-800">
+						className="text-chill-blue hover:text-blue-800">
 						<Pencil className="w-4 h-4" />
 					</button>
 					<button
@@ -234,7 +234,7 @@ export function MentorCoursesPage({ onNavigate }) {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-chill-blue" />
 					My Courses
 				</h1>
 				<p className="text-gray-600">Daftar kursus yang saya ajar</p>
@@ -245,7 +245,7 @@ export function MentorCoursesPage({ onNavigate }) {
 					<h2 className="text-xl font-semibold">Data Kursus</h2>
 					<button
 						onClick={() => onNavigate("mentor-add-course")}
-						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+						className="flex items-center px-4 py-2 bg-chill-blue text-white rounded-lg hover:bg-chill-blue-dark">
 						<Plus className="w-4 h-4 mr-2" />
 						Tambah Kursus
 					</button>
@@ -266,7 +266,7 @@ export function MentorCoursesPage({ onNavigate }) {
 								placeholder="Cari nama, kursus, deskripsi atau mentor..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							/>
 						</div>
 

@@ -242,7 +242,7 @@ export default function SessionHistoryPage({ userData }) {
 			case "started":
 				return "bg-blue-100 text-blue-800"; // sesi sedang berlangsung
 			case "end":
-				return "bg-yellow-100 text-yellow-800"; // sesi telah selesai
+				return "bg-blue-100 text-blue-800"; // sesi telah selesai
 			case "reviewed":
 				return "bg-green-100 text-green-800"; // sesi telah direview
 			default:
@@ -345,15 +345,15 @@ export default function SessionHistoryPage({ userData }) {
 					</div>
 					<button
 						onClick={() => setShowFilters(!showFilters)}
-						className={`outline-none focus:outline-yellow-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
 							showFilters
-								? "bg-yellow-50 border-yellow-400 text-yellow-700"
-								: "bg-white border-gray-200 text-gray-700 hover:border-yellow-300"
+								? "bg-blue-50 border-blue-400 text-blue-700"
+								: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
 						}`}>
 						<Filter className="w-4 h-4" />
 						<span>Filter</span>
 						{activeFiltersCount > 0 && (
-							<span className="absolute -top-2 -right-2 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+							<span className="absolute -top-2 -right-2 w-5 h-5 bg-chill-blue text-white text-xs rounded-full flex items-center justify-center animate-pulse">
 								{activeFiltersCount}
 							</span>
 						)}
@@ -588,8 +588,8 @@ export default function SessionHistoryPage({ userData }) {
 												<button
 													className={`ml-4 px-4 py-2 rounded-lg text-white transition-colors ${
 														isSubmittingTestimoni
-															? "bg-yellow-200 cursor-not-allowed"
-															: "bg-yellow-500 hover:bg-yellow-600"
+															? "bg-blue-200 cursor-not-allowed"
+															: "bg-chill-blue hover:bg-blue-600"
 													}`}
 													onClick={() => handleOpenTestimoni(session)}
 													disabled={isSubmittingTestimoni}>

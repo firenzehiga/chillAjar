@@ -75,19 +75,19 @@ export function Navigation({ onNavigate, onLogout }) {
 				}}
 				onMouseEnter={() => setHoveredItem(to)}
 				onMouseLeave={() => setHoveredItem(null)}
-				className={`focus:outline-none inline-flex items-center relative px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ease-out overflow-hidden ${
+				className={`focus:outline-none inline-flex items-center relative px-4 py-2.5 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden ${
 					isActive
-						? "bg-yellow-500 text-black shadow-lg shadow-yellow-600/25 scale-105"
-						: "text-black hover:text-black hover:bg-yellow-500"
+						? "bg-blue-500 text-white shadow-lg shadow-blue-600/25 scale-105"
+						: "text-white hover:text-white hover:bg-blue-500"
 				}`}>
 				{Icon && (
 					<Icon
-						className={`w-4 h-4 mr-1 transition-transform duration-300 ${
+						className={`w-5 h-5 mr-1 transition-transform duration-300 ${
 							isActive
-								? "text-black scale-110"
+								? "text-white scale-110"
 								: hoveredItem === to
-								? "text-black scale-110"
-								: "text-black"
+								? "text-white scale-110"
+								: "text-white"
 						}`}
 					/>
 				)}
@@ -125,8 +125,8 @@ export function Navigation({ onNavigate, onLogout }) {
 								currentPage === "admin-manage-items" ||
 								currentPage === "admin-manage-packages" ||
 								currentPage === "admin-manage-courses"
-									? "bg-yellow-500 text-gray-900"
-									: "text-gray-900 hover:bg-yellow-500"
+									? "bg-blue-500 text-white"
+									: "text-white hover:bg-blue-500"
 							}`}>
 							<Settings className="w-4 h-4 inline-block mr-1" />
 							Management
@@ -144,9 +144,9 @@ export function Navigation({ onNavigate, onLogout }) {
 										onNavigate("admin-manage-courses");
 										setIsManagementDropdownOpen(false);
 									}}
-									className={`block px-4 py-2 text-sm hover:bg-yellow-50 cursor-pointer first:rounded-t-lg ${
+									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer first:rounded-t-lg ${
 										currentPage === "admin-manage-courses"
-											? "bg-yellow-100 text-yellow-800"
+											? "bg-blue-100 text-blue-800"
 											: "text-gray-700"
 									}`}>
 									<BookOpen className="w-4 h-4 inline-block mr-2" />
@@ -157,9 +157,9 @@ export function Navigation({ onNavigate, onLogout }) {
 										onNavigate("admin-manage-items");
 										setIsManagementDropdownOpen(false);
 									}}
-									className={`block px-4 py-2 text-sm hover:bg-yellow-50 cursor-pointer ${
+									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer ${
 										currentPage === "admin-manage-items"
-											? "bg-yellow-100 text-yellow-800"
+											? "bg-blue-100 text-blue-800"
 											: "text-gray-700"
 									}`}>
 									<Package className="w-4 h-4 inline-block mr-2" />
@@ -170,9 +170,9 @@ export function Navigation({ onNavigate, onLogout }) {
 										onNavigate("admin-manage-packages");
 										setIsManagementDropdownOpen(false);
 									}}
-									className={`block px-4 py-2 text-sm hover:bg-yellow-50 cursor-pointer last:rounded-b-lg ${
+									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer last:rounded-b-lg ${
 										currentPage === "admin-manage-packages"
-											? "bg-yellow-100 text-yellow-800"
+											? "bg-blue-100 text-blue-800"
 											: "text-gray-700"
 									}`}>
 									<Gift className="w-4 h-4 inline-block mr-2" />
@@ -233,8 +233,8 @@ export function Navigation({ onNavigate, onLogout }) {
 				}}
 				className={`w-full flex items-center px-3 py-2 text-base font-medium rounded-md transition-all duration-300 ${
 					isActive
-						? "bg-yellow-500 text-black shadow-lg shadow-yellow-600/25"
-						: "text-gray-900 hover:bg-yellow-500"
+						? "bg-blue-500 text-white shadow-lg shadow-blue-600/25"
+						: "text-white hover:bg-blue-500"
 				}`}>
 				{Icon && (
 					<Icon
@@ -319,7 +319,7 @@ export function Navigation({ onNavigate, onLogout }) {
 
 	return (
 		<header
-			className={`bg-chill-yellow ${
+			className={`bg-chill-blue ${
 				currentPage !== "home" ? "shadow-sm" : ""
 			} sticky top-0 z-50`}>
 			<div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
@@ -331,7 +331,7 @@ export function Navigation({ onNavigate, onLogout }) {
 							<img
 								src={titleLogo}
 								alt="Logo ChillAjar"
-								className="h-10 w-auto relative -top-2"
+								className="h-14 w-auto -top-1 relative"
 								onClick={() => {
 									onNavigate("home");
 									setIsMobileMenuOpen(false);
@@ -388,7 +388,7 @@ export function Navigation({ onNavigate, onLogout }) {
 									setShowAuthModal(true);
 									setIsMobileMenuOpen(false);
 								}}
-								className="w-full flex items-center px-3 py-2 text-base font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-colors rounded-md">
+								className="w-full flex items-center px-3 py-2 text-base font-medium text-white bg-chill-blue hover:bg-blue-600 transition-colors rounded-md">
 								<LogIn className="w-5 h-5 mr-3" />
 								Sign In
 								<ChevronRight className="w-5 h-5 ml-auto" />
@@ -411,7 +411,7 @@ export function Navigation({ onNavigate, onLogout }) {
 											e.preventDefault();
 											onNavigate(roleCheck[userRole]?.redirect || "home");
 										}}
-										className="focus:outline-none inline-flex items-center text-sm font-medium text-gray-700 hover:text-yellow-600 ">
+										className="focus:outline-none inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 ">
 										<svg
 											className="w-3 h-3 me-2.5"
 											aria-hidden="true"

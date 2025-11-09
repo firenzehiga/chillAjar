@@ -22,7 +22,7 @@ export default function Footer({
 					{/* Company Info */}
 					<div className="space-y-4">
 						<div className="flex items-center">
-							<GraduationCap className="h-8 w-8 text-yellow-500" />
+							<GraduationCap className="h-8 w-8 text-blue-500" />
 							<h2 className="ml-2 text-xl font-bold text-white">ChillAjar</h2>
 						</div>
 						<p className="text-sm">
@@ -136,7 +136,7 @@ export default function Footer({
 						</h3>
 						<ul className="space-y-2">
 							<li className="flex items-center">
-								<Mail className="h-5 w-5 mr-2 text-yellow-500" />
+								<Mail className="h-5 w-5 mr-2 text-blue-500" />
 								<span>chillajar2025@gmail.com</span>
 							</li>
 							<a
@@ -145,12 +145,12 @@ export default function Footer({
 								rel="noopener noreferrer"
 								className="flex items-center text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
 								<li className="flex items-center">
-									<Phone className="h-5 w-5 mr-2 text-yellow-500" />
+									<Phone className="h-5 w-5 mr-2 text-blue-500" />
 									<span>+62-838-7141-7229</span>
 								</li>
 							</a>
 							<li className="flex items-center">
-								<MapPin className="h-5 w-5 mr-2 text-yellow-500" />
+								<MapPin className="h-5 w-5 mr-2 text-blue-500" />
 								<span>STT Terpadu Nurulfikri, Depok</span>
 							</li>
 							{/* <li className="items-center">

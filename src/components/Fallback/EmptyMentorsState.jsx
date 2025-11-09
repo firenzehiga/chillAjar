@@ -54,7 +54,7 @@ export function EmptyMentorsState({ context = "mentors" }) {
 						href="https://wa.me/6283871417229?text=Halo%20admin%2C%20saya%20ingin%20menanyakan%20tentang%20ketersediaan%20mentor"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
+						className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
 						<MessageSquare className="w-5 h-5 mr-2" />
 						Hubungi Admin
 					</a>

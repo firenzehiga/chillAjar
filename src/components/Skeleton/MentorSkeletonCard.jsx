@@ -5,7 +5,7 @@ export function MentorSkeletonCard() {
 		<div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 mb-4 animate-pulse">
 			{/* Header Profil Mentor */}
 			<div className="relative">
-				<div className="h-32 bg-gradient-to-r from-yellow-400 to-yellow-500" />
+				<div className="h-32 bg-gradient-to-r from-blue-400 to-blue-500" />
 				<div className="absolute -bottom-12 left-6">
 					<div className="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-gray-200" />
 				</div>

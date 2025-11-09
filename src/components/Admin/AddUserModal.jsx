@@ -244,7 +244,7 @@ export function AddUserModal({ isOpen, onClose, onUserAdded }) {
 						<button
 							type="submit"
 							disabled={isLoading}
-							className={`flex-1 w-full outline-none focus:outline-none transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
+							className={`flex-1 w-full outline-none focus:outline-none transition-all bg-chill-blue text-white font-medium px-6 py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
 								isLoading ? "opacity-50 cursor-not-allowed" : ""
 							}`}>
 							{isLoading ? (

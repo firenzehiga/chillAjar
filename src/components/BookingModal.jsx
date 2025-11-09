@@ -206,17 +206,17 @@ export function BookingModal({
 
 					{/* Package Information */}
 					{selectedPackage && (
-						<div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+						<div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
 							<div className="flex items-start justify-between">
 								<div className="flex-1">
 									<div className="flex items-center mb-2">
-										<Gift className="w-5 h-5 text-yellow-600 mr-2" />
-										<h3 className="font-medium text-yellow-900">
+										<Gift className="w-5 h-5 text-blue-600 mr-2" />
+										<h3 className="font-medium text-blue-900">
 											{selectedPackage.name}
 										</h3>
 									</div>
 
-									<p className="text-sm text-yellow-700 mb-3">
+									<p className="text-sm text-blue-700 mb-3">
 										{selectedPackage.description}
 									</p>
 
@@ -224,7 +224,7 @@ export function BookingModal({
 									{selectedPackage.items &&
 										selectedPackage.items.length > 0 && (
 											<div className="mb-3">
-												<h4 className="text-xs font-medium text-yellow-800 mb-2 flex items-center">
+												<h4 className="text-xs font-medium text-blue-800 mb-2 flex items-center">
 													<Star className="w-3 h-3 mr-1" />
 													Yang Anda Dapatkan:
 												</h4>
@@ -234,13 +234,13 @@ export function BookingModal({
 														.map((item, index) => (
 															<div
 																key={index}
-																className="flex items-center text-xs text-yellow-700">
-																<div className="w-1 h-1 bg-yellow-500 rounded-full mr-2 flex-shrink-0"></div>
+																className="flex items-center text-xs text-blue-700">
+																<div className="w-1 h-1 bg-chill-blue rounded-full mr-2 flex-shrink-0"></div>
 																<span>{item.name}</span>
 															</div>
 														))}
 													{selectedPackage.items.length > 3 && (
-														<div className="text-xs text-yellow-600 ml-3">
+														<div className="text-xs text-blue-600 ml-3">
 															+{selectedPackage.items.length - 3} item lainnya
 														</div>
 													)}
@@ -249,7 +249,7 @@ export function BookingModal({
 										)}
 
 									{/* Package Pricing */}
-									<div className="border-t border-yellow-200 pt-3">
+									<div className="border-t border-blue-200 pt-3">
 										{packageDiscount > 0 && (
 											<div className="text-xs text-gray-500 line-through">
 												Harga Normal: Rp{" "}
@@ -258,7 +258,7 @@ export function BookingModal({
 										)}
 										<div className="flex items-center justify-between">
 											<div>
-												<span className="text-lg font-bold text-yellow-900">
+												<span className="text-lg font-bold text-blue-900">
 													Rp {totalFinalPrice.toLocaleString("id-ID")}
 												</span>
 												{packageDiscount > 0 && (
@@ -267,7 +267,7 @@ export function BookingModal({
 													</div>
 												)}
 											</div>
-											<div className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded">
+											<div className="text-xs text-blue-700 bg-blue-100 px-2 py-1 rounded">
 												Paket Dipilih
 											</div>
 										</div>
@@ -300,7 +300,7 @@ export function BookingModal({
 							value={topic}
 							onChange={(e) => setTopic(e.target.value)}
 							placeholder="Tuliskan topik yang ingin kamu bahas bersama mentor dalam sesi ini... (Bisa nama materi, pertanyaan spesifik, atau hal lain yang ingin didiskusikan)"
-							className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-yellow-500"
+							className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
 							rows="3"
 						/>
 					</div>
@@ -321,7 +321,7 @@ export function BookingModal({
 									disabled={!availableModes.includes(mode)}
 									className={`flex items-center justify-center p-3 rounded-lg border ${
 										selectedMode === mode
-											? "bg-yellow-500 text-white border-yellow-500 focus:outline-none focus:ring-3 outline-none focus:border-yellow-300 transition-colors"
+											? "bg-chill-blue text-white border-blue-500 focus:outline-none focus:ring-3 outline-none focus:border-blue-300 transition-colors"
 											: availableModes.includes(mode)
 											? "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 											: "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -353,7 +353,7 @@ export function BookingModal({
 											}}
 											className={`w-full p-2 rounded-lg border text-left ${
 												selectedLocation === loc
-													? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+													? "bg-chill-blue text-white border-blue-500 focus:outline-none transition-colors"
 													: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 											}`}>
 											<div className="flex items-center">
@@ -393,7 +393,7 @@ export function BookingModal({
 											}}
 											className={`p-2 rounded ${
 												selectedDate?.toDateString() === date.toDateString()
-													? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+													? "bg-chill-blue text-white border-blue-500 focus:outline-none transition-colors"
 													: "bg-gray-100 hover:bg-gray-200"
 											}`}>
 											{format(date, "MMM d")}
@@ -415,7 +415,7 @@ export function BookingModal({
 										onClick={() => setSelectedTime(time)}
 										className={`flex items-center justify-center p-2 rounded whitespace-nowrap ${
 											selectedTime === time
-												? "bg-yellow-500 text-white border-yellow-500 focus:outline-none transition-colors"
+												? "bg-chill-blue text-white border-blue-500 focus:outline-none transition-colors"
 												: "bg-gray-100 hover:bg-gray-200"
 										}`}>
 										<Clock className="w-4 h-4 mr-2 shrink-0" />
@@ -431,9 +431,9 @@ export function BookingModal({
 
 				<div className="p-6 border-t bg-gray-50">
 					{isProcessing && (
-						<div className="mb-4 flex items-center justify-center p-4 bg-yellow-200 border-yellow-700 rounded-lg">
-							<Loader2 className="w-5 h-5 text-yellow-600 animate-spin mr-3" />
-							<span className="text-yellow-700 font-medium">
+						<div className="mb-4 flex items-center justify-center p-4 bg-blue-200 border-blue-700 rounded-lg">
+							<Loader2 className="w-5 h-5 text-blue-600 animate-spin mr-3" />
+							<span className="text-blue-700 font-medium">
 								Memproses pesanan Anda...
 							</span>
 						</div>
@@ -442,7 +442,7 @@ export function BookingModal({
 						<button
 							onClick={onClose}
 							disabled={isProcessing}
-							className={`px-4 py-2 border focus:outline-yellow-400 border-gray-300 rounded-lg transition-colors ${
+							className={`px-4 py-2 border focus:outline-blue-400 border-gray-300 rounded-lg transition-colors ${
 								isProcessing
 									? "opacity-50 cursor-not-allowed"
 									: "hover:bg-gray-100"
@@ -466,7 +466,7 @@ export function BookingModal({
 								selectedMode &&
 								filteredSchedules.length > 0 &&
 								(selectedMode === "online" || selectedLocation)
-									? "bg-black text-white hover:bg-yellow-600"
+									? "bg-black text-white hover:bg-blue-600"
 									: "bg-gray-300 text-gray-500 cursor-not-allowed"
 							}`}>
 							{isProcessing ? (

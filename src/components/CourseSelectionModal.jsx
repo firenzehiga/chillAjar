@@ -40,8 +40,8 @@ export function CourseSelectionModal({
 									onClick={() => onSelect(course)}
 									className={`w-full text-left rounded-xl border-2 transition-all outline-none focus:outline-none flex flex-col gap-2 p-3 sm:p-4 shadow-sm ${
 										selectedCourse?.id === course.id
-											? "border-yellow-500 bg-yellow-50"
-											: "border-gray-200 hover:border-yellow-300 hover:bg-gray-50"
+											? "border-blue-500 bg-blue-50"
+											: "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
 									}`}>
 									<div className="flex items-center gap-3">
 										{/* Foto mentor */}
@@ -52,7 +52,7 @@ export function CourseSelectionModal({
 													"/foto_kursus/default.jpg"
 												)}
 												alt={course.mentor.user.nama || "Nama Mentor"}
-												className="w-10 h-10 rounded-full border-2 border-yellow-400 shadow object-cover bg-white"
+												className="w-10 h-10 rounded-full border-2 border-blue-400 shadow object-cover bg-white"
 												onError={(e) => {
 													e.target.onerror = null;
 													e.target.src = "/foto_kursus/default.jpg";
@@ -61,7 +61,7 @@ export function CourseSelectionModal({
 										)}
 										<div className="flex-1 min-w-0">
 											<div className="flex items-center gap-2">
-												<BookOpen className="w-5 h-5 text-yellow-500" />
+												<BookOpen className="w-5 h-5 text-blue-500" />
 												<span className="font-semibold text-gray-900 text-base truncate">
 													{course.courseName}
 												</span>
@@ -129,7 +129,7 @@ export function CourseSelectionModal({
 														<span className="text-gray-900 font-medium">
 															Gaya Belajar:
 														</span>{" "}
-														<span className="font-semibold text-yellow-600">
+														<span className="font-semibold text-blue-600">
 															{metode}
 														</span>
 													</div>
@@ -170,7 +170,7 @@ export function CourseSelectionModal({
 							}}
 							className={`px-4 py-2 rounded-lg font-medium ${
 								selectedCourse
-									? "bg-black text-white hover:bg-yellow-600"
+									? "bg-black text-white hover:bg-blue-600"
 									: "bg-gray-200 text-gray-500 cursor-not-allowed"
 							}`}
 							disabled={!selectedCourse}>

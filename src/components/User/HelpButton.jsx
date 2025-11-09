@@ -6,7 +6,7 @@ export function HelpButton({ onClick, ...props }) {
 			aria-label="Bantuan"
 			onClick={onClick}
 			className={`
-        group relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border-0 bg-gradient-to-br from-yellow-300 to-yellow-500
+        group relative w-10 h-10 sm:w-12 sm:h-12 rounded-full border-0 bg-gradient-to-br from-blue-300 to-blue-500
         flex items-center justify-center cursor-pointer
         shadow-lg transition-all duration-200
         active:scale-95 focus:outline-none
@@ -23,7 +23,7 @@ export function HelpButton({ onClick, ...props }) {
 				?
 			</span>
 			{/* Ring effect on hover */}
-			<span className="absolute inset-0 rounded-full ring-2 ring-yellow-200 opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none"></span>
+			<span className="absolute inset-0 rounded-full ring-2 ring-blue-200 opacity-0 group-hover:opacity-100 transition duration-200 pointer-events-none"></span>
 		</button>
 	);
 }
@@ -67,7 +67,7 @@ const steps = [
 		title: "Pilih Jadwal & Metode",
 		desc: "Tentukan jadwal dan pilih metode belajar (online/offline).",
 		icon: (
-			<span className="bg-yellow-100 text-yellow-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+			<span className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-3">
 				<svg
 					className="w-5 h-5"
 					fill="none"
@@ -166,7 +166,7 @@ export function GuideModal({ show, onClose }) {
 						exit={{ y: -30, opacity: 0 }}
 						transition={{ duration: 0.3 }}
 						className="absolute left-[40%] sm:left-[48%] -translate-x-1/2 top-5 z-20">
-						<div className="rounded-full bg-yellow-200 shadow-lg flex items-center justify-center w-19 h-19 border-4 border-white">
+						<div className="rounded-full bg-blue-200 shadow-lg flex items-center justify-center w-19 h-19 border-4 border-white">
 							<svg width="46" height="46" viewBox="0 0 60 60" fill="none">
 								<circle cx="30" cy="30" r="30" fill="#FDE68A" />
 								<text
@@ -197,7 +197,7 @@ export function GuideModal({ show, onClose }) {
 						</button>
 
 						{/* Header kuning kecil */}
-						<div className="w-full rounded-t-2xl bg-gradient-to-r from-yellow-300 via-yellow-200 to-yellow-100 px-4 sm:px-8 pt-8 pb-4 flex flex-col items-center ">
+						<div className="w-full rounded-t-2xl bg-gradient-to-r from-blue-300 via-blue-200 to-blue-100 px-4 sm:px-8 pt-8 pb-4 flex flex-col items-center ">
 							<h2 className="text-lg font-bold text-gray-800 mb-1 text-center">
 								Langkah Pemesanan
 							</h2>

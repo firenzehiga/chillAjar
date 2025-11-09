@@ -3,7 +3,7 @@ export function LoadingSpinner({
 	message = "Loading data...",
 	size = "w-8 h-8",
 	height = "h-64",
-	spinnerColor = "text-yellow-500", 
+	spinnerColor = "text-blue-500",
 }) {
 	return (
 		<div className={`flex items-center justify-center ${height} text-gray-600`}>

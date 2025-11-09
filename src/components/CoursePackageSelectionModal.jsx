@@ -114,7 +114,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 		<div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-2 sm:p-4">
 			<div className="bg-white rounded-2xl shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden">
 				{/* Header - More compact and mobile-friendly */}
-				<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 p-3 sm:p-4 text-white">
+				<div className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 sm:p-4 text-white">
 					<div className="flex items-center justify-between">
 						<div>
 							<h2 className="text-lg sm:text-xl font-bold flex items-center">
@@ -123,14 +123,14 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 									Pilih Paket - {course?.courseName}
 								</span>
 							</h2>
-							<p className="text-yellow-100 text-xs mt-1 hidden sm:block">
+							<p className="text-blue-100 text-xs mt-1 hidden sm:block">
 								Setiap paket memiliki benefit yang berbeda. Pilih yang paling
 								cocok untuk pembelajaran Anda.
 							</p>
 						</div>
 						<button
 							onClick={handleClose}
-							className="text-white hover:text-yellow-200 transition-colors p-1 sm:p-2">
+							className="text-white hover:text-blue-200 transition-colors p-1 sm:p-2">
 							<X className="w-5 h-5 sm:w-6 sm:h-6" />
 						</button>
 					</div>
@@ -153,7 +153,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 							</p>
 							<button
 								onClick={handleRetry}
-								className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 text-sm">
+								className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
 								Coba Lagi
 							</button>
 						</div>
@@ -205,7 +205,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 									disabled={!selectedPackage}
 									className={`flex-1 sm:flex-none flex items-center justify-center px-4 sm:px-6 py-2 rounded-lg transition-colors text-sm ${
 										selectedPackage
-											? "bg-yellow-600 text-white hover:bg-yellow-700"
+											? "bg-blue-600 text-white hover:bg-blue-700"
 											: "bg-gray-300 text-gray-500 cursor-not-allowed"
 									}`}>
 									Lanjutkan

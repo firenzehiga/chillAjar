@@ -41,7 +41,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 				// tambahkan container actions dengan gap agar tombol tidak saling dempet
 				actions: "flex gap-3 justify-center mt-4",
 				confirmButton:
-					"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+					"px-4 py-2 focus:outline-none rounded-md bg-chill-blue hover:bg-blue-600 text-white",
 				cancelButton:
 					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
 			},
@@ -187,7 +187,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 					);
 				} else {
 					return (
-						<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+						<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
 							Data mode tidak valid
 						</span>
 					);
@@ -252,7 +252,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
 					Manage Testimonials
 				</h1>
 				<p className="text-gray-600">
@@ -286,7 +286,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 								placeholder="Cari nama, kursus, atau komentar..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							/>
 						</div>
 						<DataTable

@@ -57,7 +57,7 @@ export function AboutPage({ onNavigate }) {
 			label: "Available Courses",
 			value:
 				coursesLoading || mentorsLoading ? (
-					<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
+					<span className="inline-block w-12 h-7 rounded-xl bg-chill-blue animate-pulse mx-auto" />
 				) : coursesError ? (
 					"Error"
 				) : (
@@ -69,7 +69,7 @@ export function AboutPage({ onNavigate }) {
 			label: "Active Mentors",
 			value:
 				mentorsLoading || coursesLoading ? (
-					<span className="inline-block w-12 h-7 rounded-xl bg-yellow-500 animate-pulse mx-auto" />
+					<span className="inline-block w-12 h-7 rounded-xl bg-chill-blue animate-pulse mx-auto" />
 				) : mentorsError ? (
 					"Error"
 				) : (
@@ -128,10 +128,10 @@ export function AboutPage({ onNavigate }) {
 			{/* Animated Background */}
 			<div className="absolute inset-0 -z-10">
 				{/* Gradient Background */}
-				<div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-yellow-50"></div>
+				<div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-blue-50"></div>
 
 				{/* Floating Elements */}
-				<div className="absolute top-20 left-10 w-20 h-20 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+				<div className="absolute top-20 left-10 w-20 h-20 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
 				<div className="absolute top-40 right-20 w-32 h-32 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
 				<div className="absolute bottom-20 left-20 w-24 h-24 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
 
@@ -151,18 +151,18 @@ export function AboutPage({ onNavigate }) {
 				<div className="text-center mb-16 relative">
 					{/* Background decoration */}
 				{/* <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-						<div className="w-32 h-32 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full opacity-20 blur-3xl"></div>
+						<div className="w-32 h-32 bg-gradient-to-r from-chill-blue to-green-400 rounded-full opacity-20 blur-3xl"></div>
 					</div>
 
 					<div className="relative z-20 max-w-4xl mx-auto px-4">
-						<div className="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium mb-6 animate-fadeInUp">
+						<div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-6 animate-fadeInUp">
 							<Star className="w-4 h-4 mr-2" />
 							Platform Pembelajaran Terdepan
 						</div>
 
 						<h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight animate-fadeInUp animation-delay-200">
 							Empowering{" "}
-							<span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+							<span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent">
 								Students
 							</span>{" "}
 							Through{" "}
@@ -180,15 +180,15 @@ export function AboutPage({ onNavigate }) {
 				{/* <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 animate-fadeInUp animation-delay-600">
 							<button
 								onClick={() => onNavigate("courses")}
-								className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
+								className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
 								<Zap className="w-5 h-5" />
 								Mulai Belajar
 							</button>
 							<a
 								href="#cerita-kami"
 								className="border-2 border-gray-300 text-gray-700 px-8 py-3
-														rounded-xl font-semibold hover:border-yellow-400
-														hover:text-yellow-600 transition-all duration-300 flex
+														rounded-xl font-semibold hover:border-chill-blue
+														hover:text-blue-600 transition-all duration-300 flex
 														items-center justify-center gap-2">
 								<Coffee className="w-5 h-5" />
 								Pelajari Lebih Lanjut
@@ -200,16 +200,16 @@ export function AboutPage({ onNavigate }) {
 				{/* Stats */}
 				<div className="relative mb-20">
 					{/* Background decoration */}
-					<div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 rounded-3xl transform rotate-1 opacity-10"></div>
-					<div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-3xl transform -rotate-1 opacity-10"></div>
+					<div className="absolute inset-0 bg-gradient-to-r from-chill-blue via-green-400 to-red-400 rounded-3xl transform rotate-1 opacity-10"></div>
+					<div className="absolute inset-0 bg-gradient-to-r from-chill-blue via-purple-400 to-pink-400 rounded-3xl transform -rotate-1 opacity-10"></div>
 
-					<div className="relative bg-gradient-to-r from-chill-yellow via-orange-400 to-chill-yellow  py-8 rounded-3xl shadow-2xl mx-4">
+					<div className="relative bg-gradient-to-r from-chill-blue-dark via-chill-blue to-chill-blue-dark py-8 rounded-3xl shadow-2xl mx-4">
 						<div className="max-w-4xl mx-auto px-1 sm:px-3 lg:px-5">
 							<div className="text-center mb-8">
 								<h2 className="text-3xl font-bold text-white mb-4">
 									Platform dalam Angka
 								</h2>
-								<p className="text-yellow-100 text-lg">
+								<p className="text-blue-100 text-lg">
 									Pencapaian yang membanggakan
 								</p>
 							</div>
@@ -224,7 +224,7 @@ export function AboutPage({ onNavigate }) {
 											<div className="text-3xl font-bold text-white mb-1 group-hover:scale-110 transition-transform duration-300">
 												{stat.value}
 											</div>
-											<div className="text-yellow-100 font-semibold text-sm">
+											<div className="text-blue-100 font-semibold text-sm">
 												{stat.label}
 											</div>
 										</div>
@@ -259,14 +259,14 @@ export function AboutPage({ onNavigate }) {
 								<div key={index} className="group">
 									<div className="relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 p-8 hover:-translate-y-4 overflow-hidden border border-gray-100">
 										{/* Background decorations */}
-										<div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full -translate-y-20 translate-x-20 group-hover:scale-150 transition-transform duration-1000"></div>
+										<div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-100 to-green-100 rounded-full -translate-y-20 translate-x-20 group-hover:scale-150 transition-transform duration-1000"></div>
 										<div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-100 to-purple-100 rounded-full translate-y-16 -translate-x-16 group-hover:scale-125 transition-transform duration-1000"></div>
 
 										<div className="relative z-10">
-											<div className="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 w-20 h-20 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg">
+											<div className="bg-gradient-to-br from-chill-blue via-chill-blue to-chill-blue w-20 h-20 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg">
 												<value.icon className="h-10 w-10 text-white" />
 											</div>
-											<h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-yellow-500 group-hover:to-orange-500 group-hover:bg-clip-text transition-all duration-500">
+											<h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-green-500 group-hover:bg-clip-text transition-all duration-500">
 												{value.title}
 											</h3>
 											<p className="text-gray-600 leading-relaxed text-lg">
@@ -275,7 +275,7 @@ export function AboutPage({ onNavigate }) {
 
 											{/* Hover indicator */}
 											<div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-												<div className="h-1 w-16 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full"></div>
+												<div className="h-1 w-16 bg-gradient-to-r from-chill-blue to-green-400 rounded-full"></div>
 											</div>
 										</div>
 									</div>
@@ -309,7 +309,7 @@ export function AboutPage({ onNavigate }) {
 								<div className="grid md:grid-cols-2 gap-12 items-center">
 									<div className="space-y-6">
 										<div className="flex items-start space-x-4">
-											<div className="bg-gradient-to-br from-yellow-400 to-orange-400 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
+											<div className="bg-gradient-to-br from-chill-blue to-green-400 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
 												<Quote className="w-6 h-6 text-white" />
 											</div>
 											<div>
@@ -326,7 +326,7 @@ export function AboutPage({ onNavigate }) {
 										</div>
 
 										<div className="flex items-start space-x-4">
-											<div className="bg-gradient-to-br from-blue-400 to-purple-400 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
+											<div className="bg-gradient-to-br from-chill-blue to-green-400 w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
 												<Rocket className="w-6 h-6 text-white" />
 											</div>
 											<div>
@@ -359,12 +359,10 @@ export function AboutPage({ onNavigate }) {
 									</div>
 
 									<div className="relative">
-										<div className="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 rounded-3xl p-8 text-white">
+										<div className="bg-gradient-to-br from-chill-blue via-blue-400 to-chill-blue-dark rounded-3xl p-8 text-white">
 											<div className="text-center">
 												<div className="text-5xl font-bold mb-2">2025</div>
-												<div className="text-yellow-100 mb-4">
-													Tahun Berdiri
-												</div>
+												<div className="text-blue-100 mb-4">Tahun Berdiri</div>
 												{/* <div className="space-y-4">
 													<div className="flex items-center justify-between">
 														<span>Platform Launch</span>
@@ -418,7 +416,7 @@ export function AboutPage({ onNavigate }) {
 									title: "Mentor Berpengalaman",
 									description:
 										"Mentor yang ahli di bidangnya dengan track record yang jelas",
-									color: "from-blue-400 to-blue-600",
+									color: "from-chill-blue to-blue-600",
 								},
 								{
 									icon: Clock,

@@ -336,12 +336,12 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 						<div className="flex justify-end space-x-3">
 							<button
 								onClick={onClose}
-								className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-yellow-500">
+								className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-blue-500">
 								Nanti
 							</button>
 							<button
 								onClick={handleSubmit}
-								className="px-4 py-2 bg-black text-white rounded-lg focus:outline-none hover:bg-yellow-700 flex items-center disabled:opacity-60 disabled:cursor-not-allowed"
+								className="px-4 py-2 bg-black text-white rounded-lg focus:outline-none hover:bg-blue-700 flex items-center disabled:opacity-60 disabled:cursor-not-allowed"
 								disabled={loading}>
 								{loading ? (
 									<Loader2 className="w-4 h-4 mr-2 animate-spin" />

@@ -2,11 +2,11 @@ import { Star, Zap, Coffee } from "lucide-react";
 import { useState, useEffect } from "react";
 export function Hero({ onNavigate }) {
 	return (
-		<section className="relative left-1/2 right-1/2 bg-gradient-to-b w-full from-chill-yellow to-gray-50  -translate-x-1/2 transform py-10 overflow-hidden">
+		<section className="relative left-1/2 right-1/2 bg-gradient-to-b w-full from-chill-blue to-gray-50  -translate-x-1/2 transform py-10 overflow-hidden">
 			{/* Yang ini tetap batasi isi agar tidak melebar */}
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="text-center space-y-5 relative">
-					<div className="inline-flex items-center px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium mb-2  animate-fadeInUp">
+					<div className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-2  animate-fadeInUp">
 						<Star className="w-4 h-4 mr-2" />
 						Menuju Platform Pembelajaran Terdepan
 					</div>{" "}
@@ -74,12 +74,12 @@ export function Hero({ onNavigate }) {
 					</div>
 					<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
 						Empowering{" "}
-						<span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+						<span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 bg-clip-text text-transparent drop-shadow-md">
 							Students
 						</span>{" "}
 						<span className="px-2 py-1 relative inline-block">
 							<svg
-								className="absolute -bottom-4 left-0 w-full text-yellow-300"
+								className="absolute -bottom-4 left-0 w-full text-blue-300"
 								viewBox="0 0 410 18"
 								xmlns="http://www.w3.org/2000/svg"
 								preserveAspectRatio="none"
@@ -105,14 +105,14 @@ export function Hero({ onNavigate }) {
 					<div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 animate-fadeInUp ">
 						<a
 							href="mentors"
-							className="focus:outline-none outline-none relative group text-white transition-all transform will-change-transform flex items-center justify-center whitespace-nowrap rounded-xl hover:rotate-[3deg] duration-300 shadow-lg hover:shadow-xl h-14 text-md pl-[5rem] pr-6 bg-gradient-to-r from-yellow-500 to-orange-500 shadow-yellow-400/30 hover:shadow-yellow-400/30 active:translate-y-1 active:scale-95 active:duration-150"
+							className="focus:outline-none outline-none relative group text-white transition-all transform will-change-transform flex items-center justify-center whitespace-nowrap rounded-xl hover:rotate-[3deg] duration-300 shadow-lg hover:shadow-xl h-14 text-md pl-[5rem] pr-6 bg-gradient-to-r from-blue-500 to-chill-blue-dark shadow-blue-400/30 hover:shadow-blue-400/30 active:translate-y-1 active:scale-95 active:duration-150"
 							onClick={(e) => {
 								e.preventDefault();
 								onNavigate("mentors");
 							}}>
 							<div className="absolute left-0 top-0 mt-1 ml-1 bg-white text-white p-[0.35rem] bottom-1 group-hover:w-[calc(100%-0.5rem)] group-active:translate-y-1 group-active:scale-95 transition-all rounded-lg duration-300 h-12 w-12 overflow-hidden">
 								<img
-									src="/logo.png"
+									src="/hero.png"
 									alt="icon"
 									className="h-full w-full object-contain"
 								/>
@@ -127,8 +127,8 @@ export function Hero({ onNavigate }) {
 								onNavigate("about");
 							}}
 							className="border-2 border-gray-300 text-gray-700 px-8 py-3
-                                                                                        rounded-xl font-semibold hover:border-yellow-400
-                                                                                        hover:text-yellow-600 transition-all duration-300 flex
+                                                                                        rounded-xl font-semibold hover:border-blue-400
+                                                                                        hover:text-blue-600 transition-all duration-300 flex
                                                                                         items-center justify-center gap-2">
 							<Coffee className="w-5 h-5" />
 							Pelajari Lebih Lanjut
@@ -178,11 +178,11 @@ export function HeroRandom({ onNavigate }) {
 	}, []);
 
 	return (
-		<section className="relative left-1/2 right-1/2 bg-gradient-to-b w-full from-chill-yellow to-gray-50  -translate-x-1/2 transform py-10 overflow-hidden">
+		<section className="relative left-1/2 right-1/2 bg-gradient-to-b w-full from-chill-blue to-gray-50  -translate-x-1/2 transform py-10 overflow-hidden">
 			{/* Yang ini tetap batasi isi agar tidak melebar */}
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="text-center space-y-5 relative">
-					<div className="inline-flex items-center px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium mb-2  animate-fadeInUp">
+					<div className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-2  animate-fadeInUp">
 						<Star className="w-4 h-4 mr-2" />
 						Menuju Platform Pembelajaran Terdepan
 					</div>
@@ -191,7 +191,7 @@ export function HeroRandom({ onNavigate }) {
 					{/* <div className="flex justify-center mb-2">
 						<button
 							onClick={generateRandomAvatars}
-							className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 text-sm">
+							className="px-4 py-2 bg-chill-blue text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 text-sm">
 							🔄 Refresh Avatar
 						</button>
 					</div> */}
@@ -250,12 +250,12 @@ export function HeroRandom({ onNavigate }) {
 					</div>
 					<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
 						Empowering{" "}
-						<span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
+						<span className="bg-gradient-to-r from-blue-500 to-chill-blue-dark bg-clip-text text-transparent">
 							Students
 						</span>{" "}
 						<span className="px-2 py-1 relative inline-block">
 							<svg
-								className="absolute -bottom-4 left-0 w-full text-yellow-300"
+								className="absolute -bottom-4 left-0 w-full text-blue-300"
 								viewBox="0 0 410 18"
 								xmlns="http://www.w3.org/2000/svg"
 								preserveAspectRatio="none"
@@ -281,7 +281,7 @@ export function HeroRandom({ onNavigate }) {
 					<div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 animate-fadeInUp ">
 						<a
 							href="mentors"
-							className="focus:outline-none outline-none relative group text-white transition-all transform will-change-transform flex items-center justify-center whitespace-nowrap rounded-xl hover:rotate-[3deg] duration-300 shadow-lg hover:shadow-xl h-14 text-md pl-[5rem] pr-6 bg-gradient-to-r from-yellow-500 to-orange-500 shadow-yellow-400/30 hover:shadow-yellow-400/30 active:translate-y-1 active:scale-95 active:duration-150"
+							className="focus:outline-none outline-none relative group text-white transition-all transform will-change-transform flex items-center justify-center whitespace-nowrap rounded-xl hover:rotate-[3deg] duration-300 shadow-lg hover:shadow-xl h-14 text-md pl-[5rem] pr-6 bg-gradient-to-r from-blue-500 to-blue-600 shadow-blue-400/30 hover:shadow-blue-400/30 active:translate-y-1 active:scale-95 active:duration-150"
 							onClick={(e) => {
 								e.preventDefault();
 								onNavigate("mentors");
@@ -303,8 +303,8 @@ export function HeroRandom({ onNavigate }) {
 								onNavigate("about");
 							}}
 							className="border-2 border-gray-300 text-gray-700 px-8 py-3
-                                                                                        rounded-xl font-semibold hover:border-yellow-400
-                                                                                        hover:text-yellow-600 transition-all duration-300 flex
+                                                                                        rounded-xl font-semibold hover:border-blue-400
+                                                                                        hover:text-blue-600 transition-all duration-300 flex
                                                                                         items-center justify-center gap-2">
 							<Coffee className="w-5 h-5" />
 							Pelajari Lebih Lanjut

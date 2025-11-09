@@ -80,7 +80,7 @@ export function MentorTestimoniesPage() {
 					);
 				} else {
 					return (
-						<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+						<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
 							Data mode tidak valid
 						</span>
 					);
@@ -150,7 +150,7 @@ export function MentorTestimoniesPage() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
 					Students Testimonials
 				</h1>
 				<p className="text-gray-600">
@@ -184,7 +184,7 @@ export function MentorTestimoniesPage() {
 								placeholder="Cari nama, kursus, atau tanggal..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							/>
 						</div>
 						<DataTable

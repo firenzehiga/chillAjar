@@ -35,7 +35,7 @@ const TabNavigation = ({ tabs, activeTab, onTabChange, getTabStatus }) => (
 							onClick={() => onTabChange(tab.id)}
 							className={`focus:outline-none py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2 transition-colors ${
 								activeTab === tab.id
-									? "border-yellow-500 text-yellow-600"
+									? "border-blue-500 text-blue-600"
 									: status === "completed"
 									? "border-green-300 text-green-600 hover:border-green-400"
 									: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -74,7 +74,7 @@ const CourseBasicInfo = ({
 					value={formData.namaKursus}
 					onChange={onChange}
 					disabled={disabled}
-					className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none disabled:bg-gray-100"
+					className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 					placeholder="Enter course name"
 					required
 				/>
@@ -93,7 +93,7 @@ const CourseBasicInfo = ({
 						value={formData.mentorId}
 						onChange={onChange}
 						disabled={disabled}
-						className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none disabled:bg-gray-100"
+						className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 						required>
 						<option value="" disabled>
 							Pilih mentor...
@@ -113,24 +113,24 @@ const CourseBasicInfo = ({
 					className="block text-sm font-medium text-gray-700 mb-2">
 					Gambar
 					<span
-						className="ml-2 inline-block text-xs text-yellow-500 cursor-help"
+						className="ml-2 inline-block text-xs text-blue-500 cursor-help"
 						title="Jika gambar yang tampil adalah placeholder abu-abu, berarti path terisi di database, namun tidak ditemukan dalam storage. Silakan unggah ulang gambar kursus.">
 						<Lightbulb className="inline-block w-3 h-3 mb-1" />
 					</span>
 				</label>
 				<div
-					className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors cursor-pointer"
+					className="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer"
 					onDragOver={(e) => {
 						e.preventDefault();
-						e.currentTarget.classList.add("border-yellow-500");
+						e.currentTarget.classList.add("border-blue-500");
 					}}
 					onDragLeave={(e) => {
 						e.preventDefault();
-						e.currentTarget.classList.remove("border-yellow-500");
+						e.currentTarget.classList.remove("border-blue-500");
 					}}
 					onDrop={(e) => {
 						e.preventDefault();
-						e.currentTarget.classList.remove("border-yellow-500");
+						e.currentTarget.classList.remove("border-blue-500");
 						const file = e.dataTransfer.files[0];
 						if (file) onFileChange({ target: { files: [file] } });
 					}}>
@@ -189,7 +189,7 @@ const CourseBasicInfo = ({
 				value={formData.deskripsi}
 				onChange={onChange}
 				disabled={disabled}
-				className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none disabled:bg-gray-100"
+				className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 				placeholder="Enter course description"
 				rows="4"
 				required
@@ -312,7 +312,7 @@ const ScheduleManager = ({
 										value={schedule.tanggal}
 										onChange={(e) => onScheduleChange(index, e)}
 										disabled={disabled}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none disabled:bg-gray-100"
+										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 										required
 									/>
 								</div>
@@ -329,7 +329,7 @@ const ScheduleManager = ({
 										value={schedule.waktu}
 										onChange={(e) => onScheduleChange(index, e)}
 										disabled={disabled}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none disabled:bg-gray-100"
+										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 										required
 									/>
 								</div>
@@ -346,7 +346,7 @@ const ScheduleManager = ({
 										value={schedule.gayaMengajar}
 										onChange={(e) => onScheduleChange(index, e)}
 										disabled={disabled}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none disabled:bg-gray-100"
+										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 										required>
 										<option value="online">Online</option>
 										<option value="offline">Offline</option>
@@ -368,7 +368,7 @@ const ScheduleManager = ({
 										value={schedule.keterangan || `Kursus dengan ${mentorName}`}
 										onChange={(e) => onScheduleChange(index, e)}
 										disabled={disabled}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none disabled:bg-gray-100"
+										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 										placeholder={`Kursus dengan ${mentorName}`}
 									/>
 								</div>
@@ -390,7 +390,7 @@ const ScheduleManager = ({
 											value={schedule.tempat}
 											onChange={(e) => onScheduleChange(index, e)}
 											disabled={disabled}
-											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none disabled:bg-gray-100"
+											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 											placeholder="Enter location (optional)"
 										/>
 									</div>
@@ -439,7 +439,7 @@ const PackageSelector = ({
 							key={pkg.id}
 							className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
 								isActive
-									? "border-yellow-500 bg-yellow-50"
+									? "border-blue-500 bg-blue-50"
 									: "border-gray-200 hover:border-gray-300"
 							} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
 							onClick={() => !disabled && onPackageToggle(pkg.id)}>
@@ -453,7 +453,7 @@ const PackageSelector = ({
 								<div
 									className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
 										isActive
-											? "bg-yellow-500 border-yellow-500"
+											? "bg-chill-blue border-blue-500"
 											: "border-gray-300"
 									}`}>
 									{isActive && (
@@ -675,12 +675,12 @@ const CourseReview = ({
 
 			{/* Form validation helper */}
 			{!isFormValid() && (
-				<div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-					<div className="flex items-center text-yellow-600">
+				<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+					<div className="flex items-center text-blue-600">
 						<AlertCircle className="w-5 h-5 mr-2" />
 						<span className="font-medium">Lengkapi Data Berikut:</span>
 					</div>
-					<ul className="mt-2 text-sm text-yellow-700 list-disc list-inside">
+					<ul className="mt-2 text-sm text-blue-700 list-disc list-inside">
 						{!formData.namaKursus.trim() && <li>Nama kursus harus diisi</li>}
 						{!formData.deskripsi.trim() && <li>Deskripsi harus diisi</li>}
 						{!schedules.some((s) => s.tanggal && s.waktu && s.gayaMengajar) && (
@@ -782,7 +782,7 @@ export function CourseForm({
 				onClick={() => onNavigate(backNavigationTarget)}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 				type="button">
-				<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+				<div className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 1024 1024"
@@ -803,7 +803,7 @@ export function CourseForm({
 
 			<div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
-					<BookOpen className="w-6 h-6 mr-2 text-yellow-600" />
+					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
 					{isEditMode ? "Edit Course" : "Add New Course"}
 				</h2>
 
@@ -907,7 +907,7 @@ export function CourseForm({
 											handleTabChange(tabs[currentIndex + 1].id);
 										}
 									}}
-									className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+									className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
 									Next →
 								</button>
 							) : (
@@ -917,7 +917,7 @@ export function CourseForm({
 									className={`px-6 py-2 rounded-lg transition-colors ${
 										loading || !isFormValid()
 											? "bg-gray-300 text-gray-500 cursor-not-allowed"
-											: "bg-yellow-600 text-white hover:bg-yellow-700"
+											: "bg-blue-600 text-white hover:bg-blue-700"
 									}`}>
 									{loading ? (
 										<>

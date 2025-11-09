@@ -96,7 +96,7 @@ export function AdminPackagesPage({ onNavigate }) {
 				// tambahkan container actions dengan gap agar tombol tidak saling dempet
 				actions: "flex gap-3 justify-center mt-4",
 				confirmButton:
-					"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+					"px-4 py-2 focus:outline-none rounded-md bg-chill-blue hover:bg-chill-blue text-white",
 				cancelButton:
 					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
 			},
@@ -166,7 +166,7 @@ export function AdminPackagesPage({ onNavigate }) {
 
 				if (now < startDate) {
 					return (
-						<span className="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs">
+						<span className="px-2 py-1 bg-blue-100 text-chill-blue rounded-full text-xs">
 							Akan Datang
 						</span>
 					);
@@ -193,7 +193,7 @@ export function AdminPackagesPage({ onNavigate }) {
 				<div className="flex gap-2">
 					<button
 						onClick={() => handleEdit(row.id)}
-						className="text-blue-600 hover:text-blue-800 outline-none focus:outline-none"
+						className="text-chill-blue hover:text-blue-800 outline-none focus:outline-none"
 						title="Edit">
 						<Pencil className="w-4 h-4" />
 					</button>
@@ -235,7 +235,7 @@ export function AdminPackagesPage({ onNavigate }) {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<Gift className="w-6 h-6 mr-2 text-yellow-600" />
+					<Gift className="w-6 h-6 mr-2 text-chill-blue" />
 					Manage Packages
 				</h1>
 				<p className="text-gray-600">
@@ -248,7 +248,7 @@ export function AdminPackagesPage({ onNavigate }) {
 					<h2 className="text-xl font-semibold">Data Paket</h2>
 					<button
 						onClick={() => onNavigate("admin-add-package")}
-						className="flex items-center px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 outline-none focus:outline-none">
+						className="flex items-center px-4 py-2 bg-chill-blue text-white rounded-lg hover:bg-chill-blue-dark outline-none focus:outline-none">
 						<Plus className="w-4 h-4 mr-2" />
 						Tambah Paket
 					</button>
@@ -271,7 +271,7 @@ export function AdminPackagesPage({ onNavigate }) {
 								placeholder="Cari nama paket atau deskripsi..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+								className="border border-gray-300 rounded-md px-3 py-2 text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							/>
 						</div>
 
@@ -318,7 +318,7 @@ export function AdminPackagesPage({ onNavigate }) {
 																</div>
 															</div>
 														) : (
-															<span className="font-medium text-yellow-600">
+															<span className="font-medium text-chill-blue">
 																Rp {item.price.toLocaleString()}
 															</span>
 														)}
@@ -375,7 +375,7 @@ export function AdminPackagesPage({ onNavigate }) {
 											</div>
 											<div className="flex justify-between items-center font-semibold text-lg border-t pt-2">
 												<span>Total Harga Akhir:</span>
-												<span className="text-yellow-600">
+												<span className="text-chill-blue">
 													Rp{" "}
 													{Math.max(
 														data.items.reduce(

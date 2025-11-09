@@ -18,7 +18,7 @@ export default function ApiError({ code, message, alias }) {
 				Tips 💡: Silakan coba lagi atau hubungi admin.
 			</p>
 			<button
-				className="focus:outline-none outline-none relative group text-slate-950 transition-all transform will-change-transform flex items-center justify-center whitespace-nowrap rounded-lg hover:rotate-[3deg] duration-300 shadow-lg hover:shadow-xl h-14 text-lg pl-[5rem] pr-6 bg-yellow-400 shadow-yellow-400/30 hover:shadow-yellow-400/30 active:translate-y-1 active:scale-95 active:duration-150"
+				className="focus:outline-none outline-none relative group text-slate-950 transition-all transform will-change-transform flex items-center justify-center whitespace-nowrap rounded-lg hover:rotate-[3deg] duration-300 shadow-lg hover:shadow-xl h-14 text-lg pl-[5rem] pr-6 bg-blue-400 shadow-blue-400/30 hover:shadow-blue-400/30 active:translate-y-1 active:scale-95 active:duration-150"
 				onClick={() => window.location.reload()}>
 				<div className="absolute left-0 top-0 mt-1 ml-1 bg-white text-slate-950 p-[0.35rem] bottom-1 group-hover:w-[calc(100%-0.5rem)] group-active:translate-y-1 group-active:scale-95 transition-all rounded-md duration-300 h-12 w-12 overflow-hidden">
 					<img

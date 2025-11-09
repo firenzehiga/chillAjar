@@ -282,7 +282,7 @@ export function FaQWidget() {
 			{/* FAQ Button */}
 			<motion.button
 				onClick={() => setIsOpen(!isOpen)}
-				className=" focus:outline-none fixed bottom-6 left-6 w-12 h-12 bg-yellow-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group z-40"
+				className=" focus:outline-none fixed bottom-6 left-6 w-12 h-12 bg-chill-blue text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group z-40"
 				whileHover={{ scale: 1.1 }}
 				whileTap={{ scale: 0.95 }}>
 				<MessageCircleQuestionIcon className="w-6 h-6 transition-transform duration-300 group-hover:scale-110" />
@@ -297,7 +297,7 @@ export function FaQWidget() {
 						exit={{ opacity: 0, scale: 0.8, y: 50 }}
 						className="fixed bottom-24 left-6 w-80 h-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
 						{/* Header */}
-						<div className="p-4 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white">
+						<div className="p-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center space-x-3">
 									<div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
@@ -305,7 +305,7 @@ export function FaQWidget() {
 									</div>
 									<div>
 										<h3 className="font-medium">FAQ? Assistance</h3>
-										<p className="text-xs text-yellow-100">
+										<p className="text-xs text-blue-100">
 											Bagaimana saya bisa membantu?
 										</p>
 									</div>
@@ -334,7 +334,7 @@ export function FaQWidget() {
 										}`}>
 										{message.sender === "bot" && (
 											<div className="flex items-center space-x-2 mb-1">
-												<div className="w-6 h-6 bg-gradient-to-r from-yellow-500 to-yellow-500 rounded-full flex items-center justify-center">
+												<div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-blue-500 rounded-full flex items-center justify-center">
 													<MessageCircleQuestionIcon className="w-3 h-3 text-white" />
 												</div>
 												<span className="text-xs text-gray-500">Bot FAQ</span>
@@ -343,7 +343,7 @@ export function FaQWidget() {
 										<div
 											className={`p-3 rounded-2xl ${
 												message.sender === "user"
-													? "bg-yellow-600 text-white rounded-br-md"
+													? "bg-blue-600 text-white rounded-br-md"
 													: "bg-white text-gray-900 rounded-bl-md shadow-sm border"
 											}`}>
 											<p className="text-sm whitespace-pre-line leading-relaxed">
@@ -374,10 +374,10 @@ export function FaQWidget() {
 											className={`w-full p-3 bg-white rounded-xl border transition-all duration-200 text-left ${
 												isProcessing
 													? "opacity-50 cursor-not-allowed"
-													: "hover:border-yellow-300 hover:bg-yellow-50"
+													: "hover:border-blue-300 hover:bg-blue-50"
 											}`}>
 											<div className="flex items-center space-x-3">
-												<category.icon className="w-5 h-5 text-yellow-600" />
+												<category.icon className="w-5 h-5 text-blue-600" />
 												<span className="font-medium text-gray-900">
 													{category.category}
 												</span>
@@ -399,10 +399,10 @@ export function FaQWidget() {
 										<button
 											onClick={handleBackToCategories}
 											disabled={isProcessing}
-											className={`focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 focus:outline-none outline-none text-xs transition-colors ${
+											className={`focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:outline-none outline-none text-xs transition-colors ${
 												isProcessing
 													? "text-gray-400 cursor-not-allowed"
-													: "text-yellow-500 hover:text-yellow-600"
+													: "text-blue-500 hover:text-blue-600"
 											}`}>
 											← Kembali
 										</button>
@@ -415,7 +415,7 @@ export function FaQWidget() {
 											className={`w-full p-3 bg-white rounded-xl border transition-all duration-200 text-left ${
 												isProcessing
 													? "opacity-50 cursor-not-allowed"
-													: "hover:border-yellow-300 hover:bg-yellow-50"
+													: "hover:border-blue-300 hover:bg-blue-50"
 											}`}>
 											<p className="text-sm font-medium text-gray-900">
 												{question.question}
@@ -438,7 +438,7 @@ export function FaQWidget() {
 										value={searchQuery}
 										onChange={(e) => setSearchQuery(e.target.value)}
 										placeholder="Cari FAQ..."
-										className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm"
+										className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
 									/>
 								</div>
 								{searchQuery && (
@@ -448,7 +448,7 @@ export function FaQWidget() {
 										className={`w-full p-2 text-left text-xs rounded-lg transition-colors ${
 											isProcessing
 												? "bg-gray-50 text-red-200opacity-50 cursor-not-allowed"
-												: "bg-gray-50 text-red-200hover:bg-yellow-50"
+												: "bg-gray-50 text-red-200hover:bg-blue-50"
 										}`}>
 										<div className="flex items-center">
 											<X className="w-4 h-4" />
@@ -468,7 +468,7 @@ export function FaQWidget() {
 												handleQuestionClick(question);
 												setSearchQuery("");
 											}}
-											className="w-full p-2 text-left text-xs bg-gray-50 hover:bg-yellow-50 rounded-lg transition-colors">
+											className="w-full p-2 text-left text-xs bg-gray-50 hover:bg-blue-50 rounded-lg transition-colors">
 											{question.question}
 										</button>
 									))}

@@ -66,7 +66,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 					disabled={loading}>
 					×
 				</button>
-				<h2 className="text-2xl font-bold mb-2 text-center text-yellow-400">
+				<h2 className="text-2xl font-bold mb-2 text-center text-blue-400">
 					Beri Testimoni
 				</h2>
 				<p className="text-center text-gray-500 mb-6 text-md">
@@ -84,7 +84,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 									key={star}
 									className={`text-4xl transition-colors ${
 										(hoverRating || rating) >= star
-											? "text-yellow-400"
+											? "text-blue-400"
 											: "text-gray-300"
 									}`}
 									onClick={() => setRating(star)}
@@ -96,7 +96,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 								</button>
 							))}
 						</div>
-						<span className="text-sm font-semibold text-yellow-500">
+						<span className="text-sm font-semibold text-blue-500">
 							{rating} / 5
 						</span>
 					</div>
@@ -116,7 +116,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 							Komentar (opsional):
 						</label>
 						<textarea
-							className="w-full border focus:outline-none border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 transition min-h-[80px] resize-none"
+							className="w-full border focus:outline-none border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition min-h-[80px] resize-none"
 							rows={3}
 							value={comment}
 							onChange={(e) => setComment(e.target.value)}
@@ -134,7 +134,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 						</button>
 						<button
 							type="submit"
-							className="focus:outline-none px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-semibold shadow-sm transition"
+							className="focus:outline-none px-4 py-2 bg-chill-blue text-white rounded-lg hover:bg-blue-600 font-semibold shadow-sm transition"
 							disabled={loading}>
 							{loading ? (
 								<>

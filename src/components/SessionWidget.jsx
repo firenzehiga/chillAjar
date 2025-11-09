@@ -163,10 +163,10 @@ export function SessionsWidget({
 	if (variant === "compact-dropdown") {
 		return (
 			<div className="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden">
-				<div className="p-3 sm:p-4 bg-gradient-to-r from-yellow-50 to-gray-50 border-b">
+				<div className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-gray-50 border-b">
 					<div className="flex items-center justify-between gap-2">
 						<h3 className="font-semibold text-gray-900 flex items-center text-sm sm:text-base flex-shrink-0">
-							<Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-yellow-600 flex-shrink-0" />
+							<Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-blue-600 flex-shrink-0" />
 							<span className=" sm:inline">Sesi Saya</span>
 						</h3>
 						<div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
@@ -212,9 +212,9 @@ export function SessionsWidget({
 						{/* Animated loading dots */}
 						<span className="flex items-center space-x-1">
 							<p className="mr-1 animate-pulse">Loading sessions</p>
-							<span className="w-2 h-2 mt-1 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-							<span className="w-2 h-2 mt-1 bg-yellow-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-							<span className="w-2 h-2 mt-1 bg-yellow-500 rounded-full animate-bounce"></span>
+							<span className="w-2 h-2 mt-1 bg-chill-blue rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+							<span className="w-2 h-2 mt-1 bg-chill-blue rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+							<span className="w-2 h-2 mt-1 bg-chill-blue rounded-full animate-bounce"></span>
 						</span>
 					</div>
 				) : sessionsToShow.length === 0 ? (
@@ -277,10 +277,10 @@ export function SessionsWidget({
 												onClick={() =>
 													!showLoading && handleOpenTestimoni(session)
 												}
-												className={`outline-none focus:outline-none flex-1 bg-yellow-500 text-white py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+												className={`outline-none focus:outline-none flex-1 bg-chill-blue text-white py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
 													showLoading
 														? "opacity-60 cursor-not-allowed"
-														: "hover:bg-yellow-600"
+														: "hover:bg-blue-600"
 												}`}>
 												Beri Rating
 												<MdRateReview className="w-4 h-4 text-white" />
@@ -291,7 +291,7 @@ export function SessionsWidget({
 													onClick={() =>
 														onNavigate && onNavigate("session-history")
 													}
-													className="flex-1 bg-blue-500 text-white py-1.5 px-2 rounded text-xs font-medium hover:bg-blue-600 transition-colors">
+													className="flex-1 bg-chill-blue text-white py-1.5 px-2 rounded text-xs font-medium hover:bg-blue-600 transition-colors">
 													Lihat Detail
 												</button>
 												<button
@@ -351,9 +351,9 @@ export function SessionsWidget({
 						{/* Animated loading dots */}
 						<span className="flex items-center space-x-1">
 							<p className="mr-1 animate-pulse">Loading sessions</p>
-							<span className="w-2 h-2 mt-1 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-							<span className="w-2 h-2 mt-1 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-							<span className="w-2 h-2 mt-1 bg-blue-500 rounded-full animate-bounce"></span>
+							<span className="w-2 h-2 mt-1 bg-chill-blue rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+							<span className="w-2 h-2 mt-1 bg-chill-blue rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+							<span className="w-2 h-2 mt-1 bg-chill-blue rounded-full animate-bounce"></span>
 						</span>
 					</div>
 				) : sessionsToShow.length === 0 ? (
@@ -403,7 +403,7 @@ export function SessionsWidget({
 											{session.mentor?.user?.nama || "Mentor Name"}
 										</p>
 										<div className="flex items-center">
-											<Star className="w-4 h-4 text-yellow-400 fill-current" />
+											<Star className="w-4 h-4 text-blue-400 fill-current" />
 											<span className="text-sm text-gray-500 ml-1">
 												{session.mentor?.rating || "5.0"}
 											</span>

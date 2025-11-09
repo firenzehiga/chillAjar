@@ -7,7 +7,7 @@ export function FormSkeletonCard() {
 				onClick={() => onNavigate("mentor-manage-courses")}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 				type="button">
-				<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+				<div className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						viewBox="0 0 1024 1024"
@@ -31,7 +31,7 @@ export function FormSkeletonCard() {
 					<span className="text-gray-500 text-base font-medium">
 						Loading form...
 					</span>
-					<div className="ml-2 w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+					<div className="ml-2 w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
 				</div>
 				<form>
 					<div className="h-8 w-48 bg-gray-200 rounded mb-6 animate-pulse" />

@@ -4,7 +4,7 @@ export function NotFoundPage({ onNavigate }) {
 		// <div className="mt-8 mb-7 flex flex-col items-center justify-center">
 		<div className="min-h-screen flex items-center justify-center">
 			<div className="bg-white bg-opacity-80 rounded-xl px-8 py-12 shadow-lg text-center min-w-[320px] min-h-[50vh] flex flex-col justify-center">
-				<h1 className="text-4xl font-bold text-yellow-600 mb-2">404</h1>
+				<h1 className="text-4xl font-bold text-blue-600 mb-2">404</h1>
 				<h2 className="text-2xl font-semibold text-gray-800 mb-4">
 					Halaman Tidak Ditemukan
 				</h2>
@@ -13,7 +13,7 @@ export function NotFoundPage({ onNavigate }) {
 				</p>
 				<a
 					onClick={() => onNavigate("home")}
-					className="inline-block px-6 py-2 bg-yellow-600 text-white rounded-full font-semibold hover:bg-yellow-700 transition">
+					className="inline-block px-6 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition">
 					Kembali ke Beranda
 				</a>
 			</div>

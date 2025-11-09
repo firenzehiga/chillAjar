@@ -184,11 +184,11 @@ export function CoursePackageCard({
 			onClick={() => onSelect(packageData)}
 			className={`relative bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer border-2 ${
 				isSelected
-					? "border-yellow-500 ring-2 ring-yellow-200"
-					: "border-gray-200 hover:border-yellow-300"
+					? "border-blue-500 ring-2 ring-blue-200"
+					: "border-gray-200 hover:border-blue-300"
 			} overflow-hidden group flex flex-col h-full`}>
 			{/* Header dengan nama paket - Mobile-friendly */}
-			<div className="bg-gradient-to-r from-yellow-500 to-yellow-600 p-2 sm:p-3 text-white flex-shrink-0">
+			<div className="bg-gradient-to-r from-blue-500 to-blue-600 p-2 sm:p-3 text-white flex-shrink-0">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center min-w-0 flex-1">
 						<Gift className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 flex-shrink-0" />
@@ -241,13 +241,13 @@ export function CoursePackageCard({
 								<div
 									key={index}
 									className="flex items-center text-xs text-gray-600">
-									<div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-yellow-400 rounded-full mr-1.5 sm:mr-2 flex-shrink-0"></div>
+									<div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-400 rounded-full mr-1.5 sm:mr-2 flex-shrink-0"></div>
 									<span className="truncate">{item.name}</span>
 								</div>
 							))
 						) : (
 							<div className="flex items-center text-xs text-gray-600">
-								<div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-yellow-400 rounded-full mr-1.5 sm:mr-2 flex-shrink-0"></div>
+								<div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-blue-400 rounded-full mr-1.5 sm:mr-2 flex-shrink-0"></div>
 								<span>Akses pembelajaran dengan mentor</span>
 							</div>
 						)}
@@ -297,7 +297,7 @@ export function CoursePackageCard({
 
 						{/* Arrow indicator */}
 						<div className="flex justify-end">
-							<div className="text-yellow-600 group-hover:translate-x-1 transition-transform duration-200">
+							<div className="text-blue-600 group-hover:translate-x-1 transition-transform duration-200">
 								<ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
 							</div>
 						</div>
@@ -307,7 +307,7 @@ export function CoursePackageCard({
 
 			{/* Overlay untuk selected state */}
 			{isSelected && (
-				<div className="absolute inset-0 bg-yellow-500 bg-opacity-10 pointer-events-none"></div>
+				<div className="absolute inset-0 bg-chill-blue bg-opacity-10 pointer-events-none"></div>
 			)}
 		</div>
 	);

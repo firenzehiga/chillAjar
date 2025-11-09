@@ -293,7 +293,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 					<div className="p-6">
 						{mode === "login" && (
 							<div className="flex justify-center mb-6">
-								<img src={logo} alt="ChillAjar Logo" className="h-16 w-auto" />
+								<img src={logo} alt="ChillAjar Logo" className="h-24 w-auto" />
 							</div>
 						)}
 
@@ -311,7 +311,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												name="name"
 												value={formData.name}
 												onChange={handleInputChange}
-												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 												placeholder="Masukkan nama lengkap"
 												required
 											/>
@@ -329,7 +329,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												name="phone"
 												value={formData.phone}
 												onChange={handleInputChange}
-												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 												placeholder="Masukkan nomor whatsapp"
 												required
 											/>
@@ -347,7 +347,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												name="address"
 												value={formData.address}
 												onChange={handleInputChange}
-												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 												placeholder="Masukkan alamat"
 												required
 											/>
@@ -363,7 +363,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 									{/* <label
 												className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
 													formData.role === "pelanggan"
-														? "border-yellow-500 bg-yellow-50"
+														? "border-blue-500 bg-blue-50"
 														: "border-gray-200 hover:border-gray-300"
 												}`}>
 												<input
@@ -377,14 +377,14 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												<UserCheck
 													className={`w-6 h-6 mb-1 ${
 														formData.role === "pelanggan"
-															? "text-yellow-600"
+															? "text-blue-600"
 															: "text-gray-400"
 													}`}
 												/>
 												<span
 													className={`font-medium text-xs ${
 														formData.role === "pelanggan"
-															? "text-yellow-700"
+															? "text-blue-700"
 															: "text-gray-600"
 													}`}>
 													Pelanggan
@@ -394,7 +394,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												</span>
 												{formData.role === "pelanggan" && (
 													<div className="absolute top-1 right-1">
-														<CheckCircle className="w-4 h-4 text-yellow-600" />
+														<CheckCircle className="w-4 h-4 text-blue-600" />
 													</div>
 												)}
 											</label> */}
@@ -404,7 +404,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 											<label
 												className={`relative flex flex-col items-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
 													formData.role === "mentor"
-														? "border-yellow-500 bg-yellow-50"
+														? "border-blue-500 bg-blue-50"
 														: "border-gray-200 hover:border-gray-300"
 												}`}>
 												<input
@@ -418,14 +418,14 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												<GraduationCap
 													className={`w-6 h-6 mb-1 ${
 														formData.role === "mentor"
-															? "text-yellow-600"
+															? "text-blue-600"
 															: "text-gray-400"
 													}`}
 												/>
 												<span
 													className={`font-medium text-xs ${
 														formData.role === "mentor"
-															? "text-yellow-700"
+															? "text-blue-700"
 															: "text-gray-600"
 													}`}>
 													Mentor
@@ -435,7 +435,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												</span>
 												{formData.role === "mentor" && (
 													<div className="absolute top-1 right-1">
-														<CheckCircle className="w-4 h-4 text-yellow-600" />
+														<CheckCircle className="w-4 h-4 text-blue-600" />
 													</div>
 												)}
 											</label>
@@ -459,7 +459,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												<div
 													className={`relative border-2 border-dashed rounded-lg p-4 transition-all ${
 														isUploadingDoc
-															? "border-yellow-400 bg-yellow-50"
+															? "border-blue-400 bg-blue-50"
 															: supportingDoc
 															? "border-green-400 bg-green-50"
 															: "border-gray-300 hover:border-gray-400"
@@ -477,8 +477,8 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 													<div className="text-center">
 														{isUploadingDoc ? (
 															<div className="flex flex-col items-center">
-																<Loader2 className="w-6 h-6 text-yellow-500 animate-spin mb-1" />
-																<p className="text-xs font-medium text-yellow-600">
+																<Loader2 className="w-6 h-6 text-blue-500 animate-spin mb-1" />
+																<p className="text-xs font-medium text-blue-600">
 																	Mengunggah dokumen...
 																</p>
 																<p className="text-xs text-gray-500">
@@ -564,7 +564,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 										name="email"
 										value={formData.email}
 										onChange={handleInputChange}
-										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 										placeholder="Masukkan email"
 										required
 									/>
@@ -582,7 +582,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 										name="password"
 										value={formData.password}
 										onChange={handleInputChange}
-										className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+										className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 										placeholder="Masukkan kata sandi"
 										required
 									/>
@@ -612,7 +612,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												id="privacy-terms"
 												checked={agreedToTerms}
 												onChange={(e) => setAgreedToTerms(e.target.checked)}
-												className="w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500 focus:ring-2 focus:outline-none "
+												className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 focus:outline-none "
 											/>
 										</div>
 										<div className="flex-1">
@@ -650,7 +650,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 							<button
 								type="submit"
 								disabled={isLoading || (mode === "register" && !agreedToTerms)}
-								className={`w-full outline-none focus:outline-none transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
+								className={`w-full outline-none focus:outline-none transition-all bg-chill-blue text-white font-medium px-6 py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
 									isLoading || (mode === "register" && !agreedToTerms)
 										? "opacity-50 cursor-not-allowed"
 										: ""
@@ -672,7 +672,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 										<button
 											type="button"
 											onClick={() => handleModeChange("register")}
-											className="text-yellow-600 hover:text-yellow-700 font-medium focus:outline-none outline-none">
+											className="text-blue-600 hover:text-blue-700 font-medium focus:outline-none outline-none">
 											Daftar
 										</button>
 									</>
@@ -682,7 +682,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 										<button
 											type="button"
 											onClick={() => handleModeChange("login")}
-											className="text-yellow-600 hover:text-yellow-700 font-medium focus:outline-none outline-none">
+											className="text-blue-600 hover:text-blue-700 font-medium focus:outline-none outline-none">
 											Masuk
 										</button>
 									</>

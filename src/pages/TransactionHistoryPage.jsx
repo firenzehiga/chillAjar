@@ -278,7 +278,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	const getStatusStyle = (status) => {
 		switch (status) {
 			case "waiting_verification":
-				return "bg-yellow-100 text-yellow-800";
+				return "bg-blue-100 text-blue-800";
 			case "accepted":
 				return "bg-green-100 text-green-800";
 			case "rejected":
@@ -384,15 +384,15 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					</div>
 					<button
 						onClick={() => setShowFilters(!showFilters)}
-						className={`outline-none focus:outline-yellow-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
 							showFilters
-								? "bg-yellow-50 border-yellow-400 text-yellow-700"
-								: "bg-white border-gray-200 text-gray-700 hover:border-yellow-300"
+								? "bg-blue-50 border-blue-400 text-blue-700"
+								: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
 						}`}>
 						<Filter className="w-4 h-4" />
 						<span>Filter</span>
 						{activeFiltersCount > 0 && (
-							<span className="absolute -top-2 -right-2 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
+							<span className="absolute -top-2 -right-2 w-5 h-5 bg-chill-blue text-white text-xs rounded-full flex items-center justify-center animate-pulse">
 								{activeFiltersCount}
 							</span>
 						)}
@@ -633,8 +633,8 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 									</div>
 								</div>
 								{session.status === "waiting_verification" && (
-									<div className="mt-4 bg-yellow-50 p-4 rounded-lg">
-										<p className="text-yellow-800 text-sm">
+									<div className="mt-4 bg-blue-50 p-4 rounded-lg">
+										<p className="text-blue-800 text-sm">
 											Pembayaran Anda sedang diverifikasi. Proses ini biasanya
 											memakan waktu 1-2 jam kerja. Kami akan memberi notifikasi
 											setelah verifikasi selesai.

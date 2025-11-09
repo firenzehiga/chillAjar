@@ -6,7 +6,7 @@ export function ProfileSkeletonMentor() {
 		<div className="py-8">
 			<div className="max-w-2xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-					<div className="h-48 bg-gradient-to-r from-yellow-400 to-yellow-600 relative">
+					<div className="h-48 bg-gradient-to-r from-blue-400 to-blue-600 relative">
 						<div className="absolute -bottom-16 left-8">
 							<div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 animate-pulse" />
 						</div>
@@ -23,12 +23,12 @@ export function ProfileSkeletonMentor() {
 							<div className="w-32 h-10 bg-gray-200 rounded-full animate-pulse" />
 						</div>
 						<div className="grid grid-cols-2 gap-6 mb-8">
-							<div className="bg-yellow-50 p-4 rounded-xl text-center">
+							<div className="bg-blue-50 p-4 rounded-xl text-center">
 								<div className="w-6 h-6 mx-auto mb-2 bg-gray-200 rounded-full animate-pulse" />
 								<div className="h-7 w-16 mx-auto bg-gray-200 rounded mb-1 animate-pulse" />
 								<div className="h-4 w-24 mx-auto bg-gray-100 rounded animate-pulse" />
 							</div>
-							<div className="bg-yellow-50 p-4 rounded-xl text-center">
+							<div className="bg-blue-50 p-4 rounded-xl text-center">
 								<div className="w-6 h-6 mx-auto mb-2 bg-gray-200 rounded-full animate-pulse" />
 								<div className="h-7 w-16 mx-auto bg-gray-200 rounded mb-1 animate-pulse" />
 								<div className="h-4 w-24 mx-auto bg-gray-100 rounded animate-pulse" />
@@ -57,7 +57,7 @@ export function ProfileSkeletonUser() {
 		<div className="py-8">
 			<div className="max-w-2xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-					<div className="h-48 bg-gradient-to-r from-yellow-400 to-yellow-600 relative">
+					<div className="h-48 bg-gradient-to-r from-blue-400 to-blue-600 relative">
 						<div className="absolute -bottom-16 left-8">
 							<div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gray-200 animate-pulse" />
 						</div>
@@ -82,20 +82,20 @@ export function ProfileSkeletonUser() {
 
 						{/* stats: 2 on top, 1 full-width bawah */}
 						<div className="grid grid-cols-2 gap-6 mb-8">
-							<div className="bg-yellow-50 p-4 rounded-xl text-center">
+							<div className="bg-blue-50 p-4 rounded-xl text-center">
 								<div className="w-6 h-6 mx-auto mb-2 bg-gray-200 rounded-full animate-pulse" />
 								<div className="h-7 w-16 mx-auto bg-gray-200 rounded mb-1 animate-pulse" />
 								<div className="h-4 w-24 mx-auto bg-gray-100 rounded animate-pulse" />
 							</div>
 
-							<div className="bg-yellow-50 p-4 rounded-xl text-center">
+							<div className="bg-blue-50 p-4 rounded-xl text-center">
 								<div className="w-6 h-6 mx-auto mb-2 bg-gray-200 rounded-full animate-pulse" />
 								<div className="h-7 w-16 mx-auto bg-gray-200 rounded mb-1 animate-pulse" />
 								<div className="h-4 w-24 mx-auto bg-gray-100 rounded animate-pulse" />
 							</div>
 
 							{/* full width stat under */}
-							<div className="col-span-2 bg-yellow-50 p-4 rounded-xl text-center">
+							<div className="col-span-2 bg-blue-50 p-4 rounded-xl text-center">
 								<div className="w-6 h-6 mx-auto mb-2 bg-gray-200 rounded-full animate-pulse" />
 								<div className="h-7 w-20 mx-auto bg-gray-200 rounded mb-1 animate-pulse" />
 								<div className="h-4 w-32 mx-auto bg-gray-100 rounded animate-pulse" />

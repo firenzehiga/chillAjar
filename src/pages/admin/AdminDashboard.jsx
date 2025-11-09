@@ -91,9 +91,9 @@ export function AdminDashboard() {
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<Users className="h-8 w-8 text-yellow-600" />
+						<Users className="h-8 w-8 text-blue-600" />
 						{dataLoading ? (
-							<div className="w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
 						) : dataError ? (
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
@@ -106,9 +106,9 @@ export function AdminDashboard() {
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<BookOpen className="h-8 w-8 text-yellow-600" />
+						<BookOpen className="h-8 w-8 text-blue-600" />
 						{dataLoading ? (
-							<div className="w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
 						) : dataError ? (
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
@@ -121,9 +121,9 @@ export function AdminDashboard() {
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<Users className="h-8 w-8 text-yellow-600" />
+						<Users className="h-8 w-8 text-blue-600" />
 						{dataLoading ? (
-							<div className="w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
 						) : dataError ? (
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
@@ -136,9 +136,9 @@ export function AdminDashboard() {
 				</div>
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<Clock className="h-8 w-8 text-yellow-600" />
+						<Clock className="h-8 w-8 text-blue-600" />
 						{dataLoading ? (
-							<div className="w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
 						) : dataError ? (
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
@@ -188,7 +188,7 @@ export function AdminDashboard() {
 					<h2 className="text-lg font-semibold mb-4">User Terbaru</h2>
 					{dataLoading ? (
 						<div className="flex items-center justify-center h-32">
-							<div className="w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
 						</div>
 					) : dataError ? (
 						<div className="text-red-500 text-sm">Gagal memuat data user.</div>
@@ -200,7 +200,7 @@ export function AdminDashboard() {
 								<li
 									key={user.id}
 									className="flex items-center gap-3 py-2 border-b last:border-b-0">
-									<div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center font-bold text-yellow-700 text-lg uppercase">
+									<div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700 text-lg uppercase">
 										{user.nama?.[0] || "U"}
 									</div>
 									<div className="flex-1">
@@ -222,7 +222,7 @@ export function AdminDashboard() {
 													Admin
 												</span>
 											) : (
-												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">
+												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
 													{user.peran || "Lainnya"}
 												</span>
 											)}

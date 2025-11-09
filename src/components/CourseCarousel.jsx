@@ -113,7 +113,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 												})()
 											)}
 										</div>
-										<span className="bg-yellow-600 text-white px-4 py-1 rounded-full text-sm">
+										<span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm">
 											Mulai dari Rp
 											{course.price_per_hour.toLocaleString("id-ID")}/sesi
 										</span>

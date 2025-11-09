@@ -261,7 +261,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 				onClick={() => onNavigate("admin-manage-packages")}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 				type="button">
-				<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+				<div className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
 					<ArrowLeft className="w-5 h-5" />
 				</div>
 				<p className="translate-x-2">Kembali</p>
@@ -269,7 +269,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 
 			<div className="max-w-6xl mx-auto bg-white rounded-lg shadow p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
-					<Gift className="w-6 h-6 mr-2 text-yellow-600" />
+					<Gift className="w-6 h-6 mr-2 text-blue-600" />
 					{isEditMode ? "Edit Paket" : "Tambah Paket Baru"}
 				</h2>
 
@@ -289,7 +289,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 									name="name"
 									value={formData.name}
 									onChange={handleChange}
-									className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+									className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 									placeholder="Contoh: NgeChill"
 									required
 								/>
@@ -306,7 +306,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 									name="description"
 									value={formData.description}
 									onChange={handleChange}
-									className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+									className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 									placeholder="Jelaskan detail paket ini..."
 									rows="4"
 								/>
@@ -324,7 +324,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 									value={formData.diskon}
 									min={0}
 									onChange={handleChange}
-									className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+									className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 									placeholder="Diskon dalam rupiah, contoh: 5000"
 								/>
 							</div>
@@ -332,7 +332,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 							{/* Periode Promo */}
 							<div className="mb-4">
 								<h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-									<Calendar className="w-5 h-5 mr-2 text-yellow-600" />
+									<Calendar className="w-5 h-5 mr-2 text-blue-600" />
 									Periode Promo (Opsional)
 								</h3>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -348,7 +348,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 											name="tanggal_mulai"
 											value={formData.tanggal_mulai}
 											onChange={handleChange}
-											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 										/>
 									</div>
 									<div>
@@ -363,7 +363,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 											name="tanggal_berakhir"
 											value={formData.tanggal_berakhir}
 											onChange={handleChange}
-											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 											min={formData.tanggal_mulai}
 										/>
 									</div>
@@ -387,7 +387,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 									<div className="space-y-2">
 										{formData.selectedItems.map((item) => (
 											<div key={item.id} className="mb-2">
-												<div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+												<div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
 													<div className="flex justify-between items-center">
 														<div>
 															<div className="font-medium text-gray-900">
@@ -429,10 +429,10 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 												</div>
 											</div>
 										))}
-										<div className="pt-2 border-t border-yellow-200">
+										<div className="pt-2 border-t border-blue-200">
 											<div className="flex justify-between items-center font-semibold text-lg">
 												<span>Total Harga:</span>
-												<span className="text-yellow-600">
+												<span className="text-blue-600">
 													Rp {calculateTotalPrice().toLocaleString()}
 												</span>
 											</div>
@@ -493,7 +493,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 											{/* Preview Status Promo */}
 											{(formData.tanggal_mulai ||
 												formData.tanggal_berakhir) && (
-												<div className="mt-3 pt-2 border-t border-yellow-100">
+												<div className="mt-3 pt-2 border-t border-blue-100">
 													<div className="text-sm">
 														<span className="font-medium text-gray-700">
 															Status Promo:{" "}
@@ -563,12 +563,12 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 									className={`px-6 py-2 rounded-lg transition-colors ${
 										loading
 											? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
-											: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
+											: "bg-blue-600 text-white hover:bg-blue-700 outline-none focus:outline-none"
 									}`}>
 									{loading ? (
 										<>
 											Memproses...{" "}
-											<Loader2 className="w-4 h-4 mb-1 inline animate-spin text-yellow-500" />
+											<Loader2 className="w-4 h-4 mb-1 inline animate-spin text-blue-500" />
 										</>
 									) : isEditMode ? (
 										"Perbarui Paket"
@@ -585,7 +585,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 								<span className="text-gray-500 text-base font-medium">
 									Loading Items...
 								</span>
-								<div className="ml-2 w-5 h-5 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+								<div className="ml-2 w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
 							</div>
 						) : (
 							<div>
@@ -602,8 +602,8 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 												key={item.id}
 												className={`p-3 rounded-lg border cursor-pointer transition-colors ${
 													isSelected
-														? "bg-yellow-100 border-yellow-300 cursor-not-allowed"
-														: "bg-white border-gray-200 hover:border-yellow-300 hover:bg-yellow-50"
+														? "bg-blue-100 border-blue-300 cursor-not-allowed"
+														: "bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50"
 												}`}
 												onClick={() => !isSelected && handleAddItem(item)}>
 												<div className="flex justify-between items-start">
@@ -640,7 +640,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 													</div>
 													<div className="ml-3 text-right">
 														{isSelected && (
-															<div className="text-xs text-yellow-500 mt-1">
+															<div className="text-xs text-blue-500 mt-1">
 																Sudah dipilih
 															</div>
 														)}

@@ -142,7 +142,7 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 				onClick={() => onNavigate("admin-manage-items")}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 				type="button">
-				<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+				<div className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
 					<ArrowLeft className="w-5 h-5" />
 				</div>
 				<p className="translate-x-2">Kembali</p>
@@ -150,7 +150,7 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 
 			<div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
-					<Package className="w-6 h-6 mr-2 text-yellow-600" />
+					<Package className="w-6 h-6 mr-2 text-blue-600" />
 					{isEditMode ? "Edit Item" : "Tambah Item Baru"}
 				</h2>
 
@@ -168,7 +168,7 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 								name="name"
 								value={formData.name}
 								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 								placeholder="Contoh: 1 Materi pembelajaran"
 								required
 							/>
@@ -185,7 +185,7 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 								name="price"
 								value={formData.price}
 								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 								placeholder="5000"
 								min="0"
 								required
@@ -203,7 +203,7 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 								name="diskon"
 								value={formData.diskon}
 								onChange={handleChange}
-								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+								className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 								placeholder="Diskon, contoh: 1000"
 								min="0"
 							/>
@@ -221,7 +221,7 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 							name="description"
 							value={formData.description}
 							onChange={handleChange}
-							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 outline-none focus:outline-none"
+							className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none"
 							placeholder="Jelaskan detail item ini..."
 							rows="4"
 						/>
@@ -241,12 +241,12 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 							className={`px-6 py-2 rounded-lg transition-colors ${
 								loading
 									? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
-									: "bg-yellow-600 text-white hover:bg-yellow-700 outline-none focus:outline-none"
+									: "bg-blue-600 text-white hover:bg-blue-700 outline-none focus:outline-none"
 							}`}>
 							{loading ? (
 								<>
 									Memproses...{" "}
-									<Loader2 className="w-4 h-4 mb-1 inline animate-spin text-yellow-500" />
+									<Loader2 className="w-4 h-4 mb-1 inline animate-spin text-blue-500" />
 								</>
 							) : isEditMode ? (
 								"Perbarui Item"

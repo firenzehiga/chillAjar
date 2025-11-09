@@ -39,7 +39,7 @@ export function MentorDashboard() {
 					<h1 className="text-2xl font-bold text-gray-900">Mentor Dashboard</h1>
 					{isLoading && (
 						<div className="flex items-center gap-2 mt-1 md:mt-0">
-							<div className="w-5 h-5 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-5 h-5 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
 							<span className="text-sm text-gray-500">Loading...</span>
 						</div>
 					)}
@@ -58,7 +58,7 @@ export function MentorDashboard() {
 									: status === "inactive"
 									? "bg-red-200 text-red-700 border-red-400"
 									: status === "pending"
-									? "bg-yellow-100 text-yellow-700 border-yellow-400"
+									? "bg-blue-100 text-blue-700 border-blue-400"
 									: status === "rejected"
 									? "bg-red-100 text-red-700 border-red-400"
 									: "bg-gray-100 text-gray-500 border-gray-300")
@@ -143,9 +143,9 @@ export function MentorDashboard() {
 				{/* Rating */}
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
-						<Star className="h-8 w-8 text-yellow-600" />
+						<Star className="h-8 w-8 text-blue-600" />
 						{isLoading ? (
-							<div className="w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
 						) : error ? (
 							<span className="text-2xl font-bold text-gray-900">0</span>
 						) : (

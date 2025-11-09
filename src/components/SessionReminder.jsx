@@ -183,7 +183,7 @@ export function FloatingSessionReminder() {
 										? "bg-red-500"
 										: currentSession.status === "needReview"
 										? "bg-green-500"
-										: "bg-blue-500"
+										: "bg-chill-blue"
 								}`}
 								style={{
 									width: `${Math.max(0, (timeLeft / 5) * 100)}%`,
@@ -287,7 +287,7 @@ export function FloatingSessionReminder() {
 											? "bg-red-500 hover:bg-red-600 text-white"
 											: currentSession.status === "needReview"
 											? "bg-green-500 hover:bg-green-600 text-white"
-											: "bg-blue-500 hover:bg-blue-600 text-white"
+											: "bg-chill-blue hover:bg-blue-600 text-white"
 									}`}>
 									{currentSession.status === "live"
 										? "Segera Bergabung"

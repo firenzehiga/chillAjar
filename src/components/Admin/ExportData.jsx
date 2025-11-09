@@ -79,7 +79,7 @@ export function ExportData({
 			case "secondary":
 				return `${baseClass} bg-gray-600 text-white hover:bg-gray-700`;
 			default:
-				return `${baseClass} bg-yellow-600 text-white hover:bg-yellow-700`;
+				return `${baseClass} bg-blue-600 text-white hover:bg-blue-700`;
 		}
 	};
 

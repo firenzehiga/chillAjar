@@ -160,7 +160,7 @@ export function AdminEditProfile({
 						/>
 						<label
 							htmlFor="profileImage"
-							className="absolute bottom-0 right-0 bg-yellow-600 p-2 rounded-full text-white cursor-pointer hover:bg-yellow-700">
+							className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full text-white cursor-pointer hover:bg-blue-700">
 							<Camera className="w-5 h-5" />
 							<input
 								type="file"
@@ -186,7 +186,7 @@ export function AdminEditProfile({
 							name="nama"
 							value={formData.nama}
 							onChange={handleChange}
-							className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+							className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 							required
 						/>
 					</div>
@@ -203,7 +203,7 @@ export function AdminEditProfile({
 							name="email"
 							value={formData.email}
 							onChange={handleChange}
-							className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+							className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 							required
 						/>
 					</div>
@@ -221,7 +221,7 @@ export function AdminEditProfile({
 						name="nomorTelepon"
 						value={formData.nomorTelepon}
 						onChange={handleChange}
-						className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+						className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 					/>
 				</div>
 
@@ -236,7 +236,7 @@ export function AdminEditProfile({
 						name="alamat"
 						value={formData.alamat}
 						onChange={handleChange}
-						className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+						className="mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 					/>
 				</div>
 
@@ -260,7 +260,7 @@ export function AdminEditProfile({
 						className={`px-4 py-2 rounded-md transition-colors ${
 							loading
 								? "bg-gray-300 text-gray-500 cursor-not-allowed"
-								: "bg-yellow-600 text-white hover:bg-yellow-700"
+								: "bg-blue-600 text-white hover:bg-blue-700"
 						}`}
 						disabled={loading}>
 						{loading ? "Saving..." : "Save Changes"}

@@ -156,7 +156,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 					<div className="p-6 border-b">
 						<div className="flex justify-between items-center">
 							<h2 className="text-xl font-semibold flex items-center">
-								<GraduationCap className="w-6 h-6 mr-2 text-yellow-600" />
+								<GraduationCap className="w-6 h-6 mr-2 text-blue-600" />
 								Tambah Mentor Baru
 							</h2>
 							<button
@@ -183,7 +183,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 											name="name"
 											value={formData.name}
 											onChange={handleInputChange}
-											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 											placeholder="Masukkan nama lengkap"
 											required
 										/>
@@ -201,7 +201,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 											name="email"
 											value={formData.email}
 											onChange={handleInputChange}
-											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 											placeholder="Masukkan email"
 											required
 										/>
@@ -222,7 +222,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 											name="phone"
 											value={formData.phone}
 											onChange={handleInputChange}
-											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+											className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 											placeholder="Masukkan nomor whatsapp"
 											required
 										/>
@@ -240,7 +240,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 											name="password"
 											value={formData.password}
 											onChange={handleInputChange}
-											className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+											className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 											placeholder="Masukkan kata sandi"
 											required
 										/>
@@ -270,7 +270,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 										name="address"
 										value={formData.address}
 										onChange={handleInputChange}
-										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 										placeholder="Masukkan alamat"
 										required
 									/>
@@ -289,7 +289,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 										name="biayaPerSesi"
 										value={formData.biayaPerSesi}
 										onChange={handleInputChange}
-										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 										placeholder="25000"
 										min="0"
 									/>
@@ -310,7 +310,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 										name="deskripsi"
 										value={formData.deskripsi}
 										onChange={handleInputChange}
-										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 										placeholder="Ceritakan sedikit tentang keahlian dan pengalaman mentor..."
 										rows="3"
 									/>
@@ -356,7 +356,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 								<button
 									type="submit"
 									disabled={isLoading}
-									className={`flex-1 outline-none focus:outline-none transition-all bg-chill-yellow text-black font-medium px-6 py-2 rounded-lg border-yellow-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
+									className={`flex-1 outline-none focus:outline-none transition-all bg-chill-blue text-white font-medium px-6 py-2 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] flex items-center justify-center gap-2 ${
 										isLoading ? "opacity-50 cursor-not-allowed" : ""
 									}`}>
 									{isLoading ? (

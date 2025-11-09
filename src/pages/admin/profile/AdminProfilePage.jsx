@@ -22,7 +22,7 @@ export function AdminProfilePage({ userData, onNavigate }) {
 		<div className="py-8 px-4">
 			<div className="max-w-md sm:max-w-lg md:max-w-2xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-					<div className="h-28 bg-gradient-to-r from-yellow-500 to-yellow-600 relative">
+					<div className="h-28 bg-gradient-to-r from-chill-blue to-chill-blue-dark relative">
 						<div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 md:left-8 md:translate-x-0">
 							<img
 								src={currentUser.avatar}
@@ -53,7 +53,7 @@ export function AdminProfilePage({ userData, onNavigate }) {
 								</div>
 							</div>
 							<button
-								className="bg-yellow-600 text-white px-5 py-2 rounded-full font-medium ml-0 md:ml-4 mt-2 md:mt-0 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-gray-700 hover:shadow-lg"
+								className="bg-chill-blue-dark text-white px-5 py-2 rounded-full font-medium ml-0 md:ml-4 mt-2 md:mt-0 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-chill-blue hover:shadow-lg"
 								onClick={() => onNavigate("admin-edit-profile")}>
 								Edit Profile
 							</button>

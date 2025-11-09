@@ -369,7 +369,7 @@ function App() {
 						// tambahkan container actions dengan gap agar tombol tidak saling dempet
 						actions: "flex gap-3 justify-center mt-4",
 						confirmButton:
-							"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+							"px-4 py-2 focus:outline-none rounded-md bg-chill-blue hover:bg-blue-600 text-white",
 						cancelButton:
 							"px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-700",
 					},
@@ -416,7 +416,7 @@ function App() {
 						// tambahkan container actions dengan gap agar tombol tidak saling dempet
 						actions: "flex gap-3 justify-center mt-4",
 						confirmButton:
-							"px-4 py-2 focus:outline-none rounded-md bg-yellow-500 hover:bg-yellow-600 text-white",
+							"px-4 py-2 focus:outline-none rounded-md bg-chill-blue hover:bg-blue-600 text-white",
 						cancelButton:
 							"px-4 py-2 rounded-md border border-gray-300 bg-white hover:bg-gray-100 text-gray-700",
 					},
@@ -961,7 +961,7 @@ function App() {
 		if (!authChecked) {
 			return (
 				<div className="fixed top-0 left-0 w-full h-1 bg-blue-200">
-					<div className="h-1 bg-blue-500 animate-pulse w-1/2"></div>
+					<div className="h-1 bg-chill-blue animate-pulse w-1/2"></div>
 				</div>
 			);
 		}
@@ -995,9 +995,9 @@ function App() {
 							</div>
 							<div className="mb-12">
 								<div className="flex items-center justify-center gap-4 mb-6">
-									<div className="w-8 h-8 bg-yellow-200 rounded-full animate-pulse" />
-									<div className="h-6 bg-yellow-200 rounded-lg w-48 animate-pulse" />
-									<div className="w-8 h-8 bg-yellow-200 rounded-full animate-pulse" />
+									<div className="w-8 h-8 bg-blue-200 rounded-full animate-pulse" />
+									<div className="h-6 bg-blue-200 rounded-lg w-48 animate-pulse" />
+									<div className="w-8 h-8 bg-blue-200 rounded-full animate-pulse" />
 								</div>
 								<CarouselSkeleton />
 							</div>
@@ -1007,13 +1007,13 @@ function App() {
 					{/* Course Section Header */}
 					<div className="text-center mb-8">
 						<div className="flex gap-3 mb-4">
-							<div className="w-6 h-6 bg-yellow-300 rounded animate-pulse" />
+							<div className="w-6 h-6 bg-blue-300 rounded animate-pulse" />
 							<h2 className="text-2xl font-bold text-gray-900">
 								{currentPage === "home"
 									? "Semua Kursus"
 									: "Kursus Yang Tersedia"}
 							</h2>
-							<div className="w-6 h-6 bg-yellow-300 rounded animate-pulse" />
+							<div className="w-6 h-6 bg-blue-300 rounded animate-pulse" />
 						</div>
 						<div className="h-10 bg-gray-200 rounded w-2/5 ml-0 mt-7 animate-pulse" />
 					</div>
@@ -1300,7 +1300,7 @@ function App() {
 							}}
 							className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 							type="button">
-							<div className="bg-yellow-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
+							<div className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 1024 1024"
@@ -1341,7 +1341,7 @@ function App() {
 					// Tampilan setelah semua terpilih (mentor + course + package)
 					<div className="py-4">
 						{/* Course & Package & Mentor Info */}
-						<div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+						<div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
 							<h3 className="text-xl font-semibold text-gray-900 mb-2">
 								{selectedCourse.courseName}
 							</h3>
@@ -1371,7 +1371,7 @@ function App() {
 										selectedPackage
 									)
 								}
-								className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
+								className="bg-blue-400 hover:bg-chill-blue text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
 								Lanjut ke Pemesanan
 							</button>
 						</div>
@@ -1617,7 +1617,7 @@ function App() {
 									<button
 										onClick={() => setShowFlowModal(true)}
 										className="
-							flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-500
+							flex items-center gap-2 px-3 py-1.5 rounded-md bg-chill-blue
 							text-white font-medium shadow hover:bg-blue-600 active:bg-blue-700
 							transition-all duration-150 text-sm
 						  "

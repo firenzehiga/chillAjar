@@ -86,7 +86,7 @@ export function MentorCard({
 		<>
 			<div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
 				<div className="relative">
-					<div className="h-32 bg-gradient-to-r bg-yellow-500" />
+					<div className="h-32 bg-gradient-to-r bg-chill-blue" />
 					<div className="absolute -bottom-12 left-6">
 						<AsyncImage
 							Transition={Fade}
@@ -127,7 +127,7 @@ export function MentorCard({
 						</div>
 						<a
 							onClick={() => setShowDetails(!showDetails)}
-							className="text-yellow-600 hover:text-yellow-800 text-sm font-medium cursor-pointer">
+							className="text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer">
 							{showDetails ? "Show Less" : "View Details"}
 						</a>
 					</div>

@@ -55,11 +55,11 @@ export function SearchFilter() {
 		<div className="relative">
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className="focus:ring-2 focus:ring-yellow-500 focus:border-transparent  focus:outline-none flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-300 hover:shadow-md">
+				className="focus:ring-2 focus:ring-blue-500 focus:border-transparent  focus:outline-none flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-300 hover:shadow-md">
 				<Filter className="w-4 h-4 text-gray-600" />
 				<span className="text-sm font-medium text-gray-700">Filter Kursus</span>
 				{activeFiltersCount > 0 && (
-					<span className="bg-yellow-600 text-white text-xs px-2 py-1 rounded-full">
+					<span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
 						{activeFiltersCount}
 					</span>
 				)}
@@ -73,14 +73,14 @@ export function SearchFilter() {
 						exit={{ opacity: 0, scale: 0.95, y: -10 }}
 						className="absolute top-full mt-2 left-0 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
 						{/* Header */}
-						<div className="p-4 bg-gradient-to-r  from-yellow-50 to-orange-50 border-b">
+						<div className="p-4 bg-gradient-to-r  from-blue-50 to-orange-50 border-b">
 							<div className="flex items-center justify-between">
 								<h3 className="font-semibold text-gray-900">Filter Kursus</h3>
 								<div className="flex items-center space-x-2">
 									{activeFiltersCount > 0 && (
 										<button
 											onClick={clearFilters}
-											className="text-xs text-yellow-600 hover:text-yellow-700 font-medium">
+											className="text-xs text-blue-600 hover:text-blue-700 font-medium">
 											Hapus Semua
 										</button>
 									)}
@@ -138,7 +138,7 @@ export function SearchFilter() {
 											<Star
 												className={`w-6 h-6 ${
 													rating <= courseFilters.mentorRating
-														? "text-yellow-400 fill-current"
+														? "text-blue-400 fill-current"
 														: "text-gray-300"
 												}`}
 											/>
@@ -147,7 +147,7 @@ export function SearchFilter() {
 									{courseFilters.mentorRating > 0 && (
 										<button
 											onClick={() => handleFilterChange("mentorRating", 0)}
-											className="text-xs text-yellow-600 hover:text-yellow-700 ml-2 focus:outline-none outline-none">
+											className="text-xs text-blue-600 hover:text-blue-700 ml-2 focus:outline-none outline-none">
 											Reset
 										</button>
 									)}
@@ -168,9 +168,9 @@ export function SearchFilter() {
 												courseFilters.mode === "online" ? "" : "online"
 											)
 										}
-										className={`focus:ring-2 focus:ring-yellow-600 focus:outline-none focus:outline-transparent  flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
+										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent  flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
 											courseFilters.mode === "online"
-												? "bg-yellow-600 text-white border-yellow-600 "
+												? "bg-blue-600 text-white border-blue-600 "
 												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 										}`}>
 										<Monitor className="w-4 h-4 mr-2" />
@@ -183,9 +183,9 @@ export function SearchFilter() {
 												courseFilters.mode === "offline" ? "" : "offline"
 											)
 										}
-										className={`focus:ring-2 focus:ring-yellow-600 focus:outline-none focus:outline-transparent flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
+										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
 											courseFilters.mode === "offline"
-												? "bg-yellow-600 text-white border-yellow-600"
+												? "bg-blue-600 text-white border-blue-600"
 												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 										}`}>
 										<MapPin className="w-4 h-4 mr-2" />
@@ -208,9 +208,9 @@ export function SearchFilter() {
 												courseFilters.availability === "today" ? "" : "today"
 											)
 										}
-										className={`focus:ring-2 focus:ring-yellow-600 focus:outline-none focus:outline-transparent flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
+										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
 											courseFilters.availability === "today"
-												? "bg-yellow-600 text-white border-yellow-600"
+												? "bg-blue-600 text-white border-blue-600"
 												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 										}`}>
 										<Clock className="w-4 h-4 mr-2" />
@@ -223,9 +223,9 @@ export function SearchFilter() {
 												courseFilters.availability === "week" ? "" : "week"
 											)
 										}
-										className={`focus:ring-2 focus:ring-yellow-600 focus:outline-none focus:outline-transparent  flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
+										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent  flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
 											courseFilters.availability === "week"
-												? "bg-yellow-600 text-white border-yellow-600"
+												? "bg-blue-600 text-white border-blue-600"
 												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 										}`}>
 										<Clock className="w-4 h-4 mr-2" />
