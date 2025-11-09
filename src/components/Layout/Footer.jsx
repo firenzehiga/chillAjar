@@ -172,12 +172,6 @@ export default function Footer({
 								</ul>
 							</div>
 						</div>
-						<div className="border-t border-gray-800 mt-5 pt-5 -mb-6 text-center text-sm">
-							<p>
-								&copy; {new Date().getFullYear()} ChillAjar. All rights
-								reserved.
-							</p>
-						</div>
 					</>
 				)}
 
