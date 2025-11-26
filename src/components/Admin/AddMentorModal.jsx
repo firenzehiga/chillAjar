@@ -101,6 +101,7 @@ export function AddMentorModal({ isOpen, onClose, onMentorAdded }) {
 					Authorization: `Bearer ${localStorage.getItem("token")}`,
 					"Content-Type": "application/json",
 				},
+				skipGlobalError: true,
 			});
 
 			const { user, mentor } = response.data;
