@@ -100,12 +100,17 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 						exit={{ scale: 0.8, y: -40, opacity: 0 }}
 						transition={{ type: "spring", stiffness: 400, damping: 25 }}
 						style={{ transformOrigin: "top right" }}
-						className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5">
+						/* ganti w-48 dengan min-w-max + max-w agar lebar menyesuaikan isi tapi tetap dibatasi */
+						className="absolute right-0 mt-2 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 min-w-max max-w-xs">
 						<div className="px-4 py-2 border-b">
 							<p className="text-sm font-medium text-gray-900">
 								{getDisplayName(currentUser.nama)}
 							</p>
-							<p className="text-sm text-gray-500">{currentUser.email}</p>
+							{/* pakai break-words agar email panjang membungkus di dalam container.
+                                Jika mau ellipsis satu baris: ganti 'break-words' dengan 'truncate' */}
+							<p className="text-sm text-gray-500 break-words">
+								{currentUser.email}
+							</p>
 						</div>
 
 						{userRole === "admin" && (
