@@ -82,18 +82,18 @@ export function AdminDashboard() {
 	const [loadingAction, setLoadingAction] = useState(""); // "" | "hapusSesi" | "updateRating"
 
 	return (
-		<div className="py-8">
+		<div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 min-h-screen">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
 				<p className="text-gray-600">Ringkasan data platform ChillAjar</p>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ">
 				<div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
 					<div className="flex items-center justify-between mb-4">
 						<Users className="h-8 w-8 text-blue-600" />
 						{dataLoading ? (
-							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+							<div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin "></div>
 						) : dataError ? (
 							<span className="text-red-500 text-sm">Error</span>
 						) : (
@@ -153,7 +153,7 @@ export function AdminDashboard() {
 
 			<div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
 				<div className="mt-8">
-					<h2 className="text-lg font-semibold mb-2">Admin Utility Actions</h2>
+					<h2 className="text-lg font-semibold mb-2">Aksi Pengelolaan</h2>
 					<div className="flex flex-wrap gap-4 mb-2">
 						<button
 							disabled={loadingAction === "hapusSesi"}
@@ -163,7 +163,7 @@ export function AdminDashboard() {
 								setLoadingAction("");
 							}}
 							className="px-4 py-2 bg-red-700 text-white rounded shadow hover:bg-red-800 disabled:opacity-60 transition-all">
-							Hapus Semua Sesi Expired
+							Hapus Pemesanan Sesi Expired
 							{loadingAction === "hapusSesi" && (
 								<div className="w-3 h-3 border-4 border-white border-t-transparent rounded-full animate-spin inline-block ml-2"></div>
 							)}
@@ -176,7 +176,7 @@ export function AdminDashboard() {
 								setLoadingAction("");
 							}}
 							className="px-4 py-2 bg-emerald-700 text-white rounded shadow hover:bg-emerald-800 disabled:opacity-60 transition-all">
-							Update Seluruh Rating Mentor
+							Perbarui Rating Mentor
 							{loadingAction === "updateRating" && (
 								<div className="w-3 h-3 border-4 border-white border-t-transparent rounded-full animate-spin inline-block ml-2"></div>
 							)}
@@ -199,40 +199,42 @@ export function AdminDashboard() {
 							{totalData.user_terbaru.map((user) => (
 								<li
 									key={user.id}
-									className="flex items-center gap-3 py-2 border-b last:border-b-0">
-									<div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700 text-lg uppercase">
-										{user.nama?.[0] || "U"}
-									</div>
-									<div className="flex-1">
-										<div className="flex items-center gap-2">
-											<span className="font-medium text-gray-900">
-												{user.nama}
-											</span>
-											{/* Badge peran di samping nama */}
-											{user.peran === "mentor" ? (
-												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
-													Mentor
-												</span>
-											) : user.peran === "pelanggan" ? (
-												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-700">
-													Pelanggan
-												</span>
-											) : user.peran === "admin" ? (
-												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-500">
-													Admin
-												</span>
-											) : (
-												<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
-													{user.peran || "Lainnya"}
-												</span>
-											)}
+									className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 py-3 border-b last:border-b-0">
+									<div className="flex items-center gap-3 flex-1 min-w-0">
+										<div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700 text-lg uppercase flex-shrink-0">
+											{user.nama?.[0] || "U"}
 										</div>
-										<div className="text-xs text-gray-500">{user.email}</div>
-									</div>
-									<div className="text-xs text-gray-400">
-										<div className="text-xs text-gray-400">
-											{user.created_at ? dayjs(user.created_at).fromNow() : ""}
+										<div className="flex-1 min-w-0">
+											<div className="flex items-center gap-2 flex-wrap">
+												<span className="font-medium text-gray-900 truncate">
+													{user.nama}
+												</span>
+												{/* Badge peran */}
+												{user.peran === "mentor" ? (
+													<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700 flex-shrink-0">
+														Mentor
+													</span>
+												) : user.peran === "pelanggan" ? (
+													<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-700 flex-shrink-0">
+														Pelanggan
+													</span>
+												) : user.peran === "admin" ? (
+													<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-500 flex-shrink-0">
+														Admin
+													</span>
+												) : (
+													<span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700 flex-shrink-0">
+														{user.peran || "Lainnya"}
+													</span>
+												)}
+											</div>
+											<div className="text-xs text-gray-500 truncate">
+												{user.email}
+											</div>
 										</div>
+									</div>
+									<div className="text-xs text-gray-400 hidden sm:block flex-shrink-0">
+										{user.created_at ? dayjs(user.created_at).fromNow() : ""}
 									</div>
 								</li>
 							))}

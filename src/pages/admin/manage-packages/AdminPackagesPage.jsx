@@ -256,7 +256,7 @@ export function AdminPackagesPage({ onNavigate }) {
 
 				{/* Tampilan Loading jika data belum selesai diambil  */}
 				{isLoading ? (
-					<div className="flex justify-center py-20">
+					<div className="flex justify-center py-20 min-h-screen">
 						<BookLoader size="small" message="Loading Packages" />
 					</div>
 				) : (

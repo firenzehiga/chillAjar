@@ -33,7 +33,7 @@ export function MentorDashboard() {
 	const calendarData = dashboardData?.calendar || [];
 
 	return (
-		<div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+		<div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 min-h-screen">
 			<div className="mb-8 flex flex-col gap-2 md:gap-4">
 				<div className="flex flex-col md:flex-row md:items-center md:gap-3 gap-1">
 					<h1 className="text-2xl font-bold text-gray-900">Mentor Dashboard</h1>

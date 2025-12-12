@@ -127,7 +127,7 @@ export function EditProfilePage({
 	};
 
 	return (
-		<div className="max-w-3xl mx-auto px-4 py-10">
+		<div className="max-w-3xl mx-auto px-4 py-10 min-h-screen">
 			<div className="flex items-center space-x-4 mb-6">
 				<button
 					onClick={() => onNavigate("profile")}

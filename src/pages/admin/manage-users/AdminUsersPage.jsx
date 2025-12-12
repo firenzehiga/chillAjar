@@ -312,7 +312,8 @@ export function AdminUsersPage() {
 					Manage Users
 				</h1>
 				<p className="text-gray-600">
-					View and manage all users with session statistics
+					Lihat dan kelola semua user di platform ChillAjar. Tambah Mentor baru
+					atau akun Admin
 				</p>
 			</div>
 
@@ -384,13 +385,13 @@ export function AdminUsersPage() {
 							onClick={() => setShowAddModal(true)}
 							className="flex items-center px-4 py-2 bg-chill-blue-dark text-white rounded-lg hover:bg-chill-blue">
 							<UserPlus className="w-4 h-4 mr-2" />
-							Add User
+							Add Admin
 						</button>
 					</div>
 				</div>
 
 				{isLoading ? (
-					<div className="flex justify-center py-20">
+					<div className="flex justify-center py-20 min-h-screen">
 						<BookLoader size="small" message="Loading Users" />
 					</div>
 				) : (

@@ -273,7 +273,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 					</div>
 				</div>
 				{isLoading ? (
-					<div className="flex justify-center py-20">
+					<div className="flex justify-center py-20 min-h-screen">
 						<BookLoader size="small" message="Loading Testimonies" />
 					</div>
 				) : (

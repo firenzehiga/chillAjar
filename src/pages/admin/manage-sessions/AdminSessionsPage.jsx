@@ -207,7 +207,7 @@ export function AdminSessionsPage({ onNavigate }) {
 				</div>
 
 				{isLoading ? (
-					<div className="flex justify-center py-20">
+					<div className="flex justify-center py-20 min-h-screen">
 						<BookLoader size="small" message="Loading Sessions" />
 					</div>
 				) : (

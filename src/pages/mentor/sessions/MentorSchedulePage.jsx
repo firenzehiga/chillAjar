@@ -351,7 +351,7 @@ export function MentorSchedulePage() {
 					<h2 className="text-xl font-semibold">Data Sesi</h2>
 				</div>
 				{isLoading ? (
-					<div className="flex justify-center py-20">
+					<div className="flex justify-center py-20 min-h-screen">
 						<BookLoader size="small" message="Loading sessions" />
 					</div>
 				) : (

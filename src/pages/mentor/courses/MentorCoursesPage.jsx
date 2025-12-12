@@ -252,7 +252,7 @@ export function MentorCoursesPage({ onNavigate }) {
 				</div>
 
 				{isLoading ? (
-					<div className="flex justify-center py-20">
+					<div className="flex justify-center py-20 min-h-screen">
 						<BookLoader size="small" message="Loading courses" />
 					</div>
 				) : (

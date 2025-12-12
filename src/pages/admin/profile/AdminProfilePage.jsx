@@ -19,7 +19,7 @@ export function AdminProfilePage({ userData, onNavigate }) {
 	};
 
 	return (
-		<div className="py-8 px-4">
+		<div className="py-8 px-4 min-h-screen">
 			<div className="max-w-md sm:max-w-lg md:max-w-2xl mx-auto">
 				<div className="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
 					<div className="h-28 bg-gradient-to-r from-chill-blue to-chill-blue-dark relative">
