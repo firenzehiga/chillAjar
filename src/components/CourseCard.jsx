@@ -3,6 +3,17 @@ import { getImageUrl } from "../utils/getImageUrl";
 import { AsyncImage } from "loadable-image";
 import { Fade } from "transitions-kit";
 export function CourseCard({ course, onClick }) {
+	const formatMentorName = (name) => {
+		if (!name) return "";
+		const parts = name.trim().split(/\s+/);
+		if (parts.length <= 2) return name;
+		const lastTwo = parts.slice(-2);
+		const initials = parts
+			.slice(0, -2)
+			.map((p) => p[0].toUpperCase() + ".")
+			.join(" ");
+		return `${initials} ${lastTwo.join(" ")}`;
+	};
 	return (
 		<div
 			onClick={() => onClick(course)}
@@ -89,7 +100,7 @@ export function CourseCard({ course, onClick }) {
 					</span>
 					<span className="flex items-center transform transition-transform duration-300 hover:scale-105 hover:text-blue-800">
 						<Users className="w-4 h-4 mr-1 text-blue-800" />
-						{course?.mentorName}
+						{formatMentorName(course?.mentorName)}
 					</span>
 				</div>
 			</div>
