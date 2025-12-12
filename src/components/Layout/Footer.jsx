@@ -105,16 +105,6 @@ export default function Footer({
 											Pusat Bantuan
 										</button>
 									</li>
-									{/* <li>
-        <a className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
-            Terms of Service
-        </a>
-    </li>
-    <li>
-        <a className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
-            Privacy Policy
-        </a>
-    </li> */}
 								</ul>
 							</div>
 
@@ -123,15 +113,20 @@ export default function Footer({
 								<h3 className="text-lg font-semibold text-white mb-4">Legal</h3>
 								<ul className="space-y-2">
 									<li>
+										{/* arahin halaman baru */}
 										<a
-											onClick={() => onNavigate("terms-conditions")}
+											href="/terms-conditions"
+											target="_blank"
+											rel="noopener noreferrer"
 											className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
 											Terms of Service
 										</a>
 									</li>
 									<li>
 										<a
-											onClick={() => onNavigate("privacy-policy")}
+											href="/privacy-policy"
+											target="_blank"
+											rel="noopener noreferrer"
 											className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300">
 											Privacy Policy
 										</a>
