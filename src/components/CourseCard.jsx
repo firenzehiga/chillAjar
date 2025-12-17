@@ -1,4 +1,10 @@
-import { Users, Laptop, Building, FileQuestion } from "lucide-react";
+import {
+	Laptop,
+	Building,
+	FileQuestion,
+	UserCircleIcon,
+	CalendarOff,
+} from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
 import { AsyncImage } from "loadable-image";
 import { Fade } from "transitions-kit";
@@ -17,7 +23,7 @@ export function CourseCard({ course, onClick }) {
 	return (
 		<div
 			onClick={() => onClick(course)}
-			className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer group mb-8">
+			className="bg-gray-50 rounded-xl shadow-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer group mb-8 flex flex-col h-full">
 			<div className="relative overflow-hidden">
 				<AsyncImage
 					loading="lazy"
@@ -36,7 +42,7 @@ export function CourseCard({ course, onClick }) {
 					<AsyncImage
 						src={getImageUrl(course.mentor.user.foto_profil)}
 						alt={course.mentor.user.nama || "Mentor"}
-						className="absolute bottom-2 left-2 w-10 h-10 rounded-full border-2 border-white shadow object-cover bg-white"
+						className="absolute bottom-2 left-2 w-12 h-12 rounded-full border-2 border-gray-100 shadow object-cover bg-white"
 						onError={(e) => {
 							e.target.onerror = null;
 							e.target.src = "/foto_mentor/default.png";
@@ -48,7 +54,7 @@ export function CourseCard({ course, onClick }) {
 				</div> */}
 				{/* Harga dihilangkan karena sekarang ada di paket */}
 			</div>
-			<div className="p-5">
+			<div className="p-5 flex flex-col flex-1">
 				<h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-800 transition-colors duration-300">
 					{course.courseName}
 				</h3>
@@ -56,7 +62,11 @@ export function CourseCard({ course, onClick }) {
 					{course.courseDescription}
 				</p>
 				{/* [gayaMengajar JADWAL ONLY] Refactor: Badge/label mode belajar kini hanya berdasarkan jadwal_kursus, bukan course.learnMethod. */}
-				<div className="flex items-center justify-between text-sm text-gray-500">
+				<div className="mt-auto flex items-center justify-between text-sm text-gray-500">
+					<span className="flex items-center transform transition-transform duration-300 hover:scale-105 hover:text-blue-800">
+						<UserCircleIcon className="w-4 h-4 mr-1 text-blue-800" />
+						{formatMentorName(course?.mentorName)}
+					</span>
 					<span className="flex items-center transform transition-transform duration-300 hover:scale-105 hover:text-blue-800">
 						{/* Ambil semua mode unik dari jadwal_kursus */}
 						{(() => {
@@ -64,7 +74,7 @@ export function CourseCard({ course, onClick }) {
 							if (!schedules.length) {
 								return (
 									<div className="flex items-center text-gray-600">
-										<FileQuestion className="w-4 h-4 mr-1" />
+										<CalendarOff className="w-4 h-4 mr-1" />
 										Jadwal belum tersedia
 									</div>
 								);
@@ -97,10 +107,6 @@ export function CourseCard({ course, onClick }) {
 								</span>
 							));
 						})()}
-					</span>
-					<span className="flex items-center transform transition-transform duration-300 hover:scale-105 hover:text-blue-800">
-						<Users className="w-4 h-4 mr-1 text-blue-800" />
-						{formatMentorName(course?.mentorName)}
 					</span>
 				</div>
 			</div>

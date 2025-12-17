@@ -58,7 +58,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 									<p className="text-gray-200 mb-4">
 										{course.courseDescription}
 									</p>
-									<div className="flex items-center justify-between">
+									<div className="flex items-center justify-between sm:flex-row flex-col gap-3">
 										<div className="flex gap-2">
 											{/*
                                                 Badge mode logic:
@@ -68,7 +68,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
                                                 - Jika ada jadwal tapi tidak ada mode valid, tampilkan badge abu-abu "Tidak ada jadwal dengan mode valid"
                                             */}
 											{schedules.length === 0 ? (
-												<span className="bg-red-500 text-white px-4 py-1 rounded-full text-sm">
+												<span className="bg-red-700 text-white px-4 py-1 rounded-full text-sm ">
 													Jadwal belum tersedia
 												</span>
 											) : (
@@ -113,7 +113,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 												})()
 											)}
 										</div>
-										<span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm">
+										<span className="bg-blue-700 text-white px-4 py-1 rounded-full text-sm">
 											Mulai dari Rp
 											{course.price_per_hour.toLocaleString("id-ID")}/sesi
 										</span>

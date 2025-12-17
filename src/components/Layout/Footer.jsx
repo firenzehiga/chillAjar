@@ -64,7 +64,7 @@ export default function Footer({
 							{/* Quick Links */}
 							<div>
 								<h3 className="text-lg font-semibold text-white mb-4">
-									Quick Links
+									Link Cepat
 								</h3>
 								<ul className="space-y-2">
 									<li>
@@ -94,7 +94,7 @@ export default function Footer({
 							{/* Support */}
 							<div>
 								<h3 className="text-lg font-semibold text-white mb-4">
-									Support
+									Bantuan
 								</h3>
 								<ul className="space-y-2">
 									<li>
@@ -102,7 +102,7 @@ export default function Footer({
 											className="text-gray-400 hover:text-white transition-colors focus:outline-none duration-300"
 											onClick={onShowGuideModal}
 											type="button">
-											Pusat Bantuan
+											Panduan Pemesanan
 										</button>
 									</li>
 								</ul>

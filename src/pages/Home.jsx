@@ -111,7 +111,7 @@ export function Home({
 							Semua Kursus
 						</h2>
 						{userRole !== "admin" && userRole !== "mentor" && (
-							<div className="relative py-4 w-1/2 mb-4 flex gap-4">
+							<div className="relative py-4 w-full lg:w-2/3 mb-4 flex flex-col sm:flex-row gap-3 sm:gap-4">
 								<div className="relative flex-1">
 									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
 									<input
@@ -170,7 +170,7 @@ export function Home({
 							Semua Kursus
 						</h2>
 						{userRole !== "admin" && userRole !== "mentor" && (
-							<div className="relative py-4 w-1/2 flex gap-4">
+							<div className="relative py-4 w-full lg:w-2/3 flex flex-col sm:flex-row gap-3 sm:gap-4">
 								<div className="relative flex-1">
 									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
 									<input

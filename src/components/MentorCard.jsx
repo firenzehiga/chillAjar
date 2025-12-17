@@ -13,6 +13,7 @@ import { CourseSelectionModal } from "./CourseSelectionModal";
 import { AsyncImage } from "loadable-image";
 import { Fade } from "transitions-kit";
 import useAppStore from "@/stores/useAppStore";
+import { FaWhatsapp } from "react-icons/fa";
 export function MentorCard({
 	mentor,
 	onSchedule,
@@ -80,11 +81,11 @@ export function MentorCard({
 		setSelectedMentorCourse(null);
 	};
 
-	const buttonText = selectedCourse ? "Book Selected Course" : "Select Course";
+	const buttonText = selectedCourse ? "Pesan Kursus" : "Pilih Kursus";
 
 	return (
 		<>
-			<div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+			<div className="bg-gray-50 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
 				<div className="relative">
 					<div className="h-32 bg-gradient-to-r bg-chill-blue" />
 					<div className="absolute -bottom-12 left-6">
@@ -111,10 +112,10 @@ export function MentorCard({
 								<Star className="w-4 h-4 fill-current" />
 								<span className="ml-1 text-sm">
 									{/*
-                                        Pastikan rating bertipe number dan valid sebelum menggunakan .toFixed(1).
-                                        Ini penting karena data dari backend/public API bisa saja null, string, atau NaN.
-                                        Jika rating tidak valid, tampilkan 0.0 agar UI tetap aman di semua environment.
-                                    */}
+										Pastikan rating bertipe number dan valid sebelum menggunakan .toFixed(1).
+										Ini penting karena data dari backend/public API bisa saja null, string, atau NaN.
+										Jika rating tidak valid, tampilkan 0.0 agar UI tetap aman di semua environment.
+									*/}
 									{typeof mentor.mentorRating === "number" &&
 									!isNaN(mentor.mentorRating)
 										? mentor.mentorRating.toFixed(1)
@@ -128,7 +129,7 @@ export function MentorCard({
 						<a
 							onClick={() => setShowDetails(!showDetails)}
 							className="text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer">
-							{showDetails ? "Show Less" : "View Details"}
+							{showDetails ? "Tutup" : "Lihat Detail"}
 						</a>
 					</div>
 
@@ -151,7 +152,7 @@ export function MentorCard({
 							))
 						) : (
 							<span className="text-xs px-3 py-1 rounded-full font-medium bg-gray-100 text-gray-700">
-								No valid teaching mode
+								Metode mengajar belum tersedia
 							</span>
 						)}
 					</div>
@@ -167,13 +168,13 @@ export function MentorCard({
 					{showDetails && (
 						<div className="mt-4 space-y-4 border-t pt-4">
 							<div className="space-y-2">
-								<h4 className="font-medium text-gray-900">About</h4>
+								<h4 className="font-medium text-gray-900">Tentang Mentor</h4>
 								<p className="text-gray-600 text-sm">{mentor.mentorAbout}</p>
 							</div>
 
 							<div className="space-y-2">
 								<h4 className="font-medium text-gray-900">
-									Teaching Locations
+									Lokasi &amp; Ketersediaan
 								</h4>
 								<div className="space-y-2">
 									{/* --- Perubahan: Lokasi hanya dari jadwal offline valid --- */}
@@ -197,7 +198,7 @@ export function MentorCard({
 											<div className="flex items-center text-gray-600">
 												<CalendarX className="w-4 h-4 mr-2 text-gray-400" />
 												<span className="text-gray-500 text-sm">
-													Offline sessions unavailable
+													Sesi offline belum tersedia
 												</span>
 											</div>
 										);
@@ -207,15 +208,13 @@ export function MentorCard({
 										{validModes.includes("online") ? (
 											<>
 												<Monitor className="w-4 h-4 mr-2 text-blue-600" />
-												<span className="text-sm">
-													Available for online sessions
-												</span>
+												<span className="text-sm">Tersedia sesi online</span>
 											</>
 										) : (
 											<>
 												<MonitorX className="w-4 h-4 mr-2 text-gray-400" />
 												<span className="text-sm text-gray-500">
-													Online sessions unavailable
+													Sesi online belum tersedia
 												</span>
 											</>
 										)}
@@ -224,9 +223,25 @@ export function MentorCard({
 							</div>
 
 							{mentor.phone && (
-								<div className="flex items-center text-gray-600">
-									<Phone className="w-4 h-4 mr-2 text-blue-600" />
-									<span className="text-sm">{mentor.phone}</span>
+								<div className="mt-3">
+									<a
+										href={(() => {
+											const raw = mentor.phone || "";
+											const digits = raw.replace(/\D/g, "");
+											const normalized = digits.startsWith("0")
+												? `62${digits.slice(1)}`
+												: digits;
+											return normalized ? `https://wa.me/${normalized}` : "#";
+										})()}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="flex items-center text-gray-600 hover:text-green-700"
+										aria-label={`Chat WhatsApp ${mentor.mentorName}`}>
+										<FaWhatsapp className="w-4 h-4 mr-2 text-green-600" />
+										<span className="text-sm font-semibold">
+											{mentor.phone}
+										</span>
+									</a>
 								</div>
 							)}
 						</div>
