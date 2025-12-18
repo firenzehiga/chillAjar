@@ -3,8 +3,11 @@ import { EmptyMentorsState } from "../components/Fallback/EmptyMentorsState";
 import { Search } from "lucide-react";
 import { SearchFilter } from "../components/User/SearchFilter";
 import useAppStore from "../stores/useAppStore";
+import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
 
 export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
+	useDocumentTitle("Kursus", "Jelajahi Kursus yang Tersedia");
+
 	const {
 		searchQuery,
 		setSearchQuery,
@@ -49,7 +52,7 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 	// Ada kursus tapi hasil search/filter kosong
 	if (finalFilteredCourses.length === 0 && isFiltering) {
 		return (
-			<div className="py-8">
+			<div className="py-8 min-h-screen">
 				<h2 className="text-2xl font-bold text-gray-900 mb-3">
 					Kursus Yang Tersedia
 				</h2>

@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { getImageUrl } from "../utils/getImageUrl";
 import { AsyncImage } from "loadable-image";
 import { Fade } from "transitions-kit";
+import { CalendarOff } from "lucide-react";
 export function CourseCarousel({ courses, onCourseClick }) {
 	// Debug: Lihat data courses yang diterima CourseCarousel
 	// console.log("[CourseCarousel] Data courses diterima:", courses);
@@ -59,6 +60,10 @@ export function CourseCarousel({ courses, onCourseClick }) {
 										{course.courseDescription}
 									</p>
 									<div className="flex items-center justify-between sm:flex-row flex-col gap-3">
+										<span className="bg-blue-700 text-white px-4 py-1 rounded-full text-sm">
+											Mulai dari Rp
+											{course.price_per_hour.toLocaleString("id-ID")}/sesi
+										</span>
 										<div className="flex gap-2">
 											{/*
                                                 Badge mode logic:
@@ -68,9 +73,10 @@ export function CourseCarousel({ courses, onCourseClick }) {
                                                 - Jika ada jadwal tapi tidak ada mode valid, tampilkan badge abu-abu "Tidak ada jadwal dengan mode valid"
                                             */}
 											{schedules.length === 0 ? (
-												<span className="bg-red-700 text-white px-4 py-1 rounded-full text-sm ">
+												<div className="bg-red-700 text-white px-4 py-1 rounded-full text-sm flex items-center">
+													<CalendarOff className="w-4 h-4 mr-1" />
 													Jadwal belum tersedia
-												</span>
+												</div>
 											) : (
 												(() => {
 													// Ambil semua mode valid dari setiap jadwal
@@ -113,10 +119,6 @@ export function CourseCarousel({ courses, onCourseClick }) {
 												})()
 											)}
 										</div>
-										<span className="bg-blue-700 text-white px-4 py-1 rounded-full text-sm">
-											Mulai dari Rp
-											{course.price_per_hour.toLocaleString("id-ID")}/sesi
-										</span>
 									</div>
 								</div>
 							</div>

@@ -6,28 +6,20 @@ import {
 	Award,
 	Target,
 	Heart,
-	MapPin,
-	Mail,
-	Phone,
-	Linkedin,
-	Twitter,
-	Github,
 	Star,
-	Calendar,
-	Coffee,
-	Zap,
 	Lightbulb,
 	Rocket,
 	Shield,
 	Globe,
-	TrendingUp,
 	Quote,
 } from "lucide-react";
 import teamsData from "@/constants/TeamData";
 import { usePublicCoursesQuery } from "@/hooks/useCourse";
 import { usePublicMentorsQuery } from "@/hooks/useMentors";
+import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
 
 export function AboutPage({ onNavigate }) {
+	useDocumentTitle("Tentang Kami", "Pelajari Lebih Lanjut Tentang ChillAjar");
 	const [hoveredMember, setHoveredMember] = useState(null);
 	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	// Menggunakan endpoint publik untuk jumlah kursus tanpa autentikasi

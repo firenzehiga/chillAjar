@@ -13,6 +13,7 @@ import {
 import { getImageUrl } from "../utils/getImageUrl";
 import { usePelangganProfileInfoQuery } from "../hooks/useProfile";
 import { ProfileSkeletonUser } from "../components/Skeleton/ProfileSkeleton";
+import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
 
 // Fungsi untuk menentukan tier badge
 function getTier(jumlahSesi) {
@@ -46,6 +47,8 @@ function getTier(jumlahSesi) {
 }
 
 export function ProfilePage({ userData, userRole, onNavigate }) {
+	useDocumentTitle("Profil Saya");
+
 	const currentUser = {
 		name: userData?.nama || "Unknown User",
 		email: userData?.email || "No email provided",

@@ -94,7 +94,6 @@ export function Home({
 
 	return (
 		<div className="space-y-8">
-			{/* Section "Your Sessions" dihapus */}
 			{/* Carousel Section - Di luar dari Your Sessions */}
 			{!activeCourses || activeCourses.length === 0 ? (
 				// Kondisi: tidak ada kursus dengan mentor aktif (bukan karena search)

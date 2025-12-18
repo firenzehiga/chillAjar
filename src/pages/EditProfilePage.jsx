@@ -3,6 +3,7 @@ import { ArrowLeft, Camera, AlertCircle } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
 import { useUpdateProfileMutation } from "../hooks/useProfile";
 import Swal from "sweetalert2";
+import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
 
 export function EditProfilePage({
 	onNavigate,
@@ -10,6 +11,8 @@ export function EditProfilePage({
 	userData,
 	onUpdateUserData,
 }) {
+	useDocumentTitle("Edit Profil Saya");
+
 	const [formData, setFormData] = useState({
 		nama: "",
 		email: "",
@@ -241,7 +244,7 @@ export function EditProfilePage({
 						onClick={() => onNavigate("profile")}
 						className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
 						disabled={loading}>
-						Cancel
+						Batal
 					</button>
 					<button
 						type="submit"
@@ -251,7 +254,7 @@ export function EditProfilePage({
 								: "bg-blue-600 text-white hover:bg-blue-700"
 						}`}
 						disabled={loading}>
-						{loading ? "Saving..." : "Save Changes"}
+						{loading ? "Menyimpan..." : "Simpan"}
 					</button>
 				</div>
 			</form>

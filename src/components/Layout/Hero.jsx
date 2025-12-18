@@ -1,5 +1,6 @@
 import { Star, Zap, Coffee } from "lucide-react";
 import { useState, useEffect } from "react";
+import GradientText from "../ui/GradientText";
 export function Hero({ onNavigate }) {
 	return (
 		<section className="relative left-1/2 right-1/2 bg-gradient-to-b w-full from-chill-blue to-gray-50  -translate-x-1/2 transform py-10 overflow-hidden">
@@ -74,9 +75,13 @@ export function Hero({ onNavigate }) {
 					</div>
 					<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
 						Empowering{" "}
-						<span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-400 bg-clip-text text-transparent drop-shadow-md">
+						<GradientText
+							colors={["#6366f1", "#6366f1", "#a855f7", "#f472b6", "#6366f1"]}
+							animationSpeed={8}
+							showBorder={false}
+							className="text-transparent bg-clip-text mt-3 inline-block">
 							Students
-						</span>{" "}
+						</GradientText>
 						<span className="px-2 py-1 relative inline-block">
 							<svg
 								className="absolute -bottom-4 left-0 w-full text-blue-300"
@@ -92,9 +97,13 @@ export function Hero({ onNavigate }) {
 									strokeLinecap="round"></path>
 							</svg>
 							Through{" "}
-							<span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+							<GradientText
+								colors={["#3b82f6", "#3b82f6", "#8b5cf6", "#8b5cf6", "#3b82f6"]}
+								animationSpeed={8}
+								showBorder={false}
+								className="text-transparent bg-clip-text mt-3 inline-block">
 								Peer Learning
-							</span>
+							</GradientText>
 						</span>
 					</h1>
 					<p className="max-w-3xl mx-auto text-lg md:text-lg font-semibold text-gray-600">
@@ -250,9 +259,13 @@ export function HeroRandom({ onNavigate }) {
 					</div>
 					<h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
 						Empowering{" "}
-						<span className="bg-gradient-to-r from-blue-500 to-chill-blue-dark bg-clip-text text-transparent">
+						<GradientText
+							colors={["#6366f1", "#6366f1", "#a855f7", "#f472b6", "#6366f1"]}
+							animationSpeed={6}
+							showBorder={false}
+							className="text-transparent bg-clip-text mt-3 inline-block">
 							Students
-						</span>{" "}
+						</GradientText>
 						<span className="px-2 py-1 relative inline-block">
 							<svg
 								className="absolute -bottom-4 left-0 w-full text-blue-300"
@@ -268,9 +281,13 @@ export function HeroRandom({ onNavigate }) {
 									strokeLinecap="round"></path>
 							</svg>
 							Through{" "}
-							<span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+							<GradientText
+								colors={["#3b82f6", "#3b82f6", "#8b5cf6", "#8b5cf6", "#3b82f6"]}
+								animationSpeed={6}
+								showBorder={false}
+								className="text-transparent bg-clip-text mt-3 inline-block">
 								Peer Learning
-							</span>
+							</GradientText>
 						</span>
 					</h1>
 					<p className="max-w-3xl mx-auto text-lg md:text-lg font-semibold text-gray-600">

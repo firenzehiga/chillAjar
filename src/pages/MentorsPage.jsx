@@ -3,6 +3,7 @@ import { MentorSkeletonCard } from "@/components/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { EmptyMentorsState } from "@/components/Fallback/EmptyMentorsState";
 import { usePublicMentorsQuery } from "@/hooks/useMentors";
+import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
 
 export function MentorsPage({
 	courses,
@@ -12,6 +13,8 @@ export function MentorsPage({
 	onNavigate,
 	coursesIsLoading = false,
 }) {
+	useDocumentTitle("Mentor", "Temui Mentor Ahli Kami");
+
 	const {
 		data: mentors = [],
 		isLoading: mentorsLoading,
@@ -102,7 +105,7 @@ export function MentorsPage({
 			{mentorsData.length === 0 ? (
 				<EmptyMentorsState context="mentors" onNavigate={onNavigate} />
 			) : (
-				<div className="py-8">
+				<div className="py-8 min-h-screen">
 					<h2 className="text-2xl font-bold text-gray-900 mb-6">Mentor Kami</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 						{mentorsData.map((mentor) => (
