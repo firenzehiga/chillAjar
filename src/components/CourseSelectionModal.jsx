@@ -15,7 +15,7 @@ export function CourseSelectionModal({
 			<div className="bg-white rounded-lg w-full max-w-md">
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
-						<h2 className="text-xl font-semibold">Select a Course</h2>
+						<h2 className="text-xl font-semibold">Pilih Kursus</h2>
 						<button
 							type="button"
 							onClick={onClose}

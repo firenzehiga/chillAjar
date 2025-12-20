@@ -86,7 +86,7 @@ export function AdminItemsPage({ onNavigate }) {
 				// tambahkan container actions dengan gap agar tombol tidak saling dempet
 				actions: "flex gap-3 justify-center mt-4",
 				confirmButton:
-					"px-4 py-2 focus:outline-none rounded-md bg-blue-500 hover:bg-chill-blue text-white",
+					"px-4 py-2 focus:outline-none rounded-md bg-red-600 hover:bg-red-700 text-white",
 				cancelButton:
 					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
 			},

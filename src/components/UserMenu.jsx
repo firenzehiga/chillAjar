@@ -117,7 +117,7 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 							<button
 								onClick={() => handleNavigate("admin-profile")}
 								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-								<User className="w-4 h-4 mr-2" />
+								<User className="w-4 h-4 mr-2 border-b-2 " />
 								Profil Saya
 							</button>
 						)}
@@ -132,8 +132,8 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 						{userRole === "pelanggan" && (
 							<button
 								onClick={() => handleNavigate("profile")}
-								className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-								<User className="w-4 h-4 mr-2" />
+								className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ">
+								<User className="w-4 h-4 mr-2 " />
 								Profil Saya
 							</button>
 						)}
@@ -151,7 +151,7 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 											setShowMobileSessionsDropdown(true);
 										}
 									}}
-									className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+									className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b-2 border-gray-200">
 									<Clock className="w-4 h-4 mr-2" />
 									Sesi Saya
 								</button>

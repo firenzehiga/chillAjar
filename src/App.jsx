@@ -19,6 +19,7 @@ import { FaQWidget } from "@/components/FaQWidget";
 import { GuideModal } from "@/components/User/HelpButton";
 import { HelpButton } from "@/components/User/HelpButton";
 import { FloatingSessionReminder } from "@/components/SessionReminder";
+import TransactionReminder from "@/components/TransactionReminder";
 import { AuthModal } from "@/components/AuthModal";
 import { MentorCard } from "@/components/MentorCard";
 import { CourseSelectionModal } from "@/components/CourseSelectionModal";
@@ -772,13 +773,16 @@ function App() {
 			// console.log("Transaksi response:", res.data); // Debugging
 			Swal.fire({
 				icon: "success",
-				title: transaksiId ? "Proof Updated!" : "Payment Submitted!",
-				text: transaksiId
-					? "Your payment proof has been updated. We will verify it shortly."
-					: "Your booking has been confirmed. We will verify your payment shortly.",
+				title: transaksiId
+					? "Bukti Pembayaran Diperbarui!"
+					: "Pembayaran Dikirim!",
+				html: transaksiId
+					? "Bukti pembayaran Anda telah diperbarui. Kami akan memverifikasinya dalam maksimal 1x24 jam. Anda akan menerima notifikasi melalui whatsapp setelah verifikasi selesai."
+					: "Booking Anda telah dikonfirmasi. Pembayaran biasanya diproses dalam 1 hari kerja. Anda akan menerima notifikasi melalui whatsapp begitu pembayaran berhasil diverifikasi.",
 				showConfirmButton: false,
-				timer: 1200,
+				timer: 7000,
 				timerProgressBar: true,
+				allowOutsideClick: true,
 			}).then(() => {
 				setCurrentPage("transaction-history");
 				history.push("/transaction-history");
@@ -1675,6 +1679,7 @@ function App() {
 			) : null}
 			{/* Tombol bantuan dan alur pemesanan */}
 
+			<TransactionReminder />
 			{/* Floating Session Reminder Muncul Ketika Pelanggan baru saja login */}
 			<FloatingSessionReminder />
 
