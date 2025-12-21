@@ -15,38 +15,24 @@ export default function GradientText({
 		<>
 			<style>{`
 				@keyframes gradient {
-					0% {
-						background-position: 0% 50%;
-					}
-					50% {
-						background-position: 100% 50%;
-					}
-					100% {
-						background-position: 0% 50%;
-					}
+					0% { background-position: 0% 50%; }
+					50% { background-position: 100% 50%; }
+					100% { background-position: 0% 50%; }
 				}
 			`}</style>
-			<div
-				className={` rounded-[1.25rem] backdrop-blur transition-shadow duration-500 cursor-pointer ${className}`}>
+
+			<span
+				className={`relative inline-flex align-baseline ${className}`}
+				style={{ lineHeight: "1.25" }}>
 				{showBorder && (
-					<div
-						className="absolute inset-0 bg-cover z-0 pointer-events-none"
-						style={{
-							...gradientStyle,
-						}}>
-						<div
-							className="absolute inset-0 bg-black rounded-[1.25rem] z-[-1]"
-							style={{
-								width: "calc(100% - 2px)",
-								height: "calc(100% - 2px)",
-								left: "50%",
-								top: "50%",
-								transform: "translate(-50%, -50%)",
-							}}></div>
-					</div>
+					<span
+						className="absolute inset-0 rounded-[1.25rem] pointer-events-none"
+						style={gradientStyle}
+					/>
 				)}
-				<div
-					className="inline-block relative z-2 text-transparent bg-cover"
+
+				<span
+					className="relative inline-block text-transparent"
 					style={{
 						...gradientStyle,
 						backgroundClip: "text",
@@ -54,8 +40,8 @@ export default function GradientText({
 						WebkitTextFillColor: "transparent",
 					}}>
 					{children}
-				</div>
-			</div>
+				</span>
+			</span>
 		</>
 	);
 }

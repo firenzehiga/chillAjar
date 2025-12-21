@@ -19,7 +19,7 @@ import { usePublicMentorsQuery } from "@/hooks/useMentors";
 import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
 
 export function AboutPage({ onNavigate }) {
-	useDocumentTitle("Tentang Kami", "Pelajari Lebih Lanjut Tentang ChillAjar");
+	useDocumentTitle("Tentang Kami", "Apa itu ChillAjar?");
 	const [hoveredMember, setHoveredMember] = useState(null);
 	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	// Menggunakan endpoint publik untuk jumlah kursus tanpa autentikasi
@@ -43,10 +43,10 @@ export function AboutPage({ onNavigate }) {
 	).length;
 
 	const stats = [
-		{ icon: Users, label: "Active Students", value: "20+" },
+		{ icon: Users, label: "Active Students", value: "20" },
 		{
 			icon: BookOpen,
-			label: "Available Courses",
+			label: "Kursus Tersedia",
 			value:
 				coursesLoading || mentorsLoading ? (
 					<span className="inline-block w-12 h-7 rounded-xl bg-chill-blue animate-pulse mx-auto" />
@@ -58,7 +58,7 @@ export function AboutPage({ onNavigate }) {
 		},
 		{
 			icon: Users,
-			label: "Active Mentors",
+			label: "Mentor Aktif",
 			value:
 				mentorsLoading || coursesLoading ? (
 					<span className="inline-block w-12 h-7 rounded-xl bg-chill-blue animate-pulse mx-auto" />
@@ -73,18 +73,19 @@ export function AboutPage({ onNavigate }) {
 	const values = [
 		{
 			icon: Target,
-			title: "Excellence",
-			description: "We strive for excellence in every learning interaction.",
+			title: "Keunggulan",
+			description:
+				"Kami berusaha untuk keunggulan dalam setiap interaksi pembelajaran.",
 		},
 		{
 			icon: Users,
-			title: "Community",
-			description: "Building a supportive community of learners and mentors.",
+			title: "Komunitas",
+			description: "Membangun komunitas pendukung bagi pelajar dan mentor.",
 		},
 		{
 			icon: Heart,
-			title: "Passion",
-			description: "Passionate about helping students achieve their goals.",
+			title: "Kebersamaan",
+			description: "Bersemangat membantu pelajar mencapai tujuan mereka.",
 		},
 	];
 

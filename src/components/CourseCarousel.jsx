@@ -33,18 +33,25 @@ export function CourseCarousel({ courses, onCourseClick }) {
 					const schedules = Array.isArray(course.jadwal_kursus)
 						? course.jadwal_kursus
 						: [];
+
+					const base = getImageUrl(
+						course.courseImage,
+						"/foto_kursus/default.jpg"
+					);
+					const w768 = `${base}?w=768&h=400&fit=cover`;
+					const w1280 = `${base}?w=1280&h=400&fit=cover`;
+					const w2560 = `${base}?w=2560&h=800&fit=cover`; // 2x height optional
+
 					return (
 						<div key={course.id} className="px-4">
 							<div
-								className="relative h-[400px] rounded-xl overflow-hidden cursor-pointer"
+								className="relative h-[450px] rounded-xl overflow-hidden cursor-pointer"
 								onClick={() => onCourseClick(course)}>
 								<AsyncImage
 									loader={<div className="w-full h-full bg-gray-300" />}
 									Transition={Fade}
-									src={getImageUrl(
-										course.courseImage,
-										"/foto_kursus/default.jpg"
-									)}
+									src={w1280}
+									srcSet={`${w768} 768w, ${w1280} 1280w, ${w2560} 2560w`}
 									alt={course.courseName}
 									className="w-full h-full object-cover"
 									onError={(e) => {
