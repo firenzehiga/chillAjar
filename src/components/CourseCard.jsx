@@ -31,7 +31,7 @@ export function CourseCard({ course, onClick }) {
 					loader={<div className="w-full h-48 bg-gray-300 animate-pulse"></div>}
 					src={getImageUrl(course.courseImage)}
 					alt={course.courseName}
-					className="w-full h-48 w-48 object-cover transform transition-transform duration-500 group-hover:scale-110"
+					className="w-full h-48 object-cover transform transition-transform duration-500 group-hover:scale-110"
 					onError={(e) => {
 						e.target.onerror = null;
 						e.target.src = "/foto_kursus/default.jpg";
