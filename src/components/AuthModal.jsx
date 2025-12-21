@@ -16,6 +16,7 @@ import {
 	// GraduationCap,
 	// Shield,
 	ExternalLink,
+	Lightbulb,
 } from "lucide-react";
 import api from "@/api";
 import Swal from "sweetalert2";
@@ -24,6 +25,7 @@ import useAppStore from "@/stores/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { showToast } from "@/components/User/customToast";
+import { FaWhatsapp } from "react-icons/fa";
 
 export function AuthModal({ defaultMode = "login", onNavigate }) {
 	// Get state and actions from store
@@ -32,6 +34,8 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 	// const [isUploadingDoc, setIsUploadingDoc] = useState(false);
 	const [mode, setMode] = useState(defaultMode);
 	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 	// const [supportingDoc, setSupportingDoc] = useState(null);
 
 	// Privacy Policy States
@@ -42,6 +46,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 		name: "",
 		email: "",
 		password: "",
+		confirmPassword: "",
 		role: "pelanggan",
 		phone: "",
 		address: "",
@@ -62,6 +67,10 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 		setMode(newMode);
 		setError("");
 		setAgreedToTerms(false); // Reset privacy policy checkbox when switching modes
+		setShowPassword(false);
+		setShowConfirmPassword(false);
+		setFormData((prev) => ({ ...prev, password: "", confirmPassword: "" }));
+		setAttemptedSubmit(false);
 	};
 
 	// const handleFileChange = (e) => {
@@ -89,6 +98,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setError("");
+		setAttemptedSubmit(true);
 
 		// Prevent multiple submissions
 		if (isLoading) return;
@@ -104,6 +114,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 				!formData.name ||
 				!formData.email ||
 				!formData.password ||
+				!formData.confirmPassword ||
 				!formData.phone ||
 				!formData.address
 			) {
@@ -124,6 +135,13 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 			// 	setError("Silakan upload dokumen pendukung.");
 			// 	return;
 			// }
+		}
+
+		// Validate password confirmation for register
+		if (mode === "register" && formData.password !== formData.confirmPassword) {
+			setError("Password dan konfirmasi password tidak cocok");
+			setIsLoading(false);
+			return;
 		}
 
 		setIsLoading(true);
@@ -175,13 +193,12 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 				localStorage.setItem("token", token);
 				localStorage.setItem("user", JSON.stringify(user));
 
-				Swal.fire({
-					icon: "success",
+				showToast({
+					type: "success",
 					title: "Registrasi Berhasil!",
-					text: "Silakan login untuk melanjutkan.",
-					confirmButtonColor: "#3B82F6",
+					message: "Silakan login untuk melanjutkan.",
+					duration: 3000,
 				});
-
 				handleModeChange("login");
 			}
 		} catch (error) {
@@ -273,13 +290,13 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 					animate={{ scale: 1, y: 0, opacity: 1 }}
 					exit={{ scale: 0.8, y: 40, opacity: 0 }}
 					transition={{ type: "spring", stiffness: 300, damping: 25 }}
-					className="bg-white rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto">
+					className={`bg-white rounded-lg w-full ${
+						mode === "login" ? "max-w-lg" : "max-w-2xl"
+					} max-h-[90vh] overflow-y-auto`}>
 					<div className="p-6 border-b">
 						<div className="flex justify-between items-center">
 							<h2 className="text-xl font-semibold">
-								{mode === "login"
-									? "Masuk ke Akun ChillAjar Anda"
-									: "Buat Akun"}
+								{mode === "login" ? "Masuk ke Akun Anda" : "Buat Akun"}
 							</h2>
 							<button
 								type="button"
@@ -301,8 +318,10 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 							{mode === "register" && (
 								<>
 									<div className="mb-4">
-										<label className="block text-sm font-medium text-gray-700 mb-1">
-											Nama Lengkap
+										<label
+											htmlFor="name"
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Nama Lengkap <span className="text-red-500">*</span>
 										</label>
 										<div className="relative">
 											<User className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -317,28 +336,55 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 											/>
 										</div>
 									</div>
-
-									<div className="mb-4">
-										<label className="block text-sm font-medium text-gray-700 mb-1">
-											Nomor Telepon (WhatsApp)
-										</label>
-										<div className="relative">
-											<Phone className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-											<input
-												type="text"
-												name="phone"
-												value={formData.phone}
-												onChange={handleInputChange}
-												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-												placeholder="Masukkan nomor whatsapp"
-												required
-											/>
+									<div className="mb-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+										<div>
+											<label
+												htmlFor="phone"
+												className="block text-sm font-medium text-gray-700 mb-1">
+												Nomor Telepon (WhatsApp
+												<FaWhatsapp
+													className="inline-block ml-1 text-green-500"
+													title="Pastikan nomor WhatsApp aktif untuk komunikasi terkait pembelajaran."
+												/>
+												) <span className="text-red-500">*</span>
+											</label>
+											<div className="relative">
+												<Phone className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+												<input
+													type="text"
+													name="phone"
+													value={formData.phone}
+													onChange={handleInputChange}
+													className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+													placeholder="08xxxxxxxxxx"
+													required
+												/>
+											</div>
+										</div>
+										<div>
+											<label
+												htmlFor="email"
+												className="block text-sm font-medium text-gray-700 mb-1">
+												Email <span className="text-red-500">*</span>
+											</label>
+											<div className="relative">
+												<Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+												<input
+													type="email"
+													name="email"
+													value={formData.email}
+													onChange={handleInputChange}
+													className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+													placeholder="your@email.com"
+												/>
+											</div>
 										</div>
 									</div>
-
 									<div className="mb-4">
-										<label className="block text-sm font-medium text-gray-700 mb-1">
-											Alamat
+										<label
+											htmlFor="address"
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Alamat <span className="text-red-500">*</span>
 										</label>
 										<div className="relative">
 											<MapPin className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -348,14 +394,14 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 												value={formData.address}
 												onChange={handleInputChange}
 												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-												placeholder="Masukkan alamat"
+												placeholder="Masukkan alamat rumah Anda"
 												required
 											/>
 										</div>
 									</div>
 
 									{/* <div className="mb-4">
-										<label className="block text-sm font-medium text-gray-700 mb-3">
+										<label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-3">
 											Daftar sebagai
 										</label>
 										<div className="grid grid-cols-1 gap-2"> */}
@@ -553,54 +599,131 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 								</>
 							)}
 
-							<div className="mb-4">
-								<label className="block text-sm font-medium text-gray-700 mb-1">
-									Alamat Email
-								</label>
-								<div className="relative">
-									<Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-									<input
-										type="email"
-										name="email"
-										value={formData.email}
-										onChange={handleInputChange}
-										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-										placeholder="Masukkan email"
-										required
-									/>
-								</div>
-							</div>
+							{mode === "register" ? (
+								<div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div>
+										<label
+											htmlFor="password"
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Password <span className="text-red-500">*</span>
+										</label>
+										<div className="relative">
+											<Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+											<input
+												type={showPassword ? "text" : "password"}
+												name="password"
+												value={formData.password}
+												onChange={handleInputChange}
+												className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+												placeholder="Buat password"
+												required
+											/>
+											<button
+												type="button"
+												onClick={() => setShowPassword(!showPassword)}
+												className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+												{showPassword ? (
+													<EyeOff className="w-5 h-5" />
+												) : (
+													<Eye className="w-5 h-5" />
+												)}
+											</button>
+										</div>
+									</div>
 
-							<div className="mb-6">
-								<label className="block text-sm font-medium text-gray-700 mb-1">
-									Kata Sandi
-								</label>
-								<div className="relative">
-									<Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-									<input
-										type={showPassword ? "text" : "password"}
-										name="password"
-										value={formData.password}
-										onChange={handleInputChange}
-										className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-										placeholder="Masukkan kata sandi"
-										required
-									/>
-									<button
-										type="button"
-										onClick={() => setShowPassword(!showPassword)}
-										className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
-										{showPassword ? (
-											<EyeOff className="w-5 h-5" />
-										) : (
-											<Eye className="w-5 h-5" />
+									<div>
+										<label
+											htmlFor="confirmPassword"
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Konfirmasi Password{" "}
+											<span className="text-red-500">*</span>
+										</label>
+										<div className="relative">
+											<Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+											<input
+												type={showConfirmPassword ? "text" : "password"}
+												name="confirmPassword"
+												value={formData.confirmPassword}
+												onChange={handleInputChange}
+												className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+												placeholder="Ulangi password"
+												required
+											/>
+											<button
+												type="button"
+												onClick={() =>
+													setShowConfirmPassword(!showConfirmPassword)
+												}
+												className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+												{showConfirmPassword ? (
+													<EyeOff className="w-5 h-5" />
+												) : (
+													<Eye className="w-5 h-5" />
+												)}
+											</button>
+										</div>
+									</div>
+									{attemptedSubmit &&
+										formData.password !== formData.confirmPassword &&
+										error && (
+											<p className="text-red-500 text-sm mt-2 ml-1">{error}</p>
 										)}
-									</button>
 								</div>
-								{error && (
-									<p className="text-red-500 text-sm mt-3 ml-1">{error}</p>
-								)}
-							</div>
+							) : (
+								<>
+									<div className="mb-4">
+										<label
+											htmlFor="email"
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Email
+										</label>
+										<div className="relative">
+											<Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+											<input
+												type="email"
+												name="email"
+												value={formData.email}
+												onChange={handleInputChange}
+												className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+												placeholder="your@email.com"
+												required
+											/>
+										</div>
+									</div>
+									<div className="mb-6">
+										<label
+											htmlFor="password"
+											className="block text-sm font-medium text-gray-700 mb-1">
+											Password
+										</label>
+										<div className="relative">
+											<Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+											<input
+												type={showPassword ? "text" : "password"}
+												name="password"
+												value={formData.password}
+												onChange={handleInputChange}
+												className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+												placeholder="Masukkan password"
+												required
+											/>
+											<button
+												type="button"
+												onClick={() => setShowPassword(!showPassword)}
+												className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+												{showPassword ? (
+													<EyeOff className="w-5 h-5" />
+												) : (
+													<Eye className="w-5 h-5" />
+												)}
+											</button>
+										</div>
+										{error && (
+											<p className="text-red-500 text-sm mt-3 ml-1">{error}</p>
+										)}
+									</div>
+								</>
+							)}
 
 							{/* Privacy Policy Checkbox - Only show for register */}
 							{mode === "register" && (
@@ -627,7 +750,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 													Syarat & Ketentuan
 													<ExternalLink className="w-3 h-3" />
 												</a>
-												&nbsp;dan
+												&nbsp;dan&nbsp;
 												<a
 													href="/privacy-policy"
 													target="_blank"
