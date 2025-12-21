@@ -74,6 +74,7 @@ export const updateCourse = async (courseId, payload) => {
 			Authorization: `Bearer ${token}`,
 			"Content-Type": "multipart/form-data",
 		},
+		skipGlobalError: true,
 	});
 	return response.data;
 };
@@ -177,6 +178,7 @@ export const createMentorCourse = async (payload) => {
 			Authorization: `Bearer ${token}`,
 			"Content-Type": "multipart/form-data",
 		},
+		skipGlobalError: true,
 	});
 	return response.data;
 };
@@ -200,6 +202,7 @@ export const updateMentorCourse = async (courseId, payload) => {
 			Authorization: `Bearer ${token}`,
 			"Content-Type": "multipart/form-data",
 		},
+		skipGlobalError: true,
 	});
 	return response.data;
 };
@@ -217,7 +220,9 @@ export const setMentorSchedule = async (payload) => {
 	const token = localStorage.getItem("token");
 	const response = await api.post("/mentor/atur-jadwal", payload, {
 		headers: { Authorization: `Bearer ${token}` },
+		skipGlobalError: true,
 	});
+
 	return response.data;
 };
 

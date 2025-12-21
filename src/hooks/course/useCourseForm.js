@@ -232,6 +232,19 @@ export default function useCourseForm({
 				});
 				return;
 			}
+			// jpg atau png
+			if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
+				toast.dismiss();
+				showToast({
+					type: "error",
+					title: "Upload Gagal",
+					message: "Silakan unggah gambar yang valid (JPG atau PNG).",
+					tipText: "Periksa kembali tipe file Anda",
+					tipIcon: "💡",
+				});
+				return;
+			}
+
 			setFotoKursus(file);
 			setFotoPreview(URL.createObjectURL(file));
 		}
@@ -392,6 +405,33 @@ export default function useCourseForm({
 			if (e && e.preventDefault) e.preventDefault();
 			setLoading(true);
 			setError(null);
+
+			// gambar harus jpg/png/jpeg dan maksimal 5MB
+			if (fotoKursus) {
+				const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+				if (!validTypes.includes(fotoKursus.type)) {
+					setLoading(false);
+					toast.dismiss();
+					showToast({
+						type: "error",
+						title: "Format gambar tidak valid",
+						message: "Hanya format JPG, JPEG, dan PNG yang diperbolehkan.",
+					});
+					return;
+				}
+			}
+
+			// gambar maksimal 5MB
+			if (fotoKursus && fotoKursus.size > 5 * 1024 * 1024) {
+				setLoading(false);
+				toast.dismiss();
+				showToast({
+					type: "error",
+					title: "Ukuran gambar terlalu besar",
+					message: "Ukuran gambar maksimal adalah 5MB.",
+				});
+				return;
+			}
 
 			try {
 				const payload = new FormData();

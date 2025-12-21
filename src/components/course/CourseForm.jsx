@@ -583,7 +583,9 @@ const CourseReview = ({
 				</div>
 				{fotoPreview && (
 					<div className="mt-4">
-						<span className="text-sm text-gray-600">Gambar:</span>
+						<span className="text-sm text-gray-600">
+							Gambar (png/jpg/jpeg):
+						</span>
 						<AsyncImage
 							style={{ width: 150, height: 100 }}
 							src={fotoPreview}

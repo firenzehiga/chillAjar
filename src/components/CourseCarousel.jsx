@@ -59,7 +59,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 										e.target.src = "/foto_kursus/default.jpg";
 									}}
 								/>
-								<div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-8">
+								<div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
 									<h3 className="text-3xl font-bold text-white mb-2">
 										{course.courseName}
 									</h3>

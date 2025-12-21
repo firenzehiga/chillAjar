@@ -18,7 +18,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 				// Maksimal 5MB
 				Swal.fire({
 					icon: "error",
-					title: "File Too Large",
+					title: "File terlalu besar",
 					text: "Ukuran file maksimal 5MB.",
 				});
 				setProofImage(null);
@@ -28,8 +28,8 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 			if (!["image/jpeg", "image/png"].includes(file.type)) {
 				Swal.fire({
 					icon: "error",
-					title: "Invalid File Type",
-					text: "Please upload a valid image (JPG or PNG).",
+					title: "Tipe File Tidak Valid",
+					text: "Silakan unggah gambar yang valid (JPG atau PNG).",
 				});
 				setProofImage(null);
 				setProofPreview(null);

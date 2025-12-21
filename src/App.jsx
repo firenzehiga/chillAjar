@@ -746,6 +746,7 @@ function App() {
 					"Content-Type": "multipart/form-data",
 					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
+				skipGlobalError: true,
 			});
 
 			// Invalidate queries setelah sukses
