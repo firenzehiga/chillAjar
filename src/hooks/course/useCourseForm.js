@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { showToast } from "@/components/User/customToast";
 import Swal from "sweetalert2";
 import { getImageUrl } from "@/utils/getImageUrl";
+import useAppStore from "@/stores/useAppStore";
 import {
 	getCourseById,
 	getMentors,
@@ -24,6 +25,7 @@ import {
 	useCreateMentorCourseMutation,
 	useUpdateMentorCourseMutation,
 } from "@/hooks/useCourse";
+import { create } from "zustand";
 
 export default function useCourseForm({
 	courseId,
@@ -38,6 +40,9 @@ export default function useCourseForm({
 	const isAdmin = userRole === "admin";
 	const isMentor = userRole === "mentor";
 	const mentorName = userData?.nama || "";
+
+	const storeUserData = useAppStore((s) => s.userData);
+	const resolvedMentorId = storeUserData.mentor?.id || null;
 
 	const [formData, setFormData] = useState({
 		namaKursus: "",
@@ -83,9 +88,9 @@ export default function useCourseForm({
 		}
 	}, [mentorsData, isMentorsLoading, isAdmin]);
 
-	// Update packages state when data is available
+	// Update packages state when data is available (available to admin and mentor)
 	useEffect(() => {
-		if (isAdmin && packagesData && !isPackagesLoading) {
+		if (packagesData && !isPackagesLoading) {
 			const paketData = Array.isArray(packagesData)
 				? packagesData.map((p) => ({
 						id: p.id,
@@ -118,7 +123,7 @@ export default function useCourseForm({
 				setSelectedPackages([{ package_id: paketData[0].id, is_active: true }]);
 			}
 		}
-	}, [packagesData, isPackagesLoading, isEditMode, isAdmin]);
+	}, [packagesData, isPackagesLoading, isEditMode]);
 
 	// Update loading state based on all required data loading
 	useEffect(() => {
@@ -129,7 +134,7 @@ export default function useCourseForm({
 			}
 			// For mentor, only wait for course data
 			else {
-				setLoading(isCourseLoading);
+				setLoading(isCourseLoading || isPackagesLoading);
 			}
 		}
 	}, [
@@ -174,7 +179,8 @@ export default function useCourseForm({
 				setCollapsedSchedules(initialCollapsedState);
 			}
 
-			if (isAdmin) {
+			// Load package visibility for both admin and mentor so mentors can see/manage packages
+			if (isAdmin || isMentor) {
 				if (
 					courseData.visibilitas_paket &&
 					Array.isArray(courseData.visibilitas_paket)
@@ -195,7 +201,7 @@ export default function useCourseForm({
 				}
 			}
 		}
-	}, [courseData, isCourseLoading, isEditMode, isAdmin, mentorName]);
+	}, [courseData, isCourseLoading, isEditMode, isAdmin, isMentor, mentorName]);
 
 	const handleChange = useCallback((e) => {
 		const { name, value } = e.target;
@@ -364,7 +370,7 @@ export default function useCourseForm({
 					? "completed"
 					: "available";
 			}
-			if (tabId === "paket" && isAdmin) {
+			if (tabId === "paket" && (isAdmin || isMentor)) {
 				return selectedPackages.some((p) => p.is_active)
 					? "completed"
 					: "available";
@@ -372,7 +378,7 @@ export default function useCourseForm({
 
 			return "available";
 		},
-		[activeTab, formData, schedules, selectedPackages, isAdmin]
+		[activeTab, formData, schedules, selectedPackages, isAdmin, isMentor]
 	);
 
 	const isFormValid = useCallback(() => {
@@ -386,13 +392,13 @@ export default function useCourseForm({
 
 		if (!hasValidSchedule) return false;
 
-		if (isAdmin) {
+		if (isAdmin || isMentor) {
 			const activePackages = selectedPackages.filter((p) => p.is_active);
 			if (activePackages.length === 0) return false;
 		}
 
 		return true;
-	}, [formData, schedules, selectedPackages, isAdmin]);
+	}, [formData, schedules, selectedPackages, isAdmin, isMentor]);
 
 	// Use mutations
 	const createCourseMutation = useCreateCourseMutation();
@@ -441,6 +447,7 @@ export default function useCourseForm({
 					payload.append("fotoKursus", fotoKursus);
 				}
 
+				localStorage.getItem("user");
 				if (isAdmin) {
 					// For admin, always send mentor_id field
 					// This ensures the field exists in the request
@@ -448,9 +455,12 @@ export default function useCourseForm({
 						"mentor_id",
 						formData.mentorId !== undefined ? formData.mentorId.toString() : ""
 					);
+				} else if (isMentor) {
+					// karena endpoint admin dipakai untuk mentor, kirim mentor_id dari resolvedMentorId
+					payload.append("mentor_id", String(resolvedMentorId));
 				}
 
-				if (isAdmin && Array.isArray(selectedPackages)) {
+				if ((isAdmin || isMentor) && Array.isArray(selectedPackages)) {
 					if (!isEditMode) {
 						const activePackages = selectedPackages.filter((p) => p.is_active);
 						activePackages.forEach((p, idx) => {
@@ -503,12 +513,12 @@ export default function useCourseForm({
 					}
 				} else {
 					if (isEditMode) {
-						response = await updateMentorCourseMutation.mutateAsync({
+						response = await updateCourseMutation.mutateAsync({
 							courseId,
 							payload,
 						});
 					} else {
-						response = await createMentorCourseMutation.mutateAsync(payload);
+						response = await createCourseMutation.mutateAsync(payload);
 					}
 				}
 

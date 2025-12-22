@@ -4,6 +4,8 @@ import {
 	FileQuestion,
 	UserCircleIcon,
 	CalendarOff,
+	BookOpen,
+	User,
 } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
 import { AsyncImage } from "loadable-image";
@@ -95,17 +97,24 @@ export function CourseCard({ course, onClick }) {
 									</>
 								);
 							}
-							// Tampilkan semua mode valid sebagai badge
-							return validModes.map((mode) => (
-								<span key={mode} className="flex items-center mr-2">
-									{mode === "online" ? (
-										<Laptop className="w-4 h-4 mr-1 text-blue-800" />
-									) : (
-										<Building className="w-4 h-4 mr-1 text-blue-800" />
-									)}
-									{mode === "online" ? "Online" : "Offline"}
-								</span>
-							));
+							// Gantikan badge dengan tombol kecil "Pilih Mentor" (inline)
+							return (
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										onClick && onClick(course);
+									}}
+									disabled={validModes.length === 0}
+									className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all transform focus:outline-none ${
+										validModes.length > 0
+											? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 hover:scale-105"
+											: "bg-gray-200 text-gray-500 cursor-not-allowed"
+									}`}>
+									<User className="w-4 h-4" />
+									Pilih Mentor
+								</button>
+							);
 						})()}
 					</span>
 				</div>

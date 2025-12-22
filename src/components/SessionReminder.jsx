@@ -173,7 +173,7 @@ export function FloatingSessionReminder() {
 					initial={{ opacity: 0, y: 100, scale: 0.8 }}
 					animate={{ opacity: 1, y: 0, scale: 1 }}
 					exit={{ opacity: 0, y: 100, scale: 0.8 }}
-					className="fixed bottom-6 right-6 z-50 max-w-sm">
+					className="fixed bottom-6 right-6 z-50 max-w-lg min-w-[320px]">
 					<div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
 						{/* Progress bar untuk countdown */}
 						<div className="h-1 bg-gray-200">
@@ -281,7 +281,7 @@ export function FloatingSessionReminder() {
 							{/* Action Buttons */}
 							<div className="flex gap-2 mt-3">
 								<button
-									onClick={handleJoin}
+									onClick={handleDismiss}
 									className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
 										currentSession.status === "live"
 											? "bg-red-500 hover:bg-red-600 text-white"
@@ -290,16 +290,16 @@ export function FloatingSessionReminder() {
 											: "bg-chill-blue hover:bg-blue-600 text-white"
 									}`}>
 									{currentSession.status === "live"
-										? "Segera Bergabung"
+										? "Oke"
 										: currentSession.status === "needReview"
 										? "Tulis Ulasan"
 										: "Lihat Detail"}
 								</button>
-								<button
+								{/* <button
 									onClick={handleDismiss}
 									className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm font-medium transition-colors">
-									Later
-								</button>
+									Tutup
+								</button> */}
 							</div>
 						</div>
 					</div>

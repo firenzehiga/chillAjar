@@ -623,11 +623,11 @@ const CourseReview = ({
 											{schedule.tempat}
 										</div>
 									)}
-									{schedule.keterangan && (
+									{/* {schedule.keterangan && (
 										<div className="text-sm text-gray-600 mt-1">
 											{schedule.keterangan}
 										</div>
-									)}
+									)} */}
 								</div>
 							))}
 					</div>
@@ -768,6 +768,7 @@ export function CourseForm({
 
 	const mentorTabs = [
 		...baseTabs,
+		{ id: "paket", label: "Paket", icon: Package },
 		{ id: "review", label: "Review & Save", icon: CheckCircle },
 	];
 
@@ -849,7 +850,7 @@ export function CourseForm({
 						)}
 
 						{/* Package Tab (Admin only) */}
-						{activeTab === "paket" && isAdmin && (
+						{activeTab === "paket" && (isAdmin || isMentor) && (
 							<PackageSelector
 								packages={packages}
 								selectedPackages={selectedPackages}
@@ -868,7 +869,7 @@ export function CourseForm({
 								packages={packages}
 								error={error}
 								isFormValid={isFormValid}
-								showPackages={isAdmin}
+								showPackages={isAdmin || isMentor}
 								mentorName={isMentor ? mentorName : ""}
 							/>
 						)}

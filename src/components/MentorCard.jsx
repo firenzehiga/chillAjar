@@ -81,7 +81,7 @@ export function MentorCard({
 		setSelectedMentorCourse(null);
 	};
 
-	const buttonText = selectedCourse ? "Pesan Kursus" : "Pilih Kursus";
+	const buttonText = selectedCourse ? "Pesan Sekarang" : "Pilih Kursus";
 
 	const formatMentorName = (name) => {
 		if (!name) return "";

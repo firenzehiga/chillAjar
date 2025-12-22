@@ -307,6 +307,10 @@ export function BookingModal({
 
 					<div className="mb-6">
 						<h3 className="font-medium mb-2">Pilih Metode Belajar:</h3>
+						<div className="text-xs text-gray-500 mb-3">
+							Catatan: Pilihan jadwal, tempat, tanggal, dan jam disesuaikan
+							berdasarkan ketersediaan mentor.
+						</div>
 						<div className="grid grid-cols-2 gap-3">
 							{["online", "offline"].map((mode) => (
 								<button
