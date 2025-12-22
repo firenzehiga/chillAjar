@@ -772,21 +772,40 @@ function App() {
 			setShowPackageSelection(false); // ✅ Close package modal jika masih terbuka
 
 			// console.log("Transaksi response:", res.data); // Debugging
+
+			setCurrentPage("transaction-history");
+			history.push("/transaction-history");
+
 			Swal.fire({
 				icon: "success",
 				title: transaksiId
 					? "Bukti Pembayaran Diperbarui!"
 					: "Pembayaran Dikirim!",
 				html: transaksiId
-					? "Bukti pembayaran Anda telah diperbarui. Kami akan memverifikasinya dalam maksimal 1x24 jam. Anda akan menerima notifikasi melalui whatsapp setelah verifikasi selesai."
-					: "Booking Anda telah dikonfirmasi. Pembayaran biasanya diproses dalam 1 hari kerja. Anda akan menerima notifikasi melalui whatsapp begitu pembayaran berhasil diverifikasi.",
+					? `
+						<div class="text-justify text-sm">
+						  <p>Bukti pembayaran Anda telah diperbarui. Kami akan memverifikasinya dalam maksimal 1x24 jam.</p>
+						  <p class="mt-2">Anda akan menerima notifikasi melalui WhatsApp setelah verifikasi selesai.</p>
+						</div>
+						<div class="text-center text-sm text-gray-400 mt-4">Klik di luar popup untuk menutup</div>
+					  `
+					: `
+						<div class="text-justify text-sm">
+						  <p>Booking Anda telah dikonfirmasi. Pembayaran akan diproses paling lama 1 hari kerja.</p>
+						  <p class="mt-2">Anda akan menerima notifikasi melalui WhatsApp begitu pembayaran berhasil diverifikasi.</p>
+						</div>
+						<div class="text-center text-sm text-gray-400 mt-4">Klik di luar popup untuk menutup</div>
+					  `,
 				showConfirmButton: false,
 				timer: 7000,
 				timerProgressBar: true,
 				allowOutsideClick: true,
-			}).then(() => {
-				setCurrentPage("transaction-history");
-				history.push("/transaction-history");
+				customClass: {
+					popup:
+						"bg-white rounded-xl shadow-xl p-5 max-w-sm w-full border-l-4 border-emerald-500",
+					title: "text-lg font-semibold text-gray-900",
+					content: "text-sm text-gray-600 dark:text-gray-300 mt-1",
+				},
 			});
 		} catch (err) {
 			console.error("Error creating transaction:", err);

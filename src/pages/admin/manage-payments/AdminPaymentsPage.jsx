@@ -463,7 +463,7 @@ export function AdminPaymentsPage() {
 				return formatDate(row.tanggalPembayaran);
 			},
 			sortable: true,
-			width: "200px",
+			width: "150px",
 		},
 		{
 			name: "Status",

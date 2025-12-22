@@ -43,7 +43,7 @@ export function AboutPage({ onNavigate }) {
 	).length;
 
 	const stats = [
-		{ icon: Users, label: "Active Students", value: "20" },
+		{ icon: Users, label: "Active Students", value: "20+" },
 		{
 			icon: BookOpen,
 			label: "Kursus Tersedia",
@@ -53,7 +53,7 @@ export function AboutPage({ onNavigate }) {
 				) : coursesError ? (
 					"Error"
 				) : (
-					jumlahCourse
+					jumlahCourse + "+"
 				),
 		},
 		{
@@ -65,7 +65,7 @@ export function AboutPage({ onNavigate }) {
 				) : mentorsError ? (
 					"Error"
 				) : (
-					jumlahMentor
+					jumlahMentor + "+"
 				),
 		},
 	];

@@ -578,6 +578,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 								<div className="flex items-center text-gray-600">
 									<Calendar className="w-4 h-4 mr-2 text-blue-600" />
+									Tanggal Sesi:&nbsp;
 									{new Date(session.date).toLocaleDateString("id-ID", {
 										day: "numeric",
 										month: "long",

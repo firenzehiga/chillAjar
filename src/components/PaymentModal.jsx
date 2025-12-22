@@ -134,13 +134,13 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+				className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
 				<motion.div
 					initial={{ scale: 0.8, y: 40, opacity: 0 }}
 					animate={{ scale: 1, y: 0, opacity: 1 }}
 					exit={{ scale: 0.8, y: 40, opacity: 0 }}
 					transition={{ type: "spring", stiffness: 300, damping: 25 }}
-					className="bg-white rounded-lg w-full max-w-lg max-h-[90vh] flex flex-col">
+					className="bg-white rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col">
 					{/* Header - Fixed */}
 					<div className="p-6 border-b">
 						<div className="flex justify-between items-center">
