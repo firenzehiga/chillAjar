@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { LogOut, User, Clock, History, BookCopy } from "lucide-react";
+import {
+	LogOut,
+	User,
+	CalendarDays,
+	ReceiptText,
+	CalendarClock,
+} from "lucide-react";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { SessionsWidget } from "@/components/SessionWidget";
 import useAppStore from "@/stores/useAppStore";
@@ -117,7 +123,7 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 							<button
 								onClick={() => handleNavigate("admin-profile")}
 								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-								<User className="w-4 h-4 mr-2 border-b-2 " />
+								<User className="w-4 h-4 mr-2" />
 								Profil Saya
 							</button>
 						)}
@@ -132,7 +138,7 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 						{userRole === "pelanggan" && (
 							<button
 								onClick={() => handleNavigate("profile")}
-								className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ">
+								className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b-2 border-gray-100">
 								<User className="w-4 h-4 mr-2 " />
 								Profil Saya
 							</button>
@@ -151,8 +157,8 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 											setShowMobileSessionsDropdown(true);
 										}
 									}}
-									className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b-2 border-gray-200">
-									<Clock className="w-4 h-4 mr-2" />
+									className=" focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+									<CalendarClock className="w-4 h-4 mr-2" />
 									Sesi Saya
 								</button>
 
@@ -178,8 +184,8 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 						{userRole === "pelanggan" && (
 							<button
 								onClick={() => handleNavigate("session-history")}
-								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-								<BookCopy className="w-4 h-4 mr-2" />
+								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b-2 border-gray-100">
+								<CalendarDays className="w-4 h-4 mr-2" />
 								Riwayat Sesi
 							</button>
 						)}
@@ -187,7 +193,7 @@ export function UserMenu({ onNavigate, onLogout, userRole }) {
 							<button
 								onClick={() => handleNavigate("transaction-history")}
 								className="focus:outline-none flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-								<History className="w-4 h-4 mr-2" />
+								<ReceiptText className="w-4 h-4 mr-2" />
 								Riwayat Transaksi
 							</button>
 						)}

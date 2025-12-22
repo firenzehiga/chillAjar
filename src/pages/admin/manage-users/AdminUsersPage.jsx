@@ -320,72 +320,78 @@ export function AdminUsersPage() {
 			</div>
 
 			{/* Statistics Cards */}
-			<div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-				<div className="bg-white p-4 rounded-lg shadow">
-					<h3 className="text-sm font-medium text-gray-500">Total Users</h3>
-					<p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-					<div className="text-xs text-gray-500 mt-1">
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+				<div className="bg-white p-3 sm:p-4 rounded-lg shadow flex flex-col justify-between">
+					<h3 className="text-sm font-medium text-gray-500 truncate">
+						Total Users
+					</h3>
+					<p className="text-xl sm:text-2xl font-bold text-gray-900">
+						{stats.total}
+					</p>
+					<div className="text-xs text-gray-500 mt-1 truncate">
 						Admin: {stats.admin} | Mentor: {stats.mentor} | Pelanggan:{" "}
 						{stats.pelanggan}
 					</div>
 				</div>
-				<div className="bg-white p-4 rounded-lg shadow">
+				<div className="bg-white p-3 sm:p-4 rounded-lg shadow flex flex-col justify-between">
 					<h3 className="text-sm font-medium text-gray-500 flex items-center">
 						<CheckCircle className="w-4 h-4 mr-1 text-green-600" />
 						Sesi Reviewed
 					</h3>
-					<p className="text-2xl font-bold text-green-600">
+					<p className="text-xl sm:text-2xl font-bold text-green-600">
 						{stats.totalSesiReviewed}
 					</p>
 				</div>
-				<div className="bg-white p-4 rounded-lg shadow">
+				<div className="bg-white p-3 sm:p-4 rounded-lg shadow flex flex-col justify-between">
 					<h3 className="text-sm font-medium text-gray-500 flex items-center">
 						<Calendar className="w-4 h-4 mr-1 text-chill-blue-dark" />
 						Sesi Mendatang
 					</h3>
-					<p className="text-2xl font-bold text-chill-blue-dark">
+					<p className="text-xl sm:text-2xl font-bold text-chill-blue-dark">
 						{stats.totalSesiMendatang}
 					</p>
 				</div>
-				<div className="bg-white p-4 rounded-lg shadow">
+				<div className="bg-white p-3 sm:p-4 rounded-lg shadow flex flex-col justify-between">
 					<h3 className="text-sm font-medium text-gray-500 flex items-center">
 						<Clock className="w-4 h-4 mr-1 text-orange-600" />
 						Berlangsung
 					</h3>
-					<p className="text-2xl font-bold text-orange-600">
+					<p className="text-xl sm:text-2xl font-bold text-orange-600">
 						{stats.totalSesiBerlangsung}
 					</p>
 				</div>
-				<div className="bg-white p-4 rounded-lg shadow">
+				<div className="bg-white p-3 sm:p-4 rounded-lg shadow flex flex-col justify-between">
 					<h3 className="text-sm font-medium text-gray-500 flex items-center">
 						<CheckCircle className="w-4 h-4 mr-1 text-chill-blue-dark" />
 						Sesi Selesai
 					</h3>
-					<p className="text-2xl font-bold text-chill-blue-dark">
+					<p className="text-xl sm:text-2xl font-bold text-chill-blue-dark">
 						{stats.totalSesiSelesai}
 					</p>
 				</div>
 			</div>
 
-			<div className="bg-white rounded-lg shadow p-6">
-				<div className="flex justify-between items-center mb-6">
-					<h2 className="text-xl font-semibold">User List</h2>
-					<div className="flex gap-2">
-						<ExportData
-							data={filteredUsers}
-							filename="user-data"
-							columns={csvColumns}
-							variant="success"
-						/>
+			<div className="bg-white rounded-lg shadow p-4 sm:p-6">
+				<div className="flex flex-col sm:flex-row flex-wrap justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
+					<h2 className="text-lg sm:text-xl font-semibold">User List</h2>
+					<div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+						<div className="w-full sm:w-auto">
+							<ExportData
+								data={filteredUsers}
+								filename="user-data"
+								columns={csvColumns}
+								variant="success"
+							/>
+						</div>
 						<button
 							onClick={() => setShowAddMentorModal(true)}
-							className="flex items-center px-4 py-2 bg-chill-blue-dark text-white rounded-lg hover:bg-chill-blue">
+							className="flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-chill-blue-dark text-white rounded-lg hover:bg-chill-blue">
 							<GraduationCap className="w-4 h-4 mr-2" />
 							Add Mentor
 						</button>
 						<button
 							onClick={() => setShowAddModal(true)}
-							className="flex items-center px-4 py-2 bg-chill-blue-dark text-white rounded-lg hover:bg-chill-blue">
+							className="flex items-center justify-center w-full sm:w-auto px-4 py-2 bg-chill-blue-dark text-white rounded-lg hover:bg-chill-blue">
 							<UserPlus className="w-4 h-4 mr-2" />
 							Add Admin
 						</button>
@@ -393,7 +399,7 @@ export function AdminUsersPage() {
 				</div>
 
 				{isLoading ? (
-					<div className="flex justify-center py-20 min-h-screen">
+					<div className="flex justify-center py-12 min-h-[18rem] sm:min-h-screen">
 						<BookLoader size="small" message="Loading Users" />
 					</div>
 				) : (

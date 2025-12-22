@@ -10,6 +10,7 @@ import {
 	Download,
 	Trash2,
 	Trash,
+	Banknote,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { getImageUrl } from "@/utils/getImageUrl";
@@ -658,11 +659,13 @@ export function AdminPaymentsPage() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<CheckCircle className="w-6 h-6 mr-2 text-green-600" />
+					<Banknote className="w-6 h-6 mr-2 text-blue-600" />
 					Manage Transactions
 				</h1>
 				<p className="text-gray-600">Daftar transaksi yang dilakukan user</p>
-				<div className="flex justify-between items-center mb-6">
+			</div>
+			<div className="bg-white rounded-lg shadow p-6">
+				<div className="flex flex-wrap justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Data Transaksi</h2>
 					<div className="flex gap-2">
 						<ExportData
@@ -673,6 +676,7 @@ export function AdminPaymentsPage() {
 						/>
 					</div>
 				</div>
+
 				{isLoading ? (
 					<div className="flex justify-center py-20 min-h-screen">
 						<BookLoader size="small" message="Loading Payments" />
@@ -796,6 +800,7 @@ export function AdminPaymentsPage() {
 					</>
 				)}
 			</div>
+
 			{previewImg && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
 					<div className="relative bg-white rounded-lg shadow-lg p-7">

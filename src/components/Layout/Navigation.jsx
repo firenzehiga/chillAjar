@@ -14,12 +14,12 @@ import {
 	Calendar,
 	UserCheck,
 	LucideUserSquare2,
-	CircleDollarSign,
 	Users2,
 	DollarSign,
 	Package,
 	Gift,
 	Settings,
+	Banknote,
 } from "lucide-react";
 import { UserMenu } from "@/components/UserMenu";
 import useAppStore from "@/stores/useAppStore";
@@ -104,7 +104,7 @@ export function Navigation({ onNavigate, onLogout }) {
 					<NavLink to="admin-manage-users" Icon={Users} label="Users" />
 					<NavLink
 						to="admin-manage-payments"
-						Icon={CircleDollarSign}
+						Icon={Banknote}
 						label="Payments"
 					/>
 

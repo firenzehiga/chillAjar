@@ -14,7 +14,9 @@ import {
 	Filter,
 	Search,
 	X,
+	FileX,
 	Loader2,
+	Banknote,
 } from "lucide-react";
 import api from "@/api";
 import { PaymentModal } from "@/components/PaymentModal";
@@ -353,7 +355,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	if (history.length === 0) {
 		return (
 			<div className="min-h-screen flex flex-col items-center justify-center h-[40vh] text-gray-600">
-				<Calendar className="w-12 h-12 text-gray-400 mb-4" />
+				<FileX className="w-12 h-12 text-gray-400 mb-4" />
 				<h3 className="text-lg font-semibold mb-2">
 					Tidak Ada Riwayat Transaksi
 				</h3>
@@ -525,7 +527,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				{sortedFilteredHistory.length === 0 ? (
 					<div className="text-center py-12 bg-white rounded-2xl border border-gray-200">
 						<div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-							<DollarSign className="w-8 h-8 text-gray-400" />
+							<FaCashRegister className="w-8 h-8 text-gray-400" />
 						</div>
 						<h3 className="text-lg font-medium text-gray-900 mb-2">
 							Tidak ada transaksi ditemukan
@@ -611,7 +613,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							<div className="border-t pt-4 mt-4">
 								<div className="flex items-center justify-between text-gray-600">
 									<div className="flex items-center">
-										<DollarSign className="w-4 h-4 mr-2 text-blue-600" />
+										<Banknote className="w-4 h-4 mr-2 text-blue-600" />
 										Total Harga: Rp
 										{(session.amount || 0).toLocaleString("id-ID")} |{" "}
 										{session.paketNama}{" "}

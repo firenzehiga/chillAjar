@@ -8,6 +8,7 @@ import {
 	MessageCircle,
 	Bell,
 	Star,
+	CalendarClock,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { MdRateReview } from "react-icons/md";
@@ -166,8 +167,8 @@ export function SessionsWidget({
 				<div className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-gray-50 border-b">
 					<div className="flex items-center justify-between gap-2">
 						<h3 className="font-semibold text-gray-900 flex items-center text-sm sm:text-base flex-shrink-0">
-							<Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-blue-600 flex-shrink-0" />
-							<span className=" sm:inline">Sesi Saya</span>
+							<CalendarClock className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2 text-blue-600 flex-shrink-0" />
+							<span className=" sm:inline">Daftar Sesi</span>
 						</h3>
 						<div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
 							{activeSessions > 0 ? (
@@ -219,7 +220,7 @@ export function SessionsWidget({
 					</div>
 				) : sessionsToShow.length === 0 ? (
 					<div className="p-4 text-center text-gray-500">
-						<p>Belum ada sesi</p>
+						<p>Belum ada data</p>
 					</div>
 				) : (
 					<div className="p-2 sm:p-3 space-y-2 max-h-64 overflow-y-auto">

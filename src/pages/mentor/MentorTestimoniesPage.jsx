@@ -1,6 +1,6 @@
 import { useState } from "react";
 import DataTable from "react-data-table-component";
-import { BookOpen, AlertCircle, Star } from "lucide-react";
+import { AlertCircle, Star, MessageSquareText } from "lucide-react";
 import { useMentorTestimoniesQuery } from "@/hooks/useTestimonial";
 import { BookLoader } from "@/components/User/BookLoader";
 
@@ -150,7 +150,7 @@ export function MentorTestimoniesPage() {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
+					<MessageSquareText className="w-6 h-6 mr-2 text-blue-600" />
 					Students Testimonials
 				</h1>
 				<p className="text-gray-600">
@@ -165,16 +165,6 @@ export function MentorTestimoniesPage() {
 				{isLoading ? (
 					<div className="flex justify-center py-20">
 						<BookLoader size="small" message="Loading Testimonies" />
-					</div>
-				) : testimonies.length === 0 ? (
-					<div className="flex flex-col items-center justify-center h-64 text-gray-600">
-						<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
-						<h3 className="text-lg font-semibold mb-2">
-							No Testimonies Available
-						</h3>
-						<p className="text-gray-500 mb-4 text-center">
-							No User has given testimonies yet.
-						</p>
 					</div>
 				) : (
 					<>
@@ -210,6 +200,31 @@ export function MentorTestimoniesPage() {
 									</p>
 								</div>
 							)}
+							noDataComponent={
+								<>
+									{searchTerm ? (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Matching Testimonies
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Tidak ada Testimonies yang sesuai dengan pencarian.
+											</p>
+										</div>
+									) : (
+										<div className="flex flex-col items-center justify-center h-64 text-gray-600">
+											<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />
+											<h3 className="text-lg font-semibold mb-2">
+												No Testimonies Available
+											</h3>
+											<p className="text-gray-500 mb-4 text-center">
+												Belum ada testimoni, Lakukan sesi terlebih dahulu.
+											</p>
+										</div>
+									)}
+								</>
+							}
 						/>
 					</>
 				)}

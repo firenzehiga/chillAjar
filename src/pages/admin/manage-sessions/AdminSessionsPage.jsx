@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DataTable from "react-data-table-component";
-import { BookOpen, AlertCircle, XCircle, Pencil, Trash } from "lucide-react";
+import { AlertCircle, Pencil, Trash, CalendarDays } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
@@ -196,7 +196,7 @@ export function AdminSessionsPage({ onNavigate }) {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
+					<CalendarDays className="w-6 h-6 mr-2 text-blue-600" />
 					Manage Sessions
 				</h1>
 				<p className="text-gray-600">Daftar jadwal sesi pembelajaran</p>

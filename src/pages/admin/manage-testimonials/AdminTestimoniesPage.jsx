@@ -1,5 +1,11 @@
 import DataTable from "react-data-table-component";
-import { BookOpen, AlertCircle, Star, Pencil, Trash } from "lucide-react";
+import {
+	AlertCircle,
+	Star,
+	Pencil,
+	Trash,
+	MessageSquareText,
+} from "lucide-react";
 import Swal from "sweetalert2";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -252,7 +258,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 		<div className="py-8">
 			<div className="mb-8">
 				<h1 className="text-2xl font-bold flex items-center text-gray-900">
-					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
+					<MessageSquareText className="w-6 h-6 mr-2 text-blue-600" />
 					Manage Testimonials
 				</h1>
 				<p className="text-gray-600">
