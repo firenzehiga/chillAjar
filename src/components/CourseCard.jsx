@@ -7,10 +7,12 @@ import {
 	BookOpen,
 	User,
 } from "lucide-react";
+import { useState } from "react";
 import { getImageUrl } from "../utils/getImageUrl";
 import { AsyncImage } from "loadable-image";
 import { Fade } from "transitions-kit";
 export function CourseCard({ course, onClick }) {
+	const [expanded, setExpanded] = useState(false);
 	const formatMentorName = (name) => {
 		if (!name) return "";
 		const parts = name.trim().split(/\s+/);
@@ -60,9 +62,33 @@ export function CourseCard({ course, onClick }) {
 				<h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-800 transition-colors duration-300">
 					{course.courseName}
 				</h3>
-				<p className="text-gray-800 text-sm mb-4 line-clamp-2">
-					{course.courseDescription}
-				</p>
+				{/* Description with collapse/expand */}
+				<div className="mb-1">
+					<p
+						className={`text-gray-800 text-sm mb-2 transition-all duration-200 text-justify ${
+							expanded ? "" : "line-clamp-3"
+						}`}
+						aria-expanded={expanded}>
+						{course.courseDescription}
+					</p>
+					{/* Show toggle when description is long */}
+					{course.courseDescription &&
+						course.courseDescription.length > 160 && (
+							<div className="flex justify-end">
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										setExpanded((s) => !s);
+									}}
+									className="text-sm text-blue-600 hover:underline focus:outline-none"
+									aria-controls="course-desc"
+									aria-expanded={expanded}>
+									{expanded ? "Tampilkan lebih sedikit" : "Baca selengkapnya"}
+								</button>
+							</div>
+						)}
+				</div>
 				{/* [gayaMengajar JADWAL ONLY] Refactor: Badge/label mode belajar kini hanya berdasarkan jadwal_kursus, bukan course.learnMethod. */}
 				<div className="mt-auto flex items-center justify-between text-sm text-gray-500">
 					<span className="flex items-center transform transition-transform duration-300 hover:scale-105 hover:text-blue-800">

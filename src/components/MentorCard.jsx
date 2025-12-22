@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
 import { AsyncImage } from "loadable-image";
+import MentorModal from "./MentorModal";
 import { Fade } from "transitions-kit";
 import useAppStore from "@/stores/useAppStore";
 import { FaWhatsapp } from "react-icons/fa";
@@ -24,7 +25,7 @@ export function MentorCard({
 	const { setShowBookingModal, setShowPayment } = useAppStore();
 	const [showCourseModal, setShowCourseModal] = useState(false);
 	const [selectedMentorCourse, setSelectedMentorCourse] = useState(null);
-	const [showDetails, setShowDetails] = useState(false);
+	const [showModal, setShowModal] = useState(false);
 	const [modeError, setModeError] = useState("");
 
 	useEffect(() => {
@@ -173,9 +174,9 @@ export function MentorCard({
 							</div>
 						</div>
 						<a
-							onClick={() => setShowDetails(!showDetails)}
+							onClick={() => setShowModal((s) => !s)}
 							className="text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer">
-							{showDetails ? "Tutup" : "Lihat Detail"}
+							{showModal ? "Tutup" : "Lihat Detail"}
 						</a>
 					</div>
 
@@ -211,87 +212,22 @@ export function MentorCard({
 						</div>
 					)}
 
-					{showDetails && (
-						<div className="mt-4 space-y-4 border-t pt-4">
-							<div className="space-y-2">
-								<h4 className="font-medium text-gray-900">Tentang Mentor</h4>
-								<p className="text-gray-600 text-sm line-clamp-4">
-									{mentor.mentorAbout}
-								</p>
-							</div>
-
-							<div className="space-y-2">
-								<h4 className="font-medium text-gray-900">
-									Lokasi &amp; Ketersediaan
-								</h4>
-								<div className="space-y-2">
-									{/* --- Perubahan: Lokasi hanya dari jadwal offline valid --- */}
-									{(() => {
-										const offlineSchedules = allSchedules.filter(
-											(s) => s.gayaMengajar === "offline" && s.tempat
-										);
-										const uniqueLocations = [
-											...new Set(offlineSchedules.map((s) => s.tempat)),
-										];
-										return uniqueLocations.length > 0 ? (
-											uniqueLocations.map((location) => (
-												<div key={location} className="">
-													<div className="flex items-center text-gray-600">
-														<MapPinIcon className="w-4 h-4 mr-2 text-blue-600" />
-														<span className="text-sm">{location}</span>
-													</div>
-												</div>
-											))
-										) : (
-											<div className="flex items-center text-gray-600">
-												<CalendarX className="w-4 h-4 mr-2 text-gray-400" />
-												<span className="text-gray-500 text-sm">
-													Sesi offline belum tersedia
-												</span>
-											</div>
-										);
-									})()}
-									{/* --- Perubahan: Status online hanya dari mode valid --- */}
-									<div className="flex items-center text-gray-600">
-										{validModes.includes("online") ? (
-											<>
-												<Monitor className="w-4 h-4 mr-2 text-blue-600" />
-												<span className="text-sm">Tersedia sesi online</span>
-											</>
-										) : (
-											<>
-												<MonitorX className="w-4 h-4 mr-2 text-gray-400" />
-												<span className="text-sm text-gray-500">
-													Sesi online belum tersedia
-												</span>
-											</>
-										)}
-									</div>
-								</div>
-							</div>
-
-							{mentor.phone && (
-								<div className="mt-3">
-									<a
-										href={(() => {
-											const raw = mentor.phone || "";
-											const digits = raw.replace(/\D/g, "");
-											const normalized = digits.startsWith("0")
-												? `62${digits.slice(1)}`
-												: digits;
-											return normalized ? `https://wa.me/${normalized}` : "#";
-										})()}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition-colors text-sm"
-										aria-label={`Chat WhatsApp ${mentor.mentorName}`}>
-										<FaWhatsapp className="w-4 h-4" />
-										<span className="font-medium">WhatsApp</span>
-									</a>
-								</div>
-							)}
-						</div>
-					)}
+					{/* Details now displayed in modal to avoid pushing layout */}
+					<MentorModal
+						open={showModal}
+						onClose={() => setShowModal(false)}
+						mentor={mentor}
+						allSchedules={allSchedules}
+						validModes={validModes}
+						onSchedule={(m, c) => {
+							// If course provided, use it; otherwise open course modal flow
+							if (c) {
+								onSchedule && onSchedule(m, c);
+							} else {
+								handleScheduleClick();
+							}
+						}}
+					/>
 
 					<button
 						type="button"
