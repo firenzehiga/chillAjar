@@ -30,6 +30,7 @@ export function AdminSessionsPage({ onNavigate }) {
 			title: "Apa Anda yakin?",
 			text: "Kamu tidak akan bisa mengembalikan ini!",
 			icon: "warning",
+			iconColor: "#DC2626",
 			showCancelButton: true,
 			confirmButtonText: "Ya, hapus!",
 			cancelButtonText: "Batal",

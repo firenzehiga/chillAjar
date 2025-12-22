@@ -177,7 +177,7 @@ export default function TransactionReminder() {
 					initial={{ opacity: 0, y: 40 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: 40 }}
-					className="fixed top-6 right-6 z-50 max-w-sm">
+					className="fixed top-6 right-6 z-50 max-w-md">
 					<div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
 						<div className="p-4">
 							<div className="flex items-start justify-between">

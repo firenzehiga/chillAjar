@@ -107,7 +107,9 @@ export function AdminUsersPage() {
 		}
 
 		// Hanya izinkan admin dengan id 2
-		if (!currentUser || currentUser.id !== 2 || currentUser.peran !== "admin") {
+		// || currentUser.id !== 2 ||
+
+		if (!currentUser || currentUser.peran !== "admin") {
 			Swal.fire(
 				"Akses ditolak",
 				"Hanya admin tertentu yang dapat menghapus user.",
@@ -190,7 +192,7 @@ export function AdminUsersPage() {
 		{
 			name: "No",
 			selector: (row, index) => index + 1,
-			width: "80px",
+			width: "70px",
 			sortable: true,
 		},
 		{

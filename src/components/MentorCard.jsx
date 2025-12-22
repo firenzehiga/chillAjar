@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import {
 	Star,
-	Phone,
 	MapPinIcon,
 	Monitor,
-	BookOpen,
 	MonitorX,
 	CalendarX,
 	AlertCircle,
+	Lightbulb,
+	BookOpen,
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
 import { AsyncImage } from "loadable-image";
@@ -83,22 +83,68 @@ export function MentorCard({
 
 	const buttonText = selectedCourse ? "Pesan Kursus" : "Pilih Kursus";
 
+	const formatMentorName = (name) => {
+		if (!name) return "";
+		const parts = name.trim().split(/\s+/);
+		if (parts.length <= 2) return name;
+		const lastTwo = parts.slice(-2);
+		const initials = parts
+			.slice(0, -2)
+			.map((p) => p[0].toUpperCase() + ".")
+			.join(" ");
+		return `${initials} ${lastTwo.join(" ")}`;
+	};
 	return (
 		<>
-			<div className="bg-gray-50 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+			<style>{`
+				@keyframes floaty { 0% { transform: translateY(0) rotate(6deg); } 50% { transform: translateY(-8px) rotate(3deg); } 100% { transform: translateY(0) rotate(6deg); } }
+				@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+				.deco-float { animation: floaty 3.8s ease-in-out infinite; }
+				.deco-pop { animation: pop 2.6s ease-in-out infinite; }
+			`}</style>
+			<div className="group relative bg-gray-50 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+				{/* small ribbon to match app theme */}
+				<div className="absolute top-4 left-4 bg-white/90 text-xs font-semibold text-blue-700 px-2 py-1 rounded-md shadow-sm">
+					ChillAjar
+				</div>
 				<div className="relative">
-					<div className="h-32 bg-gradient-to-r bg-chill-blue" />
-					<div className="absolute -bottom-12 left-6">
-						<AsyncImage
-							Transition={Fade}
-							src={mentor.mentorImage}
-							alt={mentor.mentorName}
-							className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover object-center"
-							onError={(e) => {
-								e.target.onerror = null;
-								e.target.src = "/foto_mentor/default.png";
-							}}
-						/>
+					<div className="h-36 bg-gradient-to-r from-indigo-500 to-blue-500 relative overflow-hidden">
+						{/* wave decoration */}
+						<svg
+							className="absolute left-0 bottom-0 w-full h-16 text-white/40 opacity-40"
+							viewBox="0 0 1440 320"
+							preserveAspectRatio="none"
+							xmlns="http://www.w3.org/2000/svg">
+							<path
+								fill="currentColor"
+								d="M0,192L48,170.7C96,149,192,107,288,96C384,85,480,107,576,112C672,117,768,107,864,106.7C960,107,1056,117,1152,133.3C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+							/>
+						</svg>
+						<svg
+							className="absolute right-6 top-6 w-20 h-20 opacity-20"
+							viewBox="0 0 100 100"
+							xmlns="http://www.w3.org/2000/svg">
+							<circle cx="20" cy="20" r="6" fill="white" />
+							<circle cx="50" cy="40" r="4" fill="white" />
+							<circle cx="80" cy="25" r="5" fill="white" />
+						</svg>
+
+						{/* decorative icon (mentoring theme) */}
+						<Lightbulb className="absolute left-20 top-6 w-16 h-16 text-white opacity-20 transform rotate-6 deco-float transition-transform duration-500 group-hover:translate-y-1 group-hover:rotate-3" />
+					</div>
+					<div className="absolute -bottom-14 left-6">
+						<div className="rounded-full p-1 bg-gradient-to-r from-indigo-500 to-blue-500">
+							<AsyncImage
+								Transition={Fade}
+								src={mentor.mentorImage}
+								alt={mentor.mentorName}
+								className="w-24 h-24 rounded-full shadow-lg object-cover object-center"
+								onError={(e) => {
+									e.target.onerror = null;
+									e.target.src = "/foto_mentor/default.png";
+								}}
+							/>
+						</div>
 					</div>
 				</div>
 
@@ -106,7 +152,7 @@ export function MentorCard({
 					<div className="flex justify-between items-start mb-4">
 						<div>
 							<h3 className="text-xl font-bold text-gray-900">
-								{mentor.mentorName || "Chill Ajar"}
+								{formatMentorName(mentor.mentorName) || "Mentor"}
 							</h3>
 							<div className="flex items-center text-yellow-400 mt-1">
 								<Star className="w-4 h-4 fill-current" />
@@ -159,8 +205,8 @@ export function MentorCard({
 
 					{/* --- Perubahan: Tampilkan error jika tidak ada mode valid --- */}
 					{modeError && (
-						<div className="mb-2 flex items-center gap-2 text-red-600 bg-red-50 rounded p-2">
-							<AlertCircle className="w-5 h-5" />
+						<div className="mb-2 flex items-center gap-2 text-xs font-semibold text-red-600 bg-red-50 rounded p-2">
+							<AlertCircle className="w-3 h-3" />
 							<span>{modeError}</span>
 						</div>
 					)}
@@ -169,7 +215,9 @@ export function MentorCard({
 						<div className="mt-4 space-y-4 border-t pt-4">
 							<div className="space-y-2">
 								<h4 className="font-medium text-gray-900">Tentang Mentor</h4>
-								<p className="text-gray-600 text-sm">{mentor.mentorAbout}</p>
+								<p className="text-gray-600 text-sm line-clamp-4">
+									{mentor.mentorAbout}
+								</p>
 							</div>
 
 							<div className="space-y-2">
@@ -235,12 +283,10 @@ export function MentorCard({
 										})()}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="flex items-center text-gray-600 hover:text-green-700"
+										className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition-colors text-sm"
 										aria-label={`Chat WhatsApp ${mentor.mentorName}`}>
-										<FaWhatsapp className="w-4 h-4 mr-2 text-green-600" />
-										<span className="text-sm font-semibold">
-											{mentor.phone}
-										</span>
+										<FaWhatsapp className="w-4 h-4" />
+										<span className="font-medium">WhatsApp</span>
 									</a>
 								</div>
 							)}
@@ -251,9 +297,9 @@ export function MentorCard({
 						type="button"
 						onClick={handleScheduleClick}
 						disabled={validModes.length === 0}
-						className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors ${
+						className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all transform ${
 							validModes.length > 0
-								? "bg-black text-white hover:bg-gray-900 outline-none focus:outline-none"
+								? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 hover:scale-105 outline-none focus:outline-none"
 								: "bg-gray-300 text-gray-500 cursor-not-allowed"
 						}`}>
 						<BookOpen className="w-4 h-4" />

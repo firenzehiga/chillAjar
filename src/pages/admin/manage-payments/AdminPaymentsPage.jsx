@@ -8,6 +8,8 @@ import {
 	XCircle,
 	Eye,
 	Download,
+	Trash2,
+	Trash,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { getImageUrl } from "@/utils/getImageUrl";
@@ -20,12 +22,14 @@ import {
 	usePaymentsQuery,
 	useVerifyPaymentMutation,
 	useRejectPaymentMutation,
+	useDeletePaymentMutation,
 } from "@/hooks/usePayments";
 import { downloadPaymentProof } from "@/services/paymentsService";
 
 export function AdminPaymentsPage() {
 	const [verifikasiTransaksiId, setVerifikasiTransaksiId] = useState(null);
 	const [tolakTransaksiId, setTolakTransaksiId] = useState(null);
+	const [deletingPaymentId, setDeletingPaymentId] = useState(null);
 	const [previewImg, setPreviewImg] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const queryClient = useQueryClient();
@@ -37,6 +41,52 @@ export function AdminPaymentsPage() {
 		error,
 		isFetching,
 	} = usePaymentsQuery();
+
+	// Mutasi untuk hapus pembayaran
+	const deleteMutation = useDeletePaymentMutation();
+
+	const handleDelete = (id) => {
+		Swal.fire({
+			title: "Apa Anda yakin?",
+			text: "Kamu tidak akan bisa mengembalikan ini!",
+			icon: "warning",
+			iconColor: "#DC2626",
+			showCancelButton: true,
+			confirmButtonText: "Ya, hapus!",
+			cancelButtonText: "Batal",
+			customClass: {
+				// kurangi ukuran popup (max-w-md vs max-w-lg) supaya card tidak terlalu besar
+				popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
+				title: "text-lg font-semibold text-gray-900",
+				content: "text-sm text-gray-600 dark:text-gray-300 mt-1",
+				// tambahkan container actions dengan gap agar tombol tidak saling dempet
+				actions: "flex gap-3 justify-center mt-4",
+				confirmButton:
+					"px-4 py-2 focus:outline-none rounded-md bg-red-600 hover:bg-red-700 text-white",
+				cancelButton:
+					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
+			},
+			backdrop: true,
+		}).then((result) => {
+			if (result.isConfirmed) {
+				setDeletingPaymentId(id);
+				const toastId = toast.loading("Menghapus pembayaran...");
+				deleteMutation.mutate(id, {
+					onSuccess: async () => {
+						await queryClient.invalidateQueries({
+							queryKey: ["adminPayments"],
+						});
+						setDeletingPaymentId(null);
+						toast.success("Pembayaran berhasil dihapus.", { id: toastId });
+					},
+					onError: (err) => {
+						setDeletingPaymentId(null);
+						toast.error("Gagal menghapus pembayaran.", { id: toastId });
+					},
+				});
+			}
+		});
+	};
 
 	// Mutasi untuk verifikasi pembayaran
 	const verifikasiMutation = useVerifyPaymentMutation();
@@ -539,9 +589,22 @@ export function AdminPaymentsPage() {
 								</button>
 							</>
 						)}
-						{row.statusPembayaran !== "menunggu_verifikasi" && (
+						{/* {row.statusPembayaran !== "menunggu_verifikasi" && (
 							<span className="text-sm text-gray-500">Tidak ada aksi</span>
-						)}
+						)} */}
+
+						{/* Delete button (per-row) - simple styling */}
+						<button
+							onClick={() => handleDelete(row.id)}
+							className="text-red-600 hover:text-red-800 outline-none focus:outline-none"
+							title="Hapus Pembayaran"
+							disabled={deletingPaymentId === row.id || isFetching}>
+							{deletingPaymentId === row.id ? (
+								<Loader2 className="animate-spin w-4 h-4" />
+							) : (
+								<Trash className="w-4 h-4" />
+							)}
+						</button>
 					</div>
 				);
 			},
@@ -599,9 +662,6 @@ export function AdminPaymentsPage() {
 					Manage Transactions
 				</h1>
 				<p className="text-gray-600">Daftar transaksi yang dilakukan user</p>
-			</div>
-
-			<div className="bg-white rounded-lg shadow p-6">
 				<div className="flex justify-between items-center mb-6">
 					<h2 className="text-xl font-semibold">Data Transaksi</h2>
 					<div className="flex gap-2">

@@ -352,7 +352,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 
 	if (history.length === 0) {
 		return (
-			<div className="flex flex-col items-center justify-center h-[40vh] text-gray-600">
+			<div className="min-h-screen flex flex-col items-center justify-center h-[40vh] text-gray-600">
 				<Calendar className="w-12 h-12 text-gray-400 mb-4" />
 				<h3 className="text-lg font-semibold mb-2">
 					Tidak Ada Riwayat Transaksi

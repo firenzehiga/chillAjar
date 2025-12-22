@@ -4,6 +4,7 @@ import {
 	getPayments,
 	verifyPayment,
 	rejectPayment,
+	deletePayment,
 } from "@/services/paymentsService";
 
 /**
@@ -37,6 +38,27 @@ export const usePaymentsQuery = () => {
 		retry: 1,
 		onError: (err) => {
 			console.error("Error fetching payments:", err);
+		},
+	});
+};
+
+/**
+ * Hapus transaksi (admin).
+ *
+ * @returns {UseMutationResult} Mutation hook
+ * @invalidates ["adminPayments"]
+ * @optimisticUpdate Cache ["adminPayments"] langsung difilter
+ */
+export const useDeletePaymentMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: deletePayment,
+		onSuccess: (_, id) => {
+			queryClient.setQueryData(["adminPayments"], (oldData) =>
+				oldData.filter((payment) => payment.id !== id)
+			);
+			queryClient.invalidateQueries(["adminPayments"]);
 		},
 	});
 };

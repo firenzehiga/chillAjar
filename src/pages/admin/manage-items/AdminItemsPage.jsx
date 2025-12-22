@@ -75,6 +75,7 @@ export function AdminItemsPage({ onNavigate }) {
 			title: "Apa Anda yakin?",
 			text: "Item ini akan dihapus dan tidak bisa dikembalikan!",
 			icon: "warning",
+			iconColor: "#DC2626",
 			showCancelButton: true,
 			confirmButtonText: "Ya, hapus!",
 			cancelButtonText: "Batal",

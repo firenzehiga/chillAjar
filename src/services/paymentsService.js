@@ -18,6 +18,24 @@ export const getPayments = async () => {
 };
 
 /**
+ * Menghapusdata transaksi/pembayaran.
+ *
+ * @async
+ * @function deletePayment
+ * @endpoint DELETE /transaksi
+ * @returns {Promise<any>} Data transaksi.
+ *
+ */
+export const deletePayment = async (id) => {
+	try {
+		await api.delete(`/transaksi/${id}`);
+	} catch (error) {
+		console.error("Error deleting payment:", error);
+		throw error;
+	}
+};
+
+/**
  * Verifikasi pembayaran untuk transaksi tertentu (admin).
  *
  * @async
