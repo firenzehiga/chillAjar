@@ -108,7 +108,7 @@ export function MentorCard({
 					ChillAjar
 				</div>
 				<div className="relative">
-					<div className="h-36 bg-gradient-to-r from-indigo-500 to-blue-500 relative overflow-hidden">
+					<div className="h-32 bg-gradient-to-r from-indigo-500 to-blue-500 relative overflow-hidden">
 						{/* wave decoration */}
 						<svg
 							className="absolute left-0 bottom-0 w-full h-16 text-white/40 opacity-40"
@@ -130,15 +130,15 @@ export function MentorCard({
 						</svg>
 
 						{/* decorative icon (mentoring theme) */}
-						<Lightbulb className="absolute left-20 top-6 w-16 h-16 text-white opacity-20 transform rotate-6 deco-float transition-transform duration-500 group-hover:translate-y-1 group-hover:rotate-3" />
+						<Lightbulb className="absolute left-20 top-7 w-14 h-14 text-white opacity-20 transform rotate-6 deco-float transition-transform duration-500 group-hover:translate-y-1 group-hover:rotate-3" />
 					</div>
-					<div className="absolute -bottom-14 left-6">
+					<div className="absolute -bottom-12 left-6">
 						<div className="rounded-full p-1 bg-gradient-to-r from-indigo-500 to-blue-500">
 							<AsyncImage
 								Transition={Fade}
 								src={mentor.mentorImage}
 								alt={mentor.mentorName}
-								className="w-24 h-24 rounded-full shadow-lg object-cover object-center"
+								className="w-20 h-20 rounded-full shadow-lg object-cover object-center"
 								onError={(e) => {
 									e.target.onerror = null;
 									e.target.src = "/foto_mentor/default.png";
