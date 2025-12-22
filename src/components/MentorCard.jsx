@@ -108,7 +108,7 @@ export function MentorCard({
 					ChillAjar
 				</div>
 				<div className="relative">
-					<div className="h-32 bg-gradient-to-r from-indigo-500 to-blue-500 relative overflow-hidden">
+					<div className="h-32 bg-chill-blue relative overflow-hidden">
 						{/* wave decoration */}
 						<svg
 							className="absolute left-0 bottom-0 w-full h-16 text-white/40 opacity-40"
@@ -133,7 +133,7 @@ export function MentorCard({
 						<Lightbulb className="absolute left-20 top-7 w-14 h-14 text-white opacity-20 transform rotate-6 deco-float transition-transform duration-500 group-hover:translate-y-1 group-hover:rotate-3" />
 					</div>
 					<div className="absolute -bottom-12 left-6">
-						<div className="rounded-full p-1 bg-gradient-to-r from-indigo-500 to-blue-500">
+						<div className="rounded-full p-1 bg-gradient-to-r from-chill-blue via-indigo-500 to-chill-blue">
 							<AsyncImage
 								Transition={Fade}
 								src={mentor.mentorImage}
