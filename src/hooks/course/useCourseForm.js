@@ -164,111 +164,93 @@ export default function useCourseForm({
 			}
 
 			if (courseData.jadwal_kursus) {
-				// Helper untuk menentukan apakah sebuah jadwal harus dikunci (locked)
-				// Aturan yang dipakai di sini:
-				// - Jika backend mengirimkan flag eksplisit seperti `is_booked`, `locked`, atau `has_session`, gunakan itu.
-				// - Jika ada sesi terkait (`sesi`, `session`, atau `sessions`) dan status sesi menunjukkan bahwa sesi belum selesai
-				//   (mis. `booked`, `pending`, `started`) maka jadwal dikunci.
-				// - Jika ada transaksi terkait dan status pembayaran adalah `menunggu_verifikasi` atau `accepted` maka jadwal dikunci.
-				// - Jika sesi statusnya `end` atau `reviewed` (selesai), maka tidak dikunci.
+				// Helper yang merapikan logika penguncian jadwal.
+				const checkPaymentForSession = (
+					sessionId,
+					isPendingContext = false
+				) => {
+					if (
+						!sessionId ||
+						!Array.isArray(paymentsData) ||
+						paymentsData.length === 0
+					) {
+						return null;
+					}
+
+					const paymentMatch = paymentsData.find((payment) => {
+						const paymentSessionId = payment.sesi_id || null;
+						return (
+							paymentSessionId && String(paymentSessionId) === String(sessionId)
+						);
+					});
+
+					if (!paymentMatch) return null;
+
+					const paymentStatus = (
+						paymentMatch.statusPembayaran || ""
+					).toString();
+					if (paymentStatus === "menunggu_verifikasi") {
+						return { locked: true, reason: "Menunggu verifikasi pembayaran" };
+					}
+					if (paymentStatus === "accepted") {
+						// Untuk konteks 'pending' kita sertakan pesan yang lebih spesifik seperti sebelumnya
+						return {
+							locked: true,
+							reason: isPendingContext
+								? "Pembayaran diterima (menunggu sesi dimulai)"
+								: "Pembayaran diterima",
+						};
+					}
+
+					return {
+						locked: true,
+						reason: "Tersimpan(transaksi ada)",
+					};
+				};
+
 				const isJadwalLocked = (scheduleItem) => {
 					// Hormati flag eksplisit dari backend
 					if (scheduleItem.locked === true) {
 						return { locked: true, reason: "Terkunci (flag dari backend)" };
 					}
 
-					const normalize = (v) => (v || "").toString().trim().toLowerCase();
-
-					// Gunakan `paymentsData` (query admin) yang mengirim `sesi_id` untuk mencocokkan.
 					const sessions = scheduleItem.sesi || [];
+					if (!Array.isArray(sessions) || sessions.length === 0) {
+						return { locked: false };
+					}
 
-					if (Array.isArray(sessions) && sessions.length > 0) {
-						for (const s of sessions) {
-							const sessionStatus = normalize(s.statusSesi);
+					for (const session of sessions) {
+						const sessionStatus = session.statusSesi || "";
 
-							// Jika sesi sedang berjalan atau pending (butuh verifikasi), tetap kunci
-							if (sessionStatus === "started") {
-								return { locked: true, reason: "Sesi sedang berjalan" };
-							}
-							// Jika status 'pending' — Gunakan `paymentsData` yang dimiliki (mengandung `sesi_id`) untuk mencocokkan.
-							if (sessionStatus === "pending") {
-								const sessionId = s.id || null;
+						// Sesi sedang berjalan -> kunci
+						if (sessionStatus === "started") {
+							return { locked: true, reason: "Sesi sedang berjalan" };
+						}
 
-								if (
-									sessionId &&
-									Array.isArray(paymentsData) &&
-									paymentsData.length > 0
-								) {
-									const match = paymentsData.find((p) => {
-										const pid = p.sesi_id || null;
-										return pid && String(pid) === String(sessionId);
-									});
+						// Sesi telah selesai -> kunci
+						if (sessionStatus === "end") {
+							return { locked: true, reason: "Sesi telah selesai" };
+						}
 
-									if (match) {
-										const ps = (match.statusPembayaran || "")
-											.toString()
-											.toLowerCase();
-										if (ps === "menunggu_verifikasi") {
-											return {
-												locked: true,
-												reason: "Menunggu verifikasi pembayaran",
-											};
-										}
-										if (ps === "accepted") {
-											return { locked: true, reason: "Pembayaran diterima" };
-										}
-										return {
-											locked: true,
-											reason: "Tersimpan/ter-reserve (transaksi ada)",
-										};
-									}
-								}
+						// Jika status 'pending' selalu kunci; periksa transaksi dulu
+						if (sessionStatus === "pending") {
+							const sessionId = session.id || null;
+							const paymentLock = checkPaymentForSession(sessionId, true);
+							if (paymentLock) return paymentLock;
+							return { locked: true, reason: "Dipesan (belum bayar)" };
+						}
 
-								// Jika tidak ada transaksi yang cocok di paymentsData: tunjukkan sudah dipesan tapi belum bayar
-								return { locked: true, reason: "Dipesan (belum bayar)" };
-							}
+						// Untuk status selain 'pending' atau 'started', cek transaksi terkait dulu
+						const sessionId = session.id || null;
+						const paymentLock = checkPaymentForSession(sessionId, false);
+						if (paymentLock) return paymentLock;
 
-							// Cari di paymentsData berdasarkan `sesi_id` (paling andal)
-							const sessionId = s.id || null;
-							if (
-								sessionId &&
-								Array.isArray(paymentsData) &&
-								paymentsData.length > 0
-							) {
-								const match = paymentsData.find((p) => {
-									const pid = p.sesi_id || null;
-									return pid && String(pid) === String(sessionId);
-								});
-
-								if (match) {
-									const ps = normalize(match.statusPembayaran);
-									if (ps === "menunggu_verifikasi") {
-										return {
-											locked: true,
-											reason: "Menunggu verifikasi pembayaran",
-										};
-									}
-									if (ps === "accepted") {
-										return { locked: true, reason: "Pembayaran diterima" };
-									}
-
-									// transaksi ada tetapi status tidak jelas -> anggap reserved
-									return {
-										locked: true,
-										reason: "Tersimpan/ter-reserve (transaksi ada)",
-									};
-								}
-							}
-
-							// Jika status sesi adalah 'booked' namun tidak ada transaksi ditemukan,
-							// jangan kunci; tunjukkan bahwa sudah dipesan tapi belum ada transaksi.
-							if (sessionStatus === "booked") {
-								return { locked: false, reason: "Dipesan (belum bayar)" };
-							}
+						// Jika status 'booked' dan tidak ada transaksi -> jangan kunci
+						if (sessionStatus === "booked") {
+							return { locked: false, reason: "Dipesan (belum bayar)" };
 						}
 					}
 
-					// Tidak ada kondisi yang mengunci
 					return { locked: false };
 				};
 

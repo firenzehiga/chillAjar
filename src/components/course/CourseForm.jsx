@@ -301,7 +301,7 @@ const ScheduleManager = ({
 								<span
 									title={schedule.lockedReason || "Tidak Ada"}
 									className="ml-2 text-xs font-medium bg-red-100 text-red-800 px-2 py-1 rounded">
-									Dipesan
+									Memiliki Sesi
 								</span>
 							)}
 						</div>
