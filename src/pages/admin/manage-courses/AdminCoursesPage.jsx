@@ -79,15 +79,16 @@ export function AdminCoursesPage({ onNavigate }) {
 			width: "60px",
 		},
 		{
-			name: "Nama Course",
+			name: "Nama Kursus",
 			selector: (row) => row.namaKursus,
 			sortable: true,
-			width: "300px",
+			width: "250px",
 		},
 		{
 			name: "Mentor",
 			selector: (row) => row.mentor?.user?.nama || "Unknown Mentor",
 			sortable: true,
+			width: "250px",
 		},
 		{
 			name: "Gaya Pembelajaran",
@@ -135,7 +136,7 @@ export function AdminCoursesPage({ onNavigate }) {
 					</div>
 				);
 			},
-			width: "300px",
+			width: "200px",
 		},
 		{
 			name: "Foto",
@@ -269,54 +270,55 @@ export function AdminCoursesPage({ onNavigate }) {
 							noHeader
 							expandableRows
 							expandableRowsComponent={({ data }) => (
-								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-									<p className="flex">
-										<span className="w-20 font-medium text-gray-900 mb-2">
-											Deskripsi:
-										</span>
-										<span>{data.deskripsi}</span>
-									</p>
-									<p className="flex">
-										<span className="w-20 font-medium text-gray-900 mb-2">
-											Jadwal:
-										</span>
-									</p>
-									<span>
-										{data.jadwal_kursus?.map((jadwal, index) => {
-											return (
-												<div key={index} className="mb-3">
-													<p>
-														{formatDate(jadwal.tanggal)}{" "}
-														{jadwal.waktu.slice(0, 5)} WIB |
-														<span className="text-gray-500 ml-2">
-															{jadwal.tempat}
-														</span>
-													</p>
+								<div className="p-5 text-sm text-gray-700 bg-gray-50 rounded-md">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+										{/* Deskripsi di kolom kiri */}
+										<div>
+											<div className="mb-2">
+												<div className="text-sm font-medium text-gray-900 mb-1">
+													Deskripsi:
 												</div>
-											);
-										})}
-									</span>
-									{/* <p className="flex">
-										<span className="w-20 font-medium text-gray-900 mb-2">
-											Paket Aktif:
-										</span>
-									</p>
-									<div>
-										{data.packages && data.packages.length > 0 ? (
-											data.packages.map((pkg) => (
-												<span
-													key={pkg.id}
-													className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2"
-													title={`Rp ${pkg.price?.toLocaleString()}`}>
-													{pkg.name}
-												</span>
-											))
-										) : (
-											<span className="text-gray-500 text-xs">
-												Tidak ada paket aktif
-											</span>
-										)}
-									</div> */}
+												<div className="text-sm text-gray-700 text-justify">
+													{data.deskripsi || "-"}
+												</div>
+											</div>
+										</div>
+										{/* Jadwal di kolom kanan dengan scroll jika panjang */}
+										<div>
+											<div className="mb-2">
+												<div className="text-sm font-medium text-gray-900 mb-1">
+													Jadwal:
+												</div>
+											</div>
+											<div className="space-y-2 max-h-64 overflow-auto pr-2">
+												{data.jadwal_kursus && data.jadwal_kursus.length > 0 ? (
+													data.jadwal_kursus.map((jadwal, index) => (
+														<div
+															key={index}
+															className="p-2 bg-white rounded border border-gray-100">
+															<p className="text-sm">
+																{formatDate(jadwal.tanggal)}{" "}
+																{jadwal.waktu.slice(0, 5)} WIB |
+																{jadwal.gayaMengajar === "online" ? (
+																	<span className="text-blue-600 font-semibold ml-2">
+																		Online
+																	</span>
+																) : (
+																	<span className="text-gray-500 ml-2">
+																		{jadwal.tempat}
+																	</span>
+																)}
+															</p>
+														</div>
+													))
+												) : (
+													<div className="text-gray-500 text-sm">
+														Tidak ada jadwal.
+													</div>
+												)}
+											</div>
+										</div>
+									</div>
 								</div>
 							)}
 							// Tambahkan penanganan jika data kosong

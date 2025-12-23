@@ -173,12 +173,13 @@ export function AdminMentorsPage({ onNavigate }) {
 			},
 			sortable: true,
 			sortFunction: (a, b) => (Number(a.rating) || 0) - (Number(b.rating) || 0), // Handle undefined rating
+			width: "120px",
 		},
 		{
 			name: "Biaya Per Sesi",
 			selector: (row) => `Rp ${row.biayaPerSesi?.toLocaleString() || "N/A"}`,
+			width: "150px",
 		},
-		{ name: "Deskripsi", selector: (row) => row.deskripsi || "N/A" },
 		{
 			name: "Status",
 			selector: (row) => row.status || "N/A",
@@ -500,25 +501,52 @@ export function AdminMentorsPage({ onNavigate }) {
 
 								return (
 									<div className="p-4 bg-gray-50 rounded-md">
-										<p className="text-gray-600 mb-1">Dokumen Pendukung:</p>
-										{hasDokumenPendukung ? (
-											<div className="mt-2">
-												<button
-													onClick={() => handleDownloadDokumen(data)}
-													className="inline-block no-underline px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition cursor-pointer border border-blue-300">
-													📄 Download (DokumenMentor_
-													{data.user?.nama?.replace(/\s+/g, "_") || "mentor"}.
-													{data.dokumen_pendukung.split(".").pop()})
-												</button>
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+											{/* Left: Deskripsi (mengambil 2 kolom di md+) */}
+											<div className="">
+												<p className="text-gray-600 mb-1 font-semibold">
+													Deskripsi Mentor:
+												</p>
+												<p className="text-gray-700 text-sm leading-relaxed text-justify">
+													{data.deskripsi || "Tidak ada deskripsi."}
+												</p>
+												{/* Optional: tampilkan skill/keahlian jika ada */}
+												{data.keahlian && data.keahlian.length > 0 && (
+													<p className="text-gray-500 mt-3 text-xs">
+														Keahlian: {data.keahlian.join(", ")}
+													</p>
+												)}
 											</div>
-										) : (
-											<div className="flex items-center mt-2">
-												<AlertCircle className="w-4 h-4 text-orange-500 mr-1" />
-												<span className="text-orange-600 text-xs font-medium">
-													Tidak ada file
-												</span>
+
+											{/* Right: Dokumen */}
+											<div className=" flex flex-col items-start ">
+												<p className="text-gray-600 mb-1 font-semibold">
+													Dokumen CV:
+												</p>
+												{hasDokumenPendukung ? (
+													<div className="mt-2">
+														<button
+															onClick={() => handleDownloadDokumen(data)}
+															className="inline-block no-underline px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition cursor-pointer border border-blue-300 whitespace-nowrap">
+															📄 Download (DokumenMentor_
+															{(data.user?.nama || "mentor").replace(
+																/\s+/g,
+																"_"
+															)}
+															.{(data.dokumen_pendukung || "").split(".").pop()}
+															)
+														</button>
+													</div>
+												) : (
+													<div className="flex items-center mt-2">
+														<AlertCircle className="w-4 h-4 text-orange-500 mr-1" />
+														<span className="text-orange-600 text-xs font-medium">
+															Tidak ada file
+														</span>
+													</div>
+												)}
 											</div>
-										)}
+										</div>
 									</div>
 								);
 							}}

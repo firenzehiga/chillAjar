@@ -25,6 +25,7 @@ import {
 	useCreateMentorCourseMutation,
 	useUpdateMentorCourseMutation,
 } from "@/hooks/useCourse";
+import { usePaymentsQuery } from "@/hooks/usePayments";
 import { create } from "zustand";
 
 export default function useCourseForm({
@@ -80,6 +81,10 @@ export default function useCourseForm({
 	// Fetch packages data for admin using hook
 	const { data: packagesData, isLoading: isPackagesLoading } =
 		usePackagesQuery();
+
+	// Fetch admin payments (if user is admin this will be enabled)
+	const { data: paymentsData, isLoading: isPaymentsLoading } =
+		usePaymentsQuery();
 
 	// Update mentors state when data is available
 	useEffect(() => {
@@ -159,16 +164,130 @@ export default function useCourseForm({
 			}
 
 			if (courseData.jadwal_kursus) {
-				const initial = courseData.jadwal_kursus.map((jadwal) => ({
-					id: jadwal.id,
-					tanggal: jadwal.tanggal || "",
-					waktu: jadwal.waktu || "",
-					keterangan:
-						jadwal.keterangan ||
-						(isMentor ? `Kursus dengan ${mentorName}` : ""),
-					tempat: jadwal.tempat || "",
-					gayaMengajar: jadwal.gayaMengajar || "online",
-				}));
+				// Helper untuk menentukan apakah sebuah jadwal harus dikunci (locked)
+				// Aturan yang dipakai di sini:
+				// - Jika backend mengirimkan flag eksplisit seperti `is_booked`, `locked`, atau `has_session`, gunakan itu.
+				// - Jika ada sesi terkait (`sesi`, `session`, atau `sessions`) dan status sesi menunjukkan bahwa sesi belum selesai
+				//   (mis. `booked`, `pending`, `started`) maka jadwal dikunci.
+				// - Jika ada transaksi terkait dan status pembayaran adalah `menunggu_verifikasi` atau `accepted` maka jadwal dikunci.
+				// - Jika sesi statusnya `end` atau `reviewed` (selesai), maka tidak dikunci.
+				const isJadwalLocked = (scheduleItem) => {
+					// Hormati flag eksplisit dari backend
+					if (scheduleItem.locked === true) {
+						return { locked: true, reason: "Terkunci (flag dari backend)" };
+					}
+
+					const normalize = (v) => (v || "").toString().trim().toLowerCase();
+
+					// Gunakan `paymentsData` (query admin) yang mengirim `sesi_id` untuk mencocokkan.
+					const sessions = scheduleItem.sesi || [];
+
+					if (Array.isArray(sessions) && sessions.length > 0) {
+						for (const s of sessions) {
+							const sessionStatus = normalize(s.statusSesi);
+
+							// Jika sesi sedang berjalan atau pending (butuh verifikasi), tetap kunci
+							if (sessionStatus === "started") {
+								return { locked: true, reason: "Sesi sedang berjalan" };
+							}
+							// Jika status 'pending' — Gunakan `paymentsData` yang dimiliki (mengandung `sesi_id`) untuk mencocokkan.
+							if (sessionStatus === "pending") {
+								const sessionId = s.id || null;
+
+								if (
+									sessionId &&
+									Array.isArray(paymentsData) &&
+									paymentsData.length > 0
+								) {
+									const match = paymentsData.find((p) => {
+										const pid = p.sesi_id || null;
+										return pid && String(pid) === String(sessionId);
+									});
+
+									if (match) {
+										const ps = (match.statusPembayaran || "")
+											.toString()
+											.toLowerCase();
+										if (ps === "menunggu_verifikasi") {
+											return {
+												locked: true,
+												reason: "Menunggu verifikasi pembayaran",
+											};
+										}
+										if (ps === "accepted") {
+											return { locked: true, reason: "Pembayaran diterima" };
+										}
+										return {
+											locked: true,
+											reason: "Tersimpan/ter-reserve (transaksi ada)",
+										};
+									}
+								}
+
+								// Jika tidak ada transaksi yang cocok di paymentsData: tunjukkan sudah dipesan tapi belum bayar
+								return { locked: true, reason: "Dipesan (belum bayar)" };
+							}
+
+							// Cari di paymentsData berdasarkan `sesi_id` (paling andal)
+							const sessionId = s.id || null;
+							if (
+								sessionId &&
+								Array.isArray(paymentsData) &&
+								paymentsData.length > 0
+							) {
+								const match = paymentsData.find((p) => {
+									const pid = p.sesi_id || null;
+									return pid && String(pid) === String(sessionId);
+								});
+
+								if (match) {
+									const ps = normalize(match.statusPembayaran);
+									if (ps === "menunggu_verifikasi") {
+										return {
+											locked: true,
+											reason: "Menunggu verifikasi pembayaran",
+										};
+									}
+									if (ps === "accepted") {
+										return { locked: true, reason: "Pembayaran diterima" };
+									}
+
+									// transaksi ada tetapi status tidak jelas -> anggap reserved
+									return {
+										locked: true,
+										reason: "Tersimpan/ter-reserve (transaksi ada)",
+									};
+								}
+							}
+
+							// Jika status sesi adalah 'booked' namun tidak ada transaksi ditemukan,
+							// jangan kunci; tunjukkan bahwa sudah dipesan tapi belum ada transaksi.
+							if (sessionStatus === "booked") {
+								return { locked: false, reason: "Dipesan (belum bayar)" };
+							}
+						}
+					}
+
+					// Tidak ada kondisi yang mengunci
+					return { locked: false };
+				};
+
+				const initial = courseData.jadwal_kursus.map((jadwal) => {
+					const lockInfo = isJadwalLocked(jadwal) || { locked: false };
+					return {
+						id: jadwal.id,
+						tanggal: jadwal.tanggal || "",
+						waktu: jadwal.waktu || "",
+						keterangan:
+							jadwal.keterangan ||
+							(isMentor ? `Kursus dengan ${mentorName}` : ""),
+						tempat: jadwal.tempat || "",
+						gayaMengajar: jadwal.gayaMengajar || "online",
+						locked: !!lockInfo.locked,
+						lockedReason: lockInfo.reason || null,
+					};
+				});
+
 				setInitialSchedules(initial);
 				setSchedules(initial);
 
@@ -217,9 +336,7 @@ export default function useCourseForm({
 			) {
 				try {
 					URL.revokeObjectURL(fotoPreview);
-				} catch (err) {
-					/* no-op */
-				}
+				} catch (err) {}
 			}
 		};
 	}, [fotoPreview]);
@@ -259,6 +376,8 @@ export default function useCourseForm({
 	const handleScheduleChange = useCallback((index, e) => {
 		const { name, value } = e.target;
 		setSchedules((prev) => {
+			// if the schedule is locked, ignore changes
+			if (prev[index] && prev[index].locked) return prev;
 			const newSchedules = [...prev];
 			newSchedules[index] = { ...newSchedules[index], [name]: value };
 			return newSchedules;
@@ -276,6 +395,8 @@ export default function useCourseForm({
 					keterangan: mentorName ? `Kursus dengan ${mentorName}` : "",
 					tempat: "",
 					gayaMengajar: "online",
+					locked: false,
+					lockedReason: null,
 				},
 			];
 			setCollapsedSchedules((cs) => ({ ...cs, [newIndex]: false }));
@@ -297,6 +418,9 @@ export default function useCourseForm({
 				const scheduleToClone = { ...prev[index] };
 				scheduleToClone.tanggal = "";
 				scheduleToClone.waktu = "";
+				// ensure duplicated schedule is editable and not locked
+				scheduleToClone.locked = false;
+				scheduleToClone.lockedReason = null;
 				if (!scheduleToClone.keterangan && mentorName) {
 					scheduleToClone.keterangan = `Kursus dengan ${mentorName}`;
 				}
@@ -447,7 +571,6 @@ export default function useCourseForm({
 					payload.append("fotoKursus", fotoKursus);
 				}
 
-				localStorage.getItem("user");
 				if (isAdmin) {
 					// For admin, always send mentor_id field
 					// This ensures the field exists in the request

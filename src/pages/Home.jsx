@@ -105,7 +105,7 @@ export function Home({
 						courses={mappedCourses}
 						onCourseClick={handleCourseClick}
 					/>
-					<div>
+					<div className="py-8 min-h-screen">
 						<h2 className="text-2xl font-bold text-gray-900 mb-6">
 							Semua Kursus
 						</h2>

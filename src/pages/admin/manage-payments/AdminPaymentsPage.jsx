@@ -705,72 +705,139 @@ export function AdminPaymentsPage() {
 							responsive
 							noHeader
 							expandableRows
-							expandableRowsComponent={({ data }) => (
-								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Kursus:
-										</span>
-										<span>{data.sesi?.kursus?.namaKursus || "Tidak ada"}</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Mentor:
-										</span>
-										<span>{data.mentor?.user?.nama || "Tidak ada"}</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Jadwal:
-										</span>
-										<span className="capitalize">
-											{formatDate(data.sesi?.jadwal_kursus?.tanggal) || "-"}
-										</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">Jam:</span>
-										<span className="capitalize">
-											{data.sesi?.jadwal_kursus?.waktu.slice(0, 5) || "-"} WIB
-										</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Lokasi:
-										</span>
-										{data.sesi?.jadwal_kursus?.gayaMengajar === "offline" ? (
-											<span className="capitalize mb-5">
-												{data.sesi?.jadwal_kursus?.tempat || "-"}
-											</span>
-										) : (
-											<span className="capitalize mb-5">Online</span>
-										)}
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Paket Belajar:
-										</span>
-										<span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset">
-											{data.paket?.nama || "-"}
-										</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Total Harga:
-										</span>
-										<span>
-											Rp{Number(data.jumlah || 0).toLocaleString("id-ID")}
-										</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Metode Pembayaran:
-										</span>
-										<span className="capitalize">
-											{data.metodePembayaran || "-"}
-										</span>
-									</p>
-								</div>
-							)}
+							expandableRowsComponent={({ data }) => {
+								const imageUrl = data.buktiPembayaran
+									? getImageUrl(data.buktiPembayaran, "bukti_pembayaran")
+									: null;
+								const hasBuktiPembayaran =
+									data.buktiPembayaran &&
+									data.buktiPembayaran.trim() !== "" &&
+									data.buktiPembayaran !== "null" &&
+									data.buktiPembayaran !== "undefined";
+
+								return (
+									<div className="p-5 text-sm text-gray-700 bg-gray-50 rounded-md grid grid-cols-1 md:grid-cols-2 gap-6">
+										<div className="space-y-2">
+											<p className="flex">
+												<span className="w-32 font-medium text-gray-900">
+													Kursus:
+												</span>
+												<span>
+													{data.sesi?.kursus?.namaKursus || "Tidak ada"}
+												</span>
+											</p>
+											<p className="flex">
+												<span className="w-32 font-medium text-gray-900">
+													Mentor:
+												</span>
+												<span>{data.mentor?.user?.nama || "Tidak ada"}</span>
+											</p>
+											<p className="flex">
+												<span className="w-32 font-medium text-gray-900">
+													Tanggal Sesi:
+												</span>
+												<span className="capitalize">
+													{formatDate(data.sesi?.jadwal_kursus?.tanggal) || "-"}
+												</span>
+											</p>
+											<p className="flex">
+												<span className="w-32 font-medium text-gray-900">
+													Jam:
+												</span>
+												<span className="capitalize">
+													{(data.sesi?.jadwal_kursus?.waktu || "").slice(
+														0,
+														5
+													) || "-"}{" "}
+													WIB
+												</span>
+											</p>
+											<p className="flex font-medium">
+												<span className="w-32 font-medium text-gray-900">
+													Lokasi:
+												</span>
+												{data.sesi?.jadwal_kursus?.gayaMengajar ===
+												"offline" ? (
+													<span className="capitalize mb-5">
+														{data.sesi?.jadwal_kursus?.tempat || "-"}
+													</span>
+												) : (
+													<span className="capitalize mb-5 text-blue-600">
+														Online
+													</span>
+												)}
+											</p>
+										</div>
+
+										<div className="space-y-2">
+											<p className="flex items-center">
+												<span className="w-44 font-medium text-gray-900">
+													Paket Belajar:
+												</span>
+												<span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset">
+													{data.paket?.nama || "-"}
+												</span>
+											</p>
+
+											<p className="flex">
+												<span className="w-44 font-medium text-gray-900">
+													Total Harga:
+												</span>
+												<span>
+													Rp{Number(data.jumlah || 0).toLocaleString("id-ID")}
+												</span>
+											</p>
+
+											<p className="flex">
+												<span className="w-44 font-medium text-gray-900">
+													Metode Pembayaran:
+												</span>
+												<span className="capitalize">
+													{data.metodePembayaran || "-"}
+												</span>
+											</p>
+
+											<p className="flex">
+												<span className="w-44 font-medium text-gray-900">
+													Status Pembayaran:
+												</span>
+												<span className="capitalize">
+													{(statusCheck[data.statusPembayaran] &&
+														statusCheck[data.statusPembayaran].label) ||
+														data.statusPembayaran ||
+														"-"}
+												</span>
+											</p>
+
+											<div className="flex items-center space-x-3 mt-2">
+												{hasBuktiPembayaran ? (
+													<>
+														<button
+															className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm"
+															onClick={() => setPreviewImg(imageUrl)}
+															title="Lihat gambar">
+															<Eye className="w-4 h-4" />
+															<span>Lihat</span>
+														</button>
+														<button
+															onClick={() => handleDownload(data)}
+															className="text-green-600 hover:text-green-800 flex items-center gap-1 text-sm"
+															title="Download bukti pembayaran">
+															<Download className="w-4 h-4" />
+															<span>Download</span>
+														</button>
+													</>
+												) : (
+													<div className="flex items-center text-xs text-orange-600">
+														<AlertCircle className="w-4 h-4 mr-1 text-orange-500" />
+														<span>Tidak ada bukti</span>
+													</div>
+												)}
+											</div>
+										</div>
+									</div>
+								);
+							}}
 							noDataComponent={
 								<>
 									{searchTerm ? (

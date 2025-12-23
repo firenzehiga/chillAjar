@@ -78,41 +78,43 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 						</div>
 						<div className="grid grid-cols-2 gap-6 mb-8">
 							<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
-								<BookOpen className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">
+								<BookOpen className="w-5 h-5 text-blue-600 mx-auto mb-2" />
+								<div className="text-xl font-bold text-gray-900">
 									{currentUser.jumlahKursus}
 								</div>
-								<div className="text-sm text-gray-600">Courses Created</div>
+								<div className="text-sm font-medium text-gray-600">
+									Courses Created
+								</div>
 							</div>
 							<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
-								<Star className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-								<div className="text-2xl font-bold text-gray-900">
+								<Star className="w-5 h-5 text-blue-600 mx-auto mb-2" />
+								<div className="text-xl font-bold text-gray-900">
 									{currentUser.rating}
 								</div>
-								<div className="text-sm text-gray-600">Rating</div>
+								<div className="text-sm font-medium text-gray-600">Rating</div>
 							</div>
 						</div>
 						<div className="bg-gray-50 rounded-xl p-6 space-y-4">
-							<h3 className="text-xl font-semibold text-gray-900 mb-4">
+							<h3 className="text-lg font-semibold text-gray-900 mb-4">
 								Contact Information
 							</h3>
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div className="flex items-center text-gray-600 transform transition-all duration-300 hover:translate-x-2">
-									<Mail className="w-5 h-5 mr-3 text-blue-600" />
+								<div className="flex items-center text-sm text-gray-600 transform transition-all duration-300 hover:translate-x-2">
+									<Mail className="w-4 h-4 mr-3 text-blue-600" />
 									<span>{currentUser.email}</span>
 								</div>
-								<div className="flex items-center text-gray-600 transform transition-all duration-300 hover:translate-x-2">
-									<Phone className="w-5 h-5 mr-3 text-blue-600" />
+								<div className="flex items-center text-sm text-gray-600 transform transition-all duration-300 hover:translate-x-2">
+									<Phone className="w-4 h-4 mr-3 text-blue-600" />
 									<span>{currentUser.phone}</span>
 								</div>
 							</div>
 						</div>
 						<div className="bg-gray-50 rounded-xl p-6 mt-6 space-y-4">
-							<h3 className="text-xl font-semibold text-gray-900 mb-4">
+							<h3 className="text-lg font-semibold text-gray-900 mb-4">
 								Mentor Details
 							</h3>
 							<div className="space-y-2">
-								<p className="text-gray-600">
+								<p className="text-gray-600 text-sm">
 									<strong>Deskripsi:</strong> {currentUser.deskripsi}
 								</p>
 							</div>

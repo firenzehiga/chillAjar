@@ -65,7 +65,7 @@ const CourseBasicInfo = ({
 				<label
 					htmlFor="namaKursus"
 					className="block text-sm font-medium text-gray-700 mb-2">
-					Nama Kursus *
+					Nama Kursus <span className="text-red-500">*</span>
 				</label>
 				<input
 					type="text"
@@ -85,7 +85,7 @@ const CourseBasicInfo = ({
 					<label
 						htmlFor="mentorId"
 						className="block text-sm font-medium text-gray-700 mb-2">
-						Pilih Mentor *
+						Pilih Mentor <span className="text-red-500">*</span>
 					</label>
 					<select
 						id="mentorId"
@@ -181,7 +181,7 @@ const CourseBasicInfo = ({
 			<label
 				htmlFor="deskripsi"
 				className="block text-sm font-medium text-gray-700 mb-2">
-				Deskripsi *
+				Deskripsi <span className="text-red-500">*</span>
 			</label>
 			<textarea
 				id="deskripsi"
@@ -211,19 +211,49 @@ const ScheduleManager = ({
 	disabled = false,
 }) => (
 	<div className="space-y-6">
-		<div className="flex items-center justify-between">
-			<h3 className="text-lg font-medium text-gray-900">Jadwal Kursus</h3>
-			<button
-				type="button"
-				onClick={(e) => {
-					e.preventDefault();
-					onAddSchedule();
-				}}
-				disabled={disabled}
-				className="inline-flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
-				<Plus className="w-4 h-4 mr-2" />
-				Tambah Jadwal
-			</button>
+		<div className="flex items-start justify-between">
+			<div className="flex-1 pr-6">
+				<h3 className="text-lg font-medium text-gray-900">Jadwal Kursus</h3>
+				<div className="text-xs text-gray-500 mt-2 space-y-1">
+					<p className="font-medium">Catatan:</p>
+					<ul className="list-disc list-inside">
+						<li>
+							Setiap entri "jadwal" mewakili satu sesi. Jika Anda ingin
+							menambahkan beberapa sesi, buat beberapa jadwal.
+						</li>
+						<li>
+							Jadwal yang sudah dibuat tidak dapat dihapus; hanya bisa diedit
+							selama jadwal tersebut belum dipesan oleh peserta.
+						</li>
+						<li>
+							Jika jadwal sudah dipesan dan pembayaran sudah terverifikasi,
+							jadwal akan dikunci dan diberi tanda.{" "}
+							<span className="font-semibold text-black">
+								Arahkan kursor ke tanda tersebut untuk melihat alasan
+								penguncian.
+							</span>
+						</li>
+						<li>
+							Setelah sebuah jadwal dipakai hingga sesi berakhir, jadwal
+							tersebut akan otomatis dihapus dari daftar jadwal.
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<div className="flex-shrink-0">
+				<button
+					type="button"
+					onClick={(e) => {
+						e.preventDefault();
+						onAddSchedule();
+					}}
+					disabled={disabled}
+					className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap">
+					<Plus className="w-4 h-4 mr-2" />
+					Tambah Jadwal
+				</button>
+			</div>
 		</div>
 
 		{schedules.map((schedule, index) => {
@@ -266,6 +296,14 @@ const ScheduleManager = ({
 									{formatTime(schedule.waktu, true)}
 								</div>
 							)}
+
+							{schedule.locked && (
+								<span
+									title={schedule.lockedReason || "Tidak Ada"}
+									className="ml-2 text-xs font-medium bg-red-100 text-red-800 px-2 py-1 rounded">
+									Dipesan
+								</span>
+							)}
 						</div>
 
 						<div className="flex items-center space-x-2">
@@ -280,7 +318,7 @@ const ScheduleManager = ({
 								title="Duplicate schedule">
 								<Copy className="w-4 h-4" />
 							</button>
-							{!isFromDatabase && (
+							{!isFromDatabase && !schedule.locked && (
 								<button
 									type="button"
 									onClick={(e) => {
@@ -311,7 +349,7 @@ const ScheduleManager = ({
 										name="tanggal"
 										value={schedule.tanggal}
 										onChange={(e) => onScheduleChange(index, e)}
-										disabled={disabled}
+										disabled={disabled || schedule.locked}
 										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 										required
 									/>
@@ -328,7 +366,7 @@ const ScheduleManager = ({
 										name="waktu"
 										value={schedule.waktu}
 										onChange={(e) => onScheduleChange(index, e)}
-										disabled={disabled}
+										disabled={disabled || schedule.locked}
 										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 										required
 									/>
@@ -345,7 +383,7 @@ const ScheduleManager = ({
 										name="gayaMengajar"
 										value={schedule.gayaMengajar}
 										onChange={(e) => onScheduleChange(index, e)}
-										disabled={disabled}
+										disabled={disabled || schedule.locked}
 										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 										required>
 										<option value="online">Online</option>
@@ -367,7 +405,7 @@ const ScheduleManager = ({
 										name="keterangan"
 										value={schedule.keterangan || `Kursus dengan ${mentorName}`}
 										onChange={(e) => onScheduleChange(index, e)}
-										disabled={disabled}
+										disabled={disabled || schedule.locked}
 										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 										placeholder={`Kursus dengan ${mentorName}`}
 									/>
@@ -389,7 +427,7 @@ const ScheduleManager = ({
 											name="tempat"
 											value={schedule.tempat}
 											onChange={(e) => onScheduleChange(index, e)}
-											disabled={disabled}
+											disabled={disabled || schedule.locked}
 											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
 											placeholder="Enter location (optional)"
 										/>
@@ -431,7 +469,7 @@ const PackageSelector = ({
 				<Package className="w-5 h-5 text-gray-400" />
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
 				{packages.map((pkg) => {
 					const isActive = isPackageActive(pkg.id);
 					return (
@@ -560,32 +598,32 @@ const CourseReview = ({
 
 			{/* Course Info Summary */}
 			<div className="bg-gray-50 rounded-lg p-4">
-				<h4 className="font-medium text-gray-900 mb-3">Course Information</h4>
+				<h4 className="font-medium text-gray-900 mb-3 text-sm">
+					Informasi Kursus
+				</h4>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<span className="text-sm text-gray-600">Nama Kursus:</span>
-						<p className="font-medium">
+						<span className="text-sm font-medium">Nama Kursus:</span>
+						<p className="text-gray-600 font-semibold text-xs text-justify">
 							{formData.namaKursus || "Not specified"}
 						</p>
 					</div>
 					<div>
-						<span className="text-sm text-gray-600">Deskripsi:</span>
-						<p className="font-medium">
+						<span className="text-sm font-medium">Deskripsi:</span>
+						<p className="text-gray-600 font-semibold text-xs text-justify">
 							{formData.deskripsi || "Not specified"}
 						</p>
 					</div>
 					{mentorName && (
 						<div>
 							<span className="text-sm text-gray-600">Mentor:</span>
-							<p className="font-medium">{mentorName}</p>
+							<p className="">{mentorName}</p>
 						</div>
 					)}
 				</div>
 				{fotoPreview && (
-					<div className="mt-4">
-						<span className="text-sm text-gray-600">
-							Gambar (png/jpg/jpeg):
-						</span>
+					<div className="">
+						<span className="text-sm font-medium">Gambar (png/jpg/jpeg):</span>
 						<AsyncImage
 							style={{ width: 150, height: 100 }}
 							src={fotoPreview}
@@ -598,33 +636,41 @@ const CourseReview = ({
 
 			{/* Schedule Summary */}
 			<div className="bg-gray-50 p-4 rounded-lg">
-				<h4 className="font-medium text-gray-900 mb-3">Jadwal Kursus</h4>
+				<h4 className="font-medium text-gray-900 mb-3 text-sm">
+					Jadwal Kursus
+				</h4>
 				{schedules.length > 0 ? (
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 						{schedules
 							.filter((s) => s.tanggal && s.waktu)
 							.map((schedule, index) => (
 								<div key={index} className="bg-white p-3 rounded border">
-									<div className="flex items-center gap-2 text-sm text-gray-700">
+									<div className="flex items-center gap-2 text-xs text-gray-700">
 										<Calendar className="w-4 h-4" />
 										{formatDate(schedule.tanggal)}
 									</div>
-									<div className="flex items-center gap-2 text-sm text-gray-700 mt-1">
+									<div className="flex items-center gap-2 text-xs text-gray-700 mt-1">
 										<Clock className="w-4 h-4" />
 										{formatTime(schedule.waktu, true)}
 									</div>
-									<div className="flex items-center gap-2 text-sm text-gray-700 mt-1">
+									<div className="flex items-center gap-2 text-xs text-gray-700 mt-1">
 										<Monitor className="w-4 h-4" />
-										{schedule.gayaMengajar}
+										{schedule.gayaMengajar === "online" ? (
+											<span className="text-blue-600 font-medium">Online</span>
+										) : (
+											<span className="text-green-600 font-medium">
+												Offline
+											</span>
+										)}
 									</div>
-									{schedule.tempat && (
-										<div className="flex items-center gap-2 text-sm text-gray-700 mt-1">
+									{schedule.tempat && schedule.gayaMengajar === "offline" && (
+										<div className="flex items-center gap-2 text-xs text-gray-700 mt-1">
 											<MapPin className="w-4 h-4" />
 											{schedule.tempat}
 										</div>
 									)}
 									{/* {schedule.keterangan && (
-										<div className="text-sm text-gray-600 mt-1">
+										<div className="text-xs text-gray-600 mt-1">
 											{schedule.keterangan}
 										</div>
 									)} */}
@@ -632,23 +678,27 @@ const CourseReview = ({
 							))}
 					</div>
 				) : (
-					<p className="text-sm text-gray-500">Belum ada jadwal yang lengkap</p>
+					<p className="text-xs text-gray-500">Belum ada jadwal yang lengkap</p>
 				)}
 			</div>
 
 			{/* Package Summary */}
 			{showPackages && (
 				<div className="bg-gray-50 p-4 rounded-lg">
-					<h4 className="font-medium text-gray-900 mb-3">Paket Aktif</h4>
+					<h4 className="font-medium text-gray-900 mb-3 text-sm">
+						Paket Aktif
+					</h4>
 					{activePackages.length > 0 ? (
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 							{activePackages.map((pkg) => (
 								<div key={pkg.id} className="bg-white p-3 rounded border">
-									<h5 className="font-medium text-gray-900">{pkg.name}</h5>
-									<p className="text-sm text-gray-600 mt-1">
+									<h5 className="font-medium text-gray-900 text-sm">
+										{pkg.name}
+									</h5>
+									<p className="text-xs text-gray-600 mt-1">
 										{pkg.description}
 									</p>
-									<div className="mt-2 text-sm">
+									<div className="mt-2 text-xs">
 										<span className="text-green-600 font-medium">
 											Rp {(pkg.totalPrice || 0).toLocaleString("id-ID")}
 										</span>

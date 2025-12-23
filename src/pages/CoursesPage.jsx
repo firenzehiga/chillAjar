@@ -53,11 +53,11 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 	if (finalFilteredCourses.length === 0 && isFiltering) {
 		return (
 			<div className="py-8 min-h-screen">
-				<h2 className="text-2xl font-bold text-gray-900 mb-3">
+				<h2 className="text-2xl font-bold text-gray-900 mb-6">
 					Kursus Yang Tersedia
 				</h2>
 				{userRole !== "admin" && userRole !== "mentor" && (
-					<div className="relative py-4 w-1/2 mb-4 flex gap-4 ">
+					<div className="relative py-4 w-full lg:w-2/3 mb-4 flex flex-col sm:flex-row gap-3 sm:gap-4">
 						<div className="relative flex-1">
 							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
 							<input
@@ -112,7 +112,7 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 				Kursus Yang Tersedia
 			</h2>
 			{userRole !== "admin" && userRole !== "mentor" && (
-				<div className="relative py-4 w-1/2 mb-4 flex gap-4 ">
+				<div className="relative py-4 w-full lg:w-2/3 mb-4 flex flex-col sm:flex-row gap-3 sm:gap-4">
 					<div className="relative flex-1">
 						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
 						<input

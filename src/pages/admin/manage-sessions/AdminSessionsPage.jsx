@@ -232,48 +232,108 @@ export function AdminSessionsPage({ onNavigate }) {
 							responsive
 							noHeader
 							expandableRows
-							expandableRowsComponent={({ data }) => (
-								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-									<p className="flex">
-										<span className="w-10 font-medium text-gray-900 mb-2">
-											Topik:
-										</span>
-										<span className="text-gray-500 ml-2">
-											{data.detailKursus || "-"}
-										</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Jadwal:
-										</span>
-										<span className="capitalize">
-											{formatDate(data.jadwal_kursus?.tanggal) || "-"}
-										</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">Jam:</span>
-										<span className="capitalize">
-											{data.jadwal_kursus?.waktu?.slice(0, 5) || "-"} WIB
-										</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Lokasi:
-										</span>
-										<span className="capitalize mb-5">
-											{data.jadwal_kursus?.tempat || "-"}
-										</span>
-									</p>
-									<p className="flex">
-										<span className="w-48 font-medium text-gray-900">
-											Paket Belajar:
-										</span>
-										<span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset">
-											{data.paket?.nama || "-"}
-										</span>
-									</p>
-								</div>
-							)}
+							expandableRowsComponent={({ data }) => {
+								return (
+									<div className="p-5 text-sm text-gray-700 bg-gray-50 rounded-md grid grid-cols-1 md:grid-cols-2 gap-6">
+										<div className="space-y-2">
+											<p className="flex">
+												<span className="w-20 font-medium text-gray-900">
+													Topik:
+												</span>
+												<span className="text-gray-500 ml-2 text-justify">
+													{data.detailKursus || "-"}
+												</span>
+											</p>
+
+											<p className="flex">
+												<span className="w-20 font-medium text-gray-900">
+													Jadwal:
+												</span>
+												<span className="capitalize">
+													{formatDate(data.jadwal_kursus?.tanggal) || "-"}
+												</span>
+											</p>
+
+											<p className="flex">
+												<span className="w-20 font-medium text-gray-900">
+													Jam:
+												</span>
+												<span className="capitalize">
+													{(data.jadwal_kursus?.waktu || "").slice(0, 5) || "-"}{" "}
+													WIB
+												</span>
+											</p>
+
+											{data.jadwal_kursus?.gayaMengajar === "offline" && (
+												<p className="flex">
+													<span className="w-20 font-medium text-gray-900">
+														Lokasi:
+													</span>
+													<span className="capitalize mb-5">
+														{data.jadwal_kursus?.tempat || "-"}
+													</span>
+												</p>
+											)}
+										</div>
+
+										<div className="space-y-2">
+											<p className="flex items-center">
+												<span className="w-44 font-medium text-gray-900">
+													Paket Belajar:
+												</span>
+												<span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset">
+													{data.paket?.nama || "-"}
+												</span>
+											</p>
+
+											<p className="flex">
+												<span className="w-44 font-medium text-gray-900">
+													Catatan Paket:
+												</span>
+												<span className="text-gray-600">
+													{data.paket?.deskripsi || "-"}
+												</span>
+											</p>
+
+											<span className="w-44 font-medium text-gray-900 block mb-2">
+												Layanan yang termasuk:
+											</span>
+											<div className="mt-2 max-h-48 overflow-auto pr-2">
+												{data.paket?.items && data.paket.items.length > 0 ? (
+													<>
+														<ul className="divide-y divide-gray-100 bg-white rounded-md shadow-sm overflow-hidden">
+															{data.paket.items.map((item, idx) => (
+																<li
+																	key={idx}
+																	className="px-3 py-3 text-sm flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-2">
+																	<div className="flex-1 min-w-0">
+																		<div className="font-semibold text-gray-800 truncate">
+																			{item.nama || "-"}
+																		</div>
+																		{item.deskripsi ? (
+																			<div className="mt-1 text-gray-500 text-xs leading-relaxed">
+																				{item.deskripsi}
+																			</div>
+																		) : (
+																			<div className="mt-1 text-gray-400 text-xs">
+																				Tidak ada deskripsi
+																			</div>
+																		)}
+																	</div>
+																</li>
+															))}
+														</ul>
+													</>
+												) : (
+													<div className="text-gray-500 text-sm">
+														Tidak ada item di paket ini
+													</div>
+												)}
+											</div>
+										</div>
+									</div>
+								);
+							}}
 							noDataComponent={
 								<div className="flex flex-col items-center justify-center h-64 text-gray-600">
 									<AlertCircle className="w-12 h-12 text-gray-400 mb-4" />

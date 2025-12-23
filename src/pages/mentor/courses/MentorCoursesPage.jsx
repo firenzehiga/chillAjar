@@ -18,6 +18,7 @@ import {
 	useMentorCoursesQuery,
 	useDeleteMentorCourseMutation,
 } from "@/hooks/useCourse";
+import { formatDate } from "@/utils/dateFormatter";
 
 export function MentorCoursesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");
@@ -75,7 +76,7 @@ export function MentorCoursesPage({ onNavigate }) {
 			width: "60px",
 		},
 		{
-			name: "Nama Course",
+			name: "Nama Kursus",
 			selector: (row) => row.namaKursus,
 			sortable: true,
 			width: "270px",
@@ -238,7 +239,7 @@ export function MentorCoursesPage({ onNavigate }) {
 					<BookOpen className="w-6 h-6 mr-2 text-chill-blue" />
 					My Courses
 				</h1>
-				<p className="text-gray-600">Daftar kursus yang saya ajar</p>
+				<p className="text-gray-600">Daftar kursus yang saya miliki</p>
 			</div>
 
 			<div className="bg-white rounded-lg shadow p-6">
@@ -281,41 +282,55 @@ export function MentorCoursesPage({ onNavigate }) {
 							noHeader
 							expandableRows
 							expandableRowsComponent={({ data }) => (
-								<div className="p-5 text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md">
-									<p className="flex">
-										<span className="w-20 font-medium text-gray-900 mb-2">
-											Deskripsi:
-										</span>
-									</p>
-									<span>{data.deskripsi}</span>
-									<p className="flex">
-										<span className="w-20 font-medium text-gray-900 mb-2">
-											Jadwal:
-										</span>
-									</p>
-									<span>
-										{data.jadwal_kursus?.map((jadwal, index) => {
-											const tanggalFormatted = jadwal.tanggal
-												? new Date(
-														jadwal.tanggal.replace(" ", "T")
-												  ).toLocaleDateString("id-ID", {
-														day: "numeric",
-														month: "long",
-														year: "numeric",
-												  })
-												: "";
-											return (
-												<div key={index} className="mb-3">
-													<p>
-														{tanggalFormatted} {jadwal.waktu.slice(0, 5)} WIB |
-														<span className="text-gray-500 ml-2">
-															{jadwal.tempat}
-														</span>
-													</p>
+								<div className="p-5 text-sm text-gray-700 bg-gray-50 rounded-md">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+										{/* Deskripsi di kolom kiri */}
+										<div>
+											<div className="mb-2">
+												<div className="text-sm font-medium text-gray-900 mb-1">
+													Deskripsi:
 												</div>
-											);
-										})}
-									</span>
+												<div className="text-sm text-gray-700 text-justify">
+													{data.deskripsi || "-"}
+												</div>
+											</div>
+										</div>
+										{/* Jadwal di kolom kanan dengan scroll jika panjang */}
+										<div>
+											<div className="mb-2">
+												<div className="text-sm font-medium text-gray-900 mb-1">
+													Jadwal:
+												</div>
+											</div>
+											<div className="space-y-2 max-h-64 overflow-auto pr-2">
+												{data.jadwal_kursus && data.jadwal_kursus.length > 0 ? (
+													data.jadwal_kursus.map((jadwal, index) => (
+														<div
+															key={index}
+															className="p-2 bg-white rounded border border-gray-100">
+															<p className="text-sm">
+																{formatDate(jadwal.tanggal)}{" "}
+																{jadwal.waktu.slice(0, 5)} WIB |
+																{jadwal.gayaMengajar === "online" ? (
+																	<span className="text-blue-600 font-semibold ml-2">
+																		Online
+																	</span>
+																) : (
+																	<span className="text-gray-700 ml-2 font-semibold">
+																		{jadwal.tempat}
+																	</span>
+																)}
+															</p>
+														</div>
+													))
+												) : (
+													<div className="text-gray-500 text-sm">
+														Tidak ada jadwal.
+													</div>
+												)}
+											</div>
+										</div>
+									</div>
 								</div>
 							)}
 							noDataComponent={
