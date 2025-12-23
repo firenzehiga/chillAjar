@@ -518,6 +518,47 @@ export default function useCourseForm({
 			setLoading(true);
 			setError(null);
 
+			// validasi lebih ketat: normalisasi tanggal/waktu lalu cek duplikat (menangani revert edit)
+			const normalizeDate = (d) => {
+				if (!d) return "";
+				const parsed = new Date(d);
+				if (!isNaN(parsed)) return parsed.toISOString().slice(0, 10); // YYYY-MM-DD
+				return d.toString().trim();
+			};
+			const normalizeTime = (t) => {
+				if (!t) return "";
+				const parts = t.toString().trim().split(":");
+				if (parts.length >= 2) {
+					const hh = parts[0].padStart(2, "0");
+					const mm = parts[1].padStart(2, "0").slice(0, 2);
+					return `${hh}:${mm}`;
+				}
+				return t.toString().trim();
+			};
+
+			const counts = {};
+			for (const schedule of schedules) {
+				// jika belum lengkap, nanti akan ditangani validasi lain; skip sementara
+				if (!schedule.tanggal || !schedule.waktu || !schedule.gayaMengajar)
+					continue;
+
+				const key = `${normalizeDate(schedule.tanggal)}|${normalizeTime(
+					schedule.waktu
+				)}|${(schedule.gayaMengajar || "").toString().trim().toLowerCase()}`;
+
+				counts[key] = (counts[key] || 0) + 1;
+				if (counts[key] > 1) {
+					setLoading(false);
+					toast.dismiss();
+					showToast({
+						type: "error",
+						title: "Ada Jadwal yang identik",
+						message:
+							"Jadwal tidak boleh memiliki tanggal, waktu, dan gaya mengajar yang sama.",
+					});
+					return;
+				}
+			}
 			// gambar harus jpg/png/jpeg dan maksimal 5MB
 			if (fotoKursus) {
 				const validTypes = ["image/jpeg", "image/png", "image/jpg"];

@@ -23,7 +23,8 @@ export function CoursePackageCard({
 	const [timeRemaining, setTimeRemaining] = useState(null);
 
 	// Biaya default mentor
-	const mentorFee = selectedMentor?.biayaPerSesi || 0;
+	const mentorFee =
+		selectedMentor?.biayaPerSesi || selectedMentor?.mentorBiayaPerSesi || 0;
 
 	// Hitung harga paket berdasarkan harga aktual items (setelah diskon item diterapkan)
 	const actualPackagePrice = items.reduce(

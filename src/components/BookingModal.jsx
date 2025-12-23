@@ -28,7 +28,7 @@ export function BookingModal({
 	const [isProcessing, setIsProcessing] = useState(false);
 
 	// Price calculations - SINGLE DECLARATION
-	const mentorFee = mentor?.biayaPerSesi || 0;
+	const mentorFee = mentor?.biayaPerSesi || mentor?.mentorBiayaPerSesi || 0;
 	// Perhitungan harga - SATU DEKLARASI
 	const packagePrice = selectedPackage?.totalPrice || 0;
 	const packageDiscount = selectedPackage?.packageDiscount || 0;

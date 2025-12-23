@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useSubmitTestimonialMutation } from "@/hooks/useTestimonial";
 import useAppStore from "@/stores/useAppStore";
+import { formatDate } from "@/utils/dateFormatter";
 
 export const TestimoniModal = ({ isOpen, onClose, session }) => {
 	const [rating, setRating] = useState(5);
@@ -84,7 +85,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 									key={star}
 									className={`text-4xl transition-colors ${
 										(hoverRating || rating) >= star
-											? "text-blue-400"
+											? "text-yellow-400"
 											: "text-gray-300"
 									}`}
 									onClick={() => setRating(star)}
@@ -96,7 +97,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 								</button>
 							))}
 						</div>
-						<span className="text-sm font-semibold text-blue-500">
+						<span className="text-sm font-semibold text-yellow-500">
 							{rating} / 5
 						</span>
 					</div>
@@ -107,7 +108,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 						<input
 							type="text"
 							className="w-full border border-gray-200 rounded-lg p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-							value={today}
+							value={formatDate(today)}
 							readOnly
 						/>
 					</div>
@@ -120,7 +121,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 							rows={3}
 							value={comment}
 							onChange={(e) => setComment(e.target.value)}
-							placeholder="Tulis pengalamanmu... (boleh dikosongkan)"
+							placeholder="Tulis pengalamanmu..."
 							disabled={loading}
 						/>
 					</div>

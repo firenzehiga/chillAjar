@@ -1701,7 +1701,7 @@ function App() {
 
 			<TransactionReminder />
 			{/* Floating Session Reminder Muncul Ketika Pelanggan baru saja login */}
-			<FloatingSessionReminder />
+			<FloatingSessionReminder onNavigate={handleNavigate} />
 
 			{/* Global TestimoniModal Untuk Session Widget dan Session History */}
 			{showTestimoniModal && testimoniSession && (

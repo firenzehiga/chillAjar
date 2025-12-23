@@ -84,7 +84,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 	// Calculate pricing dengan mode-aware logic untuk display saja
 	const calculateMentorFee = () => {
 		//Dari props mentor yang dikirim dari App.jsx dan HistoryTransactions
-		return mentor.biayaPerSesi || 0;
+		return mentor.biayaPerSesi || mentor?.mentorBiayaPerSesi || 0;
 	};
 
 	// Untuk rincian: harga asli paket (tanpa diskon paket)

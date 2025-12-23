@@ -45,13 +45,13 @@ export function CourseSelectionModal({
 									}`}>
 									<div className="flex items-center gap-3">
 										{/* Foto mentor */}
-										{course.mentor && course.mentor.user && (
+										{course.mentor && (
 											<img
 												src={getImageUrl(
-													course.mentor.user.foto_profil,
+													course.mentor.mentorImage,
 													"/foto_kursus/default.jpg"
 												)}
-												alt={course.mentor.user.nama || "Nama Mentor"}
+												alt={course.mentor?.mentorName || "Nama Mentor"}
 												className="w-10 h-10 rounded-full border-2 border-blue-400 shadow object-cover bg-white"
 												onError={(e) => {
 													e.target.onerror = null;
@@ -67,7 +67,7 @@ export function CourseSelectionModal({
 												</span>
 											</div>
 											<span className="block text-xs text-gray-500 mt-0.5 truncate">
-												{course.mentor.user.nama}
+												{course.mentor?.mentorName}
 											</span>
 										</div>
 									</div>

@@ -51,17 +51,16 @@ export function MentorsPage({
 			// Buat mapped mentor object dulu
 			const mappedMentor = {
 				id: mentor.id,
-				mentorName: mentor.user?.nama || "Unknown Mentor",
+				mentorName: mentor.user?.nama || "",
 				mentorImage: getImageUrl(
 					mentor.user?.foto_profil,
 					"/foto_mentor/default.png"
 				),
 				mentorRating: mentor.rating || 0,
-				mentorAbout: mentor.deskripsi || "No description",
-				phone: mentor.user?.nomorTelepon || "+1234567890",
-				mentorAddress: mentor.user?.alamat || "Alamat tidak tersedia",
-				// Keep original mentor data for compatibility
-				...mentor,
+				mentorAbout: mentor.deskripsi || "",
+				mentorPhone: mentor.user?.nomorTelepon || "",
+				mentorAddress: mentor.user?.alamat || "",
+				mentorBiayaPerSesi: mentor.biayaPerSesi || 0,
 			};
 
 			// Mengambil kursus dari prop courses yang sudah di-fetch di App.jsx
@@ -87,15 +86,6 @@ export function MentorsPage({
 
 			return {
 				...mappedMentor,
-				availableLearnMethod,
-				teachingMode: {
-					online: mentorCourses.some(
-						(c) => c.learnMethod === "Online Learning"
-					),
-					offline: mentorCourses.some(
-						(c) => c.learnMethod === "Offline Learning"
-					),
-				},
 				courses: mentorCourses,
 			};
 		});

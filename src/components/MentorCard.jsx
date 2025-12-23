@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
 import { AsyncImage } from "loadable-image";
-import MentorModal from "./MentorModal";
+import DetailMentorModal from "./DetailMentorModal";
 import { Fade } from "transitions-kit";
 import useAppStore from "@/stores/useAppStore";
 import { FaWhatsapp } from "react-icons/fa";
@@ -213,7 +213,7 @@ export function MentorCard({
 					)}
 
 					{/* Details now displayed in modal to avoid pushing layout */}
-					<MentorModal
+					<DetailMentorModal
 						open={showModal}
 						onClose={() => setShowModal(false)}
 						mentor={mentor}

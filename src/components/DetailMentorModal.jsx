@@ -13,7 +13,7 @@ import {
 import { AsyncImage } from "loadable-image";
 import { FaWhatsapp } from "react-icons/fa";
 
-export default function MentorModal({
+export default function DetailMentorModal({
 	open,
 	onClose,
 	mentor,
@@ -28,6 +28,8 @@ export default function MentorModal({
 	}, [open]);
 
 	if (!open) return null;
+
+	console.log("Mentor:", mentor);
 
 	const offlineSchedules = allSchedules.filter(
 		(s) => s.gayaMengajar === "offline" && s.tempat
@@ -310,16 +312,19 @@ export default function MentorModal({
 												Telepon / WhatsApp
 											</div>
 											<div className="text-xs text-gray-600 mt-1">
-												{mentor.phone ? (
+												{mentor.mentorPhone ? (
 													<div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
 														<a
-															href={`tel:${mentor.phone.replace(/\s+/g, "")}`}
+															href={`tel:${mentor.mentorPhone.replace(
+																/\s+/g,
+																""
+															)}`}
 															className="text-sm text-blue-600 underline">
-															{mentor.phone}
+															{mentor.mentorPhone}
 														</a>
 														<a
 															href={(() => {
-																const raw = mentor.phone || "";
+																const raw = mentor.mentorPhone || "";
 																const digits = raw.replace(/\D/g, "");
 																const normalized = digits.startsWith("0")
 																	? `62${digits.slice(1)}`

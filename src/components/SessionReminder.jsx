@@ -6,7 +6,7 @@ import useAppStore from "@/stores/useAppStore";
 import { usePelangganSessionsQuery } from "@/hooks/useSessions";
 
 // Floating Session Reminder
-export function FloatingSessionReminder() {
+export function FloatingSessionReminder({ onNavigate }) {
 	const [currentSession, setCurrentSession] = useState(null);
 	const [isVisible, setIsVisible] = useState(false);
 	const [isDismissed, setIsDismissed] = useState(false);
@@ -146,7 +146,7 @@ export function FloatingSessionReminder() {
 
 		if (currentSession.status === "live") {
 			// Handle join live session
-			null;
+			setIsDismissed(true);
 			// window.open("https://meet.google.com/your-meeting-link", "_blank");
 		} else if (currentSession.status === "needReview") {
 			// Open testimoni modal
@@ -161,8 +161,9 @@ export function FloatingSessionReminder() {
 			setIsVisible(false);
 			setIsDismissed(true);
 		} else {
-			// Handle view details for upcoming sessions
-			// console.log("View session details:", currentSession.id);
+			onNavigate("session-history");
+			setIsVisible(false);
+			setIsDismissed(true);
 		}
 	};
 
@@ -281,7 +282,7 @@ export function FloatingSessionReminder() {
 							{/* Action Buttons */}
 							<div className="flex gap-2 mt-3">
 								<button
-									onClick={handleDismiss}
+									onClick={handleJoin}
 									className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
 										currentSession.status === "live"
 											? "bg-red-500 hover:bg-red-600 text-white"
