@@ -237,7 +237,8 @@ export const useUpdateMentorCourseMutation = () => {
 	return useMutation({
 		mutationFn: ({ courseId, payload }) =>
 			updateMentorCourse(courseId, payload),
-		onSuccess: (data, { courseId }) => {
+		onSuccess: async (data, { courseId }) => {
+			await queryClient.invalidateQueries(["formCoursePackages"]);
 			queryClient.invalidateQueries(["mentorCourses"]);
 			queryClient.invalidateQueries(["adminCourses"]);
 			queryClient.invalidateQueries(["courses"]);

@@ -560,9 +560,6 @@ export default function useCourseForm({
 						"mentor_id",
 						formData.mentorId !== undefined ? formData.mentorId.toString() : ""
 					);
-				} else if (isMentor) {
-					// karena endpoint admin dipakai untuk mentor, kirim mentor_id dari resolvedMentorId
-					payload.append("mentor_id", String(resolvedMentorId));
 				}
 
 				if ((isAdmin || isMentor) && Array.isArray(selectedPackages)) {
@@ -618,12 +615,12 @@ export default function useCourseForm({
 					}
 				} else {
 					if (isEditMode) {
-						response = await updateCourseMutation.mutateAsync({
+						response = await updateMentorCourseMutation.mutateAsync({
 							courseId,
 							payload,
 						});
 					} else {
-						response = await createCourseMutation.mutateAsync(payload);
+						response = await createMentorCourseMutation.mutateAsync(payload);
 					}
 				}
 
