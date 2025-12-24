@@ -1339,7 +1339,7 @@ function App() {
 									/>
 								</svg>
 							</div>
-							<p className="translate-x-2">Go Back</p>
+							<p className="translate-x-2">Kembali</p>
 						</button>
 						<h2 className="text-2xl font-bold text-gray-900 mb-6">
 							Pilih Mentor untuk {selectedCourse.courseName}

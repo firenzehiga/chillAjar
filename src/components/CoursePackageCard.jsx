@@ -156,7 +156,7 @@ export function CoursePackageCard({
 		return () => clearInterval(interval);
 	}, [tanggal_berakhir]);
 
-	// Format countdown display - simplified
+	// Format countdown display - simplified and inline-sized badge
 	const formatCountdown = (time) => {
 		if (!time) return null;
 
@@ -164,18 +164,21 @@ export function CoursePackageCard({
 
 		let displayText = "";
 		if (days > 0) {
-			displayText = `${days}h ${hours}j ${minutes}m ${seconds}s`;
+			displayText = `${days} hari ${hours}j ${minutes}m ${seconds}s`;
 		} else if (hours > 0) {
-			displayText = `${hours}j ${minutes}m`;
+			displayText = `${hours} jam ${minutes}m ${seconds}s`;
 		} else if (minutes > 0) {
-			displayText = `${minutes}m ${seconds}d`;
+			displayText = `${minutes}m ${seconds}s`;
 		} else {
-			displayText = `${seconds}d`;
+			displayText = `${seconds}s`;
 		}
 
 		return (
-			<div className="mt-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full">
-				⏰ Berakhir dalam: {displayText}
+			<div className="mt-2">
+				<span className="inline-flex items-center text-xs font-medium text-red-600 bg-red-50 px-3 py-1 rounded-full whitespace-nowrap shadow-sm">
+					<Clock className="w-3 h-3 mr-1 text-red-600" />
+					Berakhir Pada: {displayText}
+				</span>
 			</div>
 		);
 	};
@@ -238,7 +241,7 @@ export function CoursePackageCard({
 					</h4>
 					<div className="space-y-0.5 sm:space-y-1">
 						{items.length > 0 ? (
-							items.slice(0, 2).map((item, index) => (
+							items.slice(0, 3).map((item, index) => (
 								<div
 									key={index}
 									className="flex items-center text-xs text-gray-600">
@@ -252,9 +255,9 @@ export function CoursePackageCard({
 								<span>Akses pembelajaran dengan mentor</span>
 							</div>
 						)}
-						{items.length > 2 && (
+						{items.length > 3 && (
 							<div className="text-xs text-gray-500 ml-2.5 sm:ml-3">
-								+{items.length - 2} item lainnya
+								+{items.length - 3} item lainnya
 							</div>
 						)}
 					</div>
@@ -297,11 +300,11 @@ export function CoursePackageCard({
 						</div>
 
 						{/* Arrow indicator */}
-						<div className="flex justify-end">
+						{/* <div className="flex justify-end">
 							<div className="text-blue-600 group-hover:translate-x-1 transition-transform duration-200">
 								<ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
 							</div>
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</div>

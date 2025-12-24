@@ -180,7 +180,10 @@ export function BookingModal({
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
-							Pesan sesi dengan {mentor.mentorName || mentor.user?.nama}
+							Pesan sesi dengan{" "}
+							<span className="text-blue-600 bg-blue-100 px-2 py-0.5 rounded-xl">
+								{mentor.mentorName || mentor.user?.nama}
+							</span>
 						</h2>
 					</div>
 				</div>
@@ -317,6 +320,11 @@ export function BookingModal({
 							{["online", "offline"].map((mode) => (
 								<button
 									key={mode}
+									title={
+										mode === "online"
+											? "Sesi melaui platform meeting online (Zoom, Google Meet, dll)"
+											: "Sesi tatap muka langsung di lokasi yang dipilih"
+									}
 									type="button"
 									onClick={() => {
 										setSelectedMode(mode);
@@ -337,7 +345,14 @@ export function BookingModal({
 									) : (
 										<MapPin className="w-4 h-4 mr-2" />
 									)}
-									{mode.charAt(0).toUpperCase() + mode.slice(1)}
+									<div className="flex items-center sm:flex-row flex-col">
+										{mode.charAt(0).toUpperCase() + mode.slice(1)}
+										{!availableModes.includes(mode) && (
+											<span className="ml-2 text-xs italic">
+												(Belum Tersedia)
+											</span>
+										)}
+									</div>
 								</button>
 							))}
 						</div>
