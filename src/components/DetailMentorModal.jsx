@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { AsyncImage } from "loadable-image";
 import { FaWhatsapp } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export default function DetailMentorModal({
 	open,
@@ -84,9 +85,16 @@ export default function DetailMentorModal({
 	};
 
 	const content = (
-		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-			<div className="absolute inset-0 bg-black/40" onClick={onClose} />
-			<div className="relative bg-white w-full max-w-3xl mx-4 my-8 rounded-lg shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+		<div className="fixed inset-0 z-50 flex items-center justify-center">
+			<div
+				className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+				onClick={onClose}
+			/>
+			<motion.div
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				exit={{ opacity: 0 }}
+				className="relative bg-white w-full max-w-3xl mx-4 my-8 rounded-lg shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
 				<div className="flex items-center justify-between px-6 py-3 border-b">
 					<div className="flex items-center gap-4">
 						<div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
@@ -386,7 +394,7 @@ export default function DetailMentorModal({
 						Pilih Kursus
 					</button> */}
 				</div>
-			</div>
+			</motion.div>
 		</div>
 	);
 
