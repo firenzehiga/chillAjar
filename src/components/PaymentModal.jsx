@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import useLockBodyScroll from "@/hooks/utils/useLockBodyScroll";
+import { formatDateDay } from "@/utils/dateFormatter";
 export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 	useLockBodyScroll(true);
 
@@ -160,7 +161,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 							</h3>
 							<div className="bg-white border rounded-xl p-6 shadow-sm grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<div>
-									<p className="text-sm text-gray-600 mb-1">Course</p>
+									<p className="text-sm text-gray-600 mb-1">Kursus</p>
 									<p className="font-medium">{booking.course?.courseName}</p>
 								</div>
 								<div>
@@ -170,15 +171,15 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 									</p>
 								</div>
 								<div>
-									<p className="text-sm text-gray-600 mb-1">Date</p>
-									<p className="font-medium">{booking.date}</p>
+									<p className="text-sm text-gray-600 mb-1">Tanggal</p>
+									<p className="font-medium">{formatDateDay(booking.date)}</p>
 								</div>
 								<div>
-									<p className="text-sm text-gray-600 mb-1">Time</p>
+									<p className="text-sm text-gray-600 mb-1">Jam Mulai</p>
 									<p className="font-medium">{booking.time.slice(0, 5)} WIB</p>
 								</div>
 								<div>
-									<p className="text-sm text-gray-600 mb-1">Mode</p>
+									<p className="text-sm text-gray-600 mb-1">Metode Belajar</p>
 									<p className="font-medium">
 										{booking.mode === "online" ? "Online" : "Offline"}
 									</p>
@@ -206,17 +207,29 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 												Rincian Biaya:
 											</p>
 											<div className="space-y-1 text-sm">
-												<div className="flex justify-between">
-													<span>Paket: {booking.paket.name}</span>
+												<div className="flex justify-between font-medium text-base">
+													<span>
+														Paket:{" "}
+														<span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-sm font-semibold">
+															{booking.paket.name}
+															{booking.paket.harga_dasar === 0 && (
+																<span className="ml-2 text-gray-400 text-xs font-normal italic">
+																	(Paket Normal)
+																</span>
+															)}
+														</span>
+													</span>
 													<span>
 														Rp{" "}
 														{getPackageOriginalPrice().toLocaleString("id-ID")}
 													</span>
 												</div>
-												<div className="flex justify-between">
+												<div className="flex justify-between font-medium text-base">
 													<span>
 														Mentor (
-														{booking.mode === "offline" ? "Offline" : "Online"}
+														{booking.mode === "offline"
+															? "Sesi Offline"
+															: "Sesi Online"}
 														):
 													</span>
 													<span>
@@ -239,10 +252,10 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 										<p className="text-lg font-bold text-gray-800">
 											Total Pembayaran: Rp{totalAmount.toLocaleString("id-ID")}
 										</p>
-										<p className="text-xs text-gray-500 mt-1">
+										<p className="text-xs text-gray-500 mt-1 italic">
 											{booking.mode === "offline"
-												? "Biaya offline sudah termasuk"
-												: "Sesi online"}
+												? "Sudah termasuk biaya perjalanan mentor"
+												: "Sudah termasuk biaya mentor"}{" "}
 										</p>
 									</div>
 								</div>
@@ -251,9 +264,14 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 
 						{/* Payment Method */}
 						<div>
-							<h3 className="font-semibold text-xl mb-4">Metode Pembayaran</h3>
-							<div className="space-y-3">
-								<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+							<h3 className="font-semibold text-lg mb-2">Metode Pembayaran</h3>
+							{/* Catata kecil untuk menjelasakan kenapa belum banyak metode pembayaran */}
+							<span className="text-xs text-gray-500 italic mb-2 block">
+								Saat ini hanya tersedia metode Transfer Bank. Metode pembayaran
+								lain akan segera menyusul.
+							</span>
+							<div className="space-y-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-4">
+								<label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
 									<input
 										type="radio"
 										name="paymentMethod"
@@ -270,17 +288,18 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 						{/* Bank Details */}
 						{paymentMethod === "Transfer Bank" && (
 							<div>
-								<h3 className="font-semibold text-xl mb-4">Detail Bank</h3>
-								<div className="bg-blue-50 border border-blue-200 rounded-xl p-6 space-y-2">
+								<h3 className="font-semibold text-lg mb-4">Detail Bank</h3>
+								<div className="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-2">
 									<p>
-										<span className="font-medium">Bank:</span> BCA
+										<span className="font-medium">Bank Tujuan:</span> BCA
 									</p>
 									<p>
-										<span className="font-medium">Account Number:</span>{" "}
+										<span className="font-medium">Nomor Rekening:</span>{" "}
 										1234567890
 									</p>
 									<p>
-										<span className="font-medium">Account Name:</span> ChillAjar
+										<span className="font-medium">Pemilik Rekening:</span>{" "}
+										ChillAjar
 									</p>
 								</div>
 
