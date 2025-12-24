@@ -368,11 +368,11 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	}
 
 	return (
-		<div className="py-8 space-y-8">
+		<div className="py-8 space-y-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 			{/* Header */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div>
-					<h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+					<h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
 						Riwayat Transaksi
 					</h2>
 					<p className="text-gray-600 mt-1">
@@ -412,7 +412,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						placeholder="Cari berdasarkan nama kursus atau mentor..."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
-						className="w-full pl-12 pr-12 py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white shadow-sm"
+						className="w-full pl-12 pr-12 py-3 sm:py-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white shadow-sm break-words"
 					/>
 					{searchQuery && (
 						<button
@@ -425,7 +425,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 
 				{/* Filter Panel */}
 				{showFilters && (
-					<div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg">
+					<div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-lg">
 						<div className="flex items-center justify-between mb-6">
 							<h3 className="text-lg font-semibold text-gray-900">
 								Filter Transaksi
@@ -439,7 +439,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							)}
 						</div>
 
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+						<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 							<div>
 								<label className="block text-sm font-medium text-gray-700 mb-2">
 									Status Pembayaran
@@ -547,27 +547,27 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					sortedFilteredHistory.map((session) => (
 						<div
 							key={session.id}
-							className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300">
+							className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
 							<div className="flex justify-between items-start mb-4">
 								<div>
-									<h3 className="text-lg font-semibold text-gray-900">
+									<h3 className="text-lg font-semibold text-gray-900 break-words">
 										{session.course}
 									</h3>
-									<p className="text-gray-600">dengan {session.mentor}</p>
+									<p className="text-gray-600 break-words">
+										dengan {session.mentor}
+									</p>
 								</div>
 								{updatingSessionId === session.id ? (
 									<div
-										className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100 shadow-sm"
+										className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 shadow-sm whitespace-nowrap"
 										role="status"
 										aria-live="polite">
 										<Loader2 className="animate-spin h-4 w-4 text-blue-600" />
-										<span className="text-sm font-medium">
-											Memperbarui status
-										</span>
+										<span className="font-medium">Memperbarui status</span>
 									</div>
 								) : (
 									<span
-										className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusStyle(
+										className={`mt-3 sm:mt-0 inline-flex items-center px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap ${getStatusStyle(
 											session.status
 										)}`}>
 										{getStatusText(session.status)}
@@ -612,16 +612,24 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							</div>
 
 							<div className="border-t pt-4 mt-4">
-								<div className="flex items-center justify-between text-gray-600">
-									<div className="flex items-center">
-										<Banknote className="w-4 h-4 mr-2 text-blue-600" />
-										Total Harga: Rp
-										{(session.amount || 0).toLocaleString("id-ID")} |{" "}
-										{session.paketNama}{" "}
+								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-gray-600 gap-3">
+									<div className="flex items-start sm:items-center gap-3 min-w-0">
+										<Banknote className="w-4 h-4 mt-1 sm:mt-0 text-blue-600 flex-shrink-0" />
+										<div className="text-sm break-words">
+											<div>
+												<span className="text-gray-700">Total Harga: </span>
+												<span className="font-medium">
+													Rp{(session.amount || 0).toLocaleString("id-ID")}
+												</span>
+											</div>
+											<div className="text-xs text-gray-500 truncate">
+												{session.paketNama}
+											</div>
+										</div>
 									</div>
-									<div className="flex items-center gap-2">
-										<span className="text-sm">
-											Tanggal Pembayaran:{" "}
+									<div className="flex items-center gap-2 sm:text-right text-sm text-gray-600">
+										<span className="text-gray-700">Tanggal Pembayaran:</span>
+										<span className="font-medium">
 											{session.paymentDate
 												? new Date(session.paymentDate).toLocaleDateString(
 														"id-ID",

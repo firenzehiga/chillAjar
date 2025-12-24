@@ -1,6 +1,6 @@
-import React from "react";
 import { X, BookOpen } from "lucide-react";
 import { getImageUrl } from "../utils/getImageUrl";
+import useLockBodyScroll from "@/hooks/utils/useLockBodyScroll";
 
 export function CourseSelectionModal({
 	courses,
@@ -10,12 +10,16 @@ export function CourseSelectionModal({
 	selectedCourse,
 	onCoursePackageSelect, // New prop to handle course selection and trigger package modal
 }) {
+	useLockBodyScroll(true);
+
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-lg w-full max-w-md">
+		<div className="fixed inset-0 bg-black bg-opacity-100 flex items-center justify-center z-50 p-4">
+			<div className="bg-white rounded-lg w-full max-w-3xl">
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
-						<h2 className="text-xl font-semibold">Pilih Kursus</h2>
+						<h2 className="text-xl font-semibold">
+							Pilih Kursus yang Diinginkan
+						</h2>
 						<button
 							type="button"
 							onClick={onClose}
@@ -170,11 +174,13 @@ export function CourseSelectionModal({
 							}}
 							className={`px-4 py-2 rounded-lg font-medium ${
 								selectedCourse
-									? "bg-black text-white hover:bg-blue-600"
+									? "bg-blue-500 text-white hover:bg-blue-600"
 									: "bg-gray-200 text-gray-500 cursor-not-allowed"
 							}`}
 							disabled={!selectedCourse}>
-							{onCoursePackageSelect ? "Pilih Paket" : "Konfirmasi Pilihan"}
+							{onCoursePackageSelect
+								? "Lanjut Pilih Paket"
+								: "Konfirmasi Pilihan"}
 						</button>
 					</div>
 				</div>

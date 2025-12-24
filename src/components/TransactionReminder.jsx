@@ -182,7 +182,7 @@ export default function TransactionReminder() {
 						<div className="p-4">
 							<div className="flex items-start justify-between">
 								<div>
-									<div className="flex items-center gap-2">
+									<div className="flex items-center gap-2 sm:flex-row flex-col">
 										{/* Status badge */}
 										<span
 											className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${badgeClass}`}>

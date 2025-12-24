@@ -111,8 +111,8 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 	if (!course) return null;
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-2 sm:p-4">
-			<div className="bg-white rounded-2xl shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden">
+		<div className="fixed inset-0 bg-black bg-opacity-90 flex items-start sm:items-center justify-center z-50 p-2 sm:p-4">
+			<div className="bg-white rounded-2xl shadow-2xl max-w-7xl w-full h-[92vh] max-h-[98vh] overflow-hidden flex flex-col">
 				{/* Header - More compact and mobile-friendly */}
 				<div className="bg-gradient-to-r from-blue-500 to-blue-600 p-3 sm:p-4 text-white">
 					<div className="flex items-center justify-between">
@@ -128,16 +128,11 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 								cocok untuk pembelajaran Anda.
 							</p>
 						</div>
-						<button
-							onClick={handleClose}
-							className="text-white hover:text-blue-200 transition-colors p-1 sm:p-2">
-							<X className="w-5 h-5 sm:w-6 sm:h-6" />
-						</button>
 					</div>
 				</div>
 
 				{/* Content */}
-				<div className="p-3 sm:p-6 overflow-y-auto max-h-[calc(95vh-200px)]">
+				<div className="p-3 sm:p-6 overflow-y-auto flex-1">
 					{loading ? (
 						<div className="flex items-center justify-center h-72 mb-6">
 							<BookLoader message="Memuat paket" />
@@ -205,7 +200,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 									disabled={!selectedPackage}
 									className={`flex-1 sm:flex-none flex items-center justify-center px-4 sm:px-6 py-2 rounded-lg transition-colors text-sm ${
 										selectedPackage
-											? "bg-blue-600 text-white hover:bg-blue-700"
+											? "bg-blue-500 text-white hover:bg-blue-600"
 											: "bg-gray-300 text-gray-500 cursor-not-allowed"
 									}`}>
 									Lanjutkan

@@ -498,7 +498,7 @@ function App() {
 		}
 
 		// Close all modals first
-		setShowCourseSelection(false);
+
 		setShowPackageSelection(false);
 
 		setSelectedMentor(mentor);
@@ -515,7 +515,6 @@ function App() {
 
 	// Fungsi untuk menutup CourseSelectionModal
 	const handleCourseSelectionClose = () => {
-		setShowCourseSelection(false);
 		setBookingCourse(null); // Reset bookingCourse jika Cancel ditekan
 	};
 
@@ -550,7 +549,7 @@ function App() {
 			console.warn("Course doesn't have mentor data:", course);
 		}
 
-		setShowCourseSelection(false); // Tutup course selection modal
+		// Tutup course selection modal
 		setShowPackageSelection(true); // Buka package selection modal
 	};
 
@@ -974,7 +973,7 @@ function App() {
 		 * Agar Saat close modal paket di halaman mentor,
 		 * engga ngebuat halaman course jadi di kondisi setelah klik course
 		 */
-		setSelectedCourse(null);
+		// setSelectedCourse(null); // biar kalau close paket modal masih di halaman pilih si mentornya
 		setSelectedMentor(null);
 	};
 
@@ -1314,7 +1313,7 @@ function App() {
 					/>
 				);
 			case "courses":
-				return selectedCourse && !selectedPackage ? (
+				return selectedCourse ? (
 					<div className="py-4">
 						<button
 							onClick={() => {
@@ -1359,45 +1358,6 @@ function App() {
 										schedules={schedules}
 									/>
 								))}
-						</div>
-					</div>
-				) : selectedCourse && selectedPackage && selectedMentor ? (
-					// Tampilan setelah semua terpilih (mentor + course + package)
-					<div className="py-4">
-						{/* Course & Package & Mentor Info */}
-						<div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
-							<h3 className="text-xl font-semibold text-gray-900 mb-2">
-								{selectedCourse.courseName}
-							</h3>
-							<p className="text-gray-600 mb-3">
-								{selectedCourse.courseDescription}
-							</p>
-							<div className="flex items-center gap-4 flex-wrap">
-								<div className="bg-white px-3 py-1 rounded-lg border">
-									<span className="text-sm font-medium text-gray-700">
-										Mentor: {selectedMentor.user?.nama}
-									</span>
-								</div>
-								<div className="bg-white px-3 py-1 rounded-lg border">
-									<span className="text-sm font-medium text-gray-700">
-										Paket: {selectedPackage.name}
-									</span>
-								</div>
-							</div>
-						</div>
-						{/* Button untuk proceed ke booking */}
-						<div className="text-center">
-							<button
-								onClick={() =>
-									handleSchedule(
-										selectedMentor,
-										selectedCourse,
-										selectedPackage
-									)
-								}
-								className="bg-blue-400 hover:bg-chill-blue text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-colors duration-200">
-								Lanjut ke Pemesanan
-							</button>
 						</div>
 					</div>
 				) : (
@@ -1574,7 +1534,7 @@ function App() {
 							setSelectedPackage(null);
 							setBookingCourse(null);
 							setShowPackageSelection(false);
-							setShowCourseSelection(false);
+
 							setCurrentPage("transaction-history"); // arahkan ke halaman tujuan
 							// [gayaMengajar JADWAL ONLY] Komentar: Menampilkan PaymentModal hanya jika pembayaran sedang berlangsung dan booking sudah ada. Semua data mode belajar (gayaMengajar) sudah diambil dari jadwal_kursus, bukan dari level kursus.
 							showToast({

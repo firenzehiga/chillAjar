@@ -10,7 +10,9 @@ import {
 	Gift,
 	Star,
 	Loader2,
+	CalendarDays,
 } from "lucide-react";
+import useLockBodyScroll from "@/hooks/utils/useLockBodyScroll";
 
 export function BookingModal({
 	mentor,
@@ -26,6 +28,8 @@ export function BookingModal({
 	const [topic, setTopic] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
 	const [isProcessing, setIsProcessing] = useState(false);
+
+	useLockBodyScroll(true);
 
 	// Price calculations - SINGLE DECLARATION
 	const mentorFee = mentor?.biayaPerSesi || mentor?.mentorBiayaPerSesi || 0;
@@ -172,18 +176,12 @@ export function BookingModal({
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
-			<div className="bg-white rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col">
+			<div className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
 						<h2 className="text-xl font-semibold">
 							Pesan sesi dengan {mentor.mentorName || mentor.user?.nama}
 						</h2>
-						<button
-							type="button"
-							onClick={onClose}
-							className="text-gray-500 hover:text-gray-700 focus:outline-none transition-colors">
-							<X className="w-5 h-5" />
-						</button>
 					</div>
 				</div>
 
@@ -197,7 +195,7 @@ export function BookingModal({
 									{selectedCourse.courseName}
 								</h3>
 							</div>
-							<p className="text-sm text-blue-700 mt-1">
+							<p className="text-sm text-blue-700 mt-1 text-justify">
 								{selectedCourse.courseDescription ||
 									"Kursus pembelajaran dengan mentor berpengalaman"}
 							</p>
@@ -258,12 +256,14 @@ export function BookingModal({
 										)}
 										<div className="flex items-center justify-between">
 											<div>
-												<span className="text-lg font-bold text-blue-900">
-													Rp {totalFinalPrice.toLocaleString("id-ID")}
+												<span className="text-md font-bold text-blue-900">
+													Harga Paket: Rp{" "}
+													{totalFinalPrice.toLocaleString("id-ID")}
 												</span>
 												{packageDiscount > 0 && (
 													<div className="text-xs text-green-600 font-medium">
-														Hemat Rp {packageDiscount.toLocaleString("id-ID")}
+														Kamu Hemat Rp{" "}
+														{packageDiscount.toLocaleString("id-ID")}
 													</div>
 												)}
 											</div>
@@ -300,13 +300,15 @@ export function BookingModal({
 							value={topic}
 							onChange={(e) => setTopic(e.target.value)}
 							placeholder="Tuliskan topik yang ingin kamu bahas bersama mentor dalam sesi ini... (Bisa nama materi, pertanyaan spesifik, atau hal lain yang ingin didiskusikan)"
-							className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+							className="w-full p-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-blue-500"
 							rows="3"
 						/>
 					</div>
 
 					<div className="mb-6">
-						<h3 className="font-medium mb-2">Pilih Metode Belajar:</h3>
+						<h3 className="text-sm font-medium mb-2 text-gray-700">
+							Pilih Metode Belajar:
+						</h3>
 						<div className="text-xs text-gray-500 mb-3">
 							Catatan: Pilihan jadwal, tempat, tanggal, dan jam disesuaikan
 							berdasarkan ketersediaan mentor.
@@ -323,7 +325,7 @@ export function BookingModal({
 										setSelectedTime(null);
 									}}
 									disabled={!availableModes.includes(mode)}
-									className={`flex items-center justify-center p-3 rounded-lg border ${
+									className={`flex items-center justify-center p-2 rounded-lg border ${
 										selectedMode === mode
 											? "bg-chill-blue text-white border-blue-500 focus:outline-none focus:ring-3 outline-none focus:border-blue-300 transition-colors"
 											: availableModes.includes(mode)
@@ -331,9 +333,9 @@ export function BookingModal({
 											: "bg-gray-100 text-gray-400 cursor-not-allowed"
 									}`}>
 									{mode === "online" ? (
-										<Monitor className="w-5 h-5 mr-2" />
+										<Monitor className="w-4 h-4 mr-2" />
 									) : (
-										<MapPin className="w-5 h-5 mr-2" />
+										<MapPin className="w-4 h-4 mr-2" />
 									)}
 									{mode.charAt(0).toUpperCase() + mode.slice(1)}
 								</button>
@@ -343,8 +345,10 @@ export function BookingModal({
 
 					{selectedMode === "offline" && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Pilih Lokasi:</h3>
-							<div className="space-y-2 gap-3">
+							<h3 className="font-medium mb-2 text-sm text-gray-700">
+								Pilih Lokasi:
+							</h3>
+							<div className="space-y-2 gap-3 grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 ">
 								{availableLocations.length > 0 ? (
 									availableLocations.map((loc, index) => (
 										<button
@@ -379,14 +383,16 @@ export function BookingModal({
 
 					{selectedMode && (selectedMode === "online" || selectedLocation) && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Tanggal:</h3>
+							<h3 className="font-medium mb-2 text-sm text-gray-700">
+								Tanggal:
+							</h3>
 							{availableDates.length === 0 ? (
 								<div className="text-red-500 text-sm p-2 bg-red-50 rounded">
 									Belum ada jadwal tersedia untuk{" "}
 									{selectedMode === "offline" ? "lokasi ini" : "mode ini"}.
 								</div>
 							) : (
-								<div className="grid grid-cols-3 gap-2">
+								<div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2  gap-2">
 									{availableDates.map((date) => (
 										<button
 											type="button"
@@ -400,7 +406,26 @@ export function BookingModal({
 													? "bg-chill-blue text-white border-blue-500 focus:outline-none transition-colors"
 													: "bg-gray-100 hover:bg-gray-200"
 											}`}>
-											{format(date, "MMM d")}
+											<CalendarDays className="w-4 h-4 mr-1 mb-1 inline" />
+											{
+												// Tampilkan singkatan bulan Indonesia (Des untuk Desember)
+												[
+													"Jan",
+													"Feb",
+													"Mar",
+													"Apr",
+													"Mei",
+													"Jun",
+													"Jul",
+													"Agu",
+													"Sep",
+													"Okt",
+													"Nov",
+													"Des",
+												][date.getMonth()] +
+													" " +
+													format(date, "d")
+											}
 										</button>
 									))}
 								</div>
@@ -410,8 +435,8 @@ export function BookingModal({
 
 					{selectedDate && (
 						<div className="mb-6">
-							<h3 className="font-medium mb-2">Waktu:</h3>
-							<div className="grid grid-cols-2 gap-2">
+							<h3 className="font-medium mb-2 text-sm text-gray-700">Waktu:</h3>
+							<div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2  gap-2">
 								{availableTimes.map((time) => (
 									<button
 										type="button"

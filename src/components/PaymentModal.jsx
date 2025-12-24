@@ -4,7 +4,10 @@ import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import useLockBodyScroll from "@/hooks/utils/useLockBodyScroll";
 export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
+	useLockBodyScroll(true);
+
 	const [paymentMethod, setPaymentMethod] = useState("Transfer Bank");
 	const [proofImage, setProofImage] = useState(null);
 	const [proofPreview, setProofPreview] = useState(null); // Untuk pratinjau
@@ -134,22 +137,17 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+				className="fixed inset-0 bg-black bg-opacity-100 flex items-center justify-center z-50 p-4">
 				<motion.div
 					initial={{ scale: 0.8, y: 40, opacity: 0 }}
 					animate={{ scale: 1, y: 0, opacity: 1 }}
 					exit={{ scale: 0.8, y: 40, opacity: 0 }}
 					transition={{ type: "spring", stiffness: 300, damping: 25 }}
-					className="bg-white rounded-lg w-full max-w-xl max-h-[90vh] flex flex-col">
+					className="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
 					{/* Header - Fixed */}
 					<div className="p-6 border-b">
 						<div className="flex justify-between items-center">
 							<h2 className="text-xl font-semibold">Selesaikan Pembayaran</h2>
-							<button
-								onClick={onClose}
-								className="text-gray-500 hover:text-gray-700">
-								<X className="w-5 h-5" />
-							</button>
 						</div>
 					</div>
 
@@ -337,18 +335,18 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 							<button
 								onClick={onClose}
 								className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-blue-500">
-								Nanti
+								Bayar Nanti
 							</button>
 							<button
 								onClick={handleSubmit}
-								className="px-4 py-2 bg-black text-white rounded-lg focus:outline-none hover:bg-blue-700 flex items-center disabled:opacity-60 disabled:cursor-not-allowed"
+								className="px-4 py-2 bg-blue-600 text-white rounded-lg focus:outline-none hover:bg-blue-700 flex items-center disabled:opacity-60 disabled:cursor-not-allowed"
 								disabled={loading}>
 								{loading ? (
 									<Loader2 className="w-4 h-4 mr-2 animate-spin" />
 								) : (
 									<CreditCard className="w-4 h-4 mr-2" />
 								)}
-								{loading ? "Memproses..." : "Lanjut Bayar"}
+								{loading ? "Memproses..." : "Konfirmasi"}
 							</button>
 						</div>
 					</div>

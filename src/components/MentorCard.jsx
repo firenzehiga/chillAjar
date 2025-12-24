@@ -22,8 +22,15 @@ export function MentorCard({
 	selectedCourse = null,
 	resetCourseSelection,
 }) {
-	const { setShowBookingModal, setShowPayment } = useAppStore();
-	const [showCourseModal, setShowCourseModal] = useState(false);
+	const {
+		setShowBookingModal,
+		setShowPayment,
+		showPackageSelection,
+		showCourseSelection,
+		selectedMentor,
+		setSelectedMentor,
+		setShowCourseSelection,
+	} = useAppStore();
 	const [selectedMentorCourse, setSelectedMentorCourse] = useState(null);
 	const [showModal, setShowModal] = useState(false);
 	const [modeError, setModeError] = useState("");
@@ -56,7 +63,10 @@ export function MentorCard({
 		if (selectedCourse) {
 			onSchedule(mentor, selectedCourse);
 		} else if (mentor.courses) {
-			setShowCourseModal(true);
+			// open global modal and mark this mentor as selected
+			setSelectedMentor(mentor);
+			setSelectedMentorCourse(null);
+			setShowCourseSelection(true);
 		}
 	};
 
@@ -66,7 +76,6 @@ export function MentorCard({
 
 	const handleConfirmCourse = () => {
 		if (selectedMentorCourse) {
-			setShowCourseModal(false);
 			// Use package selection flow instead of direct scheduling
 			if (onCoursePackageSelect) {
 				onCoursePackageSelect(selectedMentorCourse);
@@ -76,13 +85,6 @@ export function MentorCard({
 			}
 		}
 	};
-
-	const handleCloseCourseModal = () => {
-		setShowCourseModal(false);
-		setSelectedMentorCourse(null);
-	};
-
-	const buttonText = selectedCourse ? "Pesan Sekarang" : "Pilih Kursus";
 
 	const formatMentorName = (name) => {
 		if (!name) return "";
@@ -235,23 +237,28 @@ export function MentorCard({
 						disabled={validModes.length === 0}
 						className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all transform ${
 							validModes.length > 0
-								? "bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 hover:scale-105 outline-none focus:outline-none"
+								? "bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 outline-none focus:outline-none"
 								: "bg-gray-300 text-gray-500 cursor-not-allowed"
 						}`}>
 						<BookOpen className="w-4 h-4" />
-						{buttonText}
+						{selectedCourse ? "Pesan Sekarang" : "Pilih Kursus"}
 					</button>
 				</div>
 			</div>
 
-			{showCourseModal && (
+			{showCourseSelection && selectedMentor?.id === mentor.id && (
 				<CourseSelectionModal
 					courses={mentor.courses || []}
 					selectedCourse={selectedMentorCourse}
 					onSelect={handleCourseSelect}
 					onConfirm={handleConfirmCourse}
 					onCoursePackageSelect={onCoursePackageSelect}
-					onClose={handleCloseCourseModal}
+					onClose={() => {
+						// close global modal when user cancels locally
+						setShowCourseSelection(false);
+						setSelectedMentor(null);
+						setSelectedMentorCourse(null);
+					}}
 				/>
 			)}
 		</>
