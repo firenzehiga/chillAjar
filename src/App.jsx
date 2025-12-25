@@ -1226,7 +1226,11 @@ function App() {
 			if (currentPage.startsWith("mentor-edit-course")) {
 				const id = currentPage.split("mentor-edit-course/")[1];
 				return (
-					<MentorFormCoursePage onNavigate={handleNavigate} courseId={id} />
+					<MentorFormCoursePage
+						onNavigate={handleNavigate}
+						courseId={id}
+						userData={userData}
+					/>
 				);
 			}
 

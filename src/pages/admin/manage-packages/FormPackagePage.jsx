@@ -257,16 +257,6 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 
 	return (
 		<div className="py-8">
-			<button
-				onClick={() => onNavigate("admin-manage-packages")}
-				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
-				type="button">
-				<div className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
-					<ArrowLeft className="w-5 h-5" />
-				</div>
-				<p className="translate-x-2">Kembali</p>
-			</button>
-
 			<div className="max-w-6xl mx-auto bg-white rounded-lg shadow p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
 					<Gift className="w-6 h-6 mr-2 text-blue-600" />
@@ -556,7 +546,16 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 								</div>
 							)}
 
-							<div className="flex justify-end">
+							<div className="flex justify-between pt-6 border-t border-gray-200 mt-8">
+								<button
+									type="button"
+									onClick={(e) => {
+										e.preventDefault();
+										onNavigate("admin-manage-packages");
+									}}
+									className="px-4 py-2 rounded-lg bg-gray-200 font-medium text-gray-700 hover:bg-gray-300 transition-colors">
+									Batal
+								</button>
 								<button
 									type="submit"
 									disabled={loading}

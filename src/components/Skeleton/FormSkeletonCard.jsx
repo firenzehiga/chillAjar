@@ -3,7 +3,7 @@ import React from "react";
 export function FormSkeletonCard() {
 	return (
 		<div className="py-8">
-			<button
+			{/* <button
 				onClick={() => onNavigate("mentor-manage-courses")}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 				type="button">
@@ -24,7 +24,7 @@ export function FormSkeletonCard() {
 					</svg>
 				</div>
 				<p className="translate-x-2">Cancel</p>
-			</button>
+			</button> */}
 			<div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
 				{/* Loading text di dalam card */}
 				<div className="flex items-center justify-center mb-6">

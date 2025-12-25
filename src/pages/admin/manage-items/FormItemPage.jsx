@@ -138,7 +138,7 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 
 	return (
 		<div className="py-8">
-			<button
+			{/* <button
 				onClick={() => onNavigate("admin-manage-items")}
 				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
 				type="button">
@@ -146,7 +146,7 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 					<ArrowLeft className="w-5 h-5" />
 				</div>
 				<p className="translate-x-2">Kembali</p>
-			</button>
+			</button> */}
 
 			<div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
@@ -234,7 +234,16 @@ export function AdminFormItemsPage({ onNavigate, itemId }) {
 						</div>
 					)}
 
-					<div className="flex justify-end">
+					<div className="flex justify-between pt-6 border-t border-gray-200 mt-8">
+						<button
+							type="button"
+							onClick={(e) => {
+								e.preventDefault();
+								onNavigate("admin-manage-items");
+							}}
+							className="px-4 py-2 rounded-lg bg-gray-200 font-medium text-gray-700 hover:bg-gray-300 transition-colors">
+							Batal
+						</button>
 						<button
 							type="submit"
 							disabled={loading}

@@ -15,11 +15,16 @@ import {
 	FileText,
 	CheckCircle,
 	Trash2,
+	CalendarDays,
 } from "lucide-react";
 import { AsyncImage } from "loadable-image";
 import { formatDate, formatTime } from "@/utils/dateFormatter";
 import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
 import useCourseForm from "@/hooks/course/useCourseForm";
+import React, { useState, Suspense } from "react";
+
+// Lazy-load the calendar component to avoid importing heavy deps unless enabled
+const ScheduleCalendar = React.lazy(() => import("./ScheduleCalendar"));
 
 const TabNavigation = ({ tabs, activeTab, onTabChange, getTabStatus }) => (
 	<div className="mb-6">
@@ -387,7 +392,7 @@ const ScheduleManager = ({
 									</div>
 								</div>
 
-								{mentorName && (
+								{/* {mentorName && (
 									<div>
 										<label
 											htmlFor={`keterangan-${index}`}
@@ -407,7 +412,7 @@ const ScheduleManager = ({
 											placeholder={`Kursus dengan ${mentorName}`}
 										/>
 									</div>
-								)}
+								)} */}
 
 								{schedule.gayaMengajar === "offline" && (
 									<div className="mt-3">
@@ -836,42 +841,21 @@ export function CourseForm({
 
 	const tabs = isAdmin ? adminTabs : mentorTabs;
 
+	// Feature toggle for experimental calendar view
+	const [showCalendar, setShowCalendar] = useState(false);
+
 	if (loading && isEditMode) {
 		return <FormSkeletonCard />;
 	}
 
 	return (
 		<div className="py-8">
-			{/* Back Button */}
-			<button
-				onClick={() => onNavigate(backNavigationTarget)}
-				className="px-4 py-2 mb-4 bg-gray-50 text-center w-48 rounded-2xl h-14 relative text-black text-xl font-semibold group outline-none focus:outline-none"
-				type="button">
-				<div className="bg-blue-400 rounded-xl h-12 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[184px] z-10 duration-500">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 1024 1024"
-						height="25px"
-						width="25px">
-						<path
-							d="M224 480h640a32 32 0 1 1 0 64H224a32 32 0 0 1 0-64z"
-							fill="#000000"
-						/>
-						<path
-							d="m237.248 512 265.408 265.344a32 32 0 0 1-45.312 45.312l-288-288a32 32 0 0 1 0-45.312l288-288a32 32 0 1 1 45.312 45.312L237.248 512z"
-							fill="#000000"
-						/>
-					</svg>
-				</div>
-				<p className="translate-x-2">Cancel</p>
-			</button>
-
+			{/* <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between"></div> */}
 			<div className="max-w-full sm:max-w-6xl mx-auto bg-white rounded-lg shadow p-4 sm:p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
 					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
 					{isEditMode ? "Edit Course" : "Add New Course"}
 				</h2>
-
 				{/* Tab Navigation */}
 				<TabNavigation
 					tabs={tabs}
@@ -897,20 +881,74 @@ export function CourseForm({
 
 						{/* Schedule Tab */}
 						{activeTab === "jadwal" && (
-							<ScheduleManager
-								schedules={schedules}
-								onScheduleChange={handleScheduleChange}
-								onAddSchedule={addSchedule}
-								onRemoveSchedule={removeSchedule}
-								onRemoveSchedulePermanent={removeSchedulePermanent}
-								onToggleCollapse={toggleScheduleCollapse}
-								/* duplicate removed */
-								collapsedSchedules={collapsedSchedules}
-								initialSchedulesLength={initialSchedules.length}
-								mentorName={isMentor ? mentorName : ""}
-								disabled={loading}
-								loading={loading}
-							/>
+							<>
+								<div className="mb-3">
+									<button
+										type="button"
+										onClick={(e) => {
+											e.preventDefault();
+											setShowCalendar((s) => !s);
+										}}
+										className="px-3 py-1 text-sm font-medium bg-blue-600 rounded hover:bg-blue-700 transition-all hover:scale-105 text-white">
+										<CalendarDays className="w-4 h-4 inline mr-1 mb-1" />
+										{showCalendar ? "Versi List" : "Versi Kalender (Beta)"}
+									</button>
+								</div>
+
+								{showCalendar ? (
+									<Suspense fallback={<div>Loading calendar...</div>}>
+										<div className="text-xs text-gray-500 mt-2 space-y-1">
+											<p className="font-medium">Catatan:</p>
+											<ul className="list-disc list-inside">
+												<li>
+													Klik pada tanggal di kalender untuk menambahkan jadwal
+													baru. Klik pada kolom yang diinginkan atau dimana saja
+													→ form akan muncul. Tanggal dan waktu masih bisa
+													disesuaikan
+												</li>
+
+												<li>
+													Untuk edit jadwal, klik pada kotak jadwal yang ingin
+													diubah → modal edit muncul. Jika muncul notif "jadwal
+													terkunci", maka jadwal tersebut sudah dipesan atau
+													memiliki sesi.
+												</li>
+
+												<li>
+													Jika baru membuat kursus, akan menampilkan satu jadwal
+													yang default berdasarkan tanggal, dan waktu saat ini.
+													Edit atau hapus jika perlu.
+												</li>
+												<li>
+													Pilihan menit terbatas pada kelipatan (00, 15, 30, 45)
+													untuk konsistensi dan penjadwalan yang baik.
+												</li>
+											</ul>
+										</div>
+										<ScheduleCalendar
+											schedules={schedules}
+											setSchedules={setSchedules}
+											addSchedule={addSchedule}
+											mentorName={mentorName}
+										/>
+									</Suspense>
+								) : (
+									<ScheduleManager
+										schedules={schedules}
+										onScheduleChange={handleScheduleChange}
+										onAddSchedule={addSchedule}
+										onRemoveSchedule={removeSchedule}
+										onRemoveSchedulePermanent={removeSchedulePermanent}
+										onToggleCollapse={toggleScheduleCollapse}
+										/* duplicate removed */
+										collapsedSchedules={collapsedSchedules}
+										initialSchedulesLength={initialSchedules.length}
+										mentorName={mentorName}
+										disabled={loading}
+										loading={loading}
+									/>
+								)}
+							</>
 						)}
 
 						{/* Package Tab (Admin only) */}
@@ -941,25 +979,39 @@ export function CourseForm({
 
 					{/* Navigation Buttons */}
 					<div className="flex justify-between pt-6 border-t border-gray-200 mt-8">
-						<button
-							type="button"
-							onClick={(e) => {
-								e.preventDefault();
-								const currentIndex = tabs.findIndex(
-									(tab) => tab.id === activeTab
-								);
-								if (currentIndex > 0) {
-									handleTabChange(tabs[currentIndex - 1].id);
-								}
-							}}
-							disabled={tabs.findIndex((tab) => tab.id === activeTab) === 0}
-							className={`px-4 py-2 rounded-lg transition-colors ${
-								tabs.findIndex((tab) => tab.id === activeTab) === 0
-									? "bg-gray-100 text-gray-400 cursor-not-allowed"
-									: "bg-gray-200 text-gray-700 hover:bg-gray-300"
-							}`}>
-							← Previous
-						</button>
+						{/* Kalo masih tab pertama ganti buttonnya jadi cancel */}
+
+						{activeTab === tabs[0].id ? (
+							<button
+								type="button"
+								onClick={(e) => {
+									e.preventDefault();
+									onNavigate(backNavigationTarget);
+								}}
+								className="px-4 py-2 rounded-lg bg-gray-200 font-medium text-gray-700 hover:bg-gray-300 transition-colors">
+								Batal
+							</button>
+						) : (
+							<button
+								type="button"
+								onClick={(e) => {
+									e.preventDefault();
+									const currentIndex = tabs.findIndex(
+										(tab) => tab.id === activeTab
+									);
+									if (currentIndex > 0) {
+										handleTabChange(tabs[currentIndex - 1].id);
+									}
+								}}
+								disabled={tabs.findIndex((tab) => tab.id === activeTab) === 0}
+								className={`px-4 py-2 rounded-lg transition-colors ${
+									tabs.findIndex((tab) => tab.id === activeTab) === 0
+										? "bg-gray-100 text-gray-400 cursor-not-allowed"
+										: "bg-gray-200 text-gray-700 hover:bg-gray-300"
+								}`}>
+								← Previous
+							</button>
+						)}
 
 						<div className="flex space-x-3">
 							{activeTab !== "review" ? (

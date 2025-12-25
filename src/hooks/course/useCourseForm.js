@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { showToast } from "@/components/User/customToast";
@@ -27,7 +27,6 @@ import {
 	useDeleteScheduleMutation,
 } from "@/hooks/useCourse";
 import { usePaymentsQuery } from "@/hooks/usePayments";
-import { create } from "zustand";
 
 export default function useCourseForm({
 	courseId,
@@ -41,21 +40,18 @@ export default function useCourseForm({
 
 	const isAdmin = userRole === "admin";
 	const isMentor = userRole === "mentor";
-	const mentorName = userData?.nama || "";
-
-	const storeUserData = useAppStore((s) => s.userData);
-	const resolvedMentorId = storeUserData.mentor?.id || null;
 
 	const [formData, setFormData] = useState({
 		namaKursus: "",
 		deskripsi: "",
 		mentorId: "",
 	});
+
 	const [schedules, setSchedules] = useState([
 		{
 			tanggal: "",
 			waktu: "",
-			keterangan: mentorName ? `Kursus dengan ${mentorName}` : "",
+			keterangan: "",
 			tempat: "",
 			gayaMengajar: "online",
 		},
@@ -65,6 +61,21 @@ export default function useCourseForm({
 	const [selectedPackages, setSelectedPackages] = useState([]);
 	const [initialSelectedPackages, setInitialSelectedPackages] = useState([]);
 	const [mentors, setMentors] = useState([]);
+
+	// Derive mentorName:
+	// - If admin: use selected mentor from `mentors` (by mentorId in formData) when available
+	// - If mentor: use `userData.nama`
+	const mentorName = useMemo(() => {
+		if (isAdmin) {
+			const mentorId = formData?.mentorId || "";
+			if (!mentorId) return "";
+			const found = mentors.find((m) => String(m.id) === String(mentorId));
+			return found?.user?.nama || "";
+		}
+		return userData?.nama || "";
+	}, [isAdmin, formData, mentors, userData]);
+
+	console.log("mentorName:", mentorName);
 	const [packages, setPackages] = useState([]);
 	const [activeTab, setActiveTab] = useState("info");
 	const [fotoKursus, setFotoKursus] = useState(null);
@@ -429,19 +440,26 @@ export default function useCourseForm({
 
 			// Confirm with SweetAlert2 then use mutation hook (pattern like AdminSessionsPage)
 			Swal.fire({
-				title: "Apa Anda yakin?",
-				text: "Hapus jadwal ini secara permanen? Aksi ini tidak dapat dibatalkan.",
+				title: "Hapus Jadwal?",
+				text: "Anda yakin ingin menghapus jadwal ini? Tindakan ini tidak dapat dibatalkan.",
 				icon: "warning",
+				iconColor: "#DC2626",
 				showCancelButton: true,
 				confirmButtonText: "Ya, hapus!",
 				cancelButtonText: "Batal",
 				customClass: {
+					// kurangi ukuran popup (max-w-md vs max-w-lg) supaya card tidak terlalu besar
 					popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
+					title: "text-lg font-semibold text-gray-900",
+					content: "text-sm text-gray-600 dark:text-gray-300 mt-1",
+					// tambahkan container actions dengan gap agar tombol tidak saling dempet
+					actions: "flex gap-3 justify-center mt-4",
 					confirmButton:
 						"px-4 py-2 focus:outline-none rounded-md bg-red-600 hover:bg-red-700 text-white",
 					cancelButton:
 						"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
 				},
+				backdrop: true,
 			}).then((result) => {
 				if (!result.isConfirmed) return;
 				setLoading(true);
@@ -489,7 +507,6 @@ export default function useCourseForm({
 				const updated = prev.map((p) =>
 					p.package_id === packageId ? { ...p, is_active: !p.is_active } : p
 				);
-				toast.dismiss();
 				const activeCount = updated.filter((p) => p.is_active).length;
 				if (activeCount === 0) {
 					showToast({
