@@ -13,8 +13,6 @@ import {
 	updateCourse,
 	createMentorCourse,
 	updateMentorCourse,
-	setMentorSchedule,
-	setSchedule,
 } from "@/services/courseService";
 import {
 	useCourseByIdQuery,
@@ -24,6 +22,9 @@ import {
 	useUpdateCourseMutation,
 	useCreateMentorCourseMutation,
 	useUpdateMentorCourseMutation,
+	useSetScheduleMutation,
+	useSetMentorScheduleMutation,
+	useDeleteScheduleMutation,
 } from "@/hooks/useCourse";
 import { usePaymentsQuery } from "@/hooks/usePayments";
 import { create } from "zustand";
@@ -390,46 +391,95 @@ export default function useCourseForm({
 		setSchedules((prev) => prev.filter((_, i) => i !== index));
 	}, []);
 
+	// Use mutations (declare before functions that reference them)
+	const createCourseMutation = useCreateCourseMutation();
+	const updateCourseMutation = useUpdateCourseMutation();
+	const createMentorCourseMutation = useCreateMentorCourseMutation();
+	const updateMentorCourseMutation = useUpdateMentorCourseMutation();
+
+	// Schedule mutations (use the hooks so cache invalidation is centralized)
+	const setScheduleMutation = useSetScheduleMutation();
+	const setMentorScheduleMutation = useSetMentorScheduleMutation();
+	const deleteScheduleMutation = useDeleteScheduleMutation();
+
+	const removeSchedulePermanent = useCallback(
+		async (index) => {
+			setError(null);
+
+			const schedule = schedules[index];
+			if (!schedule) return;
+
+			// If schedule has no id yet, it's only local — just remove it
+			if (!schedule.id) {
+				setSchedules((prev) => prev.filter((_, i) => i !== index));
+				return;
+			}
+
+			// Prevent deleting locked schedules (booked/paid/started/ended)
+			if (schedule.locked) {
+				toast.dismiss();
+				showToast({
+					type: "error",
+					title: "Hapus Gagal",
+					message:
+						"Jadwal tidak dapat dihapus karena sudah dipesan atau terkunci.",
+				});
+				return;
+			}
+
+			// Confirm with SweetAlert2 then use mutation hook (pattern like AdminSessionsPage)
+			Swal.fire({
+				title: "Apa Anda yakin?",
+				text: "Hapus jadwal ini secara permanen? Aksi ini tidak dapat dibatalkan.",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Ya, hapus!",
+				cancelButtonText: "Batal",
+				customClass: {
+					popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
+					confirmButton:
+						"px-4 py-2 focus:outline-none rounded-md bg-red-600 hover:bg-red-700 text-white",
+					cancelButton:
+						"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
+				},
+			}).then((result) => {
+				if (!result.isConfirmed) return;
+				setLoading(true);
+				deleteScheduleMutation.mutate(schedule.id, {
+					onSuccess: () => {
+						setSchedules((prev) => prev.filter((s) => s.id !== schedule.id));
+						setInitialSchedules((prev) =>
+							prev.filter((s) => s.id !== schedule.id)
+						);
+						toast.dismiss();
+						showToast({
+							type: "success",
+							title: "Berhasil",
+							message: "Jadwal berhasil dihapus permanen.",
+						});
+						setLoading(false);
+					},
+					onError: (err) => {
+						const msg =
+							err?.response?.data?.message ||
+							err.message ||
+							"Gagal menghapus jadwal";
+						toast.dismiss();
+						showToast({ type: "error", title: "Hapus Gagal", message: msg });
+						console.error("deleteSchedule error:", err);
+						setLoading(false);
+					},
+				});
+			});
+		},
+		[schedules, deleteScheduleMutation]
+	);
+
 	const toggleScheduleCollapse = useCallback((index) => {
 		setCollapsedSchedules((prev) => ({ ...prev, [index]: !prev[index] }));
 	}, []);
 
-	const duplicateSchedule = useCallback(
-		(index) => {
-			setSchedules((prev) => {
-				const scheduleToClone = { ...prev[index] };
-				scheduleToClone.tanggal = "";
-				scheduleToClone.waktu = "";
-				// ensure duplicated schedule is editable and not locked
-				scheduleToClone.locked = false;
-				scheduleToClone.lockedReason = null;
-				if (!scheduleToClone.keterangan && mentorName) {
-					scheduleToClone.keterangan = `Kursus dengan ${mentorName}`;
-				}
-				delete scheduleToClone.id;
-
-				const newSchedules = [...prev];
-				newSchedules.splice(index + 1, 0, scheduleToClone);
-
-				setCollapsedSchedules((cs) => {
-					const newCollapsed = {};
-					Object.keys(cs).forEach((key) => {
-						const idx = parseInt(key);
-						if (idx > index) {
-							newCollapsed[idx + 1] = cs[idx];
-						} else {
-							newCollapsed[idx] = cs[idx];
-						}
-					});
-					newCollapsed[index + 1] = false;
-					return newCollapsed;
-				});
-
-				return newSchedules;
-			});
-		},
-		[mentorName]
-	);
+	// duplicateSchedule removed — feature deprecated
 
 	const handlePackageToggle = useCallback((packageId) => {
 		setSelectedPackages((prev) => {
@@ -505,12 +555,6 @@ export default function useCourseForm({
 
 		return true;
 	}, [formData, schedules, selectedPackages, isAdmin, isMentor]);
-
-	// Use mutations
-	const createCourseMutation = useCreateCourseMutation();
-	const updateCourseMutation = useUpdateCourseMutation();
-	const createMentorCourseMutation = useCreateMentorCourseMutation();
-	const updateMentorCourseMutation = useUpdateMentorCourseMutation();
 
 	const handleSubmit = useCallback(
 		async (e) => {
@@ -724,9 +768,13 @@ export default function useCourseForm({
 						};
 
 						if (isAdmin) {
-							schedulePromises.push(setSchedule(jadwalPayload));
+							schedulePromises.push(
+								setScheduleMutation.mutateAsync(jadwalPayload)
+							);
 						} else {
-							schedulePromises.push(setMentorSchedule(jadwalPayload));
+							schedulePromises.push(
+								setMentorScheduleMutation.mutateAsync(jadwalPayload)
+							);
 						}
 					}
 
@@ -783,6 +831,8 @@ export default function useCourseForm({
 			createCourseMutation,
 			updateMentorCourseMutation,
 			createMentorCourseMutation,
+			setScheduleMutation,
+			setMentorScheduleMutation,
 		]
 	);
 
@@ -817,8 +867,9 @@ export default function useCourseForm({
 		handleScheduleChange,
 		addSchedule,
 		removeSchedule,
+		removeSchedulePermanent,
 		toggleScheduleCollapse,
-		duplicateSchedule,
+		// duplicateSchedule removed
 		handlePackageToggle,
 		handleTabChange,
 		getTabStatus,

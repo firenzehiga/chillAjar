@@ -8,13 +8,13 @@ import {
 	Lightbulb,
 	ChevronDown,
 	ChevronUp,
-	Copy,
 	Calendar,
 	Clock,
 	MapPin,
 	Monitor,
 	FileText,
 	CheckCircle,
+	Trash2,
 } from "lucide-react";
 import { AsyncImage } from "loadable-image";
 import { formatDate, formatTime } from "@/utils/dateFormatter";
@@ -203,12 +203,13 @@ const ScheduleManager = ({
 	onScheduleChange,
 	onAddSchedule,
 	onRemoveSchedule,
+	onRemoveSchedulePermanent,
 	onToggleCollapse,
-	onDuplicateSchedule,
 	collapsedSchedules,
 	initialSchedulesLength = 0,
 	mentorName = "",
 	disabled = false,
+	loading = false,
 }) => (
 	<div className="space-y-6">
 		<div className="flex items-start justify-between">
@@ -240,205 +241,216 @@ const ScheduleManager = ({
 					</ul>
 				</div>
 			</div>
-
-			<div className="flex-shrink-0">
-				<button
-					type="button"
-					onClick={(e) => {
-						e.preventDefault();
-						onAddSchedule();
-					}}
-					disabled={disabled}
-					className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap">
-					<Plus className="w-4 h-4 mr-2" />
-					Tambah Jadwal
-				</button>
-			</div>
 		</div>
 
-		{schedules.map((schedule, index) => {
-			const isCollapsed = collapsedSchedules[index];
-			const isFromDatabase = index < initialSchedulesLength;
+		<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+			{schedules.map((schedule, index) => {
+				const isCollapsed = collapsedSchedules[index];
+				const isFromDatabase = index < initialSchedulesLength;
 
-			return (
-				<div
-					key={index}
-					className="border border-gray-200 rounded-lg overflow-hidden">
-					<div className="bg-gray-50 px-4 py-3 flex items-center justify-between">
-						<div className="flex items-center space-x-3">
-							<button
-								type="button"
-								onClick={(e) => {
-									e.preventDefault();
-									onToggleCollapse(index);
-								}}
-								disabled={disabled}
-								className="p-1 hover:bg-gray-200 rounded disabled:cursor-not-allowed">
-								{isCollapsed ? (
-									<ChevronDown className="w-4 h-4" />
-								) : (
-									<ChevronUp className="w-4 h-4" />
-								)}
-							</button>
-							<h4 className="font-medium text-gray-900">
-								Jadwal {index + 1}
-								{isFromDatabase && (
-									<span className="ml-2 text-xs bg-blue-100 text-green-800 px-2 py-1 rounded">
-										Tersimpan
-									</span>
-								)}
-							</h4>
-							{schedule.tanggal && schedule.waktu && (
-								<div className="flex items-center text-sm text-gray-600">
-									<Calendar className="w-4 h-4 mr-1" />
-									{formatDate(schedule.tanggal)}
-									<Clock className="w-4 h-4 ml-3 mr-1" />
-									{formatTime(schedule.waktu, true)}
-								</div>
-							)}
-
-							{schedule.locked && (
-								<span
-									title={schedule.lockedReason || "Tidak Ada"}
-									className="ml-2 text-xs font-medium bg-red-100 text-red-800 px-2 py-1 rounded">
-									Memiliki Sesi
-								</span>
-							)}
-						</div>
-
-						<div className="flex items-center space-x-2">
-							<button
-								type="button"
-								onClick={(e) => {
-									e.preventDefault();
-									onDuplicateSchedule(index);
-								}}
-								disabled={disabled}
-								className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded disabled:cursor-not-allowed"
-								title="Duplicate schedule">
-								<Copy className="w-4 h-4" />
-							</button>
-							{!isFromDatabase && !schedule.locked && (
+				return (
+					<div
+						key={index}
+						className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+						<div className="bg-gray-50 px-2 py-1 flex items-center justify-between text-xs">
+							<div className="flex items-center space-x-3">
 								<button
 									type="button"
 									onClick={(e) => {
 										e.preventDefault();
-										onRemoveSchedule(index);
+										onToggleCollapse(index);
 									}}
 									disabled={disabled}
-									className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded disabled:cursor-not-allowed"
-									title="Remove schedule">
-									<X className="w-4 h-4" />
+									className="p-1 hover:bg-gray-200 rounded disabled:cursor-not-allowed">
+									{isCollapsed ? (
+										<ChevronDown className="w-4 h-4" />
+									) : (
+										<ChevronUp className="w-4 h-4" />
+									)}
 								</button>
-							)}
-						</div>
-					</div>
+								<h4 className="font-medium text-gray-900 text-xs">
+									Jadwal {index + 1}
+									{isFromDatabase && (
+										<span className="ml-2 text-xs bg-blue-100 text-green-800 px-2 py-1 rounded">
+											Tersimpan
+										</span>
+									)}
+								</h4>
+								{schedule.tanggal && schedule.waktu && (
+									<div className="flex items-center text-[11px] text-gray-600">
+										<Calendar className="w-4 h-4 mr-1" />
+										{formatDate(schedule.tanggal)}
+										<Clock className="w-4 h-4 ml-3 mr-1" />
+										{formatTime(schedule.waktu, true)}
+									</div>
+								)}
 
-					{!isCollapsed && (
-						<div className="p-4 space-y-4">
-							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-								<div>
-									<label
-										htmlFor={`tanggal-${index}`}
-										className="block text-xs font-medium text-gray-700 mb-2">
-										Tanggal *
-									</label>
-									<input
-										type="date"
-										id={`tanggal-${index}`}
-										name="tanggal"
-										value={schedule.tanggal}
-										onChange={(e) => onScheduleChange(index, e)}
-										disabled={disabled || schedule.locked}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
-										required
-									/>
-								</div>
-								<div>
-									<label
-										htmlFor={`waktu-${index}`}
-										className="block text-xs font-medium text-gray-700 mb-2">
-										Waktu *
-									</label>
-									<input
-										type="time"
-										id={`waktu-${index}`}
-										name="waktu"
-										value={schedule.waktu}
-										onChange={(e) => onScheduleChange(index, e)}
-										disabled={disabled || schedule.locked}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
-										required
-									/>
-								</div>
-								<div>
-									<label
-										htmlFor={`gayaMengajar-${index}`}
-										className="block text-xs font-medium text-gray-700 mb-2">
-										<Monitor className="w-4 h-4 inline mr-1" />
-										Gaya Mengajar *
-									</label>
-									<select
-										id={`gayaMengajar-${index}`}
-										name="gayaMengajar"
-										value={schedule.gayaMengajar}
-										onChange={(e) => onScheduleChange(index, e)}
-										disabled={disabled || schedule.locked}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
-										required>
-										<option value="online">Online</option>
-										<option value="offline">Offline</option>
-									</select>
-								</div>
+								{schedule.locked && (
+									<span
+										title={schedule.lockedReason || "Tidak Ada"}
+										className="ml-2 text-xs font-medium bg-red-100 text-red-800 px-2 py-1 rounded">
+										Memiliki Sesi
+									</span>
+								)}
 							</div>
 
-							{mentorName && (
-								<div>
-									<label
-										htmlFor={`keterangan-${index}`}
-										className="block text-xs font-medium text-gray-700 mb-2">
-										Keterangan
-									</label>
-									<input
-										type="text"
-										id={`keterangan-${index}`}
-										name="keterangan"
-										value={schedule.keterangan || `Kursus dengan ${mentorName}`}
-										onChange={(e) => onScheduleChange(index, e)}
-										disabled={disabled || schedule.locked}
-										className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
-										placeholder={`Kursus dengan ${mentorName}`}
-									/>
-								</div>
-							)}
+							<div className="flex items-center space-x-2">
+								{!isFromDatabase && !schedule.locked && (
+									<button
+										type="button"
+										onClick={(e) => {
+											e.preventDefault();
+											onRemoveSchedule(index);
+										}}
+										disabled={disabled || loading}
+										className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded disabled:cursor-not-allowed"
+										title="Remove schedule">
+										<X className="w-4 h-4" />
+									</button>
+								)}
 
-							{schedule.gayaMengajar === "offline" && (
-								<div className="mt-3">
+								{isFromDatabase && !schedule.locked && (
+									<button
+										type="button"
+										onClick={(e) => {
+											e.preventDefault();
+											onRemoveSchedulePermanent(index);
+										}}
+										disabled={disabled || loading}
+										className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded disabled:cursor-not-allowed"
+										title="Hapus permanen jadwal">
+										{loading ? (
+											<Loader2 className="w-4 h-4 animate-spin" />
+										) : (
+											<Trash2 className="w-4 h-4" />
+										)}
+									</button>
+								)}
+							</div>
+						</div>
+
+						{!isCollapsed && (
+							<div className="p-2 space-y-2 text-xs">
+								<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
 									<div>
 										<label
-											htmlFor={`tempat-${index}`}
+											htmlFor={`tanggal-${index}`}
 											className="block text-xs font-medium text-gray-700 mb-2">
-											<MapPin className="w-4 h-4 inline mr-1" />
-											Tempat
+											Tanggal *
+										</label>
+										<input
+											type="date"
+											id={`tanggal-${index}`}
+											name="tanggal"
+											value={schedule.tanggal}
+											onChange={(e) => onScheduleChange(index, e)}
+											disabled={disabled || schedule.locked}
+											className="w-full p-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
+											required
+										/>
+									</div>
+									<div>
+										<label
+											htmlFor={`waktu-${index}`}
+											className="block text-xs font-medium text-gray-700 mb-2">
+											Waktu *
+										</label>
+										<input
+											type="time"
+											id={`waktu-${index}`}
+											name="waktu"
+											value={schedule.waktu}
+											onChange={(e) => onScheduleChange(index, e)}
+											disabled={disabled || schedule.locked}
+											className="w-full p-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
+											required
+										/>
+									</div>
+									<div>
+										<label
+											htmlFor={`gayaMengajar-${index}`}
+											className="block text-xs font-medium text-gray-700 mb-2">
+											<Monitor className="w-4 h-4 inline mr-1" />
+											Gaya Mengajar *
+										</label>
+										<select
+											id={`gayaMengajar-${index}`}
+											name="gayaMengajar"
+											value={schedule.gayaMengajar}
+											onChange={(e) => onScheduleChange(index, e)}
+											disabled={disabled || schedule.locked}
+											className="w-full p-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
+											required>
+											<option value="online">Online</option>
+											<option value="offline">Offline</option>
+										</select>
+									</div>
+								</div>
+
+								{mentorName && (
+									<div>
+										<label
+											htmlFor={`keterangan-${index}`}
+											className="block text-xs font-medium text-gray-700 mb-2">
+											Keterangan
 										</label>
 										<input
 											type="text"
-											id={`tempat-${index}`}
-											name="tempat"
-											value={schedule.tempat}
+											id={`keterangan-${index}`}
+											name="keterangan"
+											value={
+												schedule.keterangan || `Kursus dengan ${mentorName}`
+											}
 											onChange={(e) => onScheduleChange(index, e)}
 											disabled={disabled || schedule.locked}
-											className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
-											placeholder="Enter location (optional)"
+											className="w-full p-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
+											placeholder={`Kursus dengan ${mentorName}`}
 										/>
 									</div>
-								</div>
-							)}
-						</div>
-					)}
-				</div>
-			);
-		})}
+								)}
+
+								{schedule.gayaMengajar === "offline" && (
+									<div className="mt-3">
+										<div>
+											<label
+												htmlFor={`tempat-${index}`}
+												className="block text-xs font-medium text-gray-700 mb-2">
+												<MapPin className="w-4 h-4 inline mr-1" />
+												Tempat
+											</label>
+											<input
+												type="text"
+												id={`tempat-${index}`}
+												name="tempat"
+												value={schedule.tempat}
+												onChange={(e) => onScheduleChange(index, e)}
+												disabled={disabled || schedule.locked}
+												className="w-full p-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none focus:outline-none disabled:bg-gray-100"
+												placeholder="Enter location (optional)"
+											/>
+										</div>
+									</div>
+								)}
+							</div>
+						)}
+					</div>
+				);
+			})}
+		</div>
+
+		<div className="mt-6 flex justify-center">
+			<button
+				type="button"
+				onClick={(e) => {
+					e.preventDefault();
+					onAddSchedule();
+				}}
+				disabled={disabled}
+				className="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+				<Plus className="w-3 h-3 mr-2" />
+				Tambah Jadwal
+			</button>
+		</div>
 
 		{schedules.length === 0 && (
 			<div className="text-center py-8 text-gray-500">
@@ -789,8 +801,8 @@ export function CourseForm({
 		handleScheduleChange,
 		addSchedule,
 		removeSchedule,
+		removeSchedulePermanent,
 		toggleScheduleCollapse,
-		duplicateSchedule,
 		handlePackageToggle,
 		handleTabChange,
 		getTabStatus,
@@ -854,7 +866,7 @@ export function CourseForm({
 				<p className="translate-x-2">Cancel</p>
 			</button>
 
-			<div className="max-w-4xl mx-auto bg-white rounded-lg shadow p-6">
+			<div className="max-w-full sm:max-w-6xl mx-auto bg-white rounded-lg shadow p-4 sm:p-6">
 				<h2 className="text-2xl font-bold flex items-center text-gray-900 mb-6">
 					<BookOpen className="w-6 h-6 mr-2 text-blue-600" />
 					{isEditMode ? "Edit Course" : "Add New Course"}
@@ -890,12 +902,14 @@ export function CourseForm({
 								onScheduleChange={handleScheduleChange}
 								onAddSchedule={addSchedule}
 								onRemoveSchedule={removeSchedule}
+								onRemoveSchedulePermanent={removeSchedulePermanent}
 								onToggleCollapse={toggleScheduleCollapse}
-								onDuplicateSchedule={duplicateSchedule}
+								/* duplicate removed */
 								collapsedSchedules={collapsedSchedules}
 								initialSchedulesLength={initialSchedules.length}
 								mentorName={isMentor ? mentorName : ""}
 								disabled={loading}
+								loading={loading}
 							/>
 						)}
 

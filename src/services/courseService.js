@@ -145,6 +145,24 @@ export const setSchedule = async (payload) => {
 	return response.data;
 };
 
+/**
+ * Menghapus data jadwal berdasarkan id.
+ *
+ * @async
+ * @function deleteSchedule
+ * @endpoint DELETE /jadwal-kursus/{id}
+ * @returns {Promise<any>} Data jadwal.
+ *
+ */
+export const deleteSchedule = async (id) => {
+	try {
+		await api.delete(`/jadwal-kursus/${id}`);
+	} catch (error) {
+		console.error("Error deleting schedule:", error);
+		throw error;
+	}
+};
+
 // ========== MENTOR COURSE ==========
 /**
  * Mengambil daftar kursus milik mentor.

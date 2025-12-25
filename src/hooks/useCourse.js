@@ -14,6 +14,7 @@ import {
 	updateMentorCourse,
 	setMentorSchedule,
 	setSchedule,
+	deleteSchedule,
 } from "@/services/courseService";
 
 // ========== COURSE ADMIN ===============
@@ -289,6 +290,25 @@ export const useSetScheduleMutation = () => {
 	});
 };
 
+/**
+ * Hapus schedule (admin).
+ *
+ * @returns {UseMutationResult} Mutation hook
+ * @invalidates ["mentorCourses"]
+ * @optimisticUpdate Cache ["adminCourses"] langsung difilter
+ */
+export const useDeleteScheduleMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: deleteSchedule,
+		onSuccess: () => {
+			// Invalidate lists so UI can refetch fresh data.
+			queryClient.invalidateQueries(["adminCourses"]);
+			queryClient.invalidateQueries(["mentorCourses"]);
+		},
+	});
+};
 // ========== PELANGGAN COURSE ==============
 /**
  * Ambil kursus untuk halaman about/public.
