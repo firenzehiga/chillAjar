@@ -4,7 +4,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const PUBLIC_API =
-	import.meta.env.VITE_PUBLIC_API || "https://ekomh29.biz.id/api";
+	import.meta.env.VITE_PUBLIC_API;
 
 const api = axios.create({
 	baseURL: PUBLIC_API,
