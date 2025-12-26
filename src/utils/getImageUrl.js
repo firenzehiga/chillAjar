@@ -6,7 +6,7 @@
 // - fallback: gambar default jika path kosong/null
 
 const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
-const DEFAULT_IMAGE_BASE_URL = "https://ekomh29.biz.id";
+const DEFAULT_IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
 
 /**
  * Generate URL gambar dari path backend.
