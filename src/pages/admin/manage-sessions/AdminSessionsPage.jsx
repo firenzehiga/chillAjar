@@ -227,6 +227,7 @@ export function AdminSessionsPage({ onNavigate }) {
 							columns={columns}
 							data={filteredData}
 							pagination
+							paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
 							highlightOnHover
 							persistTableHead
 							responsive

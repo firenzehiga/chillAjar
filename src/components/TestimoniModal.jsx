@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
-import { Loader2 } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import toast from "react-hot-toast";
 import { useSubmitTestimonialMutation } from "@/hooks/useTestimonial";
 import useAppStore from "@/stores/useAppStore";
@@ -101,7 +101,7 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 							{rating} / 5
 						</span>
 					</div>
-					<div className="mb-4">
+					<div className="mb-4 hidden">
 						<label className="block mb-2 font-semibold text-gray-700">
 							Tanggal Review:
 						</label>
@@ -114,14 +114,14 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 					</div>
 					<div className="mb-6">
 						<label className="block mb-2 font-semibold text-gray-700">
-							Komentar (opsional):
+							Komentar:
 						</label>
 						<textarea
 							className="w-full border focus:outline-none border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition min-h-[80px] resize-none"
 							rows={3}
 							value={comment}
 							onChange={(e) => setComment(e.target.value)}
-							placeholder="Tulis pengalamanmu..."
+							placeholder="Tulis pengalamanmu selama sesi..."
 							disabled={loading}
 						/>
 					</div>
@@ -143,7 +143,10 @@ export const TestimoniModal = ({ isOpen, onClose, session }) => {
 									<span> Mengirim...</span>
 								</>
 							) : (
-								<span>Kirim Testimoni</span>
+								<>
+									<span>Kirim Testimoni</span>
+									<Send className="w-4 h-4 ml-2 mb-1 inline" />
+								</>
 							)}
 						</button>
 					</div>

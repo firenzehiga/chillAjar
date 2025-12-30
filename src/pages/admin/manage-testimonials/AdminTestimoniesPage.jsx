@@ -299,6 +299,7 @@ export function AdminTestimoniesPage({ onNavigate }) {
 							columns={columns}
 							data={filteredTestimonies}
 							pagination
+							paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
 							highlightOnHover
 							persistTableHead
 							responsive

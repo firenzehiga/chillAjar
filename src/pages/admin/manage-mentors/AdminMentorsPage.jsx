@@ -328,6 +328,7 @@ export function AdminMentorsPage({ onNavigate }) {
 							columns={columns}
 							data={filteredMentors}
 							pagination
+							paginationRowsPerPageOptions={[10, 20, 30, 50, 100]}
 							highlightOnHover
 							persistTableHead
 							responsive
