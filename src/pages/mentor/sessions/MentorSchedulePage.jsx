@@ -133,23 +133,27 @@ export function MentorSchedulePage() {
 	const statusCheck = {
 		reviewed: {
 			label: "Reviewed",
+			title: "Sesi telah direview oleh pelanggan",
 			class:
-				"inline-flex items-center rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset",
 		},
 		pending: {
 			label: "Pending",
+			title: "Menunggu Sesi dimulai",
 			class:
-				"inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
 		},
 		started: {
 			label: "Sedang Dimulai",
+			title: "Sesi sedang berlangsung",
 			class:
-				"inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
 		},
 		end: {
 			label: "Selesai",
+			title: "Sesi telah selesai dilaksanakan",
 			class:
-				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
 	};
 
@@ -204,7 +208,9 @@ export function MentorSchedulePage() {
 			selector: (row) => {
 				const status = statusCheck[row.statusSesi];
 				return status ? (
-					<span className={`${status.class}`}>{status.label}</span>
+					<span className={`${status.class}`} title={status.title}>
+						{status.label}
+					</span>
 				) : (
 					<span className="text-gray-400 text-sm">-</span>
 				);
@@ -238,9 +244,13 @@ export function MentorSchedulePage() {
 				const endClasses = `${btnBase} bg-red-600 hover:bg-red-700 text-white`;
 				const disabledClass = "opacity-50 cursor-not-allowed";
 
+				const hasStartAction =
+					row.statusSesi === "booked" || row.statusSesi === "pending";
+				const hasEndAction = row.statusSesi === "started";
+
 				return (
 					<div className="gap-2">
-						{(row.statusSesi === "booked" || row.statusSesi === "pending") && (
+						{hasStartAction && (
 							<button
 								type="button"
 								className={`${startClasses} ${
@@ -263,7 +273,7 @@ export function MentorSchedulePage() {
 								)}{" "}
 							</button>
 						)}
-						{row.statusSesi === "started" && (
+						{hasEndAction && (
 							<button
 								type="button"
 								className={`${endClasses} ${disableEnd ? disabledClass : ""}`}
@@ -283,6 +293,9 @@ export function MentorSchedulePage() {
 									</>
 								)}{" "}
 							</button>
+						)}
+						{!hasStartAction && !hasEndAction && (
+							<span className="italic text-gray-500">Tidak ada aksi</span>
 						)}
 					</div>
 				);
@@ -439,9 +452,9 @@ export function MentorSchedulePage() {
 												</span>
 											</p>
 
-														<span className="w-44 font-medium text-gray-900 block mb-2">
-															Layanan yang termasuk:
-														</span>
+											<span className="w-44 font-medium text-gray-900 block mb-2">
+												Layanan yang termasuk:
+											</span>
 											<div className="mt-2 max-h-48 overflow-auto pr-2">
 												{data.paket?.items && data.paket.items.length > 0 ? (
 													<>

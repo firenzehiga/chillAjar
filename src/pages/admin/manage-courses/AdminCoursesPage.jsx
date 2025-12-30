@@ -157,11 +157,13 @@ export function AdminCoursesPage({ onNavigate }) {
 				<div className="flex gap-2">
 					<button
 						onClick={() => handleEdit(row.id)}
-						className="text-chill-blue hover:text-blue-800 outline-none focus:outline-none">
+						title="Edit Data"
+						className="text-yellow-500 hover:text-yellow-600 outline-none focus:outline-none">
 						<Pencil className="w-4 h-4" />
 					</button>
 					<button
 						onClick={() => handleDelete(row.id)}
+						title="Hapus Data"
 						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
 						<Trash className="w-4 h-4" />
 					</button>

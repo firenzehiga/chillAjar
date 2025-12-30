@@ -321,7 +321,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 
 							{/* Periode Promo */}
 							<div className="mb-4">
-								<h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
+								<h3 className="text-md font-medium text-gray-900 mb-3 flex items-center">
 									<Calendar className="w-5 h-5 mr-2 text-blue-600" />
 									Periode Promo (Opsional)
 								</h3>
@@ -366,7 +366,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 
 							{/* Items yang Dipilih */}
 							<div className="mb-6">
-								<h3 className="text-lg font-medium text-gray-900 mb-3">
+								<h3 className="text-md font-medium text-gray-900 mb-3">
 									Items yang Dipilih
 								</h3>
 								{formData.selectedItems.length === 0 ? (
@@ -380,16 +380,16 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 												<div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
 													<div className="flex justify-between items-center">
 														<div>
-															<div className="font-medium text-gray-900">
+															<div className="font-medium text-xs text-gray-900">
 																{item.name}
 															</div>
 															<div className="text-sm text-gray-600">
 																{item.diskon > 0 ? (
 																	<div className="space-y-1">
-																		<div className="line-through text-gray-400">
+																		<div className="line-through text-gray-400 text-xs">
 																			Rp {item.price.toLocaleString()}
 																		</div>
-																		<div className="text-green-600 font-medium">
+																		<div className="text-green-600 font-medium text-xs">
 																			Rp{" "}
 																			{calculateDiscountedPrice(
 																				item.price,
@@ -420,7 +420,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 											</div>
 										))}
 										<div className="pt-2 border-t border-blue-200">
-											<div className="flex justify-between items-center font-semibold text-lg">
+											<div className="flex justify-between items-center font-semibold text-md">
 												<span>Total Harga:</span>
 												<span className="text-blue-600">
 													Rp {calculateTotalPrice().toLocaleString()}
@@ -566,11 +566,11 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 									}`}>
 									{loading ? (
 										<>
-											Memproses...{" "}
+											Menyimpan...{" "}
 											<Loader2 className="w-4 h-4 mb-1 inline animate-spin text-blue-500" />
 										</>
 									) : isEditMode ? (
-										"Perbarui Paket"
+										"Simpan"
 									) : (
 										"Buat Paket"
 									)}
@@ -588,7 +588,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 							</div>
 						) : (
 							<div>
-								<h3 className="text-lg font-medium text-gray-900 mb-3">
+								<h3 className="text-md font-medium text-gray-900 mb-3">
 									Items Tersedia
 								</h3>
 								<div className="space-y-2 max-h-96 overflow-y-auto">
@@ -605,7 +605,7 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 														: "bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50"
 												}`}
 												onClick={() => !isSelected && handleAddItem(item)}>
-												<div className="flex justify-between items-start">
+												<div className="flex justify-between items-start text-xs">
 													<div className="flex-1">
 														<div className="font-medium text-gray-900">
 															{item.name}
@@ -613,10 +613,10 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 														<div className="text-sm text-gray-600 mt-1">
 															{item.diskon > 0 ? (
 																<div className="space-y-1">
-																	<div className="line-through text-gray-400">
+																	<div className="line-through text-gray-400 text-xs">
 																		Rp {item.price.toLocaleString()}
 																	</div>
-																	<div className="text-green-600 font-medium">
+																	<div className="text-green-600 font-medium text-xs">
 																		Rp{" "}
 																		{calculateDiscountedPrice(
 																			item.price,
@@ -628,7 +628,9 @@ export function AdminFormPackagesPage({ onNavigate, packageId }) {
 																	</div>
 																</div>
 															) : (
-																<div>Rp {item.price.toLocaleString()}</div>
+																<div className="font-medium text-xs">
+																	Rp {item.price.toLocaleString()}
+																</div>
 															)}
 														</div>
 														{item.description && (

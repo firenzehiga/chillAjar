@@ -235,6 +235,7 @@ export function AdminUsersPage() {
 				<div className="flex gap-2">
 					<button
 						onClick={() => handleDelete(row.id)}
+						title="Hapus Data"
 						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
 						<Trash className="w-4 h-4" />
 					</button>

@@ -319,7 +319,7 @@ export default function AdminFormMentorsPage({ onNavigate, mentorId }) {
 									? "bg-gray-300 text-gray-500 cursor-not-allowed outline-none focus:outline-none"
 									: "bg-blue-600 text-white hover:bg-blue-700 outline-none focus:outline-none"
 							}`}>
-							{loading ? "Processing..." : "Update Mentor"}
+							{loading ? "Menyimpan..." : "Simpan"}
 						</button>
 					</div>
 				</form>

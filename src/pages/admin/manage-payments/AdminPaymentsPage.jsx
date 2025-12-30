@@ -366,28 +366,27 @@ export function AdminPaymentsPage() {
 	const statusCheck = {
 		verified: {
 			label: "Disetujui",
+			title: "Pembayaran telah diverifikasi",
 			class:
-				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
 		accepted: {
 			label: "Accepted",
+			title: "Pembayaran telah diverifikasi Admin",
 			class:
-				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
 		rejected: {
 			label: "Ditolak",
+			title: "Pembayaran telah ditolak Admin",
 			class:
-				"inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-red-600/10 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-red-600/10 ring-inset",
 		},
 		menunggu_verifikasi: {
 			label: "Menunggu Verifikasi",
+			title: "Pembayaran menunggu verifikasi Admin",
 			class:
-				"inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset",
-		},
-		lunas: {
-			label: "Lunas",
-			class:
-				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset",
 		},
 	};
 
@@ -472,7 +471,9 @@ export function AdminPaymentsPage() {
 			cell: (row) => {
 				const status = statusCheck[row.statusPembayaran];
 				return status ? (
-					<span className={`${status.class}`}>{status.label}</span>
+					<span className={`${status.class}`} title={status.title}>
+						{status.label}
+					</span>
 				) : (
 					<span className="text-gray-400 text-sm">-</span>
 				);

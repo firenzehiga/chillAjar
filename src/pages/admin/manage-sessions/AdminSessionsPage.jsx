@@ -66,23 +66,27 @@ export function AdminSessionsPage({ onNavigate }) {
 	const statusCheck = {
 		reviewed: {
 			label: "Reviewed",
+			title: "Sesi telah direview oleh pelanggan",
 			class:
-				"inline-flex items-center rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-yellow-200 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-yellow-600/20 ring-inset",
 		},
 		pending: {
 			label: "Pending",
+			title: "Menunggu Sesi dimulai",
 			class:
-				"inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
 		},
 		started: {
 			label: "Sedang Dimulai",
+			title: "Sesi sedang berlangsung",
 			class:
-				"inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-800 ring-1 ring-blue-600/20 ring-inset",
 		},
 		end: {
 			label: "Selesai",
+			title: "Sesi telah selesai dilaksanakan oleh mentor",
 			class:
-				"inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
+				"inline-flex items-center cursor-pointer rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset",
 		},
 	};
 
@@ -140,7 +144,9 @@ export function AdminSessionsPage({ onNavigate }) {
 			selector: (row) => {
 				const status = statusCheck[row.statusSesi];
 				return status ? (
-					<span className={`${status.class}`}>{status.label}</span>
+					<span className={`${status.class}`} title={status.title}>
+						{status.label}
+					</span>
 				) : (
 					<span className="text-gray-400 text-sm">-</span>
 				);
@@ -153,11 +159,13 @@ export function AdminSessionsPage({ onNavigate }) {
 				<div className="flex gap-2">
 					<button
 						onClick={() => handleEdit(row.id)}
-						className="text-blue-600 hover:text-blue-800 outline-none focus:outline-none">
+						title="Edit Data"
+						className="text-yellow-500 hover:text-yellow-600 outline-none focus:outline-none">
 						<Pencil className="w-4 h-4" />
 					</button>
 					<button
 						onClick={() => handleDelete(row.id)}
+						title="Hapus Data"
 						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
 						<Trash className="w-4 h-4" />
 					</button>

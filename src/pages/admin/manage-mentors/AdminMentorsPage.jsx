@@ -214,6 +214,9 @@ export function AdminMentorsPage({ onNavigate }) {
 					<div className="flex items-center space-x-2">
 						<button
 							onClick={() => handleToggleStatus(row)}
+							title={
+								isActive ? "Mentor Sedang Aktif" : "Mentor Sedang Non-aktif"
+							}
 							className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
 								isActive
 									? "bg-green-500 hover:bg-green-600"
@@ -248,11 +251,13 @@ export function AdminMentorsPage({ onNavigate }) {
 				<div className="flex gap-2">
 					<button
 						onClick={() => handleEdit(row.id)}
-						className="text-blue-600 hover:text-blue-800 outline-none focus:outline-none">
+						title="Edit Data"
+						className="text-yellow-500 hover:text-yellow-600 outline-none focus:outline-none">
 						<Pencil className="w-4 h-4" />
 					</button>
 					<button
 						onClick={() => handleDelete(row.id)}
+						title="Hapus Data"
 						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
 						<Trash className="w-4 h-4" />
 					</button>

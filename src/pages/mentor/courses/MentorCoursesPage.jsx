@@ -175,11 +175,13 @@ export function MentorCoursesPage({ onNavigate }) {
 				<div className="flex gap-2">
 					<button
 						onClick={() => onNavigate(`mentor-edit-course/${row.id}`)}
-						className="text-chill-blue hover:text-blue-800">
+						className="text-yellow-500 hover:text-yellow-600"
+						title="Edit Data">
 						<Pencil className="w-4 h-4" />
 					</button>
 					<button
 						onClick={() => handleDelete(row.id)}
+						title="Hapus Data"
 						className="text-red-600 hover:text-red-800 outline-none focus:outline-none">
 						<Trash className="w-4 h-4" />
 					</button>
