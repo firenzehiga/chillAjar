@@ -98,6 +98,8 @@ export function AdminPaymentsPage() {
 		Swal.fire({
 			title: "Verifikasi Pembayaran?",
 			text: "Pastikan pembayaran sudah benar sebelum menyetujui.",
+			icon: "question",
+			iconColor: "#0ea5e9",
 			showCancelButton: true,
 			confirmButtonText: "Ya, setujui!",
 			cancelButtonText: "Batal",
@@ -143,10 +145,10 @@ export function AdminPaymentsPage() {
 			title: "Yakin ingin menolak?",
 			text: "Pembayaran akan ditolak!",
 			icon: "warning",
+			iconColor: "#dc2626",
 			showCancelButton: true,
-			confirmButtonColor: "#3085d6",
-			cancelButtonColor: "#d33",
 			confirmButtonText: "Ya, tolak!",
+			cancelButtonText: "Batal",
 			customClass: {
 				// kurangi ukuran popup (max-w-md vs max-w-lg) supaya card tidak terlalu besar
 				popup: "bg-white rounded-xl shadow-xl p-5 max-w-md w-full",
@@ -155,7 +157,7 @@ export function AdminPaymentsPage() {
 				// tambahkan container actions dengan gap agar tombol tidak saling dempet
 				actions: "flex gap-3 justify-center mt-4",
 				confirmButton:
-					"px-4 py-2 focus:outline-none rounded-md bg-chill-blue hover:bg-blue-600 text-white",
+					"px-4 py-2 focus:outline-none rounded-md bg-red-600 hover:bg-red-700 text-white",
 				cancelButton:
 					"px-4 py-2 rounded-md border border-gray-300 bg-gray-200 hover:bg-gray-300 text-gray-700",
 			},
@@ -536,7 +538,7 @@ export function AdminPaymentsPage() {
 
 				// styles untuk tombol
 				const btnBase =
-					"flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium focus:outline-none transition-all min-w-[110px]";
+					"flex items-center justify-center gap-2  py-1.5 rounded-md text-xs font-medium focus:outline-none transition-all min-w-[80px]";
 				const approveClasses = `${btnBase} bg-green-600 hover:bg-green-700 text-white`;
 				const rejectClasses = `${btnBase} bg-red-600 hover:bg-red-700 text-white`;
 				const disabledClass = "opacity-50 cursor-not-allowed";
