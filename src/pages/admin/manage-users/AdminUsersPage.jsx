@@ -17,7 +17,7 @@ import { AddMentorModal } from "../../../components/Admin/AddMentorModal";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import { BookLoader } from "../../../components/User/BookLoader";
+import { BookLoader } from "../../../components/ui/BookLoader";
 import { ExportData } from "../../../components/Admin/ExportData";
 import { formatDate } from "../../../utils/dateFormatter";
 import useAppStore from "../../../stores/useAppStore";

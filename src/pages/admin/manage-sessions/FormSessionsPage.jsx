@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { BookOpen, ArrowLeft, AlertCircle } from "lucide-react";
 import Swal from "sweetalert2";
-import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
+import { FormSkeletonCard } from "@/components/ui/Skeleton/FormSkeletonCard";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {

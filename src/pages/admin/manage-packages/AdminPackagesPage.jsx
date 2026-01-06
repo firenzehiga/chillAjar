@@ -6,7 +6,7 @@ import { Gift, Plus, Pencil, Trash, AlertCircle, Eye } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "../../../components/Admin/UpdateLoadingSpinner";
-import { BookLoader } from "../../../components/User/BookLoader";
+import { BookLoader } from "../../../components/ui/BookLoader.jsx";
 
 export function AdminPackagesPage({ onNavigate }) {
 	const [searchTerm, setSearchTerm] = useState("");

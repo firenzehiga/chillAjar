@@ -2,7 +2,7 @@ import React from "react";
 import { Mail, MapPin, Phone, Calendar, BookOpen, Star } from "lucide-react";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import { useMentorProfileQuery } from "../../../hooks/useProfile";
-import { ProfileSkeletonMentor } from "../../../components/Skeleton/ProfileSkeleton";
+import { ProfileSkeletonMentor } from "../../../components/ui/Skeleton/ProfileSkeleton";
 
 export function MentorProfilePage({ userData, userRole, onNavigate }) {
 	const { data: mentorProfile, isLoading } = useMentorProfileQuery();

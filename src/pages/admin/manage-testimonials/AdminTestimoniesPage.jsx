@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
-import { BookLoader } from "@/components/User/BookLoader";
+import { BookLoader } from "@/components/ui/BookLoader";
 import { ExportData } from "@/components/Admin/ExportData";
 import { formatDate } from "@/utils/dateFormatter";
 import {

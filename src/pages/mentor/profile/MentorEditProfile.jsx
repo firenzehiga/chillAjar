@@ -7,8 +7,8 @@ import {
 	useUpdateProfileMutation,
 } from "@/hooks/useProfile";
 import Swal from "sweetalert2";
-import { EditProfileSkeleton } from "@/components/Skeleton/EditProfileSkeleton";
-import { showToast } from "@/components/User/customToast";
+import { EditProfileSkeleton } from "@/components/ui/Skeleton/EditProfileSkeleton";
+import { showToast } from "@/components/ui/customToast";
 import toast from "react-hot-toast";
 const defaultFoto = "/foto_mentor/default.png";
 

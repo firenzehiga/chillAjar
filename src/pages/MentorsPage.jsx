@@ -1,5 +1,5 @@
 import { MentorCard } from "@/components/MentorCard";
-import { MentorSkeletonCard } from "@/components/Skeleton/MentorSkeletonCard";
+import { MentorSkeletonCard } from "@/components/ui/Skeleton/MentorSkeletonCard";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { EmptyMentorsState } from "@/components/Fallback/EmptyMentorsState";
 import { usePublicMentorsQuery } from "@/hooks/useMentors";

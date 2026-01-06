@@ -1,4 +1,4 @@
-import { CourseForm } from "@/components/course/CourseForm";
+import { CourseForm } from "@/components/ui/course/CourseForm";
 
 export function MentorFormCoursePage({ onNavigate, courseId, userData }) {
 	return (

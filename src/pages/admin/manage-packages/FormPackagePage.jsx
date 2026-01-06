@@ -9,7 +9,7 @@ import {
 	Loader2,
 } from "lucide-react";
 import Swal from "sweetalert2";
-import { FormSkeletonCard } from "../../../components/Skeleton/FormSkeletonCard";
+import { FormSkeletonCard } from "../../../components/ui/Skeleton/FormSkeletonCard.jsx";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { formatDate } from "../../../utils/dateFormatter";

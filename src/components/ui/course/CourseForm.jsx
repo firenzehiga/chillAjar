@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { AsyncImage } from "loadable-image";
 import { formatDate, formatTime } from "@/utils/dateFormatter";
-import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
+import { FormSkeletonCard } from "@/components/ui/Skeleton/FormSkeletonCard";
 import useCourseForm from "@/hooks/course/useCourseForm";
 import React, { useState, Suspense } from "react";
 

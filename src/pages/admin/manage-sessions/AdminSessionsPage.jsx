@@ -4,7 +4,7 @@ import { AlertCircle, Pencil, Trash, CalendarDays } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
-import BookLoader from "@/components/User/BookLoader";
+import BookLoader from "@/components/ui/BookLoader";
 import { formatDate } from "@/utils/dateFormatter";
 import {
 	useSessionsQuery,
@@ -224,6 +224,8 @@ export function AdminSessionsPage({ onNavigate }) {
 						{isFetching && <UpdateLoadingSpinner />}
 						<div className="flex justify-end mb-4">
 							<input
+								id="search"
+								name="search"
 								type="text"
 								placeholder="Cari nama, kursus, atau metode..."
 								value={searchTerm}

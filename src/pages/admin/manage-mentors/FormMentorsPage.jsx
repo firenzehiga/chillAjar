@@ -6,7 +6,7 @@ import {
 	useUpdateMentorMutation,
 } from "@/hooks/useMentors";
 import Swal from "sweetalert2";
-import { FormSkeletonCard } from "@/components/Skeleton/FormSkeletonCard";
+import { FormSkeletonCard } from "@/components/ui/Skeleton/FormSkeletonCard";
 import toast from "react-hot-toast";
 
 export default function AdminFormMentorsPage({ onNavigate, mentorId }) {

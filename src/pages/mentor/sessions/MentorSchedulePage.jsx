@@ -10,7 +10,7 @@ import {
 	CalendarDays,
 } from "lucide-react";
 import Swal from "sweetalert2";
-import { BookLoader } from "@/components/User/BookLoader";
+import { BookLoader } from "@/components/ui/BookLoader";
 import { formatDate } from "@/utils/dateFormatter";
 import {
 	useMentorSessionsQuery,

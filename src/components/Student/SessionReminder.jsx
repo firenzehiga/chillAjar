@@ -1,66 +1,79 @@
-import React, { useState, useEffect } from "react";
-import { X, Clock, Video, MapPin, Bell } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X, Clock, Video, MapPin, Bell, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getImageUrl } from "@/utils/getImageUrl";
 import useAppStore from "@/stores/useAppStore";
 import { usePelangganSessionsQuery } from "@/hooks/useSessions";
 
-// Floating Session Reminder
+// Constants
+const AUTO_DISMISS_DURATION = 5; // seconds
+const POLL_INTERVAL = 30000; // 30 seconds (via React Query)
+const UPCOMING_SESSION_THRESHOLD = 120; // minutes
+
 export function FloatingSessionReminder({ onNavigate }) {
+	// Zustand store
+	const { userRole, userData, isAuthenticated, openTestimoniModal } = useAppStore();
+	const pelangganId = userData?.pelanggan?.id;
+
+	// Component state
 	const [currentSession, setCurrentSession] = useState(null);
 	const [isVisible, setIsVisible] = useState(false);
 	const [isDismissed, setIsDismissed] = useState(false);
-	const [timeLeft, setTimeLeft] = useState(5);
-	const [countdownTimer, setCountdownTimer] = useState(null);
+	const [timeLeft, setTimeLeft] = useState(AUTO_DISMISS_DURATION);
 
-	// Get state from Zustand store
-	const { userRole, userData, isAuthenticated, openTestimoniModal } =
-		useAppStore();
-	const userId = userData?.id;
-	const pelangganId = userData?.pelanggan?.id;
+	// Refs
+	const countdownTimerRef = useRef(null);
 
-	// Daftar sesi
-	const {
-		data: sessions = [],
-		isLoading,
-		isFetching,
-		error,
-	} = usePelangganSessionsQuery(pelangganId);
+	// Fetch sessions data
+	const { data: sessions = [] } = usePelangganSessionsQuery(pelangganId);
 
+	// Main effect - find urgent session and manage timer
 	useEffect(() => {
 		if (!isAuthenticated || userRole !== "pelanggan") {
 			return;
 		}
 
-		// Cari sesi yang paling urgent (live, upcoming, atau need review)
+		const urgentSession = findUrgentSession(sessions);
+
+		if (urgentSession && !isDismissed) {
+			showSession(urgentSession);
+		} else {
+			hideSession();
+		}
+
+		// Cleanup timer on unmount or dependency change
+		return () => {
+			clearTimer();
+		};
+	}, [isAuthenticated, sessions, isDismissed, userRole]);
+
+	// Helper: Find the most urgent session
+	const findUrgentSession = (sessions) => {
 		const now = new Date();
-		let urgentSession = null;
 
 		for (const session of sessions) {
-			// Skip jika sesi sudah direview
+			// Skip reviewed sessions
 			if (session.statusSesi === "reviewed") continue;
 
-			// Jika sesi sedang berlangsung (prioritas tertinggi)
+			// Priority 1: Live session
 			if (session.statusSesi === "started") {
-				urgentSession = {
+				return {
 					...session,
 					status: "live",
 					minutesUntil: 0,
 				};
-				break;
 			}
 
-			// Jika sesi sudah selesai dan perlu review (prioritas kedua)
+			// Priority 2: Needs review
 			if (session.statusSesi === "end") {
-				urgentSession = {
+				return {
 					...session,
 					status: "needReview",
 					minutesUntil: 0,
 				};
-				break;
 			}
 
-			// Jika sesi akan dimulai (prioritas ketiga)
+			// Priority 3: Upcoming session (within threshold)
 			if (session.statusSesi === "pending" && session.jadwal_kursus) {
 				const sessionDate = new Date(session.jadwal_kursus.tanggal);
 				const [hours, minutes] = session.jadwal_kursus.waktu.split(":");
@@ -69,80 +82,69 @@ export function FloatingSessionReminder({ onNavigate }) {
 				const diffMs = sessionDate.getTime() - now.getTime();
 				const minutesUntil = Math.floor(diffMs / (1000 * 60));
 
-				// Jika kurang dari 120 menit (2 jam)
-				if (minutesUntil <= 120 && minutesUntil > 0) {
-					urgentSession = {
+				if (minutesUntil <= UPCOMING_SESSION_THRESHOLD && minutesUntil > 0) {
+					return {
 						...session,
 						status: "upcoming",
 						minutesUntil,
 					};
-					// Jangan break, cari yang lebih urgent dulu
 				}
 			}
 		}
 
-		if (urgentSession && !isDismissed) {
-			setCurrentSession(urgentSession);
-			setIsVisible(true);
-			setTimeLeft(5); // Reset countdown
-
-			// Clear existing timer jika ada
-			if (countdownTimer) {
-				clearInterval(countdownTimer);
-			}
-
-			// Set countdown timer
-			const timer = setInterval(() => {
-				setTimeLeft((prev) => {
-					const newTime = prev - 0.1; // Update setiap 100ms untuk smoothness
-
-					if (newTime <= 0) {
-						clearInterval(timer);
-						setIsVisible(false);
-						setIsDismissed(true);
-						return 0;
-					}
-					return newTime;
-				});
-			}, 100);
-
-			setCountdownTimer(timer);
-		} else {
-			setIsVisible(false);
-		}
-
-		// Cleanup timer saat dependency berubah
-		return () => {
-			if (countdownTimer) {
-				clearInterval(countdownTimer);
-			}
-		};
-	}, [isAuthenticated, sessions, isDismissed, userRole, userId]);
-
-	// Hanya tampilkan untuk role pelanggan - pindahkan conditional return ke akhir
-	if (!isAuthenticated || userRole !== "pelanggan") {
 		return null;
-	}
+	};
 
-	if (!isVisible || !currentSession) return null;
+	// Helper: Show session with countdown
+	const showSession = (session) => {
+		setCurrentSession(session);
+		setIsVisible(true);
+		setTimeLeft(AUTO_DISMISS_DURATION);
 
-	const handleDismiss = () => {
-		// Clear countdown timer jika user manual dismiss
-		if (countdownTimer) {
-			clearInterval(countdownTimer);
-			setCountdownTimer(null);
-		}
+		// Clear existing timer
+		clearTimer();
 
+		// Start countdown
+		const timer = setInterval(() => {
+			setTimeLeft((prev) => {
+				const newTime = prev - 0.1;
+
+				if (newTime <= 0) {
+					clearInterval(timer);
+					hideSession();
+					setIsDismissed(true);
+					return 0;
+				}
+				return newTime;
+			});
+		}, 100);
+
+		countdownTimerRef.current = timer;
+	};
+
+	// Helper: Hide session
+	const hideSession = () => {
 		setIsVisible(false);
+	};
+
+	// Helper: Clear timer
+	const clearTimer = () => {
+		if (countdownTimerRef.current) {
+			clearInterval(countdownTimerRef.current);
+			countdownTimerRef.current = null;
+		}
+	};
+
+	// Handler: Manual dismiss
+	const handleDismiss = () => {
+		clearTimer();
+		hideSession();
 		setIsDismissed(true);
 	};
 
-	const handleJoin = () => {
-		// Clear timer saat user interact
-		if (countdownTimer) {
-			clearInterval(countdownTimer);
-			setCountdownTimer(null);
-		}
+	// Handler: Primary action (Join/Review/View)
+	const handlePrimaryAction = () => {
+		clearTimer();
 
 		if (currentSession.status === "live") {
 			// Handle join live session
@@ -157,15 +159,57 @@ export function FloatingSessionReminder({ onNavigate }) {
 				mentor_id: currentSession.mentor?.id,
 			};
 			openTestimoniModal(testimoniData);
-			// Dismiss reminder setelah buka modal
-			setIsVisible(false);
+			hideSession();
 			setIsDismissed(true);
 		} else {
+			// Navigate to session history
 			onNavigate("session-history");
-			setIsVisible(false);
+			hideSession();
 			setIsDismissed(true);
 		}
 	};
+
+	// Helper: Get status configuration
+	const getStatusConfig = (status) => {
+		switch (status) {
+			case "live":
+				return {
+					label: "Sesi Dimulai",
+					progressColor: "bg-red-500",
+					headerGradient: "bg-gradient-to-r from-red-500 to-red-600",
+					buttonClass: "bg-red-500 hover:bg-red-600 text-white",
+					buttonText: "Oke",
+					showPulse: true,
+				};
+			case "needReview":
+				return {
+					label: "Sesi Selesai",
+					progressColor: "bg-green-500",
+					headerGradient: "bg-gradient-to-r from-green-500 to-green-600",
+					buttonClass: "bg-green-500 hover:bg-green-600 text-white",
+					buttonText: "Tulis Ulasan",
+					showPulse: false,
+				};
+			default: // upcoming
+				return {
+					label: "Sesi Segera Dimulai",
+					progressColor: "bg-chill-blue",
+					headerGradient: "bg-gradient-to-r from-blue-500 to-blue-600",
+					buttonClass: "bg-chill-blue hover:bg-blue-600 text-white",
+					buttonText: "Lihat Detail",
+					showPulse: false,
+				};
+		}
+	};
+
+	// Don't render for non-customers
+	if (!isAuthenticated || userRole !== "pelanggan") {
+		return null;
+	}
+
+	if (!isVisible || !currentSession) return null;
+
+	const config = getStatusConfig(currentSession.status);
 
 	return (
 		<AnimatePresence>
@@ -176,50 +220,30 @@ export function FloatingSessionReminder({ onNavigate }) {
 					exit={{ opacity: 0, y: 100, scale: 0.8 }}
 					className="fixed bottom-6 right-6 z-50 max-w-lg min-w-[320px]">
 					<div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-						{/* Progress bar untuk countdown */}
+						{/* Progress bar */}
 						<div className="h-1 bg-gray-200">
 							<div
-								className={`h-full transition-all ease-linear ${
-									currentSession.status === "live"
-										? "bg-red-500"
-										: currentSession.status === "needReview"
-										? "bg-green-500"
-										: "bg-chill-blue"
-								}`}
+								className={`h-full transition-all ease-linear ${config.progressColor}`}
 								style={{
-									width: `${Math.max(0, (timeLeft / 5) * 100)}%`,
+									width: `${Math.max(0, (timeLeft / AUTO_DISMISS_DURATION) * 100)}%`,
 									transitionDuration: "100ms",
 								}}
 							/>
 						</div>
 
 						{/* Header */}
-						<div
-							className={`p-4 ${
-								currentSession.status === "live"
-									? "bg-gradient-to-r from-red-500 to-red-600"
-									: currentSession.status === "needReview"
-									? "bg-gradient-to-r from-green-500 to-green-600"
-									: "bg-gradient-to-r from-blue-500 to-blue-600"
-							}`}>
+						<div className={`p-4 ${config.headerGradient}`}>
 							<div className="flex items-center justify-between">
 								<div className="flex items-center space-x-2">
 									<div
-										className={`w-3 h-3 rounded-full ${
-											currentSession.status === "live"
-												? "bg-white animate-pulse"
-												: "bg-white/80"
-										}`}></div>
+										className={`w-3 h-3 rounded-full ${config.showPulse ? "bg-white animate-pulse" : "bg-white/80"
+											}`}
+									/>
 									<span className="text-white font-medium text-sm">
-										{currentSession.status === "live"
-											? "Sesi Dimulai"
-											: currentSession.status === "needReview"
-											? "Sesi Selesai"
-											: "Sesi Segera Dimulai"}
+										{config.label}
 									</span>
 								</div>
 								<div className="flex items-center space-x-2">
-									{/* Countdown indicator */}
 									<span className="text-white/80 text-xs font-medium">
 										{Math.ceil(timeLeft)}s
 									</span>
@@ -234,6 +258,7 @@ export function FloatingSessionReminder({ onNavigate }) {
 
 						{/* Content */}
 						<div className="p-4">
+							{/* Session info */}
 							<div className="flex items-center space-x-3 mb-3">
 								<img
 									src={getImageUrl(
@@ -257,11 +282,11 @@ export function FloatingSessionReminder({ onNavigate }) {
 								</div>
 							</div>
 
+							{/* Session details */}
 							<div className="flex items-center justify-between text-xs text-gray-500 mb-4">
 								<span className="flex items-center">
 									<Clock className="w-3 h-3 mr-1" />
-									{currentSession.jadwal_kursus?.waktu?.slice(0, 5) ||
-										"No time"}
+									{currentSession.jadwal_kursus?.waktu?.slice(0, 5) || "No time"}
 								</span>
 								<span className="flex items-center">
 									{currentSession.jadwal_kursus?.gayaMengajar === "online" ? (
@@ -279,29 +304,12 @@ export function FloatingSessionReminder({ onNavigate }) {
 								)}
 							</div>
 
-							{/* Action Buttons */}
-							<div className="flex gap-2 mt-3">
-								<button
-									onClick={handleJoin}
-									className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-										currentSession.status === "live"
-											? "bg-red-500 hover:bg-red-600 text-white"
-											: currentSession.status === "needReview"
-											? "bg-green-500 hover:bg-green-600 text-white"
-											: "bg-chill-blue hover:bg-blue-600 text-white"
-									}`}>
-									{currentSession.status === "live"
-										? "Oke"
-										: currentSession.status === "needReview"
-										? "Tulis Ulasan"
-										: "Lihat Detail"}
-								</button>
-								{/* <button
-									onClick={handleDismiss}
-									className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm font-medium transition-colors">
-									Tutup
-								</button> */}
-							</div>
+							{/* Action button */}
+							<button
+								onClick={handlePrimaryAction}
+								className={`w-full py-2 px-3 rounded-lg text-sm font-medium transition-colors ${config.buttonClass}`}>
+								{config.buttonText}
+							</button>
 						</div>
 					</div>
 				</motion.div>
@@ -310,28 +318,21 @@ export function FloatingSessionReminder({ onNavigate }) {
 	);
 }
 
-// Top Banner Notification
+// Top Banner Notification (kept as is, but with consistent patterns)
 export function SessionBanner({ isAuthenticated }) {
 	const [isVisible, setIsVisible] = useState(false);
 	const [currentSession, setCurrentSession] = useState(null);
 
-	// Get state from Zustand store
 	const { userRole, userData, openTestimoniModal } = useAppStore();
-	const userId = userData?.id;
+	const pelangganId = userData?.pelanggan?.id;
 
-	// Hanya tampilkan untuk role pelanggan
-	if (!isAuthenticated || userRole !== "pelanggan") {
-		return null;
-	}
-
-	// Fetch daftar sesi pelanggan berdasarkan userId
-	// Daftar sesi
 	const { data: sessions = [] } = usePelangganSessionsQuery(pelangganId);
 
 	useEffect(() => {
-		if (!isAuthenticated || !sessions.length) return;
+		if (!isAuthenticated || userRole !== "pelanggan" || !sessions.length) {
+			return;
+		}
 
-		// Cari sesi yang sedang live atau need review
 		const urgentSession = sessions.find(
 			(session) =>
 				session.statusSesi === "started" || session.statusSesi === "end"
@@ -343,23 +344,23 @@ export function SessionBanner({ isAuthenticated }) {
 		} else {
 			setIsVisible(false);
 		}
-	}, [isAuthenticated, sessions]);
+	}, [isAuthenticated, sessions, userRole]);
+
+	if (!isAuthenticated || userRole !== "pelanggan") {
+		return null;
+	}
 
 	if (!isVisible || !currentSession) return null;
 
 	const handleBannerAction = () => {
 		if (currentSession.statusSesi === "started") {
 			// Handle join live session
-			null;
-			// window.open("https://meet.google.com/your-meeting-link", "_blank");
 		} else if (currentSession.statusSesi === "end") {
-			// Open testimoni modal
 			const testimoniData = {
 				id: currentSession.id,
 				sesi_id: currentSession.id,
 				pelanggan_id: userData?.pelanggan?.id,
 				mentor_id: currentSession.mentor?.id,
-				user_id: userId,
 			};
 			openTestimoniModal(testimoniData);
 		}
@@ -369,15 +370,14 @@ export function SessionBanner({ isAuthenticated }) {
 		<motion.div
 			initial={{ opacity: 0, y: -50 }}
 			animate={{ opacity: 1, y: 0 }}
-			className={`text-white py-3 px-4 ${
-				currentSession.statusSesi === "started"
+			className={`text-white py-3 px-4 ${currentSession.statusSesi === "started"
 					? "bg-gradient-to-r from-red-500 to-red-600"
 					: "bg-gradient-to-r from-green-500 to-green-600"
-			}`}>
+				}`}>
 			<div className="max-w-7xl mx-auto flex items-center justify-between">
 				<div className="flex items-center space-x-4">
 					<div className="flex items-center space-x-2">
-						<div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+						<div className="w-2 h-2 bg-white rounded-full animate-pulse" />
 						<span className="font-medium">
 							{currentSession.statusSesi === "started"
 								? "Sesi Dimulai"
@@ -412,7 +412,7 @@ export function SessionBanner({ isAuthenticated }) {
 // Navigation Badge Component
 export function SessionBadge({ sessionCount = 0 }) {
 	if (sessionCount === 0) {
-		return null; // Jangan tampilkan badge jika tidak ada sesi
+		return null;
 	}
 
 	return (

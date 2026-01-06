@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { getImageUrl } from "@/utils/getImageUrl";
-import { BookLoader } from "@/components/User/BookLoader";
+import { BookLoader } from "@/components/ui/BookLoader";
 import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
 import toast from "react-hot-toast";
 import { AsyncImage } from "loadable-image";

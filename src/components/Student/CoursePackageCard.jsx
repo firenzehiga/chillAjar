@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Gift, Clock, Star, ArrowRight, Check } from "lucide-react";
-import useAppStore from "../stores/useAppStore";
+import useAppStore from "../../stores/useAppStore";
 export function CoursePackageCard({
 	packageData,
 	onSelect,

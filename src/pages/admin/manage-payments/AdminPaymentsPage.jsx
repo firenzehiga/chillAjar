@@ -15,7 +15,7 @@ import {
 import Swal from "sweetalert2";
 import { getImageUrl } from "@/utils/getImageUrl";
 import toast from "react-hot-toast";
-import { BookLoader } from "@/components/User/BookLoader";
+import { BookLoader } from "@/components/ui/BookLoader";
 import { UpdateLoadingSpinner } from "@/components/Admin/UpdateLoadingSpinner";
 import { ExportData } from "@/components/Admin/ExportData";
 import { formatDate } from "@/utils/dateFormatter";

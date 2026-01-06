@@ -2,7 +2,7 @@ import { useState } from "react";
 import DataTable from "react-data-table-component";
 import { AlertCircle, Star, MessageSquareText } from "lucide-react";
 import { useMentorTestimoniesQuery } from "@/hooks/useTestimonial";
-import { BookLoader } from "@/components/User/BookLoader";
+import { BookLoader } from "@/components/ui/BookLoader";
 
 export function MentorTestimoniesPage() {
 	const [searchTerm, setSearchTerm] = useState("");

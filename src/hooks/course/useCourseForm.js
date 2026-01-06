@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { showToast } from "@/components/User/customToast";
+import { showToast } from "@/components/ui/customToast";
 import Swal from "sweetalert2";
 import { getImageUrl } from "@/utils/getImageUrl";
 import useAppStore from "@/stores/useAppStore";

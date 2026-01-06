@@ -24,7 +24,7 @@ import logo from "@/assets/title.png";
 import useAppStore from "@/stores/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { showToast } from "@/components/User/customToast";
+import { showToast } from "@/components/ui/customToast";
 import { FaWhatsapp } from "react-icons/fa";
 
 export function AuthModal({ defaultMode = "login", onNavigate }) {
@@ -732,7 +732,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 										<div className="flex-shrink-0 mt-0.5">
 											<input
 												type="checkbox"
-												id="privacy-terms"
+												name="privacy-terms"
 												checked={agreedToTerms}
 												onChange={(e) => setAgreedToTerms(e.target.checked)}
 												className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 focus:outline-none "

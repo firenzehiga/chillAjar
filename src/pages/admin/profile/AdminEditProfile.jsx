@@ -3,7 +3,7 @@ import { ArrowLeft, Camera, AlertCircle, CheckCircle2 } from "lucide-react";
 import { getImageUrl } from "@/utils/getImageUrl";
 import { useUpdateProfileMutation } from "@/hooks/useProfile";
 import Swal from "sweetalert2";
-import { showToast } from "@/components/User/customToast";
+import { showToast } from "@/components/ui/customToast";
 
 const defaultFoto = "/foto_mentor/default.png";
 

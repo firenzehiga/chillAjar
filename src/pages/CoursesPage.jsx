@@ -1,7 +1,7 @@
 import { CourseCard } from "../components/CourseCard";
 import { EmptyMentorsState } from "../components/Fallback/EmptyMentorsState";
 import { Search } from "lucide-react";
-import { SearchFilter } from "../components/User/SearchFilter";
+import { SearchFilter } from "../components/ui/SearchFilter";
 import useAppStore from "../stores/useAppStore";
 import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
 

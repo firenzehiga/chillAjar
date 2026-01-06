@@ -20,9 +20,15 @@ import {
 	User,
 } from "lucide-react";
 import api from "@/api";
-import { PaymentModal } from "@/components/PaymentModal";
-import { BookLoader } from "@/components/User/BookLoader";
+import { PaymentModal } from "@/components/Student/PaymentModal";
+import { BookLoader } from "@/components/ui/BookLoader";
 import { formatDateDay } from "@/utils/dateFormatter";
+import {
+	formatCurrency,
+	getSessionEndTime,
+	getTransactionStatusStyle,
+	getTransactionStatusText,
+} from "@/utils/helpers";
 
 import useAppStore from "@/stores/useAppStore";
 
@@ -52,8 +58,9 @@ const CustomSelect = ({
 					</span>
 				</div>
 				<ChevronDown
-					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
-						}`}
+					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
+						isOpen ? "rotate-180" : ""
+					}`}
 				/>
 			</button>
 
@@ -72,10 +79,11 @@ const CustomSelect = ({
 										onChange(option.value);
 										setIsOpen(false);
 									}}
-									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${value === option.value
-										? "bg-blue-50 text-blue-600 font-medium"
-										: "text-gray-700"
-										}`}>
+									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${
+										value === option.value
+											? "bg-blue-50 text-blue-600 font-medium"
+											: "text-gray-700"
+									}`}>
 									{option.icon && <option.icon className="w-4 h-4" />}
 									<span>{option.label}</span>
 									{value === option.value && (
@@ -180,10 +188,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					? transaksi.statusPembayaran === "menunggu_verifikasi"
 						? "waiting_verification"
 						: transaksi.statusPembayaran === "accepted"
-							? "accepted"
-							: transaksi.statusPembayaran === "rejected"
-								? "rejected"
-								: "pending_payment"
+						? "accepted"
+						: transaksi.statusPembayaran === "rejected"
+						? "rejected"
+						: "pending_payment"
 					: "pending_payment",
 				// Untuk status 'pending_payment', gunakan jumlahSementara dari sesi (hasil perhitungan backend).
 				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
@@ -277,36 +285,6 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	const activeFiltersCount =
 		Object.values(filters).filter(Boolean).length + (searchQuery ? 1 : 0);
 
-	const getStatusStyle = (status) => {
-		switch (status) {
-			case "waiting_verification":
-				return "bg-blue-100 text-blue-800";
-			case "accepted":
-				return "bg-green-100 text-green-800";
-			case "rejected":
-				return "bg-red-100 text-red-800";
-			case "pending_payment":
-				return "bg-blue-100 text-blue-800";
-			default:
-				return "bg-gray-100 text-gray-800";
-		}
-	};
-
-	const getStatusText = (status) => {
-		switch (status) {
-			case "waiting_verification":
-				return "Menunggu Verifikasi";
-			case "accepted":
-				return "Disetujui";
-			case "rejected":
-				return "Ditolak";
-			case "pending_payment":
-				return "Menunggu Pembayaran";
-			default:
-				return status;
-		}
-	};
-
 	const handleContinuePayment = (session) => {
 		setSelectedSession(session);
 		setShowPaymentModal(true);
@@ -368,7 +346,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	}
 
 	return (
-		<div className="py-8 space-y-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div className="py-8 min-h-screen space-y-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 			{/* Header */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div>
@@ -386,10 +364,11 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					</div>
 					<button
 						onClick={() => setShowFilters(!showFilters)}
-						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${showFilters
-							? "bg-blue-50 border-blue-400 text-blue-700"
-							: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
-							}`}>
+						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+							showFilters
+								? "bg-blue-50 border-blue-400 text-blue-700"
+								: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
+						}`}>
 						<Filter className="w-4 h-4" />
 						<span>Filter</span>
 						{activeFiltersCount > 0 && (
@@ -502,8 +481,8 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							key === "status"
 								? statusOptions
 								: key === "mode"
-									? modeOptions
-									: dateRangeOptions
+								? modeOptions
+								: dateRangeOptions
 						).find((opt) => opt.value === value);
 						return (
 							<span
@@ -572,10 +551,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 											</div>
 										) : (
 											<span
-												className={`px-4 py-2 rounded-full text-sm font-medium shadow-sm ${getStatusStyle(
+												className={`px-4 py-2 rounded-full text-sm font-medium shadow-sm ${getTransactionStatusStyle(
 													session.status
 												)}`}>
-												{getStatusText(session.status)}
+												{getTransactionStatusText(session.status)}
 											</span>
 										)}
 									</div>
@@ -604,10 +583,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 											</div>
 											<div>
 												<p className="text-xs text-gray-500 font-medium">
-													Jam Mulai
+													Waktu Sesi
 												</p>
 												<p className="font-semibold text-gray-900 text-sm">
-													{session.time} WIB
+													{session.time} - {getSessionEndTime(session.time)} WIB
 												</p>
 											</div>
 										</div>
@@ -625,10 +604,11 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 													Metode Belajar
 												</p>
 												<span
-													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${session.mode === "online"
+													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+														session.mode === "online"
 															? "bg-blue-100 text-blue-800"
 															: "bg-red-100 text-red-800"
-														}`}>
+													}`}>
 													{session.mode === "online" ? "Online" : "Offline"}
 												</span>
 											</div>
@@ -666,7 +646,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 										<div>
 											<p className="text-xs text-gray-500 mb-1">Total Harga</p>
 											<p className="text-xl font-bold text-green-600">
-												Rp {(session.amount || 0).toLocaleString("id-ID")}
+												{formatCurrency(session.amount)}
 											</p>
 											{session.paketNama && session.paketNama !== "-" && (
 												<p className="text-xs text-gray-500 mt-1">
@@ -730,7 +710,9 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 												className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2"
 												onClick={() => handleContinuePayment(session)}>
 												<Banknote className="w-4 h-4" />
-												<span className="font-medium">Selesaikan Pembayaran</span>
+												<span className="font-medium">
+													Selesaikan Pembayaran
+												</span>
 											</button>
 										</div>
 									)}
@@ -756,18 +738,18 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						topic: selectedSession.topic,
 						paket: selectedSession.paket
 							? {
-								...selectedSession.paket,
-								// Pastikan data paket lengkap dari session
-								id: selectedSession.paket.id,
-								name: selectedSession.paket.nama,
-								diskon: selectedSession.paket.diskon ?? 0,
-								items: Array.isArray(selectedSession.paket.items)
-									? selectedSession.paket.items.map((item) => ({
-										...item,
-										diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
-									}))
-									: [],
-							}
+									...selectedSession.paket,
+									// Pastikan data paket lengkap dari session
+									id: selectedSession.paket.id,
+									name: selectedSession.paket.nama,
+									diskon: selectedSession.paket.diskon ?? 0,
+									items: Array.isArray(selectedSession.paket.items)
+										? selectedSession.paket.items.map((item) => ({
+												...item,
+												diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
+										  }))
+										: [],
+							  }
 							: null,
 						// prefer explicit paket_id from session (history mapping) if available
 						paket_id:

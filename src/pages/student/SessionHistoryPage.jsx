@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { usePelangganSessionsQuery } from "@/hooks/useSessions"; // Import hook baru
+import { usePelangganSessionsQuery } from "@/hooks/useSessions";
 import {
 	Calendar,
 	Clock,
@@ -18,8 +18,14 @@ import {
 } from "lucide-react";
 import { MdRateReview } from "react-icons/md";
 import useAppStore from "@/stores/useAppStore";
-import { BookLoader } from "@/components/User/BookLoader";
+import { BookLoader } from "@/components/ui/BookLoader";
 import { formatDateDay } from "@/utils/dateFormatter";
+import {
+	getSessionEndTime,
+	getSessionStatusStyle,
+	getSessionStatusText,
+} from "@/utils/helpers";
+
 
 // Custom Select Component
 const CustomSelect = ({
@@ -47,9 +53,8 @@ const CustomSelect = ({
 					</span>
 				</div>
 				<ChevronDown
-					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
-						isOpen ? "rotate-180" : ""
-					}`}
+					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+						}`}
 				/>
 			</button>
 
@@ -68,11 +73,10 @@ const CustomSelect = ({
 										onChange(option.value);
 										setIsOpen(false);
 									}}
-									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${
-										value === option.value
-											? "bg-blue-50 text-blue-600 font-medium"
-											: "text-gray-700"
-									}`}>
+									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${value === option.value
+										? "bg-blue-50 text-blue-600 font-medium"
+										: "text-gray-700"
+										}`}>
 									{option.icon && <option.icon className="w-4 h-4" />}
 									<span>{option.label}</span>
 									{value === option.value && (
@@ -247,46 +251,6 @@ export default function SessionHistoryPage({ userData }) {
 	const activeFiltersCount =
 		Object.values(filters).filter(Boolean).length + (searchQuery ? 1 : 0);
 
-	// Calculate session end time (start time + 1 hour)
-	const getEndTime = (startTime) => {
-		if (!startTime) return "-";
-		const [hours, minutes] = startTime.split(":").map(Number);
-		const endHours = (hours + 1) % 24;
-		return `${String(endHours).padStart(2, "0")}:${String(minutes).padStart(
-			2,
-			"0"
-		)}`;
-	};
-	const getStatusStyle = (status) => {
-		switch (status) {
-			case "pending":
-				return "bg-gray-200 text-gray-700"; // sesi belum dimulai
-			case "started":
-				return "bg-blue-100 text-blue-800"; // sesi sedang berlangsung
-			case "end":
-				return "bg-blue-100 text-blue-800"; // sesi telah selesai
-			case "reviewed":
-				return "bg-green-100 text-green-800"; // sesi telah direview
-			default:
-				return "bg-gray-100 text-gray-800";
-		}
-	};
-
-	const getStatusText = (status) => {
-		switch (status) {
-			case "pending":
-				return "Belum Dimulai";
-			case "started":
-				return "Sedang Berlangsung";
-			case "end":
-				return "Selesai";
-			case "reviewed":
-				return "Reviewed";
-			default:
-				return status;
-		}
-	};
-
 	const handleOpenTestimoni = (session) => {
 		const testimoniData = {
 			id: session.id,
@@ -349,7 +313,7 @@ export default function SessionHistoryPage({ userData }) {
 	}
 
 	return (
-		<div className="py-8 space-y-8">
+		<div className="py-8 min-h-screen space-y-8 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 			{/* Header */}
 			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div>
@@ -367,11 +331,10 @@ export default function SessionHistoryPage({ userData }) {
 					</div>
 					<button
 						onClick={() => setShowFilters(!showFilters)}
-						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
-							showFilters
-								? "bg-blue-50 border-blue-400 text-blue-700"
-								: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
-						}`}>
+						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${showFilters
+							? "bg-blue-50 border-blue-400 text-blue-700"
+							: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
+							}`}>
 						<Filter className="w-4 h-4" />
 						<span>Filter</span>
 						{activeFiltersCount > 0 && (
@@ -390,6 +353,7 @@ export default function SessionHistoryPage({ userData }) {
 					<Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
 					<input
 						type="text"
+						name="search"
 						placeholder="Cari berdasarkan nama kursus atau mentor..."
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
@@ -484,8 +448,8 @@ export default function SessionHistoryPage({ userData }) {
 							key === "status"
 								? statusOptions
 								: key === "mode"
-								? modeOptions
-								: dateRangeOptions
+									? modeOptions
+									: dateRangeOptions
 						).find((opt) => opt.value === value);
 						return (
 							<span
@@ -562,10 +526,10 @@ export default function SessionHistoryPage({ userData }) {
 											</span>
 										) : (
 											<span
-												className={`px-4 py-2 rounded-full text-sm font-medium shadow-sm ${getStatusStyle(
+												className={`px-4 py-2 rounded-full text-sm font-medium shadow-sm ${getSessionStatusStyle(
 													session.status
 												)}`}>
-												{getStatusText(session.status)}
+												{getSessionStatusText(session.status)}
 											</span>
 										)}
 									</div>
@@ -597,7 +561,7 @@ export default function SessionHistoryPage({ userData }) {
 													Waktu Sesi
 												</p>
 												<p className="font-semibold text-gray-900 text-sm">
-													{session.time} - {getEndTime(session.time)} WIB
+													{session.time} - {getSessionEndTime(session.time)} WIB
 												</p>
 											</div>
 										</div>
@@ -615,11 +579,10 @@ export default function SessionHistoryPage({ userData }) {
 													Metode Belajar
 												</p>
 												<span
-													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-														session.mode === "online"
-															? "bg-blue-100 text-blue-800"
-															: "bg-red-100 text-red-800"
-													}`}>
+													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${session.mode === "online"
+														? "bg-blue-100 text-blue-800"
+														: "bg-red-100 text-red-800"
+														}`}>
 													{session.mode === "online" ? "Online" : "Offline"}
 												</span>
 											</div>
@@ -658,11 +621,10 @@ export default function SessionHistoryPage({ userData }) {
 										session.statusSesi === "end" &&
 										updatingSessionId !== session.id && (
 											<button
-												className={`px-4 py-2 rounded-lg text-white transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 ${
-													isSubmittingTestimoni
-														? "bg-blue-200 cursor-not-allowed"
-														: "bg-yellow-500 hover:bg-yellow-600"
-												}`}
+												className={`px-4 py-2 rounded-lg text-white transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 ${isSubmittingTestimoni
+													? "bg-blue-200 cursor-not-allowed"
+													: "bg-yellow-500 hover:bg-yellow-600"
+													}`}
 												onClick={() => handleOpenTestimoni(session)}
 												disabled={isSubmittingTestimoni}>
 												{isSubmittingTestimoni ? (

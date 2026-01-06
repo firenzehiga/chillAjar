@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { X, Gift, ArrowRight, AlertCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import api from "../api";
+import api from "../../api";
 import CoursePackageCard from "./CoursePackageCard";
-import { BookLoader } from "./User/BookLoader";
+import { BookLoader } from "../ui/BookLoader";
 
 export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 	const [selectedPackage, setSelectedPackage] = useState(null);

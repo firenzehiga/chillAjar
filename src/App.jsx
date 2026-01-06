@@ -4,29 +4,29 @@ import { ListChecks, LucideShieldQuestion } from "lucide-react";
 // Shared UI
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
-import showToast from "@/components/User/customToast";
+import showToast from "@/components/ui/customToast";
 import { motion, AnimatePresence } from "framer-motion";
 // Layout
 import { Navigation } from "@/components/Layout/Navigation";
 import { Hero } from "@/components/Layout/Hero";
 import Footer from "@/components/Layout/Footer";
 // Loading
-import { CourseSkeletonCard } from "@/components/Skeleton/CourseSkeletonCard";
-import { CarouselSkeleton } from "@/components/Skeleton/CarouselSkeleton";
-import { BookLoader } from "@/components/User/BookLoader";
+import { CourseSkeletonCard } from "@/components/ui/Skeleton/CourseSkeletonCard";
+import { CarouselSkeleton } from "@/components/ui/Skeleton/CarouselSkeleton";
+import { BookLoader } from "@/components/ui/BookLoader";
 // Core Components
-import { FaQWidget } from "@/components/FaQWidget";
-import { GuideModal } from "@/components/User/HelpButton";
-import { HelpButton } from "@/components/User/HelpButton";
-import { FloatingSessionReminder } from "@/components/SessionReminder";
-import TransactionReminder from "@/components/TransactionReminder";
+import { FaQWidget } from "@/components/ui/FaQWidget";
+import { GuideModal } from "@/components/ui/HelpButton";
+import { HelpButton } from "@/components/ui/HelpButton";
+import { FloatingSessionReminder } from "@/components/Student/SessionReminder";
+import TransactionReminder from "@/components/Student/TransactionReminder";
 import { AuthModal } from "@/components/AuthModal";
 import { MentorCard } from "@/components/MentorCard";
 import { CourseSelectionModal } from "@/components/CourseSelectionModal";
-import { CoursePackageSelectionModal } from "@/components/CoursePackageSelectionModal";
-import { BookingModal } from "@/components/BookingModal";
-import { PaymentModal } from "@/components/PaymentModal";
-import { TestimoniModal } from "@/components/TestimoniModal";
+import { CoursePackageSelectionModal } from "@/components/Student/CoursePackageSelectionModal";
+import { BookingModal } from "@/components/Student/BookingModal";
+import { PaymentModal } from "@/components/Student/PaymentModal";
+import { TestimoniModal } from "@/components/Student/TestimoniModal";
 // Pages
 import { Home } from "@/pages/Home";
 import { CoursesPage } from "@/pages/CoursesPage";
@@ -42,13 +42,13 @@ import { PageLoader } from "@/components/Fallback/PageLoader";
 import ApiError from "@/components/Fallback/ApiError";
 // ============= LAZY LOADED PAGES =============
 // Halaman Pelanggan (di-lazy load karena hanya untuk user login)
-const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
+const ProfilePage = lazy(() => import("@/pages/student/ProfilePage"));
 const EditProfilePage = lazy(() => import("@/pages/EditProfilePage"));
 const TransactionHistoryPage = lazy(() =>
-	import("@/pages/TransactionHistoryPage")
+	import("@/pages/student/TransactionHistoryPage")
 );
-const SessionHistoryPage = lazy(() => import("@/pages/SessionHistoryPage"));
-const SessionDetailPage = lazy(() => import("@/pages/SessionDetailPage"));
+const SessionHistoryPage = lazy(() => import("@/pages/student/SessionHistoryPage"));
+const SessionDetailPage = lazy(() => import("@/pages/student/SessionDetailPage"));
 
 // Halaman Admin (di-lazy load karena jarang diakses)
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));

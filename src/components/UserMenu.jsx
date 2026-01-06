@@ -7,7 +7,7 @@ import {
 	CalendarClock,
 } from "lucide-react";
 import { getImageUrl } from "@/utils/getImageUrl";
-import { SessionsWidget } from "@/components/SessionWidget";
+import { SessionsWidget } from "@/components/Student/SessionWidget";
 import useAppStore from "@/stores/useAppStore";
 import { motion, AnimatePresence } from "framer-motion";
 

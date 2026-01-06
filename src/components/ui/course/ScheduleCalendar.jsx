@@ -5,7 +5,7 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import idLocale from "date-fns/locale/id";
 import Swal from "sweetalert2";
-import { showToast } from "../User/customToast";
+import { showToast } from "../customToast";
 
 // gunakan locale Bahasa Indonesia
 const locales = { id: idLocale };

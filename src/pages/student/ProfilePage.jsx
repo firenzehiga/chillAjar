@@ -10,9 +10,9 @@ import {
 	Building2Icon,
 	Loader2,
 } from "lucide-react";
-import { getImageUrl } from "../utils/getImageUrl";
-import { usePelangganProfileInfoQuery } from "../hooks/useProfile";
-import { ProfileSkeletonUser } from "../components/Skeleton/ProfileSkeleton";
+import { getImageUrl } from "../../utils/getImageUrl";
+import { usePelangganProfileInfoQuery } from "../../hooks/useProfile";
+import { ProfileSkeletonUser } from "../../components/ui/Skeleton/ProfileSkeleton";
 import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
 
 // Fungsi untuk menentukan tier badge
