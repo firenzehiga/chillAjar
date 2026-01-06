@@ -25,8 +25,11 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 	const [error, setError] = useState(null);
 
 	// Hanya ambil data sesi spesifik
-	const { data: sessionData, isLoading: sessionLoading } =
-		useSessionByIdQuery(sessionId);
+	const {
+		data: sessionData,
+		isLoading: sessionLoading,
+		error: errorSession,
+	} = useSessionByIdQuery(sessionId);
 
 	// Update form data when session data is loaded
 	useEffect(() => {
@@ -90,13 +93,28 @@ export function AdminFormSessionsPage({ onNavigate, sessionId }) {
 	};
 
 	// Tampilkan skeleton jika query sesi masih loading
-	if (sessionLoading) {
+	if (sessionLoading || !sessionData) {
 		return <FormSkeletonCard />;
 	}
-
-	// Tambahkan pengecekan tambahan jika sessionData belum ada atau form belum diisi
-	if (!sessionData) {
-		return <FormSkeletonCard />;
+	if (errorSession || !sessionData || error) {
+		return (
+			<div className="min-h-screen flex flex-col items-center justify-center">
+				<div className="text-center">
+					<XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+					<h2 className="text-2xl font-bold text-gray-900 mb-2">
+						Sesi Tidak Ditemukan
+					</h2>
+					<p className="text-gray-600 mb-6">
+						Sesi yang Anda cari tidak tersedia atau telah dihapus.
+					</p>
+					<button
+						onClick={() => onNavigate("admin-manage-sessions")}
+						className="px-6 py-3 bg-chill-blue text-white rounded-xl focus:outline-none outline-none hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-xl">
+						Kembali ke Riwayat Sesi
+					</button>
+				</div>
+			</div>
+		);
 	}
 
 	return (

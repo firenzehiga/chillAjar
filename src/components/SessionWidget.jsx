@@ -255,13 +255,12 @@ export function SessionsWidget({
 												)}`}
 											/>
 											<span
-												className={`text-xs px-1.5 py-0.5 rounded ${
-													session.statusSesi === "started"
-														? "text-red-600 bg-red-50"
-														: session.statusSesi === "end"
+												className={`text-xs px-1.5 py-0.5 rounded ${session.statusSesi === "started"
+													? "text-red-600 bg-red-50"
+													: session.statusSesi === "end"
 														? "text-orange-600 bg-orange-50"
 														: "text-blue-600 bg-blue-50"
-												}`}>
+													}`}>
 												{getStatusText(session.statusSesi)}
 											</span>
 										</div>
@@ -278,13 +277,12 @@ export function SessionsWidget({
 												onClick={() =>
 													!showLoading && handleOpenTestimoni(session)
 												}
-												className={`outline-none focus:outline-none flex-1 bg-chill-blue text-white py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
-													showLoading
-														? "opacity-60 cursor-not-allowed"
-														: "hover:bg-blue-600"
-												}`}>
-												Beri Rating
+												className={`outline-none focus:outline-none flex-1 text-white py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${showLoading
+													? "opacity-60 bg-blue-200 cursor-not-allowed"
+													: "bg-yellow-500 hover:bg-yellow-600"
+													}`}>
 												<MdRateReview className="w-4 h-4 text-white" />
+												Beri Testimoni
 											</button>
 										) : (
 											<>
@@ -298,8 +296,7 @@ export function SessionsWidget({
 												<button
 													onClick={() =>
 														window.open(
-															`https://wa.me/${waPhone}?text=Halo, saya ingin menanyakan tentang sesi ${
-																session.kursus?.namaKursus || "Course Name"
+															`https://wa.me/${waPhone}?text=Halo, saya ingin menanyakan tentang sesi ${session.kursus?.namaKursus || "Course Name"
 															}`
 														)
 													}
@@ -373,11 +370,10 @@ export function SessionsWidget({
 									)} animate-pulse`}
 								/>
 								<span
-									className={`text-xs font-medium px-2 py-1 rounded-full ${
-										session.statusSesi === "started"
-											? "text-red-600 bg-red-50"
-											: "text-green-600 bg-green-50"
-									}`}>
+									className={`text-xs font-medium px-2 py-1 rounded-full ${session.statusSesi === "started"
+										? "text-red-600 bg-red-50"
+										: "text-green-600 bg-green-50"
+										}`}>
 									{getStatusText(session.statusSesi)}
 								</span>
 							</div>
@@ -478,8 +474,7 @@ export function SessionsWidget({
 												onClick={(e) => {
 													e.stopPropagation();
 													window.open(
-														`https://wa.me/6282139436043?text=Halo, saya ingin menanyakan tentang sesi ${
-															session.kursus?.namaKursus || "Course Name"
+														`https://wa.me/6282139436043?text=Halo, saya ingin menanyakan tentang sesi ${session.kursus?.namaKursus || "Course Name"
 														} yang akan dimulai pada ${formatDate(
 															session.jadwal_kursus?.tanggal
 														)}`
@@ -496,11 +491,10 @@ export function SessionsWidget({
 												e.stopPropagation();
 												!showLoading && handleOpenTestimoni(session);
 											}}
-											className={`flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${
-												showLoading
-													? "opacity-60 cursor-not-allowed"
-													: "hover:from-green-600 hover:to-green-700"
-											}`}>
+											className={`flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl font-medium transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${showLoading
+												? "opacity-60 cursor-not-allowed"
+												: "hover:from-green-600 hover:to-green-700"
+												}`}>
 											<div className="flex items-center justify-center space-x-2">
 												<Star className="w-5 h-5" />
 												<span>Write Review</span>

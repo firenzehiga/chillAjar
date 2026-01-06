@@ -48,6 +48,7 @@ const TransactionHistoryPage = lazy(() =>
 	import("@/pages/TransactionHistoryPage")
 );
 const SessionHistoryPage = lazy(() => import("@/pages/SessionHistoryPage"));
+const SessionDetailPage = lazy(() => import("@/pages/SessionDetailPage"));
 
 // Halaman Admin (di-lazy load karena jarang diakses)
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
@@ -526,7 +527,6 @@ function App() {
 		}
 
 		// Kalok kursus tidak ada jadwal, tampilkan toast error
-		toast.dismiss(); // Hapus semua toast sebelumnya
 		if (course.schedules.length === 0) {
 			showToast({
 				type: "error",
@@ -536,6 +536,7 @@ function App() {
 				title: "Belum ada jadwal kursus saat ini",
 				message: "Mohon maaf, mentor untuk kursus ini belum menambahkan jadwal",
 				duration: 2000,
+				position: "bottom-right",
 			});
 			return;
 		}
@@ -887,7 +888,6 @@ function App() {
 		}
 
 		// Kalok kursus tidak ada jadwal, tampilkan toast error
-		toast.dismiss(); // Hapus semua toast sebelumnya
 		if (!course?.jadwal_kursus || course.jadwal_kursus.length === 0) {
 			showToast({
 				type: "error",
@@ -897,6 +897,7 @@ function App() {
 				title: "Belum ada jadwal kursus saat ini",
 				message: "Mohon maaf, mentor untuk kursus ini belum menambahkan jadwal",
 				duration: 2000,
+				position: "bottom-right",
 			});
 			return;
 		}
@@ -1306,6 +1307,18 @@ function App() {
 				return isAuthenticated ? (
 					<SessionHistoryPage userData={userData} />
 				) : null;
+			// Session Detail Page (dynamic route)
+			case currentPage.startsWith("session-detail/") ? currentPage : null:
+				if (currentPage.startsWith("session-detail/") && isAuthenticated) {
+					const sessionId = currentPage.split("session-detail/")[1];
+					return (
+						<SessionDetailPage
+							sessionId={sessionId}
+							onNavigate={handleNavigate}
+						/>
+					);
+				}
+				return null;
 			case "mentors":
 				return (
 					<MentorsPage

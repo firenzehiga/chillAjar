@@ -13,10 +13,13 @@ import {
 	Search,
 	X,
 	Monitor,
+	Eye,
+	User,
 } from "lucide-react";
 import { MdRateReview } from "react-icons/md";
 import useAppStore from "@/stores/useAppStore";
 import { BookLoader } from "@/components/User/BookLoader";
+import { formatDateDay } from "@/utils/dateFormatter";
 
 // Custom Select Component
 const CustomSelect = ({
@@ -96,6 +99,15 @@ export default function SessionHistoryPage({ userData }) {
 	});
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showFilters, setShowFilters] = useState(false);
+
+	// Get navigation handler from store
+	const setCurrentPage = useAppStore((s) => s.setCurrentPage);
+
+	// Handler to navigate to session detail page
+	const handleViewDetail = (sessionId) => {
+		setCurrentPage(`session-detail/${sessionId}`);
+		window.history.pushState({}, "", `/session-detail/${sessionId}`);
+	};
 
 	// Filter options
 	const statusOptions = [
@@ -235,6 +247,16 @@ export default function SessionHistoryPage({ userData }) {
 	const activeFiltersCount =
 		Object.values(filters).filter(Boolean).length + (searchQuery ? 1 : 0);
 
+	// Calculate session end time (start time + 1 hour)
+	const getEndTime = (startTime) => {
+		if (!startTime) return "-";
+		const [hours, minutes] = startTime.split(":").map(Number);
+		const endHours = (hours + 1) % 24;
+		return `${String(endHours).padStart(2, "0")}:${String(minutes).padStart(
+			2,
+			"0"
+		)}`;
+	};
 	const getStatusStyle = (status) => {
 		switch (status) {
 			case "pending":
@@ -506,107 +528,156 @@ export default function SessionHistoryPage({ userData }) {
 					sortedFilteredHistory.map((session) => (
 						<div
 							key={session.id}
-							className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-all duration-300">
-							<div className="flex justify-between items-start mb-4">
-								<div>
-									<h3 className="text-lg font-semibold text-gray-900">
-										{session.course}
-									</h3>
-									<p className="text-gray-600">dengan {session.mentor}</p>
-								</div>
-								{updatingSessionId === session.id ? (
-									<div
-										className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100 shadow-sm"
-										role="status"
-										aria-live="polite">
-										<Loader2 className="animate-spin h-4 w-4 text-blue-600" />
-										<span className="text-sm font-medium">
-											Memperbarui status
-										</span>
+							className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-l-4 border-chill-blue">
+							<div className="p-6">
+								{/* Header with Course and Status */}
+								<div className="flex justify-between items-start mb-4">
+									<div className="flex-1">
+										<h3 className="text-xl font-bold text-gray-900 mb-1">
+											{session.course}
+										</h3>
+										<p className="text-gray-600 flex items-center gap-2">
+											<User className="w-4 h-4" />
+											<span>dengan {session.mentor}</span>
+										</p>
 									</div>
-								) : session.status === "started" ? (
-									<span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-red-600 rounded-full text-sm font-medium">
-										<span className="relative flex h-3 w-3">
-											<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-											<span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-										</span>
-										On Going
-									</span>
-								) : (
-									<span
-										className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusStyle(
-											session.status
-										)}`}>
-										{getStatusText(session.status)}
-									</span>
-								)}
-							</div>
+									<div className="flex flex-col items-end gap-2">
+										{updatingSessionId === session.id ? (
+											<div
+												className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100 shadow-sm"
+												role="status"
+												aria-live="polite">
+												<Loader2 className="animate-spin h-4 w-4 text-blue-600" />
+												<span className="text-sm font-medium">
+													Memperbarui status
+												</span>
+											</div>
+										) : session.status === "started" ? (
+											<span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-red-600 rounded-full text-sm font-medium shadow-sm border border-red-200">
+												<span className="relative flex h-3 w-3">
+													<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+													<span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+												</span>
+												On Going
+											</span>
+										) : (
+											<span
+												className={`px-4 py-2 rounded-full text-sm font-medium shadow-sm ${getStatusStyle(
+													session.status
+												)}`}>
+												{getStatusText(session.status)}
+											</span>
+										)}
+									</div>
+								</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-								<div className="flex items-center text-gray-600">
-									<Calendar className="w-4 h-4 mr-2 text-blue-600" />
-									{new Date(session.date).toLocaleDateString("id-ID", {
-										day: "numeric",
-										month: "long",
-										year: "numeric",
-									})}{" "}
-								</div>
-								<div className="flex items-center text-gray-600">
-									<Clock className="w-4 h-4 mr-2 text-blue-600" />
-									Jam Mulai: {session.time}
-								</div>
-								<div className="flex items-center text-gray-600">
-									{session.mode === "offline" ? (
-										<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-											Sesi Offline
-										</span>
-									) : session.mode === "online" ? (
-										<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-											Sesi Online
-										</span>
-									) : (
-										<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-											Data mode tidak valid
-										</span>
-									)}
-								</div>
-								{session.mode === "offline" && (
-									<div className="flex items-center text-gray-600">
-										<MapPin className="w-4 h-4 mr-2 text-blue-600" />
-										Lokasi: {session.location}
-									</div>
-								)}
-							</div>
-							<div className="border-t pt-4 mt-4">
-								<div className="flex items-center justify-between text-gray-600">
-									<div className="flex items-center"></div>
+								{/* Session Details Grid */}
+								<div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 mb-4">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+										<div className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+												<Calendar className="w-5 h-5 text-blue-600" />
+											</div>
+											<div>
+												<p className="text-xs text-gray-500 font-medium">
+													Tanggal
+												</p>
+												<p className="font-semibold text-gray-900 text-sm">
+													{formatDateDay(session.date)}
+												</p>
+											</div>
+										</div>
 
-									<div className="flex items-center gap-2">
-										{!session.sudahTestimoni &&
-											session.statusSesi === "end" &&
-											updatingSessionId !== session.id && (
-												<button
-													className={`ml-4 px-4 py-2 rounded-lg text-white transition-colors ${
-														isSubmittingTestimoni
-															? "bg-blue-200 cursor-not-allowed"
-															: "bg-chill-blue hover:bg-blue-600"
-													}`}
-													onClick={() => handleOpenTestimoni(session)}
-													disabled={isSubmittingTestimoni}>
-													{isSubmittingTestimoni ? (
-														<span className="flex items-center">
-															<Loader2 className="animate-spin h-4 w-4 mr-2" />
-															Sedang mengirim...
-														</span>
-													) : (
-														<span>
-															Beri Testimoni
-															<MdRateReview className="inline-block ml-1 mb-1" />
-														</span>
-													)}
-												</button>
-											)}
+										<div className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+												<Clock className="w-5 h-5 text-purple-600" />
+											</div>
+											<div>
+												<p className="text-xs text-gray-500 font-medium">
+													Waktu Sesi
+												</p>
+												<p className="font-semibold text-gray-900 text-sm">
+													{session.time} - {getEndTime(session.time)} WIB
+												</p>
+											</div>
+										</div>
+
+										<div className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+												{session.mode === "online" ? (
+													<Monitor className="w-5 h-5 text-green-600" />
+												) : (
+													<MapPin className="w-5 h-5 text-green-600" />
+												)}
+											</div>
+											<div>
+												<p className="text-xs text-gray-500 font-medium">
+													Metode Belajar
+												</p>
+												<span
+													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+														session.mode === "online"
+															? "bg-blue-100 text-blue-800"
+															: "bg-red-100 text-red-800"
+													}`}>
+													{session.mode === "online" ? "Online" : "Offline"}
+												</span>
+											</div>
+										</div>
+
+										{session.mode === "offline" && session.location && (
+											<div className="flex items-center gap-3">
+												<div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+													<MapPin className="w-5 h-5 text-orange-600" />
+												</div>
+												<div className="min-w-0 flex-1">
+													<p className="text-xs text-gray-500 font-medium">
+														Lokasi
+													</p>
+													<p className="font-semibold text-gray-900 text-sm truncate">
+														{session.location}
+													</p>
+												</div>
+											</div>
+										)}
 									</div>
+								</div>
+
+								{/* Action Buttons */}
+								<div className="flex items-center justify-end gap-2 pt-4 border-t border-gray-100">
+									{/* View Detail Button */}
+									<button
+										onClick={() => handleViewDetail(session.id)}
+										className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 group">
+										<Eye className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+										<span className="font-medium">Lihat Detail</span>
+									</button>
+
+									{/* Testimoni Button */}
+									{!session.sudahTestimoni &&
+										session.statusSesi === "end" &&
+										updatingSessionId !== session.id && (
+											<button
+												className={`px-4 py-2 rounded-lg text-white transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 ${
+													isSubmittingTestimoni
+														? "bg-blue-200 cursor-not-allowed"
+														: "bg-yellow-500 hover:bg-yellow-600"
+												}`}
+												onClick={() => handleOpenTestimoni(session)}
+												disabled={isSubmittingTestimoni}>
+												{isSubmittingTestimoni ? (
+													<>
+														<Loader2 className="animate-spin h-4 w-4" />
+														<span>Sedang mengirim...</span>
+													</>
+												) : (
+													<>
+														<MdRateReview className="w-4 h-4" />
+														<span className="font-medium">Beri Testimoni</span>
+													</>
+												)}
+											</button>
+										)}
 								</div>
 							</div>
 						</div>

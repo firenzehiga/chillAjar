@@ -13,6 +13,7 @@ export const PAGES = {
 	"session-history": { title: "Riwayat Sesi", roles: ["pelanggan"] },
 	profile: { title: "Profile", roles: ["pelanggan"] },
 	"edit-profile": { title: "Edit Profile", roles: ["pelanggan"] },
+	"session-detail": { title: "Detail Transaksi", roles: ["pelanggan"] },
 
 	// Admin
 	"admin-dashboard": { title: "Admin Dashboard", roles: ["admin"] },
@@ -114,6 +115,7 @@ export const hideNavigationPages = [
 	"edit-profile",
 	"privacy-policy",
 	"terms-conditions",
+	"session-detail",
 ];
 
 /**

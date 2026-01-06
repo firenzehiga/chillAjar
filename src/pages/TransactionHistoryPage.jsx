@@ -17,10 +17,12 @@ import {
 	FileX,
 	Loader2,
 	Banknote,
+	User,
 } from "lucide-react";
 import api from "@/api";
 import { PaymentModal } from "@/components/PaymentModal";
 import { BookLoader } from "@/components/User/BookLoader";
+import { formatDateDay } from "@/utils/dateFormatter";
 
 import useAppStore from "@/stores/useAppStore";
 
@@ -50,9 +52,8 @@ const CustomSelect = ({
 					</span>
 				</div>
 				<ChevronDown
-					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
-						isOpen ? "rotate-180" : ""
-					}`}
+					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+						}`}
 				/>
 			</button>
 
@@ -71,11 +72,10 @@ const CustomSelect = ({
 										onChange(option.value);
 										setIsOpen(false);
 									}}
-									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${
-										value === option.value
-											? "bg-blue-50 text-blue-600 font-medium"
-											: "text-gray-700"
-									}`}>
+									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${value === option.value
+										? "bg-blue-50 text-blue-600 font-medium"
+										: "text-gray-700"
+										}`}>
 									{option.icon && <option.icon className="w-4 h-4" />}
 									<span>{option.label}</span>
 									{value === option.value && (
@@ -180,10 +180,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					? transaksi.statusPembayaran === "menunggu_verifikasi"
 						? "waiting_verification"
 						: transaksi.statusPembayaran === "accepted"
-						? "accepted"
-						: transaksi.statusPembayaran === "rejected"
-						? "rejected"
-						: "pending_payment"
+							? "accepted"
+							: transaksi.statusPembayaran === "rejected"
+								? "rejected"
+								: "pending_payment"
 					: "pending_payment",
 				// Untuk status 'pending_payment', gunakan jumlahSementara dari sesi (hasil perhitungan backend).
 				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
@@ -386,11 +386,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					</div>
 					<button
 						onClick={() => setShowFilters(!showFilters)}
-						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
-							showFilters
-								? "bg-blue-50 border-blue-400 text-blue-700"
-								: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
-						}`}>
+						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${showFilters
+							? "bg-blue-50 border-blue-400 text-blue-700"
+							: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
+							}`}>
 						<Filter className="w-4 h-4" />
 						<span>Filter</span>
 						{activeFiltersCount > 0 && (
@@ -503,8 +502,8 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							key === "status"
 								? statusOptions
 								: key === "mode"
-								? modeOptions
-								: dateRangeOptions
+									? modeOptions
+									: dateRangeOptions
 						).find((opt) => opt.value === value);
 						return (
 							<span
@@ -527,7 +526,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				{sortedFilteredHistory.length === 0 ? (
 					<div className="text-center py-12 bg-white rounded-2xl border border-gray-200">
 						<div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-							<FaCashRegister className="w-8 h-8 text-gray-400" />
+							<FileX className="w-8 h-8 text-gray-400" />
 						</div>
 						<h3 className="text-lg font-medium text-gray-900 mb-2">
 							Tidak ada transaksi ditemukan
@@ -547,104 +546,150 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					sortedFilteredHistory.map((session) => (
 						<div
 							key={session.id}
-							className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
-							<div className="flex justify-between items-start mb-4">
-								<div>
-									<h3 className="text-lg font-semibold text-gray-900 break-words">
-										{session.course}
-									</h3>
-									<p className="text-gray-600 break-words">
-										dengan {session.mentor}
-									</p>
-								</div>
-								{updatingSessionId === session.id ? (
-									<div
-										className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs sm:text-sm bg-blue-50 text-blue-700 border border-blue-100 shadow-sm whitespace-nowrap"
-										role="status"
-										aria-live="polite">
-										<Loader2 className="animate-spin h-4 w-4 text-blue-600" />
-										<span className="font-medium">Memperbarui status</span>
+							className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-l-4 border-green-500">
+							<div className="p-6">
+								{/* Header with Course and Status */}
+								<div className="flex justify-between items-start mb-4">
+									<div className="flex-1">
+										<h3 className="text-xl font-bold text-gray-900 mb-1">
+											{session.course}
+										</h3>
+										<p className="text-gray-600 flex items-center gap-2">
+											<User className="w-4 h-4" />
+											<span>dengan {session.mentor}</span>
+										</p>
 									</div>
-								) : (
-									<span
-										className={`mt-3 sm:mt-0 inline-flex items-center px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap ${getStatusStyle(
-											session.status
-										)}`}>
-										{getStatusText(session.status)}
-									</span>
-								)}
-							</div>
-
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-								<div className="flex items-center text-gray-600">
-									<Calendar className="w-4 h-4 mr-2 text-blue-600" />
-									Tanggal Sesi:&nbsp;
-									{new Date(session.date).toLocaleDateString("id-ID", {
-										day: "numeric",
-										month: "long",
-										year: "numeric",
-									})}{" "}
-								</div>
-								<div className="flex items-center text-gray-600">
-									<Clock className="w-4 h-4 mr-2 text-blue-600" />
-									Jam Mulai: {session.time}
-								</div>
-								<div className="flex items-center text-gray-600">
-									{session.mode === "online" ? (
-										<Monitor className="w-4 h-4 mr-2 text-blue-600" />
-									) : session.mode === "offline" ? (
-										<MapPin className="w-4 h-4 mr-2 text-blue-600" />
-									) : (
-										<MapPin className="w-4 h-4 mr-2 text-blue-600" />
-									)}
-									{session.mode === "online"
-										? "Sesi Online"
-										: session.mode === "offline"
-										? "Sesi Offline"
-										: "Data mode tidak valid"}
-								</div>
-								{session.mode === "offline" && (
-									<div className="flex items-center text-gray-600">
-										<MapPin className="w-4 h-4 mr-2 text-blue-600" />
-										Lokasi: {session.location}
-									</div>
-								)}
-							</div>
-
-							<div className="border-t pt-4 mt-4">
-								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-gray-600 gap-3">
-									<div className="flex items-start sm:items-center gap-3 min-w-0">
-										<Banknote className="w-4 h-4 mt-1 sm:mt-0 text-blue-600 flex-shrink-0" />
-										<div className="text-sm break-words">
-											<div>
-												<span className="text-gray-700">Total Harga: </span>
-												<span className="font-medium">
-													Rp{(session.amount || 0).toLocaleString("id-ID")}
+									<div className="flex flex-col items-end gap-2">
+										{updatingSessionId === session.id ? (
+											<div
+												className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100 shadow-sm"
+												role="status"
+												aria-live="polite">
+												<Loader2 className="animate-spin h-4 w-4 text-blue-600" />
+												<span className="text-sm font-medium">
+													Memperbarui status
 												</span>
 											</div>
-											<div className="text-xs text-gray-500 truncate">
-												{session.paketNama}
-											</div>
-										</div>
-									</div>
-									<div className="flex items-center gap-2 sm:text-right text-sm text-gray-600">
-										<span className="text-gray-700">Tanggal Pembayaran:</span>
-										<span className="font-medium">
-											{session.paymentDate
-												? new Date(session.paymentDate).toLocaleDateString(
-														"id-ID",
-														{
-															day: "numeric",
-															month: "long",
-															year: "numeric",
-														}
-												  )
-												: "-"}
-										</span>
+										) : (
+											<span
+												className={`px-4 py-2 rounded-full text-sm font-medium shadow-sm ${getStatusStyle(
+													session.status
+												)}`}>
+												{getStatusText(session.status)}
+											</span>
+										)}
 									</div>
 								</div>
+
+								{/* Session Details Grid */}
+								<div className="bg-gradient-to-r from-gray-50 to-green-50 rounded-xl p-4 mb-4">
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+										<div className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+												<Calendar className="w-5 h-5 text-blue-600" />
+											</div>
+											<div>
+												<p className="text-xs text-gray-500 font-medium">
+													Tanggal Sesi
+												</p>
+												<p className="font-semibold text-gray-900 text-sm">
+													{formatDateDay(session.date)}
+												</p>
+											</div>
+										</div>
+
+										<div className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+												<Clock className="w-5 h-5 text-purple-600" />
+											</div>
+											<div>
+												<p className="text-xs text-gray-500 font-medium">
+													Jam Mulai
+												</p>
+												<p className="font-semibold text-gray-900 text-sm">
+													{session.time} WIB
+												</p>
+											</div>
+										</div>
+
+										<div className="flex items-center gap-3">
+											<div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+												{session.mode === "online" ? (
+													<Monitor className="w-5 h-5 text-green-600" />
+												) : (
+													<MapPin className="w-5 h-5 text-green-600" />
+												)}
+											</div>
+											<div>
+												<p className="text-xs text-gray-500 font-medium">
+													Metode Belajar
+												</p>
+												<span
+													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${session.mode === "online"
+															? "bg-blue-100 text-blue-800"
+															: "bg-red-100 text-red-800"
+														}`}>
+													{session.mode === "online" ? "Online" : "Offline"}
+												</span>
+											</div>
+										</div>
+
+										{session.mode === "offline" && session.location && (
+											<div className="flex items-center gap-3">
+												<div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+													<MapPin className="w-5 h-5 text-orange-600" />
+												</div>
+												<div className="min-w-0 flex-1">
+													<p className="text-xs text-gray-500 font-medium">
+														Lokasi
+													</p>
+													<p className="font-semibold text-gray-900 text-sm truncate">
+														{session.location}
+													</p>
+												</div>
+											</div>
+										)}
+									</div>
+								</div>
+
+								{/* Payment Info Section */}
+								<div className="bg-gray-50 rounded-xl p-4 mb-4">
+									<div className="flex items-center justify-between mb-3">
+										<div className="flex items-center gap-2">
+											<Banknote className="w-5 h-5 text-green-600" />
+											<span className="font-semibold text-gray-700">
+												Informasi Pembayaran
+											</span>
+										</div>
+									</div>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+										<div>
+											<p className="text-xs text-gray-500 mb-1">Total Harga</p>
+											<p className="text-xl font-bold text-green-600">
+												Rp {(session.amount || 0).toLocaleString("id-ID")}
+											</p>
+											{session.paketNama && session.paketNama !== "-" && (
+												<p className="text-xs text-gray-500 mt-1">
+													{session.paketNama}
+												</p>
+											)}
+										</div>
+										<div>
+											<p className="text-xs text-gray-500 mb-1">
+												Tanggal Pembayaran
+											</p>
+											<p className="font-semibold text-gray-900">
+												{session.paymentDate
+													? formatDateDay(session.paymentDate)
+													: "-"}
+											</p>
+										</div>
+									</div>
+								</div>
+
+								{/* Status Messages */}
 								{session.status === "waiting_verification" && (
-									<div className="mt-4 bg-blue-50 p-4 rounded-lg">
+									<div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
 										<p className="text-blue-800 text-sm">
 											Pembayaran Anda sedang diverifikasi. Proses ini biasanya
 											memakan waktu 1-2 jam kerja. Kami akan memberi notifikasi
@@ -652,8 +697,9 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 										</p>
 									</div>
 								)}
+
 								{session.status === "accepted" && (
-									<div className="mt-4 bg-green-50 p-4 rounded-lg">
+									<div className="bg-green-50 p-4 rounded-lg border border-green-100">
 										<p className="text-green-800 text-sm">
 											Pembayaran Anda diterima. Silakan tunggu mentor untuk
 											memulai sesi.
@@ -661,27 +707,30 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 									</div>
 								)}
 
+								{/* Action Buttons */}
 								{session.status === "rejected" &&
 									updatingSessionId !== session.id && (
-										<div className="mt-4 bg-red-50 p-4 rounded-lg">
+										<div className="bg-red-50 p-4 rounded-lg border border-red-100">
 											<p className="text-red-800 text-sm mb-3">
 												Pembayaran Anda ditolak. Silakan kirim ulang bukti
 												pembayaran yang valid.
 											</p>
 											<button
-												className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+												className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-300 shadow-md hover:shadow-lg"
 												onClick={() => handleContinuePayment(session)}>
 												Kirim Ulang Bukti
 											</button>
 										</div>
 									)}
+
 								{session.status === "pending_payment" &&
 									updatingSessionId !== session.id && (
-										<div className="mt-4">
+										<div className="flex justify-end pt-4 border-t border-gray-100">
 											<button
-												className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+												className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2"
 												onClick={() => handleContinuePayment(session)}>
-												Selesaikan Pembayaran
+												<Banknote className="w-4 h-4" />
+												<span className="font-medium">Selesaikan Pembayaran</span>
 											</button>
 										</div>
 									)}
@@ -707,18 +756,18 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						topic: selectedSession.topic,
 						paket: selectedSession.paket
 							? {
-									...selectedSession.paket,
-									// Pastikan data paket lengkap dari session
-									id: selectedSession.paket.id,
-									name: selectedSession.paket.nama,
-									diskon: selectedSession.paket.diskon ?? 0,
-									items: Array.isArray(selectedSession.paket.items)
-										? selectedSession.paket.items.map((item) => ({
-												...item,
-												diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
-										  }))
-										: [],
-							  }
+								...selectedSession.paket,
+								// Pastikan data paket lengkap dari session
+								id: selectedSession.paket.id,
+								name: selectedSession.paket.nama,
+								diskon: selectedSession.paket.diskon ?? 0,
+								items: Array.isArray(selectedSession.paket.items)
+									? selectedSession.paket.items.map((item) => ({
+										...item,
+										diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
+									}))
+									: [],
+							}
 							: null,
 						// prefer explicit paket_id from session (history mapping) if available
 						paket_id:

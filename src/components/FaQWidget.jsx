@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const faqData = [
 	{
 		id: 1,
-		category: "Getting Started",
+		category: "Memulai Belajar",
 		icon: Book,
 		questions: [
 			{
@@ -38,7 +38,7 @@ const faqData = [
 	},
 	{
 		id: 2,
-		category: "Sessions",
+		category: "Tentang Sesi",
 		icon: Users,
 		questions: [
 			{
@@ -63,7 +63,7 @@ const faqData = [
 	},
 	{
 		id: 3,
-		category: "Payment",
+		category: "Pembayaran",
 		icon: CreditCard,
 		questions: [
 			{
@@ -88,7 +88,7 @@ const faqData = [
 	},
 	{
 		id: 4,
-		category: "Technical",
+		category: "Masalah Teknis",
 		icon: Settings,
 		questions: [
 			{

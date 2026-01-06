@@ -139,62 +139,11 @@ export function AboutPage({ onNavigate }) {
 			</div>
 
 			<div className="relative z-10 py-12">
-				{/* Hero Section */}
-				{/*
-				<div className="text-center mb-16 relative">
-					{/* Background decoration */}
-				{/* <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-						<div className="w-32 h-32 bg-gradient-to-r from-chill-blue to-green-400 rounded-full opacity-20 blur-3xl"></div>
-					</div>
-
-					<div className="relative z-20 max-w-4xl mx-auto px-4">
-						<div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-6 animate-fadeInUp">
-							<Star className="w-4 h-4 mr-2" />
-							Platform Pembelajaran Terdepan
-						</div>
-
-						<h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight animate-fadeInUp animation-delay-200">
-							Empowering{" "}
-							<span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent">
-								Students
-							</span>{" "}
-							Through{" "}
-							<span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-								Peer Learning
-							</span>
-						</h1>
-
-						<p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed animate-fadeInUp animation-delay-400">
-							ChillAjar menghubungkan mahasiswa dengan mentor ahli untuk
-							menciptakan pengalaman belajar yang bermakna dan transformatif.
-						</p>
-
-						{/* CTA Buttons */}
-				{/* <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 animate-fadeInUp animation-delay-600">
-							<button
-								onClick={() => onNavigate("courses")}
-								className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
-								<Zap className="w-5 h-5" />
-								Mulai Belajar
-							</button>
-							<a
-								href="#cerita-kami"
-								className="border-2 border-gray-300 text-gray-700 px-8 py-3
-														rounded-xl font-semibold hover:border-chill-blue
-														hover:text-blue-600 transition-all duration-300 flex
-														items-center justify-center gap-2">
-								<Coffee className="w-5 h-5" />
-								Pelajari Lebih Lanjut
-							</a>
-						</div> */}
-				{/* </div>
-				</div> */}
-
 				{/* Stats */}
 				<div className="relative mb-20">
 					{/* Background decoration */}
-					<div className="absolute inset-0 bg-gradient-to-r from-chill-blue via-green-400 to-red-400 rounded-3xl transform rotate-1 opacity-10"></div>
-					<div className="absolute inset-0 bg-gradient-to-r from-chill-blue via-purple-400 to-pink-400 rounded-3xl transform -rotate-1 opacity-10"></div>
+					<div className="absolute inset-0 bg-gradient-to-r from-chill-blue via-green-400 to-blue-400 rounded-3xl transform rotate-1 opacity-10"></div>
+					<div className="absolute inset-0 bg-gradient-to-r from-chill-blue via-purple-400 to-blue-400 rounded-3xl transform -rotate-1 opacity-10"></div>
 
 					<div className="relative bg-gradient-to-r from-chill-blue-dark via-chill-blue to-chill-blue-dark py-8 rounded-3xl shadow-2xl mx-4">
 						<div className="max-w-4xl mx-auto px-1 sm:px-3 lg:px-5">
