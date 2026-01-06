@@ -20,6 +20,7 @@ import { MdRateReview } from "react-icons/md";
 import useAppStore from "@/stores/useAppStore";
 import { BookLoader } from "@/components/ui/BookLoader";
 import { formatDateDay } from "@/utils/dateFormatter";
+import Pagination from "@/components/ui/Pagination";
 import {
 	getSessionEndTime,
 	getSessionStatusStyle,
@@ -104,12 +105,16 @@ export default function SessionHistoryPage({ userData }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showFilters, setShowFilters] = useState(false);
 
+	// Pagination state
+	const [currentPage, setCurrentPage] = useState(1);
+	const ITEMS_PER_PAGE = 5;
+
 	// Get navigation handler from store
-	const setCurrentPage = useAppStore((s) => s.setCurrentPage);
+	const navigateToPage = useAppStore((s) => s.setCurrentPage);
 
 	// Handler to navigate to session detail page
 	const handleViewDetail = (sessionId) => {
-		setCurrentPage(`session-detail/${sessionId}`);
+		navigateToPage(`session-detail/${sessionId}`);
 		window.history.pushState({}, "", `/session-detail/${sessionId}`);
 	};
 
@@ -224,12 +229,25 @@ export default function SessionHistoryPage({ userData }) {
 		});
 	}, [history, searchQuery, filters]);
 
+	// Reset to page 1 when filters change
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [searchQuery, filters]);
+
 	// Sorting
 	const sortedFilteredHistory = [...filteredHistory].sort((a, b) => {
 		const dateA = new Date(a.created_at || a.date);
 		const dateB = new Date(b.created_at || b.date);
 		return dateB - dateA;
 	});
+
+	// Pagination
+	const totalPages = Math.ceil(sortedFilteredHistory.length / ITEMS_PER_PAGE);
+	const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+	const paginatedHistory = sortedFilteredHistory.slice(
+		startIndex,
+		startIndex + ITEMS_PER_PAGE
+	);
 
 	// Filter change handlers
 	const handleFilterChange = (filterType, value) => {
@@ -489,7 +507,7 @@ export default function SessionHistoryPage({ userData }) {
 						)}
 					</div>
 				) : (
-					sortedFilteredHistory.map((session) => (
+					paginatedHistory.map((session) => (
 						<div
 							key={session.id}
 							className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-l-4 border-chill-blue">
@@ -646,6 +664,15 @@ export default function SessionHistoryPage({ userData }) {
 					))
 				)}
 			</div>
+
+			{/* Pagination */}
+			{sortedFilteredHistory.length > 0 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={setCurrentPage}
+				/>
+			)}
 		</div>
 	);
 }

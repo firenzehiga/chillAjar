@@ -23,6 +23,7 @@ import api from "@/api";
 import { PaymentModal } from "@/components/Student/PaymentModal";
 import { BookLoader } from "@/components/ui/BookLoader";
 import { formatDateDay } from "@/utils/dateFormatter";
+import Pagination from "@/components/ui/Pagination";
 import {
 	formatCurrency,
 	getSessionEndTime,
@@ -58,9 +59,8 @@ const CustomSelect = ({
 					</span>
 				</div>
 				<ChevronDown
-					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
-						isOpen ? "rotate-180" : ""
-					}`}
+					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+						}`}
 				/>
 			</button>
 
@@ -79,11 +79,10 @@ const CustomSelect = ({
 										onChange(option.value);
 										setIsOpen(false);
 									}}
-									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${
-										value === option.value
-											? "bg-blue-50 text-blue-600 font-medium"
-											: "text-gray-700"
-									}`}>
+									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${value === option.value
+										? "bg-blue-50 text-blue-600 font-medium"
+										: "text-gray-700"
+										}`}>
 									{option.icon && <option.icon className="w-4 h-4" />}
 									<span>{option.label}</span>
 									{value === option.value && (
@@ -111,6 +110,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	});
 	const [searchQuery, setSearchQuery] = useState("");
 	const [showFilters, setShowFilters] = useState(false);
+
+	// Pagination state
+	const [currentPage, setCurrentPage] = useState(1);
+	const ITEMS_PER_PAGE = 5;
 
 	// Filter options for transaction history
 	const statusOptions = [
@@ -188,10 +191,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					? transaksi.statusPembayaran === "menunggu_verifikasi"
 						? "waiting_verification"
 						: transaksi.statusPembayaran === "accepted"
-						? "accepted"
-						: transaksi.statusPembayaran === "rejected"
-						? "rejected"
-						: "pending_payment"
+							? "accepted"
+							: transaksi.statusPembayaran === "rejected"
+								? "rejected"
+								: "pending_payment"
 					: "pending_payment",
 				// Untuk status 'pending_payment', gunakan jumlahSementara dari sesi (hasil perhitungan backend).
 				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
@@ -258,12 +261,25 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 		});
 	}, [history, searchQuery, filters]);
 
+	// Reset to page 1 when filters change
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [searchQuery, filters]);
+
 	// Sorting
 	const sortedFilteredHistory = [...filteredHistory].sort((a, b) => {
 		const dateA = new Date(a.created_at);
 		const dateB = new Date(b.created_at);
 		return dateB - dateA;
 	});
+
+	// Pagination
+	const totalPages = Math.ceil(sortedFilteredHistory.length / ITEMS_PER_PAGE);
+	const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+	const paginatedHistory = sortedFilteredHistory.slice(
+		startIndex,
+		startIndex + ITEMS_PER_PAGE
+	);
 
 	// Filter change handlers
 	const handleFilterChange = (filterType, value) => {
@@ -364,11 +380,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 					</div>
 					<button
 						onClick={() => setShowFilters(!showFilters)}
-						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
-							showFilters
-								? "bg-blue-50 border-blue-400 text-blue-700"
-								: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
-						}`}>
+						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${showFilters
+							? "bg-blue-50 border-blue-400 text-blue-700"
+							: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
+							}`}>
 						<Filter className="w-4 h-4" />
 						<span>Filter</span>
 						{activeFiltersCount > 0 && (
@@ -481,8 +496,8 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 							key === "status"
 								? statusOptions
 								: key === "mode"
-								? modeOptions
-								: dateRangeOptions
+									? modeOptions
+									: dateRangeOptions
 						).find((opt) => opt.value === value);
 						return (
 							<span
@@ -522,7 +537,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						)}
 					</div>
 				) : (
-					sortedFilteredHistory.map((session) => (
+					paginatedHistory.map((session) => (
 						<div
 							key={session.id}
 							className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border-l-4 border-green-500">
@@ -604,11 +619,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 													Metode Belajar
 												</p>
 												<span
-													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-														session.mode === "online"
-															? "bg-blue-100 text-blue-800"
-															: "bg-red-100 text-red-800"
-													}`}>
+													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${session.mode === "online"
+														? "bg-blue-100 text-blue-800"
+														: "bg-red-100 text-red-800"
+														}`}>
 													{session.mode === "online" ? "Online" : "Offline"}
 												</span>
 											</div>
@@ -722,6 +736,15 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				)}
 			</div>
 
+			{/* Pagination */}
+			{sortedFilteredHistory.length > 0 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={setCurrentPage}
+				/>
+			)}
+
 			{/* Simulasi PaymentModal */}
 			{showPaymentModal && selectedSession && (
 				<PaymentModal
@@ -738,18 +761,18 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 						topic: selectedSession.topic,
 						paket: selectedSession.paket
 							? {
-									...selectedSession.paket,
-									// Pastikan data paket lengkap dari session
-									id: selectedSession.paket.id,
-									name: selectedSession.paket.nama,
-									diskon: selectedSession.paket.diskon ?? 0,
-									items: Array.isArray(selectedSession.paket.items)
-										? selectedSession.paket.items.map((item) => ({
-												...item,
-												diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
-										  }))
-										: [],
-							  }
+								...selectedSession.paket,
+								// Pastikan data paket lengkap dari session
+								id: selectedSession.paket.id,
+								name: selectedSession.paket.nama,
+								diskon: selectedSession.paket.diskon ?? 0,
+								items: Array.isArray(selectedSession.paket.items)
+									? selectedSession.paket.items.map((item) => ({
+										...item,
+										diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
+									}))
+									: [],
+							}
 							: null,
 						// prefer explicit paket_id from session (history mapping) if available
 						paket_id:
