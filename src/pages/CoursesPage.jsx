@@ -4,6 +4,9 @@ import { Search } from "lucide-react";
 import { SearchFilter } from "../components/ui/SearchFilter";
 import useAppStore from "../stores/useAppStore";
 import { useDocumentTitle } from "@/hooks/utils/useDocumentTitle";
+import { useDebounce } from "@/hooks/utils/useDebounce";
+import { useState, useEffect } from "react";
+import Pagination from "@/components/ui/Pagination";
 
 export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 	useDocumentTitle("Kursus", "Jelajahi Kursus yang Tersedia");
@@ -16,10 +19,22 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 		applyFilters,
 	} = useAppStore();
 
-	// Aplikasikan filter dari Zustand store
+	// Debounce search query untuk performa lebih baik
+	const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+	// Pagination state
+	const [currentPage, setCurrentPage] = useState(1);
+	const itemsPerPage = 6;
+
+	// Reset to page 1 when filters change
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [debouncedSearchQuery, courseFilters]);
+
+	// Aplikasikan filter dari Zustand store dengan debounced search
 	const finalFilteredCourses = applyFilters(
 		filteredCourses,
-		searchQuery,
+		debouncedSearchQuery,
 		courseFilters
 	);
 
@@ -30,8 +45,15 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 		return true;
 	});
 
-	const hasSearchQuery = searchQuery?.trim();
+	const hasSearchQuery = debouncedSearchQuery?.trim();
 	const isFiltering = hasSearchQuery || hasActiveFilters;
+
+	// Pagination calculations
+	const totalPages = Math.ceil(finalFilteredCourses.length / itemsPerPage);
+	const startIndex = (currentPage - 1) * itemsPerPage;
+	const endIndex = startIndex + itemsPerPage;
+	const paginatedCourses = finalFilteredCourses.slice(startIndex, endIndex);
+
 
 	// // Debug logging
 	// console.log("CoursesPage - Debug info:", {
@@ -68,7 +90,7 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 								className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 focus:outline-none"
 							/>
 						</div>
-						<SearchFilter />
+						<SearchFilter filterType="course" />
 					</div>
 				)}
 
@@ -120,10 +142,10 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 							placeholder="Cari nama kursus..."
 							value={searchQuery || ""}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 outline-none focus:outline-none"
+							className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 outline-none focus:outline-none"
 						/>
 					</div>
-					<SearchFilter />
+					<SearchFilter filterType="course" />
 				</div>
 			)}
 
@@ -136,10 +158,17 @@ export function CoursesPage({ onCourseClick, filteredCourses, userRole }) {
 			)}
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{finalFilteredCourses.map((course) => (
+				{paginatedCourses.map((course) => (
 					<CourseCard key={course.id} course={course} onClick={onCourseClick} />
 				))}
 			</div>
+
+			{/* Pagination */}
+			<Pagination
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={setCurrentPage}
+			/>
 		</div>
 	);
 }

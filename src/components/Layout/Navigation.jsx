@@ -75,20 +75,18 @@ export function Navigation({ onNavigate, onLogout }) {
 				}}
 				onMouseEnter={() => setHoveredItem(to)}
 				onMouseLeave={() => setHoveredItem(null)}
-				className={`focus:outline-none inline-flex items-center relative px-3 py-2 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden ${
-					isActive
-						? "bg-blue-500 text-white shadow-lg shadow-blue-600/25 scale-105"
-						: "text-white hover:text-white hover:bg-blue-500"
-				}`}>
+				className={`focus:outline-none inline-flex items-center relative px-3 py-2 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden ${isActive
+					? "bg-blue-500 text-white shadow-lg shadow-blue-600/25 scale-105"
+					: "text-white hover:text-white hover:bg-blue-500"
+					}`}>
 				{Icon && (
 					<Icon
-						className={`w-4 h-4 mr-1 transition-transform duration-300 ${
-							isActive
-								? "text-white scale-110"
-								: hoveredItem === to
+						className={`w-4 h-4 mr-1 transition-transform duration-300 ${isActive
+							? "text-white scale-110"
+							: hoveredItem === to
 								? "text-white scale-110"
 								: "text-white"
-						}`}
+							}`}
 					/>
 				)}
 				{label}
@@ -116,13 +114,12 @@ export function Navigation({ onNavigate, onLogout }) {
 							onClick={() =>
 								setIsManagementDropdownOpen(!isManagementDropdownOpen)
 							}
-							className={`focus:outline-none inline-flex items-center relative px-3 py-2.5 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden ${
-								currentPage === "admin-manage-items" ||
+							className={`focus:outline-none inline-flex items-center relative px-3 py-2.5 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden ${currentPage === "admin-manage-items" ||
 								currentPage === "admin-manage-packages" ||
 								currentPage === "admin-manage-courses"
-									? "bg-blue-500 text-white"
-									: "text-white hover:bg-blue-500"
-							}`}>
+								? "bg-blue-500 text-white"
+								: "text-white hover:bg-blue-500"
+								}`}>
 							<Settings className="w-4 h-4 inline-block mr-1" />
 							Management
 							{isManagementDropdownOpen ? (
@@ -139,11 +136,10 @@ export function Navigation({ onNavigate, onLogout }) {
 										onNavigate("admin-manage-mentors");
 										setIsManagementDropdownOpen(false);
 									}}
-									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer last:rounded-b-lg ${
-										currentPage === "admin-manage-mentors"
-											? "bg-blue-100 text-blue-800"
-											: "text-gray-700"
-									}`}>
+									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer last:rounded-b-lg ${currentPage === "admin-manage-mentors"
+										? "bg-blue-100 text-blue-800"
+										: "text-gray-700"
+										}`}>
 									<LucideUserSquare2 className="w-4 h-4 inline-block mr-2" />
 									Mentors
 								</a>
@@ -152,11 +148,10 @@ export function Navigation({ onNavigate, onLogout }) {
 										onNavigate("admin-manage-courses");
 										setIsManagementDropdownOpen(false);
 									}}
-									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer first:rounded-t-lg ${
-										currentPage === "admin-manage-courses"
-											? "bg-blue-100 text-blue-800"
-											: "text-gray-700"
-									}`}>
+									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer first:rounded-t-lg ${currentPage === "admin-manage-courses"
+										? "bg-blue-100 text-blue-800"
+										: "text-gray-700"
+										}`}>
 									<BookOpen className="w-4 h-4 inline-block mr-2" />
 									Kursus
 								</a>
@@ -165,11 +160,10 @@ export function Navigation({ onNavigate, onLogout }) {
 										onNavigate("admin-manage-items");
 										setIsManagementDropdownOpen(false);
 									}}
-									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer ${
-										currentPage === "admin-manage-items"
-											? "bg-blue-100 text-blue-800"
-											: "text-gray-700"
-									}`}>
+									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer ${currentPage === "admin-manage-items"
+										? "bg-blue-100 text-blue-800"
+										: "text-gray-700"
+										}`}>
 									<Package className="w-4 h-4 inline-block mr-2" />
 									Items
 								</a>
@@ -178,11 +172,10 @@ export function Navigation({ onNavigate, onLogout }) {
 										onNavigate("admin-manage-packages");
 										setIsManagementDropdownOpen(false);
 									}}
-									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer last:rounded-b-lg ${
-										currentPage === "admin-manage-packages"
-											? "bg-blue-100 text-blue-800"
-											: "text-gray-700"
-									}`}>
+									className={`block px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer last:rounded-b-lg ${currentPage === "admin-manage-packages"
+										? "bg-blue-100 text-blue-800"
+										: "text-gray-700"
+										}`}>
 									<Gift className="w-4 h-4 inline-block mr-2" />
 									Paket
 								</a>
@@ -239,16 +232,14 @@ export function Navigation({ onNavigate, onLogout }) {
 					onNavigate(to);
 					setIsMobileMenuOpen(false);
 				}}
-				className={`w-full flex items-center px-3 py-2 text-base font-medium rounded-md transition-all duration-300 ${
-					isActive
-						? "bg-blue-500 text-white shadow-lg shadow-blue-600/25"
-						: "text-white hover:bg-blue-500"
-				}`}>
+				className={`w-full flex items-center px-3 py-2 text-base font-medium rounded-md transition-all duration-300 ${isActive
+					? "bg-blue-500 text-white shadow-lg shadow-blue-600/25"
+					: "text-white hover:bg-blue-500"
+					}`}>
 				{Icon && (
 					<Icon
-						className={`w-5 h-5 mr-3 transition-transform duration-300 ${
-							isActive ? "scale-110" : hoveredItem === to ? "scale-110" : ""
-						}`}
+						className={`w-5 h-5 mr-3 transition-transform duration-300 ${isActive ? "scale-110" : hoveredItem === to ? "scale-110" : ""
+							}`}
 					/>
 				)}
 				{label}
@@ -327,9 +318,8 @@ export function Navigation({ onNavigate, onLogout }) {
 
 	return (
 		<header
-			className={`bg-chill-blue ${
-				currentPage !== "home" ? "shadow-sm" : ""
-			} sticky top-0 z-50`}>
+			className={`bg-chill-blue ${currentPage !== "home" ? "shadow-sm" : ""
+				} sticky top-0 z-50`}>
 			<div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center">
@@ -366,8 +356,8 @@ export function Navigation({ onNavigate, onLogout }) {
 								<button
 									type="button"
 									onClick={() => setShowAuthModal(true)}
-									className="group flex items-center px-4 py-2 rounded-lg text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none transition-all duration-200">
-									<LogIn className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
+									className="focus:outline-none inline-flex items-center relative px-3 py-2 rounded-xl text-base font-medium transition-all duration-300 ease-out overflow-hidden text-white bg-black hover:bg-black/80">
+									<LogIn className="w-4 h-4 mr-1 transition-transform duration-300" />
 									Masuk
 								</button>
 							)}
@@ -396,7 +386,7 @@ export function Navigation({ onNavigate, onLogout }) {
 									setShowAuthModal(true);
 									setIsMobileMenuOpen(false);
 								}}
-								className="w-full flex items-center px-3 py-2 text-base font-medium text-white bg-chill-blue hover:bg-blue-600 transition-colors rounded-md">
+								className="w-full flex items-center px-3 py-2 text-base font-medium rounded-md transition-all duration-300 text-white hover:bg-blue-500">
 								<LogIn className="w-5 h-5 mr-3" />
 								Sign In
 								<ChevronRight className="w-5 h-5 ml-auto" />

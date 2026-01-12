@@ -53,6 +53,15 @@ const useAppStore = create((set, get) => ({
 		mode: "",
 	},
 
+	// Mentor Filter State
+	mentorSearchQuery: "",
+	mentorFilters: {
+		priceRange: [0, 100000],
+		mentorRating: 0,
+		availability: "",
+		mode: "",
+	},
+
 	// Testimoni State
 	testimoniSession: null,
 	isSubmittingTestimoni: false,
@@ -107,6 +116,23 @@ const useAppStore = create((set, get) => ({
 				mode: "",
 			},
 			searchQuery: "",
+		}),
+
+	// Actions - Mentor Filters
+	setMentorSearchQuery: (query) => set({ mentorSearchQuery: query }),
+	updateMentorFilter: (key, value) =>
+		set((state) => ({
+			mentorFilters: { ...state.mentorFilters, [key]: value },
+		})),
+	resetMentorFilters: () =>
+		set({
+			mentorFilters: {
+				priceRange: [0, 100000],
+				mentorRating: 0,
+				availability: "",
+				mode: "",
+			},
+			mentorSearchQuery: "",
 		}),
 
 	// Course Filtering Logic
@@ -212,6 +238,77 @@ const useAppStore = create((set, get) => ({
 		});
 	},
 
+	// Mentor Filtering Logic
+	applyMentorFilters: (mentors, searchQuery, filters) => {
+		return mentors.filter((mentor) => {
+			// Filter berdasarkan search query (nama mentor)
+			if (searchQuery?.trim()) {
+				const query = searchQuery.toLowerCase();
+				const mentorName = mentor.mentorName?.toLowerCase() || "";
+				const mentorAbout = mentor.mentorAbout?.toLowerCase() || "";
+				if (!mentorName.includes(query) && !mentorAbout.includes(query)) {
+					return false;
+				}
+			}
+
+			// Filter berdasarkan mode pembelajaran
+			if (filters.mode) {
+				const courses = mentor.courses || [];
+				const hasMode = courses.some((course) => {
+					const schedules = course.schedules || [];
+					return schedules.some(
+						(schedule) =>
+							schedule.gaya_mengajar?.toLowerCase() === filters.mode.toLowerCase()
+					);
+				});
+				if (!hasMode) return false;
+			}
+
+			// Filter berdasarkan ketersediaan jadwal
+			if (filters.availability) {
+				const now = new Date();
+				const today = new Date(
+					now.getFullYear(),
+					now.getMonth(),
+					now.getDate()
+				);
+				const courses = mentor.courses || [];
+
+				const hasAvailability = courses.some((course) => {
+					const schedules = course.schedules || [];
+					return schedules.some((schedule) => {
+						if (!schedule.tanggal) return false;
+						const scheduleDate = new Date(schedule.tanggal);
+
+						if (filters.availability === "today") {
+							return scheduleDate.toDateString() === today.toDateString();
+						} else if (filters.availability === "week") {
+							const weekFromNow = new Date(today);
+							weekFromNow.setDate(today.getDate() + 7);
+							return scheduleDate >= today && scheduleDate <= weekFromNow;
+						}
+						return false;
+					});
+				});
+				if (!hasAvailability) return false;
+			}
+
+			// Filter berdasarkan rentang harga (biayaPerSesi)
+			if (filters.priceRange && filters.priceRange[1] < 100000) {
+				const mentorPrice = mentor.mentorBiayaPerSesi || 0;
+				if (mentorPrice > filters.priceRange[1]) return false;
+			}
+
+			// Filter berdasarkan rating mentor
+			if (filters.mentorRating > 0) {
+				const mentorRating = mentor.mentorRating || 0;
+				if (mentorRating < filters.mentorRating) return false;
+			}
+
+			return true;
+		});
+	},
+
 	// Actions - Testimoni
 	setTestimoniSession: (session) => set({ testimoniSession: session }),
 	setIsSubmittingTestimoni: (loading) =>
@@ -297,6 +394,13 @@ const useAppStore = create((set, get) => ({
 			testimoniSession: null,
 			searchQuery: "",
 			courseFilters: {
+				priceRange: [0, 100000],
+				mentorRating: 0,
+				availability: "",
+				mode: "",
+			},
+			mentorSearchQuery: "",
+			mentorFilters: {
 				priceRange: [0, 100000],
 				mentorRating: 0,
 				availability: "",

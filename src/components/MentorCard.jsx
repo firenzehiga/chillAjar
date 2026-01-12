@@ -166,12 +166,12 @@ export function MentorCard({
 										Jika rating tidak valid, tampilkan 0.0 agar UI tetap aman di semua environment.
 									*/}
 									{typeof mentor.mentorRating === "number" &&
-									!isNaN(mentor.mentorRating)
+										!isNaN(mentor.mentorRating)
 										? mentor.mentorRating.toFixed(1)
 										: Number(mentor.mentorRating) &&
-										  !isNaN(Number(mentor.mentorRating))
-										? Number(mentor.mentorRating).toFixed(1)
-										: "0.0"}
+											!isNaN(Number(mentor.mentorRating))
+											? Number(mentor.mentorRating).toFixed(1)
+											: "0.0"}
 								</span>
 							</div>
 						</div>
@@ -189,13 +189,12 @@ export function MentorCard({
 							validModes.map((mode) => (
 								<span
 									key={mode}
-									className={`text-xs px-3 py-1 rounded-full font-medium ${
-										mode === "online"
-											? "bg-blue-50 text-blue-700"
-											: mode === "offline"
+									className={`text-xs px-3 py-1 rounded-full font-medium ${mode === "online"
+										? "bg-blue-50 text-blue-700"
+										: mode === "offline"
 											? "bg-red-50 text-red-700"
 											: "bg-gray-100 text-gray-700"
-									}`}>
+										}`}>
 									{mode === "online" ? "Online" : "Offline"}
 								</span>
 							))
@@ -230,19 +229,19 @@ export function MentorCard({
 							}
 						}}
 					/>
-
-					<button
-						type="button"
-						onClick={handleScheduleClick}
-						disabled={validModes.length === 0}
-						className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all transform ${
-							validModes.length > 0
+					{validModes.length > 0 && (
+						<button
+							type="button"
+							onClick={handleScheduleClick}
+							disabled={validModes.length === 0}
+							className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all transform ${validModes.length > 0
 								? "bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 outline-none focus:outline-none"
 								: "bg-gray-300 text-gray-500 cursor-not-allowed"
-						}`}>
-						<BookOpen className="w-4 h-4" />
-						{selectedCourse ? "Pesan Sekarang" : "Pilih Kursus"}
-					</button>
+								}`}>
+							<BookOpen className="w-4 h-4" />
+							{selectedCourse ? "Pesan Sekarang" : "Pilih Kursus"}
+						</button>
+					)}
 				</div>
 			</div>
 

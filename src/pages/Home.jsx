@@ -77,8 +77,8 @@ export function Home({
 			jadwal_kursus: Array.isArray(course.jadwal_kursus)
 				? course.jadwal_kursus
 				: Array.isArray(course.jadwalKursus)
-				? course.jadwalKursus
-				: [],
+					? course.jadwalKursus
+					: [],
 		};
 	});
 
@@ -118,7 +118,7 @@ export function Home({
 										placeholder="Cari nama kursus..."
 										value={searchQuery || ""}
 										onChange={(e) => setSearchQuery(e.target.value)}
-										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 outline-none focus:outline-none"
+										className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 outline-none focus:outline-none"
 									/>
 								</div>
 								<SearchFilter />
@@ -165,11 +165,11 @@ export function Home({
 						onCourseClick={handleCourseClick}
 					/>
 					<div className="px-4">
-						<h2 className="text-2xl font-bold text-gray-900 mb-6">
+						<h2 className="text-2xl font-bold text-gray-900 ">
 							Semua Kursus
 						</h2>
 						{userRole !== "admin" && userRole !== "mentor" && (
-							<div className="relative py-4 w-full lg:w-2/3 flex flex-col sm:flex-row gap-3 sm:gap-4">
+							<div className="relative py-4 mb-4 w-full lg:w-2/3 flex flex-col sm:flex-row gap-3 sm:gap-4">
 								<div className="relative flex-1">
 									<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
 									<input
@@ -177,7 +177,7 @@ export function Home({
 										placeholder="Cari nama kursus..."
 										value={searchQuery || ""}
 										onChange={(e) => setSearchQuery(e.target.value)}
-										className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 outline-none focus:outline-none"
+										className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 outline-none focus:outline-none"
 									/>
 								</div>
 								<SearchFilter />
