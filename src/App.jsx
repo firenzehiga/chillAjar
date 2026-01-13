@@ -241,8 +241,8 @@ function App() {
 		const schedules = Array.isArray(course.jadwal_kursus) // Cek apakah jadwal_kursus ada dan merupakan array
 			? course.jadwal_kursus
 			: Array.isArray(course.jadwalKursus)
-			? course.jadwalKursus
-			: [];
+				? course.jadwalKursus
+				: [];
 
 		const validModes = Array.from(
 			// Ini cara untuk mendapatkan mode belajar unik dari jadwal_kursus
@@ -258,8 +258,8 @@ function App() {
 			validModes.length === 0
 				? "Belum diatur"
 				: validModes.length === 1
-				? validModes[0]
-				: validModes.join(", ");
+					? validModes[0]
+					: validModes.join(", ");
 
 		const mentorData = course.mentor || {};
 
@@ -394,7 +394,7 @@ function App() {
 						ignoreNextPopRef.current = true;
 						try {
 							window.history.forward();
-						} catch (e) {}
+						} catch (e) { }
 						setTimeout(() => (ignoreNextPopRef.current = false), 500);
 					}
 				});
@@ -438,7 +438,7 @@ function App() {
 						ignoreNextPopRef.current = true;
 						try {
 							window.history.forward();
-						} catch (e) {}
+						} catch (e) { }
 						setTimeout(() => (ignoreNextPopRef.current = false), 500);
 					}
 				});
@@ -626,16 +626,16 @@ function App() {
 					topic: topic || "No specific topic",
 					paket: selectedPackage
 						? {
-								...selectedPackage,
-								id: selectedPackage.id || null,
-								diskon: selectedPackage.diskon ?? 0,
-								items: Array.isArray(selectedPackage.items)
-									? selectedPackage.items.map((item) => ({
-											...item,
-											diskon: item.diskon ?? 0,
-									  }))
-									: [],
-						  }
+							...selectedPackage,
+							id: selectedPackage.id || null,
+							diskon: selectedPackage.diskon ?? 0,
+							items: Array.isArray(selectedPackage.items)
+								? selectedPackage.items.map((item) => ({
+									...item,
+									diskon: item.diskon ?? 0,
+								}))
+								: [],
+						}
 						: null,
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
@@ -1301,11 +1301,12 @@ function App() {
 					<TransactionHistoryPage
 						userData={userData}
 						onPaymentSubmit={handlePaymentSubmit}
+						onNavigate={handleNavigate}
 					/>
 				) : null;
 			case "session-history":
 				return isAuthenticated ? (
-					<SessionHistoryPage userData={userData} />
+					<SessionHistoryPage userData={userData} onNavigate={handleNavigate} />
 				) : null;
 			// Session Detail Page (dynamic route)
 			case currentPage.startsWith("session-detail/") ? currentPage : null:

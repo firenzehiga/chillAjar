@@ -19,6 +19,7 @@ import {
 import { BookLoader } from "@/components/ui/BookLoader";
 import { getImageUrl } from "@/utils/getImageUrl";
 import useAppStore from "@/stores/useAppStore";
+import { formatSessionId } from "@/utils/helpers";
 
 export default function SessionDetailPage({ sessionId, onNavigate }) {
 	const { userData } = useAppStore();
@@ -113,12 +114,6 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 	const statusConfig = getStatusConfig(session.statusSesi);
 	const StatusIcon = statusConfig.icon;
 
-	// Format session ID to look like a receipt number (resi)
-	const formatSessionId = (id) => {
-		const paddedId = String(id).padStart(6, "0");
-		return `CHILL-${paddedId}`;
-	};
-
 	// Calculate session end time (start time + 1 hour)
 	const getEndTime = (startTime) => {
 		if (!startTime) return "-";
@@ -170,10 +165,10 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 								<BookOpen className="w-8 h-8 text-white" />
 							</div>
 							<div className="flex-1">
-								<h2 className="text-xl font-bold text-gray-900 mb-2">
+								<h2 className="text-lg font-bold text-gray-900 mb-2">
 									{kursus?.namaKursus || "Nama Kursus"}
 								</h2>
-								<p className="text-gray-600 mb-3">
+								<p className="text-gray-600 mb-3 text-sm text-justify">
 									{kursus?.deskripsi || "Deskripsi kursus tidak tersedia"}
 								</p>
 								<div className="flex items-center space-x-3">
@@ -219,7 +214,7 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 							<div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
 								<Calendar className="w-6 h-6 text-white" />
 							</div>
-							<h3 className="text-xl font-bold text-gray-900">
+							<h3 className="text-lg font-bold text-gray-900">
 								Jadwal & Lokasi
 							</h3>
 						</div>
@@ -269,9 +264,9 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 									<MapPinned className="w-5 h-5 text-blue-600 mt-1" />
 								)}
 								<div>
-									<p className="text-sm text-gray-500">Mode Sesi</p>
+									<p className="text-sm text-gray-500">Metode Belajar</p>
 									<span
-										className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+										className={`inline-flex items-center px-2 py-1 mt-1 rounded-full text-xs font-medium ${
 											jadwal?.gayaMengajar === "online"
 												? "bg-blue-100 text-blue-800"
 												: "bg-red-100 text-red-800"
@@ -302,7 +297,7 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 								<div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-md">
 									<CreditCard className="w-6 h-6 text-white" />
 								</div>
-								<h3 className="text-xl font-bold text-gray-900">
+								<h3 className="text-lg font-bold text-gray-900">
 									Informasi Pembayaran
 								</h3>
 							</div>
@@ -338,15 +333,9 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 								{/* Diskon (jika ada) */}
 								{paket && paket.diskon > 0 && (
 									<div className="flex justify-between items-center">
-										<span className="text-gray-600 text-sm">
-											Diskon Paket ({paket.diskon}%)
-										</span>
+										<span className="text-gray-600 text-sm">Diskon Paket</span>
 										<span className="font-semibold text-green-600">
-											- Rp{" "}
-											{(
-												(paket.harga_dasar * paket.diskon) /
-												100
-											)?.toLocaleString("id-ID") || "0"}
+											- Rp {paket.diskon?.toLocaleString("id-ID") || "0"}
 										</span>
 									</div>
 								)}
@@ -390,7 +379,7 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 									</p>
 								</div>
 
-								<div className="md:col-span-2">
+								{/* <div className="md:col-span-2">
 									<p className="text-sm text-gray-500 mb-1">
 										Status Pembayaran
 									</p>
@@ -408,7 +397,7 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 											? "Menunggu Verifikasi"
 											: transaksi.statusPembayaran || "Pending"}
 									</span>
-								</div>
+								</div> */}
 							</div>
 						</div>
 					)}
@@ -429,15 +418,13 @@ export default function SessionDetailPage({ sessionId, onNavigate }) {
 							<div className="space-y-3">
 								<div>
 									<p className="text-sm text-gray-600 mb-1">Nama Paket</p>
-									<p className="font-bold text-gray-900 text-lg">
-										{paket.nama}
-									</p>
+									<p className="font-bold text-gray-900 ">{paket.nama}</p>
 								</div>
 
 								{paket.deskripsi && (
 									<div>
 										<p className="text-sm text-gray-600 mb-1">Deskripsi</p>
-										<p className="text-gray-700">{paket.deskripsi}</p>
+										<p className="text-gray-700 text-sm">{paket.deskripsi}</p>
 									</div>
 								)}
 

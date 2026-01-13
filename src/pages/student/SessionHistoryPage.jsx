@@ -93,7 +93,7 @@ const CustomSelect = ({
 	);
 };
 
-export default function SessionHistoryPage({ userData }) {
+export default function SessionHistoryPage({ userData, onNavigate }) {
 	// use global updatingSessionId from store so other components (modal/handlers) can set it
 	const updatingSessionId = useAppStore((s) => s.updatingSessionId);
 	const setUpdatingSessionId = useAppStore((s) => s.setUpdatingSessionId);
@@ -109,13 +109,9 @@ export default function SessionHistoryPage({ userData }) {
 	const [currentPage, setCurrentPage] = useState(1);
 	const ITEMS_PER_PAGE = 5;
 
-	// Get navigation handler from store
-	const navigateToPage = useAppStore((s) => s.setCurrentPage);
-
 	// Handler to navigate to session detail page
 	const handleViewDetail = (sessionId) => {
-		navigateToPage(`session-detail/${sessionId}`);
-		window.history.pushState({}, "", `/session-detail/${sessionId}`);
+		onNavigate(`session-detail/${sessionId}`);
 	};
 
 	// Filter options

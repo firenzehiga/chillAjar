@@ -18,6 +18,7 @@
     "framer-motion": "^12.23.26",
     "history": "^5.3.0",
     "jquery": "^3.7.1",
+    "jspdf": "^4.0.0",
     "loadable-image": "^3.3.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",

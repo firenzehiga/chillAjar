@@ -1,6 +1,7 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePelangganSessionsTransactionQuery } from "@/hooks/useSessions"; // Import hook baru
+import { generateInvoicePDF } from "@/utils/generateInvoicePDF";
 import {
 	Calendar,
 	Clock,
@@ -18,6 +19,8 @@ import {
 	Loader2,
 	Banknote,
 	User,
+	Printer,
+	Download,
 } from "lucide-react";
 import api from "@/api";
 import { PaymentModal } from "@/components/Student/PaymentModal";
@@ -98,9 +101,11 @@ const CustomSelect = ({
 	);
 };
 
-export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
+export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNavigate }) {
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
 	const [selectedSession, setSelectedSession] = useState(null);
+	const [downloadingInvoice, setDownloadingInvoice] = useState(null);
+	const invoiceRef = useRef(null);
 	const updatingSessionId = useAppStore((s) => s.updatingSessionId);
 	const setUpdatingSessionId = useAppStore((s) => s.setUpdatingSessionId);
 	const [filters, setFilters] = useState({
@@ -165,6 +170,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 		enabled: !!pelangganId,
 	});
 
+
 	const history = useMemo(() => {
 		if (!sessions.length) return [];
 		return sessions.map((sesi) => {
@@ -180,7 +186,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 				mentor: sesi.mentor?.user?.nama || "-",
 				mentor_id: sesi.mentor?.id || null,
 				paketNama: transaksi?.paket?.nama || sesi.paket?.nama || "-",
-				paket: transaksi?.paket || sesi.paket || null,
+				paket: sesi?.paket || transaksi?.paket || null,
 				biayaPerSesi: sesi.mentor?.biayaPerSesi || 0,
 				date: jadwal?.tanggal || "-",
 				time: jadwal?.waktu.slice(0, 5) || "-",
@@ -236,7 +242,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 			// Simple date filtering
 			let matchesDate = true;
 			if (filters.dateRange) {
-				const sessionDate = new Date(session.date);
+				const sessionDate = new Date(session.created_at);
 				const now = new Date();
 
 				switch (filters.dateRange) {
@@ -304,6 +310,22 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 	const handleContinuePayment = (session) => {
 		setSelectedSession(session);
 		setShowPaymentModal(true);
+	};
+
+	console.log(paginatedHistory);
+
+
+	const handleDownloadInvoice = async (session) => {
+		try {
+			setDownloadingInvoice(session.transaksiId);
+			// Generate PDF with userData
+			await generateInvoicePDF(session, userData);
+		} catch (error) {
+			console.error('Error generating PDF:', error);
+			alert('Gagal membuat PDF. Silakan coba lagi.');
+		} finally {
+			setDownloadingInvoice(null);
+		}
 	};
 
 	const handlePaymentFromHistory = async (data) => {
@@ -702,6 +724,28 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit }) {
 								)}
 
 								{/* Action Buttons */}
+								{session.status === "accepted" &&
+									updatingSessionId !== session.id && (
+										<div className="flex justify-end pt-4 border-t border-gray-100">
+											<button
+												onClick={() => handleDownloadInvoice(session)}
+												disabled={downloadingInvoice === session.transaksiId}
+												className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+												{downloadingInvoice === session.transaksiId ? (
+													<>
+														<Loader2 className="w-4 h-4 animate-spin" />
+														<span className="font-medium">Membuat PDF...</span>
+													</>
+												) : (
+													<>
+														<Download className="w-4 h-4" />
+														<span className="font-medium">Invoice</span>
+													</>
+												)}
+											</button>
+										</div>
+									)}
+
 								{session.status === "rejected" &&
 									updatingSessionId !== session.id && (
 										<div className="bg-red-50 p-4 rounded-lg border border-red-100">

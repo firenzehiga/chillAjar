@@ -143,3 +143,19 @@ export const formatSessionId = (id) => {
     const paddedId = String(id).padStart(6, "0");
     return `CHILL-${paddedId}`;
 };
+
+/**
+ * Generate invoice number from transaction ID and created date
+ * 📍 Dipakai di: Invoice (specific)
+ * @param {number} transactionId - Transaction ID
+ * @param {string} createdAt - Created date (ISO format)
+ * @returns {string} Formatted invoice number (e.g., "INV-2026-00148")
+ */
+export const generateInvoiceNumber = (transactionId, createdAt) => {
+    if (!transactionId || !createdAt) return "INV-0000-00000";
+
+    const year = new Date(createdAt).getFullYear();
+    const paddedId = String(transactionId).padStart(5, "0");
+
+    return `INV-${year}-${paddedId}`;
+};
