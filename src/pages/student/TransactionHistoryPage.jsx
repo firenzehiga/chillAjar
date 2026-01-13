@@ -21,6 +21,7 @@ import {
 	User,
 	Printer,
 	Download,
+	MessageCircleWarning,
 } from "lucide-react";
 import api from "@/api";
 import { PaymentModal } from "@/components/Student/PaymentModal";
@@ -62,8 +63,9 @@ const CustomSelect = ({
 					</span>
 				</div>
 				<ChevronDown
-					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
-						}`}
+					className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
+						isOpen ? "rotate-180" : ""
+					}`}
 				/>
 			</button>
 
@@ -82,10 +84,11 @@ const CustomSelect = ({
 										onChange(option.value);
 										setIsOpen(false);
 									}}
-									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${value === option.value
-										? "bg-blue-50 text-blue-600 font-medium"
-										: "text-gray-700"
-										}`}>
+									className={`w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors duration-200 flex items-center space-x-3 ${
+										value === option.value
+											? "bg-blue-50 text-blue-600 font-medium"
+											: "text-gray-700"
+									}`}>
 									{option.icon && <option.icon className="w-4 h-4" />}
 									<span>{option.label}</span>
 									{value === option.value && (
@@ -101,7 +104,11 @@ const CustomSelect = ({
 	);
 };
 
-export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNavigate }) {
+export default function TransactionHistoryPage({
+	userData,
+	onPaymentSubmit,
+	onNavigate,
+}) {
 	const [showPaymentModal, setShowPaymentModal] = useState(false);
 	const [selectedSession, setSelectedSession] = useState(null);
 	const [downloadingInvoice, setDownloadingInvoice] = useState(null);
@@ -170,7 +177,6 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 		enabled: !!pelangganId,
 	});
 
-
 	const history = useMemo(() => {
 		if (!sessions.length) return [];
 		return sessions.map((sesi) => {
@@ -197,10 +203,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 					? transaksi.statusPembayaran === "menunggu_verifikasi"
 						? "waiting_verification"
 						: transaksi.statusPembayaran === "accepted"
-							? "accepted"
-							: transaksi.statusPembayaran === "rejected"
-								? "rejected"
-								: "pending_payment"
+						? "accepted"
+						: transaksi.statusPembayaran === "rejected"
+						? "rejected"
+						: "pending_payment"
 					: "pending_payment",
 				// Untuk status 'pending_payment', gunakan jumlahSementara dari sesi (hasil perhitungan backend).
 				// Jika transaksi sudah ada, gunakan transaksi.jumlah.
@@ -312,17 +318,14 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 		setShowPaymentModal(true);
 	};
 
-	console.log(paginatedHistory);
-
-
 	const handleDownloadInvoice = async (session) => {
 		try {
 			setDownloadingInvoice(session.transaksiId);
 			// Generate PDF with userData
 			await generateInvoicePDF(session, userData);
 		} catch (error) {
-			console.error('Error generating PDF:', error);
-			alert('Gagal membuat PDF. Silakan coba lagi.');
+			console.error("Error generating PDF:", error);
+			alert("Gagal membuat PDF. Silakan coba lagi.");
 		} finally {
 			setDownloadingInvoice(null);
 		}
@@ -402,10 +405,11 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 					</div>
 					<button
 						onClick={() => setShowFilters(!showFilters)}
-						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${showFilters
-							? "bg-blue-50 border-blue-400 text-blue-700"
-							: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
-							}`}>
+						className={`outline-none focus:outline-blue-500 relative flex items-center space-x-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+							showFilters
+								? "bg-blue-50 border-blue-400 text-blue-700"
+								: "bg-white border-gray-200 text-gray-700 hover:border-blue-300"
+						}`}>
 						<Filter className="w-4 h-4" />
 						<span>Filter</span>
 						{activeFiltersCount > 0 && (
@@ -518,8 +522,8 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 							key === "status"
 								? statusOptions
 								: key === "mode"
-									? modeOptions
-									: dateRangeOptions
+								? modeOptions
+								: dateRangeOptions
 						).find((opt) => opt.value === value);
 						return (
 							<span
@@ -568,7 +572,10 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 								<div className="flex justify-between items-start mb-4">
 									<div className="flex-1">
 										<h3 className="text-xl font-bold text-gray-900 mb-1">
-											{session.course}
+											{session.course} -{" "}
+											<span className="text-black text-sm">
+												{session.paketNama}
+											</span>
 										</h3>
 										<p className="text-gray-600 flex items-center gap-2">
 											<User className="w-4 h-4" />
@@ -641,10 +648,11 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 													Metode Belajar
 												</p>
 												<span
-													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${session.mode === "online"
-														? "bg-blue-100 text-blue-800"
-														: "bg-red-100 text-red-800"
-														}`}>
+													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+														session.mode === "online"
+															? "bg-blue-100 text-blue-800"
+															: "bg-red-100 text-red-800"
+													}`}>
 													{session.mode === "online" ? "Online" : "Offline"}
 												</span>
 											</div>
@@ -678,26 +686,26 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 											</span>
 										</div>
 									</div>
+
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 										<div>
 											<p className="text-xs text-gray-500 mb-1">Total Harga</p>
 											<p className="text-xl font-bold text-green-600">
 												{formatCurrency(session.amount)}
 											</p>
-											{session.paketNama && session.paketNama !== "-" && (
-												<p className="text-xs text-gray-500 mt-1">
-													{session.paketNama}
-												</p>
-											)}
 										</div>
 										<div>
 											<p className="text-xs text-gray-500 mb-1">
 												Tanggal Pembayaran
 											</p>
 											<p className="font-semibold text-gray-900">
-												{session.paymentDate
-													? formatDateDay(session.paymentDate)
-													: "-"}
+												{session.paymentDate ? (
+													formatDateDay(session.paymentDate)
+												) : (
+													<span className="text-gray-500 text-xs italic">
+														Transaksi belum dilakukan
+													</span>
+												)}
 											</p>
 										</div>
 									</div>
@@ -706,7 +714,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 								{/* Status Messages */}
 								{session.status === "waiting_verification" && (
 									<div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-										<p className="text-blue-800 text-sm">
+										<p className="text-blue-800 text-xs font-medium">
 											Pembayaran Anda sedang diverifikasi. Proses ini biasanya
 											memakan waktu 1-2 jam kerja. Kami akan memberi notifikasi
 											setelah verifikasi selesai.
@@ -715,8 +723,9 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 								)}
 
 								{session.status === "accepted" && (
-									<div className="bg-green-50 p-4 rounded-lg border border-green-100">
-										<p className="text-green-800 text-sm">
+									<div className="bg-green-50 p-4 py-2 flex rounded-lg border border-green-100">
+										<MessageCircleWarning className="w-4 h-4 mr-1 text-green-600" />
+										<p className="text-green-800 text-xs font-medium">
 											Pembayaran Anda diterima. Silakan tunggu mentor untuk
 											memulai sesi.
 										</p>
@@ -749,7 +758,7 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 								{session.status === "rejected" &&
 									updatingSessionId !== session.id && (
 										<div className="bg-red-50 p-4 rounded-lg border border-red-100">
-											<p className="text-red-800 text-sm mb-3">
+											<p className="text-red-800 text-xs font-medium mb-3">
 												Pembayaran Anda ditolak. Silakan kirim ulang bukti
 												pembayaran yang valid.
 											</p>
@@ -805,18 +814,18 @@ export default function TransactionHistoryPage({ userData, onPaymentSubmit, onNa
 						topic: selectedSession.topic,
 						paket: selectedSession.paket
 							? {
-								...selectedSession.paket,
-								// Pastikan data paket lengkap dari session
-								id: selectedSession.paket.id,
-								name: selectedSession.paket.nama,
-								diskon: selectedSession.paket.diskon ?? 0,
-								items: Array.isArray(selectedSession.paket.items)
-									? selectedSession.paket.items.map((item) => ({
-										...item,
-										diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
-									}))
-									: [],
-							}
+									...selectedSession.paket,
+									// Pastikan data paket lengkap dari session
+									id: selectedSession.paket.id,
+									name: selectedSession.paket.nama,
+									diskon: selectedSession.paket.diskon ?? 0,
+									items: Array.isArray(selectedSession.paket.items)
+										? selectedSession.paket.items.map((item) => ({
+												...item,
+												diskon: item.diskon ?? 0, // fallback ke 0 jika undefined/null
+										  }))
+										: [],
+							  }
 							: null,
 						// prefer explicit paket_id from session (history mapping) if available
 						paket_id:
