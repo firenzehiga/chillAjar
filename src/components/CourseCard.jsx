@@ -16,13 +16,10 @@ export function CourseCard({ course, onClick }) {
 	const formatMentorName = (name) => {
 		if (!name) return "";
 		const parts = name.trim().split(/\s+/);
-		if (parts.length <= 2) return name;
-		const lastTwo = parts.slice(-2);
-		const initials = parts
-			.slice(0, -2)
-			.map((p) => p[0].toUpperCase() + ".")
-			.join(" ");
-		return `${initials} ${lastTwo.join(" ")}`;
+		if (parts.length === 1) return parts[0];
+		const lastInitial = parts[parts.length - 1][0].toUpperCase() + ".";
+		const firstParts = parts.slice(0, -1).join(" ");
+		return `${firstParts} ${lastInitial}`;
 	};
 	return (
 		<div
@@ -112,8 +109,8 @@ export function CourseCard({ course, onClick }) {
 								new Set(
 									schedules
 										.map((j) => j.gayaMengajar)
-										.filter((m) => m === "online" || m === "offline")
-								)
+										.filter((m) => m === "online" || m === "offline"),
+								),
 							);
 							if (!validModes.length) {
 								return (

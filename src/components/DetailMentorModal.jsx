@@ -32,7 +32,7 @@ export default function DetailMentorModal({
 	if (!open) return null;
 
 	const offlineSchedules = allSchedules.filter(
-		(s) => s.gayaMengajar === "offline" && s.tempat
+		(s) => s.gayaMengajar === "offline" && s.tempat,
 	);
 	const schedulesByLocation = offlineSchedules.reduce((acc, s) => {
 		const key = s.tempat;
@@ -47,7 +47,7 @@ export default function DetailMentorModal({
 		const s = String(val).trim();
 		// ISO datetime e.g. 2025-12-23T18:00:00 or 2025-12-23 18:00:00
 		const isoMatch = s.match(
-			/^(\d{4}-\d{2}-\d{2})[T\s](\d{2}):(\d{2})(?::\d{2})?/
+			/^(\d{4}-\d{2}-\d{2})[T\s](\d{2}):(\d{2})(?::\d{2})?/,
 		);
 		if (isoMatch) return `${isoMatch[1]} • ${isoMatch[2]}:${isoMatch[3]} WIB`;
 		// Time only HH:MM:SS or HH:MM
@@ -116,9 +116,9 @@ export default function DetailMentorModal({
 								!isNaN(mentor.mentorRating)
 									? mentor.mentorRating.toFixed(1)
 									: Number(mentor.mentorRating) &&
-									  !isNaN(Number(mentor.mentorRating))
-									? Number(mentor.mentorRating).toFixed(1)
-									: "0.0"}
+										  !isNaN(Number(mentor.mentorRating))
+										? Number(mentor.mentorRating).toFixed(1)
+										: "0.0"}
 							</div>
 						</div>
 					</div>
@@ -158,7 +158,7 @@ export default function DetailMentorModal({
 						</button>
 						<button
 							onClick={() => setTab("contact")}
-							className={`py-2 px-3 ${
+							className={`py-2 px-3 focus:outline-none ${
 								tab === "contact"
 									? "border-b-2 border-blue-600 text-blue-600"
 									: "text-gray-600"
@@ -325,7 +325,7 @@ export default function DetailMentorModal({
 														<a
 															href={`tel:${mentor.mentorPhone.replace(
 																/\s+/g,
-																""
+																"",
 															)}`}
 															className="text-sm text-blue-600 underline">
 															{mentor.mentorPhone}

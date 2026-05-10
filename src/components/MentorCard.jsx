@@ -8,6 +8,7 @@ import {
 	AlertCircle,
 	Lightbulb,
 	BookOpen,
+	X,
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
 import { AsyncImage } from "loadable-image";
@@ -34,6 +35,7 @@ export function MentorCard({
 	const [selectedMentorCourse, setSelectedMentorCourse] = useState(null);
 	const [showModal, setShowModal] = useState(false);
 	const [modeError, setModeError] = useState("");
+	const [showAvatarPreview, setShowAvatarPreview] = useState(false);
 
 	useEffect(() => {
 		setSelectedMentorCourse(null);
@@ -46,8 +48,8 @@ export function MentorCard({
 		new Set(
 			allSchedules
 				.map((s) => s.gayaMengajar)
-				.filter((m) => m === "online" || m === "offline")
-		)
+				.filter((m) => m === "online" || m === "offline"),
+		),
 	);
 
 	// --- Perubahan: Validasi jika tidak ada jadwal dengan gayaMengajar valid ---
@@ -87,15 +89,7 @@ export function MentorCard({
 	};
 
 	const formatMentorName = (name) => {
-		if (!name) return "";
-		const parts = name.trim().split(/\s+/);
-		if (parts.length <= 2) return name;
-		const lastTwo = parts.slice(-2);
-		const initials = parts
-			.slice(0, -2)
-			.map((p) => p[0].toUpperCase() + ".")
-			.join(" ");
-		return `${initials} ${lastTwo.join(" ")}`;
+		return name || "";
 	};
 	return (
 		<>
@@ -105,7 +99,7 @@ export function MentorCard({
 				.deco-float { animation: floaty 3.8s ease-in-out infinite; }
 				.deco-pop { animation: pop 2.6s ease-in-out infinite; }
 			`}</style>
-			<div className="group relative bg-gray-50 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+			<div className="group relative bg-gray-50 rounded-xl shadow-lg overflow-hidden transform-gpu transition-transform  duration-300 will-change-transform hover:shadow-2xl hover:translate-y-1">
 				{/* small ribbon to match app theme */}
 				<div className="absolute top-4 left-4 bg-white/90 text-xs font-semibold text-blue-700 px-2 py-1 rounded-md shadow-sm">
 					ChillAjar
@@ -136,7 +130,11 @@ export function MentorCard({
 						<Lightbulb className="absolute left-20 top-7 w-14 h-14 text-white opacity-20 transform rotate-6 deco-float transition-transform duration-500 group-hover:translate-y-1 group-hover:rotate-3" />
 					</div>
 					<div className="absolute -bottom-12 left-6">
-						<div className="rounded-full p-1 bg-gradient-to-r from-chill-blue via-indigo-500 to-chill-blue">
+						<button
+							type="button"
+							onClick={() => setShowAvatarPreview(true)}
+							className="rounded-full p-1 bg-gradient-to-r from-chill-blue via-indigo-500 to-chill-blue outline-none active:outline-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white [-webkit-tap-highlight-color:transparent]"
+							aria-label={`Lihat foto ${mentor.mentorName || "mentor"}`}>
 							<AsyncImage
 								Transition={Fade}
 								src={mentor.mentorImage}
@@ -147,17 +145,28 @@ export function MentorCard({
 									e.target.src = "/foto_mentor/default.png";
 								}}
 							/>
-						</div>
+						</button>
 					</div>
 				</div>
 
 				<div className="pt-14 px-6 pb-6">
 					<div className="flex justify-between items-start mb-4">
-						<div>
-							<h3 className="text-xl font-bold text-gray-900">
+						<div className="min-w-0">
+							<h3 className="text-xl font-bold text-gray-900 leading-tight break-words">
 								{formatMentorName(mentor.mentorName) || "Mentor"}
 							</h3>
-							<div className="flex items-center text-yellow-400 mt-1">
+							<div
+								className="flex items-center text-yellow-400 mt-1"
+								aria-label={`Rating ${
+									typeof mentor.mentorRating === "number" &&
+									!isNaN(mentor.mentorRating)
+										? mentor.mentorRating.toFixed(1)
+										: Number(mentor.mentorRating) &&
+											  !isNaN(Number(mentor.mentorRating))
+											? Number(mentor.mentorRating).toFixed(1)
+											: "0.0"
+								} dari 5`}
+								role="img">
 								<Star className="w-4 h-4 fill-current" />
 								<span className="ml-1 text-sm">
 									{/*
@@ -166,10 +175,10 @@ export function MentorCard({
 										Jika rating tidak valid, tampilkan 0.0 agar UI tetap aman di semua environment.
 									*/}
 									{typeof mentor.mentorRating === "number" &&
-										!isNaN(mentor.mentorRating)
+									!isNaN(mentor.mentorRating)
 										? mentor.mentorRating.toFixed(1)
 										: Number(mentor.mentorRating) &&
-											!isNaN(Number(mentor.mentorRating))
+											  !isNaN(Number(mentor.mentorRating))
 											? Number(mentor.mentorRating).toFixed(1)
 											: "0.0"}
 								</span>
@@ -189,12 +198,13 @@ export function MentorCard({
 							validModes.map((mode) => (
 								<span
 									key={mode}
-									className={`text-xs px-3 py-1 rounded-full font-medium ${mode === "online"
-										? "bg-blue-50 text-blue-700"
-										: mode === "offline"
-											? "bg-red-50 text-red-700"
-											: "bg-gray-100 text-gray-700"
-										}`}>
+									className={`text-xs px-3 py-1 rounded-full font-medium ${
+										mode === "online"
+											? "bg-blue-50 text-blue-700"
+											: mode === "offline"
+												? "bg-red-50 text-red-700"
+												: "bg-gray-100 text-gray-700"
+									}`}>
 									{mode === "online" ? "Online" : "Offline"}
 								</span>
 							))
@@ -234,10 +244,11 @@ export function MentorCard({
 							type="button"
 							onClick={handleScheduleClick}
 							disabled={validModes.length === 0}
-							className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all transform ${validModes.length > 0
-								? "bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 outline-none focus:outline-none"
-								: "bg-gray-300 text-gray-500 cursor-not-allowed"
-								}`}>
+							className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all transform ${
+								validModes.length > 0
+									? "bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 outline-none focus:outline-none"
+									: "bg-gray-300 text-gray-500 cursor-not-allowed"
+							}`}>
 							<BookOpen className="w-4 h-4" />
 							{selectedCourse ? "Pesan Sekarang" : "Pilih Kursus"}
 						</button>
@@ -259,6 +270,37 @@ export function MentorCard({
 						setSelectedMentorCourse(null);
 					}}
 				/>
+			)}
+
+			{showAvatarPreview && (
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm px-4"
+					onClick={() => setShowAvatarPreview(false)}
+					role="dialog"
+					aria-modal="true">
+					<div className="relative" onClick={(e) => e.stopPropagation()}>
+						<div className="absolute -inset-6 rounded-full bg-blue-400/20 blur-2xl" />
+						<div className="relative rounded-full p-[6px] bg-gradient-to-br from-blue-400 via-indigo-400 to-sky-300 shadow-2xl">
+							<AsyncImage
+								Transition={Fade}
+								src={mentor.mentorImage}
+								alt={mentor.mentorName}
+								className="w-72 h-72 rounded-full object-cover object-center border-[6px] border-white"
+								onError={(e) => {
+									e.target.onerror = null;
+									e.target.src = "/foto_mentor/default.png";
+								}}
+							/>
+						</div>
+						<button
+							type="button"
+							onClick={() => setShowAvatarPreview(false)}
+							className="absolute -top-3 -right-3 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
+							aria-label="Tutup">
+							<X className="w-5 h-5 text-gray-600" />
+						</button>
+					</div>
+				</div>
 			)}
 		</>
 	);
