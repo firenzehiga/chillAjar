@@ -109,7 +109,7 @@ export function SearchFilter({ filterType = "course" }) {
 						exit={{ opacity: 0, scale: 0.95, y: -10 }}
 						className="absolute top-full mt-2 left-0 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
 						{/* Header */}
-						<div className="p-4 bg-gradient-to-r  from-blue-50 to-orange-50 border-b">
+						<div className="p-4 bg-gradient-to-r  from-blue-50 to-blue-100 border-b">
 							<div className="flex items-center justify-between">
 								<h3 className="font-semibold text-gray-900">{filterLabel}</h3>
 								<div className="flex items-center space-x-2">
@@ -135,7 +135,10 @@ export function SearchFilter({ filterType = "course" }) {
 							<div>
 								<label className="block text-sm font-medium text-gray-700 mb-3">
 									<DollarSign className="w-4 h-4 inline mr-1" />
-									Rentang Harga: Rp {localPriceRange[0].toLocaleString("id-ID")} - Rp {localPriceRange[1].toLocaleString("id-ID")}
+									Rentang Harga: Rp {localPriceRange[0].toLocaleString(
+										"id-ID",
+									)}{" "}
+									- Rp {localPriceRange[1].toLocaleString("id-ID")}
 								</label>
 								<div className="flex items-center space-x-3">
 									<span className="text-xs text-gray-500">0</span>
@@ -145,7 +148,9 @@ export function SearchFilter({ filterType = "course" }) {
 										max="100000"
 										step="5000"
 										value={localPriceRange[1]}
-										onChange={(e) => setLocalPriceRange([0, parseInt(e.target.value)])}
+										onChange={(e) =>
+											setLocalPriceRange([0, parseInt(e.target.value)])
+										}
 										className="flex-1 focus:outline-none outline-none"
 									/>
 									<span className="text-xs text-gray-500">100k</span>
@@ -165,10 +170,11 @@ export function SearchFilter({ filterType = "course" }) {
 											onClick={() => handleFilterChange("mentorRating", rating)}
 											className="transition-all duration-200 hover:scale-110 focus:outline-none outline-none">
 											<Star
-												className={`w-6 h-6 ${rating <= filters.mentorRating
-													? "text-yellow-400 fill-current"
-													: "text-gray-300"
-													}`}
+												className={`w-6 h-6 ${
+													rating <= filters.mentorRating
+														? "text-yellow-400 fill-current"
+														: "text-gray-300"
+												}`}
 											/>
 										</button>
 									))}
@@ -193,13 +199,14 @@ export function SearchFilter({ filterType = "course" }) {
 										onClick={() =>
 											handleFilterChange(
 												"mode",
-												filters.mode === "online" ? "" : "online"
+												filters.mode === "online" ? "" : "online",
 											)
 										}
-										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent  flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${filters.mode === "online"
-											? "bg-blue-600 text-white border-blue-600 "
-											: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-											}`}>
+										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent  flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
+											filters.mode === "online"
+												? "bg-blue-600 text-white border-blue-600 "
+												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+										}`}>
 										<Monitor className="w-4 h-4 mr-2" />
 										Online
 									</button>
@@ -207,13 +214,14 @@ export function SearchFilter({ filterType = "course" }) {
 										onClick={() =>
 											handleFilterChange(
 												"mode",
-												filters.mode === "offline" ? "" : "offline"
+												filters.mode === "offline" ? "" : "offline",
 											)
 										}
-										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${filters.mode === "offline"
-											? "bg-blue-600 text-white border-blue-600"
-											: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-											}`}>
+										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
+											filters.mode === "offline"
+												? "bg-blue-600 text-white border-blue-600"
+												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+										}`}>
 										<MapPin className="w-4 h-4 mr-2" />
 										Offline
 									</button>
@@ -231,13 +239,14 @@ export function SearchFilter({ filterType = "course" }) {
 										onClick={() =>
 											handleFilterChange(
 												"availability",
-												filters.availability === "today" ? "" : "today"
+												filters.availability === "today" ? "" : "today",
 											)
 										}
-										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${filters.availability === "today"
-											? "bg-blue-600 text-white border-blue-600"
-											: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-											}`}>
+										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
+											filters.availability === "today"
+												? "bg-blue-600 text-white border-blue-600"
+												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+										}`}>
 										<Clock className="w-4 h-4 mr-2" />
 										Hari Ini
 									</button>
@@ -245,13 +254,14 @@ export function SearchFilter({ filterType = "course" }) {
 										onClick={() =>
 											handleFilterChange(
 												"availability",
-												filters.availability === "week" ? "" : "week"
+												filters.availability === "week" ? "" : "week",
 											)
 										}
-										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent  flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${filters.availability === "week"
-											? "bg-blue-600 text-white border-blue-600"
-											: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-											}`}>
+										className={`focus:ring-2 focus:ring-blue-600 focus:outline-none focus:outline-transparent  flex items-center justify-center p-3 rounded-lg border transition-all duration-300 ${
+											filters.availability === "week"
+												? "bg-blue-600 text-white border-blue-600"
+												: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+										}`}>
 										<Clock className="w-4 h-4 mr-2" />
 										Minggu Ini
 									</button>
@@ -264,4 +274,3 @@ export function SearchFilter({ filterType = "course" }) {
 		</div>
 	);
 }
-

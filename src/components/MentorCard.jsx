@@ -8,6 +8,7 @@ import {
 	AlertCircle,
 	Lightbulb,
 	BookOpen,
+	Maximize2,
 	X,
 } from "lucide-react";
 import { CourseSelectionModal } from "./CourseSelectionModal";
@@ -133,18 +134,22 @@ export function MentorCard({
 						<button
 							type="button"
 							onClick={() => setShowAvatarPreview(true)}
-							className="rounded-full p-1 bg-gradient-to-r from-chill-blue via-indigo-500 to-chill-blue outline-none active:outline-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white [-webkit-tap-highlight-color:transparent]"
+							className="group/avatar relative rounded-full p-1 bg-gradient-to-r from-chill-blue via-blue-500 to-chill-blue outline-none active:outline-none focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white cursor-zoom-in [-webkit-tap-highlight-color:transparent]"
 							aria-label={`Lihat foto ${mentor.mentorName || "mentor"}`}>
 							<AsyncImage
 								Transition={Fade}
 								src={mentor.mentorImage}
 								alt={mentor.mentorName}
-								className="w-20 h-20 rounded-full shadow-lg object-cover object-center"
+								className="w-24 h-24 rounded-full shadow-lg object-cover object-center hover:brightness-85 transition-all duration-300"
 								onError={(e) => {
 									e.target.onerror = null;
 									e.target.src = "/foto_mentor/default.png";
 								}}
 							/>
+							<span className="absolute inset-0 rounded-full bg-black/35 opacity-0 transition-opacity duration-200 group-hover/avatar:opacity-100" />
+							<span className="absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity duration-200 group-hover/avatar:opacity-100">
+								<Maximize2 className="w-5 h-5" />
+							</span>
 						</button>
 					</div>
 				</div>
@@ -246,7 +251,7 @@ export function MentorCard({
 							disabled={validModes.length === 0}
 							className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all transform ${
 								validModes.length > 0
-									? "bg-blue-500 text-white hover:bg-blue-600 hover:scale-105 outline-none focus:outline-none"
+									? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-105 outline-none focus:outline-none"
 									: "bg-gray-300 text-gray-500 cursor-not-allowed"
 							}`}>
 							<BookOpen className="w-4 h-4" />
@@ -280,12 +285,12 @@ export function MentorCard({
 					aria-modal="true">
 					<div className="relative" onClick={(e) => e.stopPropagation()}>
 						<div className="absolute -inset-6 rounded-full bg-blue-400/20 blur-2xl" />
-						<div className="relative rounded-full p-[6px] bg-gradient-to-br from-blue-400 via-indigo-400 to-sky-300 shadow-2xl">
+						<div className="relative rounded-full p-[6px] bg-gradient-to-br from-blue-400 via-blue-400 to-sky-300 shadow-2xl">
 							<AsyncImage
 								Transition={Fade}
 								src={mentor.mentorImage}
 								alt={mentor.mentorName}
-								className="w-72 h-72 rounded-full object-cover object-center border-[6px] border-white"
+								className="w-72 h-72 rounded-full object-cover object-center"
 								onError={(e) => {
 									e.target.onerror = null;
 									e.target.src = "/foto_mentor/default.png";
@@ -295,7 +300,7 @@ export function MentorCard({
 						<button
 							type="button"
 							onClick={() => setShowAvatarPreview(false)}
-							className="absolute -top-3 -right-3 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
+							className="absolute -top-2 -right-3 p-2 rounded-full bg-white shadow-lg hover:bg-gray-100"
 							aria-label="Tutup">
 							<X className="w-5 h-5 text-gray-600" />
 						</button>

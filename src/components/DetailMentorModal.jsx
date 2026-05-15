@@ -87,17 +87,23 @@ export default function DetailMentorModal({
 	const content = (
 		<div className="fixed inset-0 z-50 flex items-center justify-center">
 			<div
-				className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+				className="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-slate-900/50 to-blue-900/40 backdrop-blur-sm"
 				onClick={onClose}
 			/>
 			<motion.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				className="relative bg-white w-full max-w-3xl mx-4 my-8 rounded-lg shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
-				<div className="flex items-center justify-between px-6 py-3 border-b">
+				className="relative w-full max-w-2xl mx-4 my-8 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col border border-white/20 bg-white">
+				<div className="absolute inset-0 opacity-20">
+					<div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,#e5e7eb_1px,transparent_1px)] [background-size:18px_18px]" />
+				</div>
+				<div className="absolute inset-0 rounded-2xl border border-slate-100" />
+				<div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-blue-400/15 blur-3xl" />
+				<div className="absolute -bottom-20 -left-16 h-48 w-48 rounded-full bg-indigo-400/10 blur-3xl" />
+				<div className="relative flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-blue-50 via-white to-white">
 					<div className="flex items-center gap-4">
-						<div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+						<div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 ring-2 ring-blue-100">
 							<AsyncImage
 								src={mentor.mentorImage}
 								alt={mentor.mentorName}
@@ -110,7 +116,7 @@ export default function DetailMentorModal({
 						</div>
 						<div>
 							<h3 className="text-lg font-semibold">{mentor.mentorName} </h3>
-							<div className="text-sm font-medium text-yellow-400 flex items-center">
+							<div className="text-sm font-medium text-yellow-500 flex items-center">
 								<Star className="w-4 h-4 fill-current mr-1" />
 								{typeof mentor.mentorRating === "number" &&
 								!isNaN(mentor.mentorRating)
@@ -122,12 +128,14 @@ export default function DetailMentorModal({
 							</div>
 						</div>
 					</div>
-					<button onClick={onClose} className="p-2 rounded hover:bg-gray-100">
+					<button
+						onClick={onClose}
+						className="p-2 rounded-full hover:bg-gray-100">
 						<X className="w-5 h-5 text-gray-600" />
 					</button>
 				</div>
 
-				<div className="px-6 py-4 overflow-auto flex-1">
+				<div className="px-6 py-5 overflow-auto flex-1">
 					<div className="flex gap-3 border-b mb-4">
 						<button
 							onClick={() => setTab("about")}
@@ -381,18 +389,6 @@ export default function DetailMentorModal({
 							</div>
 						)}
 					</div>
-				</div>
-				<div className="px-6 py-4 border-t flex justify-end gap-3">
-					<button
-						onClick={onClose}
-						className="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-200 text-gray-700 hover:text-gray-800 hover:scale-105 transition-all">
-						Tutup
-					</button>
-					{/* <button
-						onClick={() => onSchedule && onSchedule(mentor)}
-						className="px-4 py-2 rounded bg-blue-600 text-white">
-						Pilih Kursus
-					</button> */}
 				</div>
 			</motion.div>
 		</div>

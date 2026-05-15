@@ -39,12 +39,12 @@ html {
   outline-offset: 2px;
 }
 
-/* Carousel Styling */
+/* Carousel Styling
 .slick-prev,
 .slick-next {
   z-index: 10;
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   background-color: rgba(255, 255, 255, 0.8) !important;
   border-radius: 50%;
   transition: background-color 0.2s;
@@ -70,7 +70,7 @@ html {
   font-size: 24px;
   color: #1e40af !important;
   opacity: 1;
-}
+} */
 
 .slick-dots {
   bottom: 20px;

@@ -36,7 +36,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 
 					const base = getImageUrl(
 						course.courseImage,
-						"/foto_kursus/default.jpg"
+						"/foto_kursus/default.jpg",
 					);
 					const w768 = `${base}?w=768&h=400&fit=cover`;
 					const w1280 = `${base}?w=1280&h=400&fit=cover`;
@@ -92,7 +92,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 														.filter(
 															(v, i, arr) =>
 																(v === "online" || v === "offline") &&
-																arr.indexOf(v) === i
+																arr.indexOf(v) === i,
 														);
 													if (validModes.length > 0) {
 														return (
