@@ -95,12 +95,12 @@ export default function DetailMentorModal({
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
 				className="relative w-full max-w-2xl mx-4 my-8 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col border border-white/20 bg-white">
-				<div className="absolute inset-0 opacity-20">
+				<div className="absolute inset-0 opacity-20 pointer-events-none">
 					<div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,#e5e7eb_1px,transparent_1px)] [background-size:18px_18px]" />
 				</div>
-				<div className="absolute inset-0 rounded-2xl border border-slate-100" />
-				<div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-blue-400/15 blur-3xl" />
-				<div className="absolute -bottom-20 -left-16 h-48 w-48 rounded-full bg-indigo-400/10 blur-3xl" />
+				<div className="absolute inset-0 rounded-2xl border border-slate-100 pointer-events-none" />
+				<div className="absolute -top-16 -right-16 h-40 w-40 rounded-full bg-blue-400/15 blur-3xl pointer-events-none" />
+				<div className="absolute -bottom-20 -left-16 h-48 w-48 rounded-full bg-indigo-400/10 blur-3xl pointer-events-none" />
 				<div className="relative flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-blue-50 via-white to-white">
 					<div className="flex items-center gap-4">
 						<div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 ring-2 ring-blue-100">
@@ -178,9 +178,15 @@ export default function DetailMentorModal({
 					<div className="min-h-[140px]">
 						{tab === "about" && (
 							<div>
-								<p className="text-gray-700 text-sm whitespace-pre-line text-justify">
-									{mentor.mentorAbout}
-								</p>
+								{mentor.mentorAbout ? (
+									<p className="text-gray-700 text-sm whitespace-pre-line text-justify">
+										{mentor.mentorAbout}
+									</p>
+								) : (
+									<p className="text-gray-500 text-sm italic">
+										Mentor belum memiliki deskripsi.
+									</p>
+								)}
 							</div>
 						)}
 

@@ -1,87 +1,22 @@
 import React, { useState } from "react";
 import { X, Gift, ArrowRight, AlertCircle } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import api from "../../api";
+import { useCoursePackages } from "@/hooks/useCoursePackages";
 import CoursePackageCard from "./CoursePackageCard";
 import { BookLoader } from "../ui/BookLoader";
 
 export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 	const [selectedPackage, setSelectedPackage] = useState(null);
 
-	const token = localStorage.getItem("token");
-	const isAuthenticated = !!token;
-
-	// Fetch packages menggunakan useQuery
+	// Fetch packages menggunakan hook terpusat (filter visible + aktif + mapping data)
 	const {
 		data: packages = [],
 		isLoading: loading,
 		error,
 		refetch,
-	} = useQuery({
-		queryKey: ["coursePackages", course?.id],
-		queryFn: async () => {
-			if (!course?.id) return [];
-			if (!isAuthenticated) return [];
-
-			// console.log("Fetching packages for course:", course);
-			// Ambil data kursus beserta paket yang visible
-			const response = await api.get(`/kursus/${course.id}`, {
-				headers: token ? { Authorization: `Bearer ${token}` } : {},
-			});
-
-			// console.log("Response dari /kursus:", response.data);
-
-			// Ambil paket dari visibilitasPaket yang statusnya visible (visibilitas = 1)
-			const visiblePackages =
-				response.data.visibilitas_paket
-					?.filter((vp) => vp.visibilitas === 1)
-					?.map((vp) => vp.paket)
-					?.filter((pkg) => pkg) || [];
-
-			// console.log("Visible packages from visibilitas_paket:", visiblePackages);
-
-			// Filter paket yang aktif dan sudah dimulai
-			const activePackages = visiblePackages.filter((pkg) => {
-				const now = new Date();
-
-				// Cek tanggal mulai - paket harus sudah dimulai
-				if (pkg.tanggal_mulai) {
-					const startDate = new Date(pkg.tanggal_mulai);
-					if (startDate > now) return false; // Paket belum dimulai
-				}
-
-				// Cek tanggal berakhir - paket tidak boleh expired
-				if (pkg.tanggal_berakhir) {
-					const endDate = new Date(pkg.tanggal_berakhir);
-					if (endDate < now) return false; // Paket sudah expired
-				}
-
-				return true; // Paket aktif dan dapat dibeli
-			});
-
-			// console.log("Active packages after filtering:", activePackages);
-
-			// Map data untuk konsistensi
-			return activePackages.map((pkg) => ({
-				id: pkg.id,
-				name: pkg.nama,
-				description: pkg.deskripsi,
-				totalPrice: pkg.harga_dasar || 0,
-				packageDiscount: pkg.diskon || 0,
-				items:
-					pkg.items?.map((item) => ({
-						id: item.id,
-						name: item.nama,
-						price: item.harga,
-						harga: item.harga, // Duplikat untuk kompatibilitas
-						diskon: item.diskon || 0, // Tambahkan diskon item
-						description: item.deskripsi,
-					})) || [],
-				tanggal_mulai: pkg.tanggal_mulai,
-				tanggal_berakhir: pkg.tanggal_berakhir,
-			}));
-		},
-		enabled: !!course?.id && isAuthenticated, // Hanya fetch jika course ID ada
+	} = useCoursePackages({
+		courseId: course?.id,
+		// Hanya fetch jika course ID ada
+		enabled: Boolean(course?.id),
 		// staleTime: 5 * 60 * 1000, // Data fresh selama 5 menit
 		// cacheTime: 10 * 60 * 1000, // Cache selama 10 menit
 		// retry: 2,

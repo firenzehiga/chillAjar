@@ -63,7 +63,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 									<h3 className="text-3xl font-bold text-white mb-2">
 										{course.courseName}
 									</h3>
-									<p className="text-gray-200 mb-4">
+									<p className="text-gray-200 mb-4 hidden lg:block">
 										{course.courseDescription}
 									</p>
 									<div className="flex items-center justify-between sm:flex-row flex-col gap-3">
@@ -80,8 +80,8 @@ export function CourseCarousel({ courses, onCourseClick }) {
                                                 - Jika ada jadwal tapi tidak ada mode valid, tampilkan badge abu-abu "Tidak ada jadwal dengan mode valid"
                                             */}
 											{schedules.length === 0 ? (
-												<div className="bg-red-700 text-white px-4 py-1 rounded-full text-sm flex items-center">
-													<CalendarOff className="w-4 h-4 mr-1" />
+												<div className="bg-red-700 text-white px-4 py-1 rounded-full text-sm flex italic items-center">
+													<CalendarOff className="w-4 h-4 mr-2" />
 													Jadwal belum tersedia
 												</div>
 											) : (
@@ -101,7 +101,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 																{validModes.includes("online") && (
 																	<span
 																		key="online"
-																		className="bg-blue-800 text-white px-4 py-1 rounded-full text-sm">
+																		className="bg-blue-50 text-blue-700 px-4 py-1 rounded-full text-sm font-semibold">
 																		Online
 																	</span>
 																)}
@@ -109,7 +109,7 @@ export function CourseCarousel({ courses, onCourseClick }) {
 																{validModes.includes("offline") && (
 																	<span
 																		key="offline"
-																		className="bg-red-800 text-white px-4 py-1 rounded-full text-sm">
+																		className="bg-red-50 text-red-700 px-4 py-1 rounded-full text-sm font-semibold">
 																		Offline
 																	</span>
 																)}
