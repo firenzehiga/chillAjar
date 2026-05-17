@@ -64,11 +64,11 @@ export const computePackagePricing = (packageData, mentorFee = 0) => {
 	const actualPackagePrice = items.reduce(
 		(sum, item) =>
 			sum + Math.max((item.harga || item.price || 0) - (item.diskon || 0), 0),
-		0
+		0,
 	);
 	const finalPackagePrice = Math.max(
 		actualPackagePrice - (packageData?.packageDiscount || 0),
-		0
+		0,
 	);
 	const totalFinalPrice = finalPackagePrice + (mentorFee || 0);
 
