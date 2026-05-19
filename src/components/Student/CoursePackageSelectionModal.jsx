@@ -135,7 +135,7 @@ export function CoursePackageSelectionModal({ course, onClose, onConfirm }) {
 									disabled={!selectedPackage}
 									className={`flex-1 sm:flex-none flex items-center justify-center px-4 sm:px-6 py-2 rounded-lg transition-colors text-sm ${
 										selectedPackage
-											? "bg-blue-500 text-white hover:bg-blue-600"
+											? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 outline-none focus:outline-none"
 											: "bg-gray-300 text-gray-500 cursor-not-allowed"
 									}`}>
 									Lanjutkan

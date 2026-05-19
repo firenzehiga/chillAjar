@@ -335,7 +335,7 @@ export function BookingModal({
 									disabled={!availableModes.includes(mode)}
 									className={`flex items-center justify-center p-2 rounded-lg border ${
 										selectedMode === mode
-											? "bg-chill-blue text-white border-blue-500 focus:outline-none focus:ring-3 outline-none focus:border-blue-300 transition-colors"
+											? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 outline-none focus:outline-none"
 											: availableModes.includes(mode)
 												? "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 												: "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -376,7 +376,7 @@ export function BookingModal({
 											}}
 											className={`w-full p-2 rounded-lg border text-left ${
 												selectedLocation === loc
-													? "bg-chill-blue text-white border-blue-500 focus:outline-none transition-colors"
+													? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 outline-none focus:outline-none"
 													: "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
 											}`}>
 											<div className="flex items-center">
@@ -418,7 +418,7 @@ export function BookingModal({
 											}}
 											className={`p-2 rounded ${
 												selectedDate?.toDateString() === date.toDateString()
-													? "bg-chill-blue text-white border-blue-500 focus:outline-none transition-colors"
+													? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 outline-none focus:outline-none"
 													: "bg-gray-100 hover:bg-gray-200"
 											}`}>
 											<CalendarDays className="w-4 h-4 mr-1 mb-1 inline" />
@@ -459,7 +459,7 @@ export function BookingModal({
 										onClick={() => setSelectedTime(time)}
 										className={`flex items-center justify-center p-2 rounded whitespace-nowrap ${
 											selectedTime === time
-												? "bg-chill-blue text-white border-blue-500 focus:outline-none transition-colors"
+												? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 outline-none focus:outline-none"
 												: "bg-gray-100 hover:bg-gray-200"
 										}`}>
 										<Clock className="w-4 h-4 mr-2 shrink-0" />
@@ -510,7 +510,7 @@ export function BookingModal({
 								selectedMode &&
 								filteredSchedules.length > 0 &&
 								(selectedMode === "online" || selectedLocation)
-									? "bg-blue-500 text-white hover:bg-blue-600"
+									? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 outline-none focus:outline-none"
 									: "bg-gray-300 text-gray-500 cursor-not-allowed"
 							}`}>
 							{isProcessing ? (

@@ -144,7 +144,7 @@ export function CourseCard({ course, onClick }) {
 										disabled={validModes.length === 0}
 										className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all transform focus:outline-none ${
 											validModes.length > 0
-												? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-105"
+												? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700"
 												: "bg-gray-300 text-gray-500 cursor-not-allowed"
 										}`}>
 										<User className="w-4 h-4" />
