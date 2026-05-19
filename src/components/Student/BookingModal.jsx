@@ -44,7 +44,7 @@ export function BookingModal({
 			const itemDiscount = item?.diskon ?? 0;
 			return sum + Math.max(itemPrice - itemDiscount, 0);
 		},
-		0
+		0,
 	);
 	// Gunakan harga hasil perhitungan item jika bernilai; jika tidak, gunakan packagePrice yang tersimpan (kompatibilitas mundur)
 	const basePackagePrice =
@@ -55,18 +55,18 @@ export function BookingModal({
 
 	// Ambil jadwal dari selectedCourse yang sudah difilter agar hanya jadwal yang belum memiliki data sesi dan transaksi
 	const filteredSchedules = (selectedCourse?.jadwal_kursus || []).filter(
-		(s) => s.gayaMengajar === "online" || s.gayaMengajar === "offline"
+		(s) => s.gayaMengajar === "online" || s.gayaMengajar === "offline",
 	);
 
 	// Buat available modes dari jadwal
 	const availableModes = Array.from(
-		new Set(filteredSchedules.map((s) => s.gayaMengajar))
+		new Set(filteredSchedules.map((s) => s.gayaMengajar)),
 	);
 
 	useEffect(() => {
 		if (filteredSchedules.length === 0) {
 			setErrorMsg(
-				"Mohon maaf, tidak ada jadwal tersedia untuk kursus ini. Silakan pilih kursus lain."
+				"Mohon maaf, tidak ada jadwal tersedia untuk kursus ini. Silakan pilih kursus lain.",
 			);
 		} else {
 			setErrorMsg("");
@@ -81,9 +81,9 @@ export function BookingModal({
 						filteredSchedules
 							.filter((s) => s.gayaMengajar === "offline")
 							.map((s) => s.tempat)
-							.filter(Boolean)
+							.filter(Boolean),
 					),
-			  ]
+				]
 			: [];
 
 	// Buat available dates dari jadwal
@@ -99,11 +99,11 @@ export function BookingModal({
 									// Untuk online: ambil semua tanggal, untuk offline: filter lokasi
 									(selectedMode === "online" ||
 										(selectedMode === "offline" &&
-											(!selectedLocation || s.tempat === selectedLocation)))
+											(!selectedLocation || s.tempat === selectedLocation))),
 							)
-							.map((s) => s.tanggal)
+							.map((s) => s.tanggal),
 					),
-			  ].map((date) => new Date(date))
+				].map((date) => new Date(date))
 			: [];
 	// --- END Perubahan ---
 
@@ -118,7 +118,7 @@ export function BookingModal({
 							s.tanggal === selectedDate.toISOString().split("T")[0] &&
 							(selectedMode === "online" ||
 								(selectedMode === "offline" &&
-									(!selectedLocation || s.tempat === selectedLocation)))
+									(!selectedLocation || s.tempat === selectedLocation))),
 					)
 					.map((s) => s.waktu)
 			: [];
@@ -146,7 +146,7 @@ export function BookingModal({
 				s.waktu === selectedTime &&
 				(selectedMode === "online" ||
 					(selectedMode === "offline" &&
-						(!selectedLocation || s.tempat === selectedLocation)))
+						(!selectedLocation || s.tempat === selectedLocation))),
 		);
 		if (!found) {
 			setErrorMsg("Jadwal tidak ditemukan atau tidak valid.");
@@ -164,7 +164,7 @@ export function BookingModal({
 				selectedCourse,
 				topic,
 				selectedLocation,
-				selectedPackage
+				selectedPackage,
 			);
 			onClose();
 		} catch (err) {
@@ -337,8 +337,8 @@ export function BookingModal({
 										selectedMode === mode
 											? "bg-chill-blue text-white border-blue-500 focus:outline-none focus:ring-3 outline-none focus:border-blue-300 transition-colors"
 											: availableModes.includes(mode)
-											? "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-											: "bg-gray-100 text-gray-400 cursor-not-allowed"
+												? "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+												: "bg-gray-100 text-gray-400 cursor-not-allowed"
 									}`}>
 									{mode === "online" ? (
 										<Monitor className="w-4 h-4 mr-2" />
@@ -510,7 +510,7 @@ export function BookingModal({
 								selectedMode &&
 								filteredSchedules.length > 0 &&
 								(selectedMode === "online" || selectedLocation)
-									? "bg-black text-white hover:bg-blue-600"
+									? "bg-blue-500 text-white hover:bg-blue-600"
 									: "bg-gray-300 text-gray-500 cursor-not-allowed"
 							}`}>
 							{isProcessing ? (

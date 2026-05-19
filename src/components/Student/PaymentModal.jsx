@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Upload, CreditCard, Loader2 } from "lucide-react";
+import { X, Upload, CreditCard, Loader2, Copy } from "lucide-react";
 import Swal from "sweetalert2";
 import toast from "react-hot-toast";
 import { createPortal } from "react-dom";
@@ -13,6 +13,26 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 	const [proofImage, setProofImage] = useState(null);
 	const [proofPreview, setProofPreview] = useState(null); // Untuk pratinjau
 	const [loading, setLoading] = useState(false); // Tambah state loading
+	const [copied, setCopied] = useState(false);
+
+	const handleCopyRekening = async () => {
+		const text = "901298497261";
+		try {
+			await navigator.clipboard.writeText(text);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1500);
+		} catch {
+			// fallback sederhana
+			const textarea = document.createElement("textarea");
+			textarea.value = text;
+			document.body.appendChild(textarea);
+			textarea.select();
+			document.execCommand("copy");
+			document.body.removeChild(textarea);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1500);
+		}
+	};
 
 	const handleFileChange = (e) => {
 		const file = e.target.files[0];
@@ -71,7 +91,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 						borderRadius: "8px",
 						minWidth: "300px",
 					},
-				}
+				},
 			);
 			return;
 		}
@@ -98,7 +118,7 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 			return booking.paket.items.reduce(
 				(sum, item) =>
 					sum + Math.max((item.harga || 0) - (item.diskon || 0), 0),
-				0
+				0,
 			);
 		}
 		return booking.paket.harga_dasar || booking.paket.harga || 0;
@@ -288,19 +308,48 @@ export function PaymentModal({ booking, onClose, onSubmit, mentor }) {
 						{/* Bank Details */}
 						{paymentMethod === "Transfer Bank" && (
 							<div>
-								<h3 className="font-semibold text-lg mb-4">Detail Bank</h3>
-								<div className="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-2">
-									<p>
-										<span className="font-medium">Bank Tujuan:</span> BCA
-									</p>
-									<p>
-										<span className="font-medium">Nomor Rekening:</span>{" "}
-										1234567890
-									</p>
-									<p>
-										<span className="font-medium">Pemilik Rekening:</span>{" "}
-										ChillAjar
-									</p>
+								<h3 className="font-semibold text-lg mb-4">
+									Informasi Pembayaran
+								</h3>
+								<div className="rounded-2xl bg-blue-50 border border-blue-200 p-4 shadow-sm">
+									<div className="flex items-center justify-between">
+										<div>
+											<p className="text-xs font-semibold text-slate-500">
+												Transfer Bank
+											</p>
+											<div className="mt-1 inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
+												Seabank
+											</div>
+										</div>
+										<div className="flex items-center gap-2">
+											<button
+												type="button"
+												onClick={handleCopyRekening}
+												className="p-2 text-blue-700 border focus:outline-none border-blue-200 bg-white rounded-md hover:bg-blue-50 transition"
+												aria-label="Salin nomor rekening">
+												<Copy className="h-4 w-4" />
+											</button>
+											{copied && (
+												<span
+													className="text-xs text-green-600"
+													aria-live="polite">
+													Tersalin
+												</span>
+											)}
+										</div>
+									</div>
+
+									<div className="mt-3">
+										<p className="text-xs text-slate-500">No. Rekening</p>
+										<p className="text-lg font-semibold tracking-wide text-slate-900">
+											901298497261
+										</p>
+									</div>
+
+									<div className="mt-2 text-sm text-slate-600">
+										<span className="font-medium text-slate-700">a.n.</span>
+										&nbsp;Muhamad Nur Raply
+									</div>
 								</div>
 
 								{/* Upload Proof */}
