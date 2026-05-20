@@ -83,7 +83,7 @@ export function MentorProfilePage({ userData, userRole, onNavigate }) {
 									{currentUser.jumlahKursus}
 								</div>
 								<div className="text-sm font-medium text-gray-600">
-									Courses Created
+									Active Courses
 								</div>
 							</div>
 							<div className="bg-blue-50 p-4 rounded-xl text-center transform transition-all duration-300 hover:scale-105">
