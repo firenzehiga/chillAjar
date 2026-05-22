@@ -100,7 +100,7 @@ export function MentorCard({
 				.deco-float { animation: floaty 3.8s ease-in-out infinite; }
 				.deco-pop { animation: pop 2.6s ease-in-out infinite; }
 			`}</style>
-			<div className="group relative bg-gray-50 rounded-xl shadow-lg overflow-hidden transform-gpu transition-transform  duration-300 will-change-transform hover:shadow-2xl hover:translate-y-1">
+			<div className="group relative bg-gray-50 rounded-xl shadow-xl overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-xl cursor-pointer group mb-8 flex flex-col">
 				{/* small ribbon to match app theme */}
 				<div className="absolute top-4 left-4 bg-white/90 text-xs font-semibold text-blue-700 px-2 py-1 rounded-md shadow-sm">
 					ChillAjar
@@ -251,7 +251,7 @@ export function MentorCard({
 							disabled={validModes.length === 0}
 							className={`w-full mt-6 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all transform ${
 								validModes.length > 0
-									? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 hover:scale-105 outline-none focus:outline-none"
+									? "bg-gradient-to-r shadow-lg shadow-blue-600/25 from-blue-500 to-blue-500 text-white hover:from-blue-600 hover:to-blue-700 outline-none focus:outline-none"
 									: "bg-gray-300 text-gray-500 cursor-not-allowed"
 							}`}>
 							<BookOpen className="w-4 h-4" />

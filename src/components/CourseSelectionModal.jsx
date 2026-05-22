@@ -17,7 +17,7 @@ export function CourseSelectionModal({
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0 }}
-			className="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+			className="fixed inset-0 bg-black bg-opacity-90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 			<div className="bg-white rounded-lg w-full max-w-3xl">
 				<div className="p-6 border-b">
 					<div className="flex justify-between items-center">
@@ -57,7 +57,7 @@ export function CourseSelectionModal({
 											<img
 												src={getImageUrl(
 													course.mentor.mentorImage,
-													"/foto_kursus/default.jpg"
+													"/foto_kursus/default.jpg",
 												)}
 												alt={course.mentor?.mentorName || "Nama Mentor"}
 												className="w-10 h-10 rounded-full border-2 border-blue-400 shadow object-cover bg-white"
@@ -121,10 +121,11 @@ export function CourseSelectionModal({
 										{(() => {
 											if (course.schedules && course.schedules.length > 0) {
 												const hasOnline = course.schedules.some(
-													(sch) => sch.gayaMengajar?.toLowerCase() === "online"
+													(sch) => sch.gayaMengajar?.toLowerCase() === "online",
 												);
 												const hasOffline = course.schedules.some(
-													(sch) => sch.gayaMengajar?.toLowerCase() === "offline"
+													(sch) =>
+														sch.gayaMengajar?.toLowerCase() === "offline",
 												);
 												let metode = "";
 												if (hasOnline && hasOffline)

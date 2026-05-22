@@ -44,82 +44,86 @@ import ApiError from "@/components/Fallback/ApiError";
 // Halaman Pelanggan (di-lazy load karena hanya untuk user login)
 const ProfilePage = lazy(() => import("@/pages/student/ProfilePage"));
 const EditProfilePage = lazy(() => import("@/pages/EditProfilePage"));
-const TransactionHistoryPage = lazy(() =>
-	import("@/pages/student/TransactionHistoryPage")
+const TransactionHistoryPage = lazy(
+	() => import("@/pages/student/TransactionHistoryPage"),
 );
-const SessionHistoryPage = lazy(() => import("@/pages/student/SessionHistoryPage"));
-const SessionDetailPage = lazy(() => import("@/pages/student/SessionDetailPage"));
+const SessionHistoryPage = lazy(
+	() => import("@/pages/student/SessionHistoryPage"),
+);
+const SessionDetailPage = lazy(
+	() => import("@/pages/student/SessionDetailPage"),
+);
 
 // Halaman Admin (di-lazy load karena jarang diakses)
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
-const AdminProfilePage = lazy(() =>
-	import("@/pages/admin/profile/AdminProfilePage")
+const AdminProfilePage = lazy(
+	() => import("@/pages/admin/profile/AdminProfilePage"),
 );
-const AdminEditProfile = lazy(() =>
-	import("@/pages/admin/profile/AdminEditProfile")
+const AdminEditProfile = lazy(
+	() => import("@/pages/admin/profile/AdminEditProfile"),
 );
-const AdminUsersPage = lazy(() =>
-	import("@/pages/admin/manage-users/AdminUsersPage")
+const AdminUsersPage = lazy(
+	() => import("@/pages/admin/manage-users/AdminUsersPage"),
 );
-const AdminCoursesPage = lazy(() =>
-	import("@/pages/admin/manage-courses/AdminCoursesPage")
+const AdminCoursesPage = lazy(
+	() => import("@/pages/admin/manage-courses/AdminCoursesPage"),
 );
-const AdminFormCoursePage = lazy(() =>
-	import("@/pages/admin/manage-courses/FormCoursePage")
+const AdminFormCoursePage = lazy(
+	() => import("@/pages/admin/manage-courses/FormCoursePage"),
 );
-const AdminMentorsPage = lazy(() =>
-	import("@/pages/admin/manage-mentors/AdminMentorsPage")
+const AdminMentorsPage = lazy(
+	() => import("@/pages/admin/manage-mentors/AdminMentorsPage"),
 );
-const AdminFormMentorsPage = lazy(() =>
-	import("@/pages/admin/manage-mentors/FormMentorsPage")
+const AdminFormMentorsPage = lazy(
+	() => import("@/pages/admin/manage-mentors/FormMentorsPage"),
 );
-const AdminPaymentsPage = lazy(() =>
-	import("@/pages/admin/manage-payments/AdminPaymentsPage")
+const AdminPaymentsPage = lazy(
+	() => import("@/pages/admin/manage-payments/AdminPaymentsPage"),
 );
-const AdminSessionsPage = lazy(() =>
-	import("@/pages/admin/manage-sessions/AdminSessionsPage")
+const AdminSessionsPage = lazy(
+	() => import("@/pages/admin/manage-sessions/AdminSessionsPage"),
 );
-const AdminFormSessionsPage = lazy(() =>
-	import("@/pages/admin/manage-sessions/FormSessionsPage")
+const AdminFormSessionsPage = lazy(
+	() => import("@/pages/admin/manage-sessions/FormSessionsPage"),
 );
-const AdminTestimoniesPage = lazy(() =>
-	import("@/pages/admin/manage-testimonials/AdminTestimoniesPage")
+const AdminTestimoniesPage = lazy(
+	() => import("@/pages/admin/manage-testimonials/AdminTestimoniesPage"),
 );
-const AdminFormTestimoniesPage = lazy(() =>
-	import("@/pages/admin/manage-testimonials/FormTestimoniesPage")
+const AdminFormTestimoniesPage = lazy(
+	() => import("@/pages/admin/manage-testimonials/FormTestimoniesPage"),
 );
-const AdminItemsPage = lazy(() =>
-	import("@/pages/admin/manage-items/AdminItemsPage")
+const AdminItemsPage = lazy(
+	() => import("@/pages/admin/manage-items/AdminItemsPage"),
 );
-const AdminFormItemsPage = lazy(() =>
-	import("@/pages/admin/manage-items/FormItemPage")
+const AdminFormItemsPage = lazy(
+	() => import("@/pages/admin/manage-items/FormItemPage"),
 );
-const AdminPackagesPage = lazy(() =>
-	import("@/pages/admin/manage-packages/AdminPackagesPage")
+const AdminPackagesPage = lazy(
+	() => import("@/pages/admin/manage-packages/AdminPackagesPage"),
 );
-const AdminFormPackagesPage = lazy(() =>
-	import("@/pages/admin/manage-packages/FormPackagePage")
+const AdminFormPackagesPage = lazy(
+	() => import("@/pages/admin/manage-packages/FormPackagePage"),
 );
 
 // Halaman Mentor (di-lazy load karena jarang diakses)
 const MentorDashboard = lazy(() => import("@/pages/mentor/MentorDashboard"));
-const MentorSchedulePage = lazy(() =>
-	import("@/pages/mentor/sessions/MentorSchedulePage")
+const MentorSchedulePage = lazy(
+	() => import("@/pages/mentor/sessions/MentorSchedulePage"),
 );
-const MentorCoursesPage = lazy(() =>
-	import("@/pages/mentor/courses/MentorCoursesPage")
+const MentorCoursesPage = lazy(
+	() => import("@/pages/mentor/courses/MentorCoursesPage"),
 );
-const MentorTestimoniesPage = lazy(() =>
-	import("@/pages/mentor/MentorTestimoniesPage")
+const MentorTestimoniesPage = lazy(
+	() => import("@/pages/mentor/MentorTestimoniesPage"),
 );
-const MentorFormCoursePage = lazy(() =>
-	import("@/pages/mentor/courses/FormCoursePage")
+const MentorFormCoursePage = lazy(
+	() => import("@/pages/mentor/courses/FormCoursePage"),
 );
-const MentorProfilePage = lazy(() =>
-	import("@/pages/mentor/profile/MentorProfilePage")
+const MentorProfilePage = lazy(
+	() => import("@/pages/mentor/profile/MentorProfilePage"),
 );
-const MentorEditProfile = lazy(() =>
-	import("@/pages/mentor/profile/MentorEditProfile")
+const MentorEditProfile = lazy(
+	() => import("@/pages/mentor/profile/MentorEditProfile"),
 );
 // Logic (Stores, API, Routing, Data Fetching)
 import useAppStore from "@/stores/useAppStore";
@@ -249,8 +253,8 @@ function App() {
 			new Set(
 				schedules
 					.map((j) => j.gayaMengajar)
-					.filter((m) => m === "online" || m === "offline")
-			)
+					.filter((m) => m === "online" || m === "offline"),
+			),
 		);
 
 		// Simpan mode apa adanya (online / offline). Fallback kalau kosong.
@@ -280,7 +284,7 @@ function App() {
 					mentorName: mentorData?.user?.nama || "Unknown Mentor",
 					mentorImage: getImageUrl(
 						mentorData?.user?.foto_profil,
-						"/foto_mentor/default.png"
+						"/foto_mentor/default.png",
 					),
 					mentorRating: mentorData?.rating || 0,
 					mentorAbout: mentorData?.deskripsi || "No description",
@@ -394,7 +398,7 @@ function App() {
 						ignoreNextPopRef.current = true;
 						try {
 							window.history.forward();
-						} catch (e) { }
+						} catch (e) {}
 						setTimeout(() => (ignoreNextPopRef.current = false), 500);
 					}
 				});
@@ -438,7 +442,7 @@ function App() {
 						ignoreNextPopRef.current = true;
 						try {
 							window.history.forward();
-						} catch (e) { }
+						} catch (e) {}
 						setTimeout(() => (ignoreNextPopRef.current = false), 500);
 					}
 				});
@@ -485,7 +489,7 @@ function App() {
 	]);
 	// Filtered course gunanaya untuk tampilan card course di coursepage dan home
 	const filteredCourses = courses.filter(
-		(course) => course.mentor && course.mentor.status === "active" // hanya kursus dengan mentor aktif
+		(course) => course.mentor && course.mentor.status === "active", // hanya kursus dengan mentor aktif
 	);
 
 	// Import store actions yang diperlukan untuk event handlers
@@ -536,7 +540,7 @@ function App() {
 				title: "Belum ada jadwal kursus saat ini",
 				message: "Mohon maaf, mentor untuk kursus ini belum menambahkan jadwal",
 				duration: 2000,
-				position: "bottom-right",
+				position: "top-right",
 			});
 			return;
 		}
@@ -567,7 +571,7 @@ function App() {
 		course,
 		topic,
 		customLocation,
-		selectedPackage
+		selectedPackage,
 	) => {
 		if (!isAuthenticated) {
 			setShowAuthModal(true);
@@ -584,7 +588,7 @@ function App() {
 					(s) =>
 						s.kursus_id === course.id &&
 						s.tanggal === date.toISOString().split("T")[0] &&
-						s.waktu.startsWith(time.slice(0, 5))
+						s.waktu.startsWith(time.slice(0, 5)),
 				);
 
 				if (!selectedSchedule) {
@@ -626,16 +630,16 @@ function App() {
 					topic: topic || "No specific topic",
 					paket: selectedPackage
 						? {
-							...selectedPackage,
-							id: selectedPackage.id || null,
-							diskon: selectedPackage.diskon ?? 0,
-							items: Array.isArray(selectedPackage.items)
-								? selectedPackage.items.map((item) => ({
-									...item,
-									diskon: item.diskon ?? 0,
-								}))
-								: [],
-						}
+								...selectedPackage,
+								id: selectedPackage.id || null,
+								diskon: selectedPackage.diskon ?? 0,
+								items: Array.isArray(selectedPackage.items)
+									? selectedPackage.items.map((item) => ({
+											...item,
+											diskon: item.diskon ?? 0,
+										}))
+									: [],
+							}
 						: null,
 					paket_id: paketId,
 					selectedPackage: selectedPackage || null,
@@ -661,7 +665,7 @@ function App() {
 					</div>,
 					{
 						duration: 5000,
-						position: "top-center",
+						position: "top-right",
 						style: {
 							background: "#fef2f2",
 							border: "1px solid #ef4444",
@@ -669,7 +673,7 @@ function App() {
 							borderRadius: "8px",
 							minWidth: "300px",
 						},
-					}
+					},
 				);
 			}
 		}
@@ -726,7 +730,7 @@ function App() {
 			formData.append("metodePembayaran", paymentMethod);
 			formData.append(
 				"tanggalPembayaran",
-				new Date().toISOString().slice(0, 10)
+				new Date().toISOString().slice(0, 10),
 			);
 			formData.append("buktiPembayaran", proofImage);
 			// Ambil paket_id dari booking jika ada, jika tidak fallback ke selectedPackage
@@ -868,6 +872,8 @@ function App() {
 					icon: "👋",
 					title: "Berhasil logout!",
 					message: "Selamat tinggal, sampai jumpa lagi!",
+					position: "top-right",
+					duration: 1500,
 				});
 			})
 			.catch((error) => {
@@ -1663,7 +1669,7 @@ function App() {
 									handleSchedule(
 										selectedMentor,
 										selectedCourse,
-										selectedPackage
+										selectedPackage,
 									);
 									// Don't clear mentor selection immediately - let booking modal handle it
 									// setSelectedMentor(null);

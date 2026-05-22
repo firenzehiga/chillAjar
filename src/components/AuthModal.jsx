@@ -125,7 +125,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 			// Validasi privacy policy untuk register
 			if (!agreedToTerms) {
 				setError(
-					"Anda harus menyetujui Syarat & Ketentuan dan Kebijakan Privasi"
+					"Anda harus menyetujui Syarat & Ketentuan dan Kebijakan Privasi",
 				);
 				return;
 			}
@@ -154,7 +154,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 						email: formData.email,
 						password: formData.password,
 					},
-					{ skipGlobalError: true }
+					{ skipGlobalError: true },
 				); // Skip global error handling for login
 				const { token, user } = response.data;
 
@@ -166,7 +166,7 @@ export function AuthModal({ defaultMode = "login", onNavigate }) {
 					icon: "👋",
 					title: "Berhasil login!",
 					message: `Selamat datang kembali, ${user.nama}!`,
-					position: "top-center",
+					position: "top-right",
 					duration: 1500,
 				});
 				handleAuthSuccess(user.peran.toLowerCase(), user);

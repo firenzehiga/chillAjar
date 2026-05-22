@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"; // Impor React Query
-import { Users, BookOpen, Clock } from "lucide-react";
+import { Users, BookOpen, Clock, Trash2, RefreshCw } from "lucide-react";
 import api from "../../api";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -51,7 +51,7 @@ export function AdminDashboard() {
 		} catch (err) {
 			setPentestMsg(
 				"Gagal menjalankan perintah: " +
-					(err?.response?.data?.message || err.message)
+					(err?.response?.data?.message || err.message),
 			);
 		} finally {
 			setLoadingPentest(false);
@@ -71,7 +71,7 @@ export function AdminDashboard() {
 		} catch (err) {
 			setPentestMsg(
 				"Gagal menjalankan perintah: " +
-					(err?.response?.data?.message || err.message)
+					(err?.response?.data?.message || err.message),
 			);
 		} finally {
 			setLoadingPentest(false);
@@ -162,10 +162,11 @@ export function AdminDashboard() {
 								await handleHapusSesiExpired();
 								setLoadingAction("");
 							}}
-							className="px-4 py-2 bg-red-700 text-white rounded shadow hover:bg-red-800 disabled:opacity-60 transition-all">
-							Hapus Pemesanan Sesi Expired
+							className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg shadow-sm hover:bg-red-700 hover:shadow disabled:opacity-60 disabled:cursor-not-allowed transition">
+							<Trash2 className="w-4 h-4" />
+							<span>Hapus Pemesanan Sesi Expired</span>
 							{loadingAction === "hapusSesi" && (
-								<div className="w-3 h-3 border-4 border-white border-t-transparent rounded-full animate-spin inline-block ml-2"></div>
+								<div className="w-3 h-3 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
 							)}
 						</button>
 						<button
@@ -175,10 +176,11 @@ export function AdminDashboard() {
 								await handleUpdateRatingMentor();
 								setLoadingAction("");
 							}}
-							className="px-4 py-2 bg-emerald-700 text-white rounded shadow hover:bg-emerald-800 disabled:opacity-60 transition-all">
-							Perbarui Rating Mentor
+							className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-lg shadow-sm hover:bg-emerald-700 hover:shadow disabled:opacity-60 disabled:cursor-not-allowed transition">
+							<RefreshCw className="w-4 h-4" />
+							<span>Perbarui Rating Mentor</span>
 							{loadingAction === "updateRating" && (
-								<div className="w-3 h-3 border-4 border-white border-t-transparent rounded-full animate-spin inline-block ml-2"></div>
+								<div className="w-3 h-3 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
 							)}
 						</button>
 					</div>
