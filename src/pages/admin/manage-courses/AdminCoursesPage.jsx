@@ -98,18 +98,17 @@ export function AdminCoursesPage({ onNavigate }) {
 					new Set(
 						(row.jadwal_kursus || [])
 							.map((jadwal) => jadwal.gayaMengajar)
-							.filter(Boolean)
-					)
+							.filter(Boolean),
+					),
 				).sort();
-				if (modes.length === 0) {
-					return (
-						<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-							Data mode tidak valid
-						</span>
-					);
-				}
+
 				return (
 					<div className="flex gap-1 flex-wrap">
+						{modes.length === 0 && (
+							<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 border border-gray-200 shadow-sm text-gray-800">
+								Jadwal Belum Tersedia
+							</span>
+						)}
 						{modes.map((mode) => {
 							if (mode === "online") {
 								return (
@@ -130,7 +129,11 @@ export function AdminCoursesPage({ onNavigate }) {
 									</span>
 								);
 							} else {
-								return null;
+								return (
+									<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 border border-gray-200 shadow-sm text-gray-800">
+										Gaya Belajar Tidak Valid
+									</span>
+								);
 							}
 						})}
 					</div>
@@ -200,8 +203,8 @@ export function AdminCoursesPage({ onNavigate }) {
 	// Sort courses by created_at in descending order
 	const sortedCourses = courses
 		? [...courses].sort(
-				(a, b) => new Date(b.created_at) - new Date(a.created_at)
-		  )
+				(a, b) => new Date(b.created_at) - new Date(a.created_at),
+			)
 		: [];
 
 	// Filter data untuk DataTable berdasarkan searchTerm
